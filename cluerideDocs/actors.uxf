@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLHierarchy</id>
+    <coordinates>
+      <x>70</x>
+      <y>0</y>
+      <w>330</w>
+      <h>670</h>
+    </coordinates>
+    <panel_attributes>type=Actor
+Visitor
+	Player
+		GroupMember
+		GroupLeader
+	Builder
+		Contributor
+		Reviewer
+	Sponsor
+	Host
+
+Benefactor</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
