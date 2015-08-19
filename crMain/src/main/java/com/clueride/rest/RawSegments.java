@@ -26,10 +26,10 @@ import com.clueride.io.JsonStoreType;
 import com.clueride.service.SegmentService;
 
 /**
- * Description.
+ * Maps between the raw segments endpoint and the SegmentService which knows how
+ * to retrieve the raw segments and turn it into JSON.
  *
  * @author jett
- *
  */
 @Path("segments/raw")
 public class RawSegments {
@@ -38,7 +38,7 @@ public class RawSegments {
 	 * Method handling HTTP GET requests. The returned object is GeoJSON
 	 * representing a FeatureCollection.
 	 *
-	 * @return String that will be returned as a text/plain response.
+	 * @return String representing the raw segments as GeoJSON.
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
