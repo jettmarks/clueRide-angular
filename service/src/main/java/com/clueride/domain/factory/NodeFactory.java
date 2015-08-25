@@ -13,42 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Aug 21, 2015
+ * Created Aug 15, 2015
  */
-package com.clueride.poc;
+package com.clueride.domain.factory;
 
-import java.util.List;
-
-import org.opengis.feature.simple.SimpleFeature;
-
+import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.NodeNetworkState;
+import com.vividsolutions.jts.geom.Point;
 
 /**
- * Abstraction of a Network - the body of connected Segments and Nodes.
+ * Description.
  *
  * @author jett
  *
  */
-public interface Network {
+public class NodeFactory {
 
 	/**
-	 * @param connectedNode
+	 * @param point
 	 * @return
 	 */
-	public abstract boolean canReach(GeoNode connectedNode);
+	public static GeoNode getInstance(Point point) {
+		DefaultGeoNode node = new DefaultGeoNode();
+		node.setPoint(point);
+		return node;
+	}
 
-	/**
-	 * @param simpleFeature
-	 */
-	public abstract void add(SimpleFeature simpleFeature);
-
-	/**
-	 * @param connectedNode
-	 * @return
-	 */
-	public abstract NodeNetworkState evaluateNodeState(GeoNode connectedNode);
-
-	public abstract List<GeoNode> getSortedNodes(GeoNode geoNode);
-
+	public static GeoNode getInstance(double lon, double lat, double elevation) {
+		DefaultGeoNode node = new DefaultGeoNode();
+		node.setPoint(PointFactory.getJtsInstance(lon, lat, elevation));
+		return node;
+	}
 }

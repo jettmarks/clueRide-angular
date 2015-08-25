@@ -24,7 +24,7 @@ import java.util.Map;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.clueride.domain.Segment;
+import com.clueride.domain.dev.Segment;
 import com.clueride.feature.FeatureType;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.gpx.TrackUtil;

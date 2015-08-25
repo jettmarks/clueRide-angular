@@ -47,6 +47,23 @@
         	<artifactId>geotools</artifactId>
         	<version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+        	<groupId>org.mockito</groupId>
+        	<artifactId>mockito-core</artifactId>
+        	<version>1.9.5</version>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.testng</groupId>
+        	<artifactId>testng</artifactId>
+        	<version>6.9.4</version>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>com.google.inject</groupId>
+        	<artifactId>guice</artifactId>
+        	<version>3.0</version>
+        </dependency>
     </dependencies>
     <properties>
         <jersey.version>2.19</jersey.version>

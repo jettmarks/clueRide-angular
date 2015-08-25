@@ -18,11 +18,14 @@
 package com.clueride.poc.geotools;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.geotools.feature.DefaultFeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
+import com.clueride.poc.DefaultNetwork;
 import com.clueride.poc.Network;
 
 /**
@@ -34,6 +37,7 @@ import com.clueride.poc.Network;
 public class LoadService {
 
 	private static LoadService instance;
+	private static TrackStore trackStore = null;
 
 	/**
 	 * @return
@@ -50,9 +54,32 @@ public class LoadService {
 	 * scratch.
 	 * 
 	 * @return
+	 * @throws IOException
 	 */
-	public Network loadNetwork() {
-		Network network = new Network(new DefaultFeatureCollection());
+	public Network loadNetwork() throws IOException {
+		Network network = new DefaultNetwork(new DefaultFeatureCollection());
+
+		if (trackStore == null) {
+			loadTrackStore();
+		}
+
+		network.add(trackStore.getFirstFeature());
+		return network;
+	}
+
+	/**
+	 * @param i
+	 * @return
+	 * @throws IOException
+	 */
+	public Network loadNetwork(int index) throws IOException {
+		Network network = new DefaultNetwork(new DefaultFeatureCollection());
+
+		if (trackStore == null) {
+			loadTrackStore();
+		}
+
+		network.add(trackStore.getTrackPerId(index));
 		return network;
 	}
 
@@ -61,9 +88,41 @@ public class LoadService {
 	 * @throws IOException
 	 */
 	public TrackStore loadTrackStore() throws IOException {
-		JsonUtil jsonUtil = new JsonUtil(JsonStoreType.RAW);
-		DefaultFeatureCollection features = jsonUtil.readFeatureCollection();
-		return new TrackStore(features);
+		if (trackStore == null) {
+			JsonUtil jsonUtil = new JsonUtil(JsonStoreType.RAW);
+			DefaultFeatureCollection features = jsonUtil
+					.readFeatureCollection();
+			trackStore = new TrackStore(features);
+		}
+		return trackStore;
 	}
 
+	/**
+	 * Temporary method for picking up a track for testing.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	private SimpleFeature getFirstFeature() throws IOException {
+		if (trackStore == null) {
+			loadTrackStore();
+		}
+		return trackStore.getFirstFeature();
+	}
+
+	/**
+	 * @param trackIds
+	 * @return
+	 * @throws IOException
+	 */
+	public Network loadNetwork(List<Integer> trackIds) throws IOException {
+		Network network = new DefaultNetwork(new DefaultFeatureCollection());
+		if (trackStore == null) {
+			loadTrackStore();
+		}
+		for (Integer trackId : trackIds) {
+			network.add(trackStore.getTrackPerId(trackId));
+		}
+		return network;
+	}
 }

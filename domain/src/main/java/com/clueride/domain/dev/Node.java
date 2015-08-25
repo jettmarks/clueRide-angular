@@ -13,42 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Aug 21, 2015
+ * Created Jul 28, 2015
  */
-package com.clueride.poc;
+package com.clueride.domain.dev;
 
 import java.util.List;
 
-import org.opengis.feature.simple.SimpleFeature;
-
-import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.NodeNetworkState;
-
 /**
- * Abstraction of a Network - the body of connected Segments and Nodes.
+ * Description.
  *
  * @author jett
  *
  */
-public interface Network {
+public interface Node {
+	public boolean matchesLocation(Node node);
 
 	/**
-	 * @param connectedNode
+	 * Summary of the Node's relationship to a particular Network.
+	 * 
 	 * @return
 	 */
-	public abstract boolean canReach(GeoNode connectedNode);
+	public abstract NodeNetworkState getState();
 
-	/**
-	 * @param simpleFeature
-	 */
-	public abstract void add(SimpleFeature simpleFeature);
+	public abstract void setState(NodeNetworkState nodeNetworkState);
 
-	/**
-	 * @param connectedNode
-	 * @return
-	 */
-	public abstract NodeNetworkState evaluateNodeState(GeoNode connectedNode);
+	public List<Segment> getSegments();
 
-	public abstract List<GeoNode> getSortedNodes(GeoNode geoNode);
+	public void addSegment(Segment segment);
 
 }

@@ -26,8 +26,8 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.clueride.domain.Segment;
 import com.clueride.domain.SegmentImpl;
+import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.SegmentFactory;
 import com.clueride.feature.FeatureType;
 import com.jettmarks.gmaps.encoder.Track;
@@ -79,6 +79,10 @@ public class TranslateUtil {
 	}
 
 	/**
+	 * This is taking Tracks and turning into Segments rather than LineStrings.
+	 * 
+	 * TODO: Rename this appropriately; hierarchy to find out who is using it.
+	 * 
 	 * @param linesByName
 	 * @return
 	 */
@@ -96,6 +100,32 @@ public class TranslateUtil {
 			segments.add(segment);
 		}
 		return segments;
+	}
+
+	/**
+	 * Takes a LineString into a Segment.
+	 * 
+	 * Note that this method doesn't know about the "Feature" aspects of this
+	 * geometry and for that reason is unable to add it to the Segment.
+	 * 
+	 * @param lineString
+	 * @return
+	 */
+	public static Segment lineStringToSegment(LineString lineString) {
+		Segment segment = SegmentFactory.getInstance(lineString);
+		return segment;
+	}
+
+	/**
+	 * @param feature
+	 * @return
+	 */
+	public static Segment featureToSegment(SimpleFeature feature) {
+		LineString lineString = (LineString) feature.getDefaultGeometry();
+		Segment segment = SegmentFactory.getInstance(lineString);
+		segment.setName((String) feature.getAttribute("name"));
+		segment.setUrl((String) feature.getAttribute("url"));
+		return segment;
 	}
 
 }

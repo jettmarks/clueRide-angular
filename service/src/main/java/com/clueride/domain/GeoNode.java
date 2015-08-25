@@ -13,42 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Aug 21, 2015
+ * Created Aug 22, 2015
  */
-package com.clueride.poc;
+package com.clueride.domain;
 
 import java.util.List;
 
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.NodeNetworkState;
+import com.clueride.domain.dev.Node;
+import com.vividsolutions.jts.geom.Point;
 
 /**
- * Abstraction of a Network - the body of connected Segments and Nodes.
+ * Refinement of Node that knows about the GeoTools objects.
  *
  * @author jett
  *
  */
-public interface Network {
+public interface GeoNode extends Node {
 
 	/**
-	 * @param connectedNode
 	 * @return
 	 */
-	public abstract boolean canReach(GeoNode connectedNode);
+	public Point getPoint();
+
+	public Double getLon();
+
+	public Double getLat();
+
+	public abstract Double getElevation();
 
 	/**
-	 * @param simpleFeature
+	 * @param nearestNodes
 	 */
-	public abstract void add(SimpleFeature simpleFeature);
+	public void setNearByNodes(List<GeoNode> nearestNodes);
+
+	public List<GeoNode> getNearByNodes();
 
 	/**
-	 * @param connectedNode
-	 * @return
+	 * @param feature
 	 */
-	public abstract NodeNetworkState evaluateNodeState(GeoNode connectedNode);
+	public void addTrack(SimpleFeature feature);
 
-	public abstract List<GeoNode> getSortedNodes(GeoNode geoNode);
-
+	public List<SimpleFeature> getTracks();
 }

@@ -17,11 +17,17 @@
  */
 package com.clueride.poc.geotools;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.simple.SimpleFeatureImpl;
+import org.opengis.feature.simple.SimpleFeature;
 
-import com.clueride.domain.Node;
+import com.clueride.domain.GeoNode;
+import com.clueride.domain.LineFeature;
+import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.domain.factory.NodeFactory;
 import com.vividsolutions.jts.geom.LineString;
 
@@ -34,12 +40,21 @@ import com.vividsolutions.jts.geom.LineString;
  */
 public class TrackStore {
 	private FeatureCollection trackFeatures;
+	private Map<Integer, SimpleFeature> trackPerId = new HashMap<>();
 
 	/**
 	 * @param features
 	 */
 	public TrackStore(DefaultFeatureCollection trackFeatures) {
 		this.trackFeatures = trackFeatures;
+		for (Object object : trackFeatures.toArray()) {
+			if (object instanceof SimpleFeature) {
+				SimpleFeature feature = (SimpleFeature) object;
+				trackPerId.put(
+						Integer.parseInt((String) feature.getAttribute("url")),
+						feature);
+			}
+		}
 	}
 
 	/**
@@ -47,11 +62,67 @@ public class TrackStore {
 	 * 
 	 * @return
 	 */
-	public Node getFirstPoint() {
-		SimpleFeatureImpl simpleFeature = (SimpleFeatureImpl) trackFeatures
-				.toArray()[0];
-		LineString geometry = (LineString) simpleFeature.getDefaultGeometry();
-		return NodeFactory.getInstance(geometry.getPointN(0));
+	public GeoNode getFirstPoint() {
+		LineString lineString = getFirstLineString();
+		return NodeFactory.getInstance(lineString.getPointN(0));
+	}
+
+	public GeoNode getFirstPointOfTrack(Integer id) {
+		LineString lineString = getLineString(id);
+		return NodeFactory.getInstance(lineString.getPointN(0));
+	}
+
+	/**
+	 * @return
+	 */
+	public LineString getFirstLineString() {
+		return (LineString) getFirstFeature().getDefaultGeometry();
+	}
+
+	public LineString getLineString(Integer id) {
+		return (LineString) trackPerId.get(id).getDefaultGeometry();
+	}
+
+	public LineFeature getFirstLineFeature() {
+		return LineFeatureFactory.getInstance(getFirstFeature());
+	}
+
+	public SimpleFeature getFirstFeature() {
+		return (SimpleFeature) trackFeatures.toArray()[0];
+	}
+
+	/**
+	 * @return
+	 */
+	public GeoNode getMidPoint() {
+		LineString lineString = getFirstLineString();
+		int n = lineString.getNumPoints() / 2;
+		return NodeFactory.getInstance(lineString.getPointN(n));
+	}
+
+	/**
+	 * @param index
+	 * @return
+	 */
+	public SimpleFeature getTrackPerId(int index) {
+		return trackPerId.get(index);
+	}
+
+	/**
+	 * @param trackId
+	 * @return
+	 */
+	public GeoNode getMidPoint(int trackId) {
+		LineString lineString = getLineString(trackId);
+		int n = lineString.getNumPoints() / 2;
+		return NodeFactory.getInstance(lineString.getPointN(n));
+	}
+
+	/**
+	 * @return
+	 */
+	public Collection<SimpleFeature> getFeatures() {
+		return trackPerId.values();
 	}
 
 }

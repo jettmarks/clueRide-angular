@@ -16,8 +16,8 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.FactoryFinder;
 
-import com.clueride.domain.Segment;
 import com.clueride.domain.SegmentImpl;
+import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.SegmentFactory;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.gpx.TrackUtil;

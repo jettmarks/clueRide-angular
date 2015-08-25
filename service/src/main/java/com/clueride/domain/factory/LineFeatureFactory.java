@@ -13,42 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Aug 21, 2015
+ * Created Aug 23, 2015
  */
-package com.clueride.poc;
-
-import java.util.List;
+package com.clueride.domain.factory;
 
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.NodeNetworkState;
+import com.clueride.domain.DefaultLineFeature;
+import com.clueride.domain.LineFeature;
 
 /**
- * Abstraction of a Network - the body of connected Segments and Nodes.
+ * Takes a SimpleFeature which is wrapping a LineString geometry, and turns it
+ * into an implementation of the LineFeature interface.
  *
  * @author jett
  *
  */
-public interface Network {
+public class LineFeatureFactory {
 
-	/**
-	 * @param connectedNode
-	 * @return
-	 */
-	public abstract boolean canReach(GeoNode connectedNode);
-
-	/**
-	 * @param simpleFeature
-	 */
-	public abstract void add(SimpleFeature simpleFeature);
-
-	/**
-	 * @param connectedNode
-	 * @return
-	 */
-	public abstract NodeNetworkState evaluateNodeState(GeoNode connectedNode);
-
-	public abstract List<GeoNode> getSortedNodes(GeoNode geoNode);
+	public static LineFeature getInstance(SimpleFeature simpleLineStringFeature) {
+		return new DefaultLineFeature(simpleLineStringFeature);
+	}
 
 }
