@@ -17,6 +17,7 @@
  */
 package com.clueride.dao;
 
+import java.io.IOException;
 import java.util.Set;
 
 import com.clueride.domain.GeoNode;
@@ -42,8 +43,10 @@ public interface NetworkStore {
 	 * (with backup preferably), and then reloads from that store.
 	 * 
 	 * Can be used to initially load as well if the memory copy is empty.
+	 * 
+	 * @throws IOException
 	 */
-	void persistAndReload();
+	void persistAndReload() throws IOException;
 
 	/**
 	 * This holds the segments -- if we need them, this is the place to go.
@@ -61,19 +64,13 @@ public interface NetworkStore {
 	Segment getSegmentById(Integer id);
 
 	/**
-	 * Unsure we need this to be outside of the implementation.
-	 * 
-	 * @return
-	 */
-	Integer newSegmentId();
-
-	/**
 	 * Brings the geometry and other details for creation of a new Segment along
 	 * with the assignment of an ID.
 	 * 
 	 * @param segment
+	 * @return
 	 */
-	void addNew(Segment segment);
+	Integer addNew(Segment segment);
 
 	/**
 	 * When it's time to split one of these, we want the Store to know about it.

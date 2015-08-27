@@ -17,12 +17,20 @@
  */
 package com.clueride.dao;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+import org.geotools.feature.DefaultFeatureCollection;
 
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Segment;
+import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
+import com.clueride.io.JsonUtil;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -34,6 +42,9 @@ import com.vividsolutions.jts.geom.Point;
 public class DefaultNetworkStore implements NetworkStore {
 
 	JsonStoreType ourStoreType = JsonStoreType.NETWORK;
+	Integer maxSegmentId = 0;
+	Set<Segment> segments = new HashSet<>();
+	Map<Integer, Segment> segmentMap = new HashMap<>();
 
 	/**
 	 * @see com.clueride.dao.NetworkStore#getStoreLocation()
@@ -44,12 +55,33 @@ public class DefaultNetworkStore implements NetworkStore {
 	}
 
 	/**
+	 * Write our segments out to disk.
+	 * 
+	 * This implementation is dependent on the org.geotools.gt-referencing
+	 * package, although it is far from clear that this is the case because it
+	 * gets reported as an inability to parse the incoming null. The problem is
+	 * actually writing the null out there. If the identifier for the CRS can't
+	 * be pulled up, why write it out when you know it can't be read back in?
+	 * Ugh.
+	 * 
+	 * Creating a Stack Overflow ticket for this.
+	 * 
+	 * @throws IOException
 	 * @see com.clueride.dao.NetworkStore#persistAndReload()
 	 */
 	@Override
-	public void persistAndReload() {
-		// TODO Auto-generated method stub
+	public void persistAndReload() throws IOException {
+		JsonUtil networkStorageUtil = new JsonUtil(JsonStoreType.NETWORK);
+		DefaultFeatureCollection features = TranslateUtil
+				.segmentsToFeatureCollection(segments);
+		networkStorageUtil.writeFeaturesToFile(features, "mainNetwork.geojson");
 
+		segments.clear();
+
+		// DefaultFeatureCollection features = networkStorageUtil
+		features = networkStorageUtil
+				.readFeatureCollection("mainNetwork.geojson");
+		segments = TranslateUtil.featureCollectionToSegments(features);
 	}
 
 	/**
@@ -57,8 +89,7 @@ public class DefaultNetworkStore implements NetworkStore {
 	 */
 	@Override
 	public Set<Segment> getSegments() {
-		// TODO Auto-generated method stub
-		return null;
+		return segments;
 	}
 
 	/**
@@ -66,26 +97,26 @@ public class DefaultNetworkStore implements NetworkStore {
 	 */
 	@Override
 	public Segment getSegmentById(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		return segmentMap.get(id);
 	}
 
 	/**
-	 * @see com.clueride.dao.NetworkStore#newSegmentId()
-	 */
-	@Override
-	public Integer newSegmentId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
+	 * Ignores the incoming segment ID if there is one and replaces it with the
+	 * next in sequence.
+	 * 
+	 * Note that DB implementations may be using the database's algorithm for
+	 * assigning PKs.
+	 * 
+	 * @return
 	 * @see com.clueride.dao.NetworkStore#addNew(com.clueride.domain.dev.Segment)
 	 */
 	@Override
-	public void addNew(Segment segment) {
-		// TODO Auto-generated method stub
-
+	public Integer addNew(Segment segment) {
+		maxSegmentId++;
+		segment.setSegId(maxSegmentId);
+		segments.add(segment);
+		segmentMap.put(maxSegmentId, segment);
+		return maxSegmentId;
 	}
 
 	/**

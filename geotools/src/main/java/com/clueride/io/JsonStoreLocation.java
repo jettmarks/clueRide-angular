@@ -28,6 +28,8 @@ import java.util.Map;
  */
 public class JsonStoreLocation {
 	private static Map<JsonStoreType, String> map;
+	private static Map<JsonStoreType, String> testMap;
+	private static boolean testMode = false;
 
 	static {
 		map = new HashMap<JsonStoreType, String>();
@@ -37,9 +39,33 @@ public class JsonStoreLocation {
 		map.put(JsonStoreType.NETWORK,
 				"/home/jett/jsonFeatures/segments/network");
 		map.put(JsonStoreType.LOCATION, "/home/jett/jsonFeatures/locations");
+
+		testMap = new HashMap<JsonStoreType, String>();
+		testMap.put(JsonStoreType.BASE, "/home/jett/jsonFeatures-test");
+		testMap.put(JsonStoreType.SEGMENTS,
+				"/home/jett/jsonFeatures-test/segments");
+		testMap.put(JsonStoreType.RAW,
+				"/home/jett/jsonFeatures-test/segments/raw");
+		testMap.put(JsonStoreType.NETWORK,
+				"/home/jett/jsonFeatures-test/segments/network");
+		testMap.put(JsonStoreType.LOCATION,
+				"/home/jett/jsonFeatures-test/locations");
+
 	}
 
 	public static String toString(JsonStoreType jsonStoreType) {
-		return map.get(jsonStoreType);
+		if (testMode) {
+			return testMap.get(jsonStoreType);
+		} else {
+			return map.get(jsonStoreType);
+		}
+	}
+
+	public static void clearTestMode() {
+		testMode = false;
+	}
+
+	public static void setTestMode() {
+		testMode = true;
 	}
 }

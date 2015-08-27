@@ -40,7 +40,7 @@ public class FeatureType {
 														// reference system
 
 		// add attributes in order
-		builder.add("id", Integer.class);
+		builder.add("segId", Integer.class);
 		builder.add("the_geom", LineString.class);
 		builder.add("name", String.class);
 		builder.add("url", String.class);

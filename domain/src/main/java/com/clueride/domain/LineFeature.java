@@ -27,9 +27,9 @@ import com.clueride.domain.dev.Node;
  *
  */
 public interface LineFeature {
-	public int getId();
+	public int getSegId();
 
-	public void setId(int id);
+	public void setSegId(int id);
 
 	public String getName();
 

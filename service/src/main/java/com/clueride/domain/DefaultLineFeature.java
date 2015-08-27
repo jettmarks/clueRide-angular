@@ -58,7 +58,7 @@ public class DefaultLineFeature implements LineFeature {
 	 * @see com.clueride.domain.LineFeature#getId()
 	 */
 	@Override
-	public int getId() {
+	public int getSegId() {
 		return id;
 	}
 
@@ -66,7 +66,7 @@ public class DefaultLineFeature implements LineFeature {
 	 * @see com.clueride.domain.LineFeature#setId(int)
 	 */
 	@Override
-	public void setId(int id) {
+	public void setSegId(int id) {
 		this.id = id;
 	}
 

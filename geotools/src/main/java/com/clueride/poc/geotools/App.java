@@ -68,7 +68,7 @@ public class App {
 			// " has "
 			// + pointCount + " points");
 			Segment segment = SegmentFactory.getInstance(geometry);
-			segment.setId(i);
+			segment.setSegId(i);
 			if (pointCount == 2 && validateSegment(segment)) {
 				segment.setName("SinglePoint LineString - " + i);
 				singlePointSegments.add(segment);

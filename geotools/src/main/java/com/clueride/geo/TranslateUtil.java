@@ -18,9 +18,11 @@
 package com.clueride.geo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -64,13 +66,24 @@ public class TranslateUtil {
 	}
 
 	/**
+	 * @param segments
+	 * @return
+	 */
+	public static DefaultFeatureCollection segmentsToFeatureCollection(
+			Set<Segment> segments) {
+		List<Segment> segList = new ArrayList<>();
+		segList.addAll(segments);
+		return segmentsToFeatureCollection(segList);
+	}
+
+	/**
 	 * @param segmentFeatureBuilder
 	 * @param segment
 	 * @return
 	 */
 	public static SimpleFeature segmentToFeature(
 			SimpleFeatureBuilder segmentFeatureBuilder, Segment segment) {
-		segmentFeatureBuilder.add(segment.getId());
+		segmentFeatureBuilder.add(segment.getSegId());
 		segmentFeatureBuilder.add(((SegmentImpl) segment).getLineString());
 		segmentFeatureBuilder.add(segment.getName());
 		segmentFeatureBuilder.add(segment.getUrl());
@@ -94,7 +107,7 @@ public class TranslateUtil {
 		for (Entry<Track, LineString> trackEntry : linesByName.entrySet()) {
 			index++;
 			Segment segment = SegmentFactory.getInstance(trackEntry.getValue());
-			segment.setId(index);
+			segment.setSegId(index);
 			segment.setName(trackEntry.getKey().getDisplayName());
 			segment.setUrl(trackEntry.getKey().getName());
 			segments.add(segment);
@@ -125,7 +138,24 @@ public class TranslateUtil {
 		Segment segment = SegmentFactory.getInstance(lineString);
 		segment.setName((String) feature.getAttribute("name"));
 		segment.setUrl((String) feature.getAttribute("url"));
+		Long idLong = (Long) feature.getAttribute("segId");
+		if (idLong != null) {
+			segment.setSegId(idLong.intValue());
+		}
 		return segment;
+	}
+
+	/**
+	 * @param features
+	 * @return
+	 */
+	public static Set<Segment> featureCollectionToSegments(
+			DefaultFeatureCollection features) {
+		Set<Segment> segmentSet = new HashSet<>();
+		for (SimpleFeature feature : features) {
+			segmentSet.add(featureToSegment(feature));
+		}
+		return segmentSet;
 	}
 
 }

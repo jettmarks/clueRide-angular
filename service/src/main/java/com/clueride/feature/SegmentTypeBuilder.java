@@ -24,7 +24,11 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import com.vividsolutions.jts.geom.LineString;
 
 /**
- * Description.
+ * Constructs the layout to store Segments as Features.
+ * 
+ * Note that using and parsing the CRS depends on including the correct geotools
+ * package, and you don't find this out until you attempt to read a JSON file
+ * that had been written by the library.
  *
  * @author jett
  *
@@ -40,7 +44,7 @@ public class SegmentTypeBuilder {
 		// add attributes in order
 		builder.add("the_geom", LineString.class);
 		builder.add("name", String.class);
-		builder.add("id", Integer.class);
+		builder.add("segId", Integer.class);
 
 		// build the type
 		final SimpleFeatureType featureType = builder.buildFeatureType();

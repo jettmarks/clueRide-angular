@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.opengis.feature.simple.SimpleFeature;
@@ -64,9 +65,24 @@ public class JsonUtil {
 		// Get a list of the files
 		File file = new File(JsonStoreLocation.toString(currentType));
 		for (File child : file.listFiles()) {
-			System.out.println(child.getCanonicalPath());
+			// System.out.println(child.getCanonicalPath());
 			SimpleFeature feature = readFeature(child);
 			features.add(feature);
+		}
+		return features;
+	}
+
+	public DefaultFeatureCollection readFeatureCollection(String fileName)
+			throws IOException {
+		File file = new File(JsonStoreLocation.toString(currentType)
+				+ File.separator + fileName);
+		DefaultFeatureCollection features = new DefaultFeatureCollection();
+		GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
+		FeatureJSON featureJson = new FeatureJSON(geometryJson);
+		FeatureIterator<SimpleFeature> featureIterator = featureJson
+				.streamFeatureCollection(file.getCanonicalFile());
+		while (featureIterator.hasNext()) {
+			features.add(featureIterator.next());
 		}
 		return features;
 	}
