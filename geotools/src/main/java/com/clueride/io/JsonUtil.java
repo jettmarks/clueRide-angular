@@ -42,16 +42,16 @@ public class JsonUtil {
 	private static int DIGITS_OF_PRECISION = 5;
 
 	private JsonStoreType currentType = JsonStoreType.SEGMENTS;
-	private String currentLocation = JsonStoreLocation.toString(currentType);
+	private String currentPath = JsonStoreLocation.toString(currentType);
 
 	public JsonUtil(JsonStoreType storeType) {
 		currentType = storeType;
-		currentLocation = JsonStoreLocation.toString(currentType);
+		currentPath = JsonStoreLocation.toString(currentType);
 	}
 
-	public JsonUtil(String location) {
+	public JsonUtil(String path) {
 		currentType = JsonStoreType.OTHER;
-		currentLocation = location;
+		currentPath = path;
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class JsonUtil {
 		GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
 		FeatureJSON featureJson = new FeatureJSON(geometryJson);
 
-		File outFile = new File(currentLocation + File.separator + fileName);
+		File outFile = new File(currentPath + File.separator + fileName);
 		OutputStream oStream = null;
 		try {
 			oStream = new FileOutputStream(outFile);
