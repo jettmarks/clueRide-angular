@@ -1,0 +1,9 @@
+
+.mapFrame {
+	float: left;
+	margin-right: 1em;
+	width: 46%;
+	border: 2px;
+	border-style: solid;
+	border-color: #40F;
+}

@@ -27,12 +27,13 @@ app.controller("BasicFirstController", [ "$scope", 'leafletData',
 		    zoom: 12,
 		    autoDiscover: true
 		},
-		geojson: {},
+		gjNetwork: {},
+		gjTracks: {},
 		selectedFeature: {}
     });
 
     RawSegments.get({}, function(featureCollection) {
-		angular.extend($scope.geojson, {
+		angular.extend($scope.gjTracks, {
 		    segments: {
 				data: featureCollection,
 				style: {
@@ -66,7 +67,7 @@ app.controller("BasicFirstController", [ "$scope", 'leafletData',
     });
 
     $http.get("/crMain/tempJson/singleLineSegments.geojson").success(function(data, status) {
-		angular.extend($scope.geojson, {
+		angular.extend($scope.gjTracks, {
 		    problems: {
 				data: data,
 				style: {
@@ -106,7 +107,7 @@ app.controller("BasicFirstController", [ "$scope", 'leafletData',
             lat: latlng.lat,
             lon: latlng.lng
         }, function(pointFeature) {
-            angular.extend($scope.geojson, {
+            angular.extend($scope.gjNetwork, {
                 newPoints: {
                     data: pointFeature,
 	                pointToLayer: function(feature, latlng) {
@@ -132,7 +133,7 @@ app.controller("BasicFirstController", [ "$scope", 'leafletData',
     }
     
     // Responds to mouse-click to submit lat/lon and return point candidate
-    leafletData.getMap().then(function(map) {
+    leafletData.getMap('networkMap').then(function(map) {
         map.on('click', function(mouseEvent) {
 	        checkNewPointLocation(mouseEvent.latlng);
         });
