@@ -37,6 +37,8 @@ import com.clueride.dao.NetworkStore;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.factory.NodeFactory;
+import com.clueride.io.JsonStoreType;
+import com.clueride.io.JsonUtil;
 import com.clueride.poc.geotools.TrackStore;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -297,5 +299,15 @@ public class DefaultNetwork implements Network {
                 + ", allLineStringsCount=" + allLineStrings.size()
                 + ", nodeSetCount=" + nodeSet.size() + ", trackStoreCount="
                 + trackStore.getFeatures().size() + "]";
+    }
+
+    /**
+     * @return
+     */
+    public String getNetworkForDisplay() {
+        String result = "";
+        JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
+        result = jsonUtil.toString(allSegments);
+        return result;
     }
 }

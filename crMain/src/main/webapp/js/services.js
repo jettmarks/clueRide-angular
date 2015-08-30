@@ -4,6 +4,16 @@
 
 var services = angular.module('crMain.services', ['ngResource']);
 
+services.factory('Network', function ($resource) {
+    return $resource('/crMain/rest/network', {}, {
+        query: {
+            method: 'GET',
+            params: {},
+            isArray: false
+        }
+    })
+});
+
 services.factory('RawSegments', function ($resource) {
     return $resource('/crMain/rest/segments/raw', {}, {
         query: {

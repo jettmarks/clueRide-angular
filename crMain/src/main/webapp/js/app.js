@@ -1,7 +1,7 @@
 var app = angular.module("crMain", ['leaflet-directive', 'crMain.services']);
 app.controller("BasicFirstController", [ "$scope", 'leafletData', 
-                                         '$http', 'RawSegments', 'Locations',
-                                         function($scope, leafletData, $http, RawSegments, Locations) {
+                                         '$http', 'RawSegments', 'Locations', 'Network',
+                                         function($scope, leafletData, $http, RawSegments, Locations, Network) {
 
     $scope.layers = {
 	    baselayers: {
@@ -32,6 +32,21 @@ app.controller("BasicFirstController", [ "$scope", 'leafletData',
 		selectedFeature: {}
     });
 
+    Network.get({}, function(featureCollection) {
+		angular.extend($scope.gjNetwork, {
+		    segments: {
+				data: featureCollection,
+				style: {
+				    opacity: 0.7,
+				    color: '#030',
+				    weight: 4,
+				}
+		    }
+		});
+    });
+				
+				
+				
     RawSegments.get({}, function(featureCollection) {
 		angular.extend($scope.gjTracks, {
 		    segments: {
