@@ -15,7 +15,7 @@
  *
  * Created Aug 18, 2015
  */
-package com.clueride.poc.geotools;
+package com.clueride.dao;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,10 +23,11 @@ import java.util.List;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 
+import com.clueride.geo.DefaultNetwork;
+import com.clueride.geo.Network;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
-import com.clueride.poc.DefaultNetwork;
-import com.clueride.poc.Network;
+import com.clueride.poc.geotools.TrackStore;
 
 /**
  * Description.

@@ -32,28 +32,48 @@ import com.vividsolutions.jts.geom.Point;
  */
 public interface GeoNode extends Node {
 
-	/**
-	 * @return
-	 */
-	public Point getPoint();
+    /**
+     * @return
+     */
+    Integer getId();
 
-	public Double getLon();
+    void setId(Integer pointId);
 
-	public Double getLat();
+    String getName();
 
-	public abstract Double getElevation();
+    void setName(String name);
 
-	/**
-	 * @param nearestNodes
-	 */
-	public void setNearByNodes(List<GeoNode> nearestNodes);
+    /**
+     * @return
+     */
+    Point getPoint();
 
-	public List<GeoNode> getNearByNodes();
+    /**
+     * @param point
+     */
+    void setPoint(Point point);
 
-	/**
-	 * @param feature
-	 */
-	public void addTrack(SimpleFeature feature);
+    Double getLon();
 
-	public List<SimpleFeature> getTracks();
+    Double getLat();
+
+    abstract Double getElevation();
+
+    /**
+     * @param nearestNodes
+     */
+    void setNearByNodes(List<GeoNode> nearestNodes);
+
+    List<GeoNode> getNearByNodes();
+
+    int getNearByNodeCount();
+
+    int getTrackCount();
+
+    /**
+     * @param feature
+     */
+    void addTrack(SimpleFeature feature);
+
+    List<SimpleFeature> getTracks();
 }

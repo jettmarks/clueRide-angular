@@ -41,102 +41,121 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class DefaultNetworkStore implements NetworkStore {
 
-	JsonStoreType ourStoreType = JsonStoreType.NETWORK;
-	Integer maxSegmentId = 0;
-	Set<Segment> segments = new HashSet<>();
-	Map<Integer, Segment> segmentMap = new HashMap<>();
+    JsonStoreType ourStoreType = JsonStoreType.NETWORK;
+    Integer maxSegmentId = 0;
+    Set<Segment> segments = new HashSet<>();
+    Map<Integer, Segment> segmentMap = new HashMap<>();
 
-	/**
-	 * @see com.clueride.dao.NetworkStore#getStoreLocation()
-	 */
-	@Override
-	public String getStoreLocation() {
-		return JsonStoreLocation.toString(ourStoreType);
-	}
+    /**
+     * @see com.clueride.dao.NetworkStore#getStoreLocation()
+     */
+    @Override
+    public String getStoreLocation() {
+        return JsonStoreLocation.toString(ourStoreType);
+    }
 
-	/**
-	 * Write our segments out to disk.
-	 * 
-	 * This implementation is dependent on the org.geotools.gt-referencing
-	 * package, although it is far from clear that this is the case because it
-	 * gets reported as an inability to parse the incoming null. The problem is
-	 * actually writing the null out there. If the identifier for the CRS can't
-	 * be pulled up, why write it out when you know it can't be read back in?
-	 * Ugh.
-	 * 
-	 * Creating a Stack Overflow ticket for this.
-	 * 
-	 * @throws IOException
-	 * @see com.clueride.dao.NetworkStore#persistAndReload()
-	 */
-	@Override
-	public void persistAndReload() throws IOException {
-		JsonUtil networkStorageUtil = new JsonUtil(JsonStoreType.NETWORK);
-		DefaultFeatureCollection features = TranslateUtil
-				.segmentsToFeatureCollection(segments);
-		networkStorageUtil.writeFeaturesToFile(features, "mainNetwork.geojson");
+    /**
+     * Write our segments out to disk.
+     * 
+     * This implementation is dependent on the org.geotools.gt-referencing
+     * package, although it is far from clear that this is the case because it
+     * gets reported as an inability to parse the incoming null. The problem is
+     * actually writing the null out there. If the identifier for the CRS can't
+     * be pulled up, why write it out when you know it can't be read back in?
+     * Ugh.
+     * 
+     * Creating a Stack Overflow ticket for this.
+     * 
+     * @throws IOException
+     * @see com.clueride.dao.NetworkStore#persistAndReload()
+     */
+    @Override
+    public void persistAndReload() throws IOException {
+        JsonUtil networkStorageUtil = new JsonUtil(JsonStoreType.NETWORK);
+        DefaultFeatureCollection features = TranslateUtil
+                .segmentsToFeatureCollection(segments);
+        networkStorageUtil.writeFeaturesToFile(features, "mainNetwork.geojson");
 
-		segments.clear();
+        segments.clear();
 
-		// DefaultFeatureCollection features = networkStorageUtil
-		features = networkStorageUtil
-				.readFeatureCollection("mainNetwork.geojson");
-		segments = TranslateUtil.featureCollectionToSegments(features);
-	}
+        // DefaultFeatureCollection features = networkStorageUtil
+        features = networkStorageUtil
+                .readFeatureCollection("mainNetwork.geojson");
+        segments = TranslateUtil.featureCollectionToSegments(features);
+    }
 
-	/**
-	 * @see com.clueride.dao.NetworkStore#getSegments()
-	 */
-	@Override
-	public Set<Segment> getSegments() {
-		return segments;
-	}
+    /**
+     * @see com.clueride.dao.NetworkStore#getSegments()
+     */
+    @Override
+    public Set<Segment> getSegments() {
+        if (segments.isEmpty()) {
+            loadFromDefault();
+        }
+        return segments;
+    }
 
-	/**
-	 * @see com.clueride.dao.NetworkStore#getSegmentById(java.lang.Integer)
-	 */
-	@Override
-	public Segment getSegmentById(Integer id) {
-		return segmentMap.get(id);
-	}
+    /**
+     * @throws IOException
+     * 
+     */
+    private void loadFromDefault() {
+        JsonUtil networkStorageUtil = new JsonUtil(JsonStoreType.NETWORK);
+        DefaultFeatureCollection features = null;
+        try {
+            features = networkStorageUtil
+                    .readFeatureCollection("mainNetwork.geojson");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        segments = TranslateUtil.featureCollectionToSegments(features);
+    }
 
-	/**
-	 * Ignores the incoming segment ID if there is one and replaces it with the
-	 * next in sequence.
-	 * 
-	 * Note that DB implementations may be using the database's algorithm for
-	 * assigning PKs.
-	 * 
-	 * @return
-	 * @see com.clueride.dao.NetworkStore#addNew(com.clueride.domain.dev.Segment)
-	 */
-	@Override
-	public Integer addNew(Segment segment) {
-		maxSegmentId++;
-		segment.setSegId(maxSegmentId);
-		segments.add(segment);
-		segmentMap.put(maxSegmentId, segment);
-		return maxSegmentId;
-	}
+    /**
+     * @see com.clueride.dao.NetworkStore#getSegmentById(java.lang.Integer)
+     */
+    @Override
+    public Segment getSegmentById(Integer id) {
+        return segmentMap.get(id);
+    }
 
-	/**
-	 * @see com.clueride.dao.NetworkStore#splitSegment(java.lang.Integer,
-	 *      com.clueride.domain.GeoNode)
-	 */
-	@Override
-	public void splitSegment(Integer id, GeoNode geoNode) {
-		// TODO Auto-generated method stub
+    /**
+     * Ignores the incoming segment ID if there is one and replaces it with the
+     * next in sequence.
+     * 
+     * Note that DB implementations may be using the database's algorithm for
+     * assigning PKs.
+     * 
+     * @return
+     * @see com.clueride.dao.NetworkStore#addNew(com.clueride.domain.dev.Segment)
+     */
+    @Override
+    public Integer addNew(Segment segment) {
+        maxSegmentId++;
+        segment.setSegId(maxSegmentId);
+        segments.add(segment);
+        segmentMap.put(maxSegmentId, segment);
+        return maxSegmentId;
+    }
 
-	}
+    /**
+     * @see com.clueride.dao.NetworkStore#splitSegment(java.lang.Integer,
+     *      com.clueride.domain.GeoNode)
+     */
+    @Override
+    public void splitSegment(Integer id, GeoNode geoNode) {
+        // TODO Auto-generated method stub
 
-	/**
-	 * @see com.clueride.dao.NetworkStore#splitSegment(java.lang.Integer,
-	 *      com.vividsolutions.jts.geom.Point)
-	 */
-	@Override
-	public void splitSegment(Integer id, Point point) {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    /**
+     * @see com.clueride.dao.NetworkStore#splitSegment(java.lang.Integer,
+     *      com.vividsolutions.jts.geom.Point)
+     */
+    @Override
+    public void splitSegment(Integer id, Point point) {
+        // TODO Auto-generated method stub
+
+    }
 
 }

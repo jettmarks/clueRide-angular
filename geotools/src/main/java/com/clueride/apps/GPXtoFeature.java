@@ -21,11 +21,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Segment;
-import com.clueride.feature.FeatureType;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.gpx.TrackUtil;
 import com.clueride.io.JsonStoreType;
@@ -45,38 +43,35 @@ import com.vividsolutions.jts.geom.LineString;
  */
 public class GPXtoFeature {
 
-	private static String tag = "bikeTrain";
+    private static String tag = "bikeTrain";
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		if (args.length > 0) {
-			tag = args[0];
-		}
-		System.out.println("Using the tag: " + tag);
-		File directory = new File(tag);
-		if (!directory.isDirectory()) {
-			directory.mkdir();
-		}
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        if (args.length > 0) {
+            tag = args[0];
+        }
+        System.out.println("Using the tag: " + tag);
+        File directory = new File(tag);
+        if (!directory.isDirectory()) {
+            directory.mkdir();
+        }
 
-		List<Track> tracks = TrackUtil.getTracksForTag(tag);
-		System.out.println("Number of tracks: " + tracks.size());
+        List<Track> tracks = TrackUtil.getTracksForTag(tag);
+        System.out.println("Number of tracks: " + tracks.size());
 
-		Map<Track, LineString> linesByName = TrackUtil
-				.trackToLineString(tracks);
+        Map<Track, LineString> linesByName = TrackUtil
+                .trackToLineString(tracks);
 
-		List<Segment> segments = TranslateUtil.lineStringToSegment(linesByName);
+        List<Segment> segments = TranslateUtil.lineStringToSegment(linesByName);
 
-		SimpleFeatureBuilder segmentFeatureBuilder = new SimpleFeatureBuilder(
-				FeatureType.SEGMENT_FEATURE_TYPE);
-		JsonUtil jsonUtilRaw = new JsonUtil(JsonStoreType.SEGMENTS);
-		for (Segment segment : segments) {
-			SimpleFeature feature = TranslateUtil.segmentToFeature(
-					segmentFeatureBuilder, segment);
-			jsonUtilRaw.writeFeatureToFile(feature, tag + File.separator
-					+ segment.getUrl() + ".geojson");
-		}
+        JsonUtil jsonUtilRaw = new JsonUtil(JsonStoreType.SEGMENTS);
+        for (Segment segment : segments) {
+            SimpleFeature feature = TranslateUtil.segmentToFeature(segment);
+            jsonUtilRaw.writeFeatureToFile(feature, tag + File.separator
+                    + segment.getUrl() + ".geojson");
+        }
 
-	}
+    }
 }

@@ -18,7 +18,6 @@ import com.clueride.domain.dev.Segment;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
-import com.clueride.poc.geotools.LoadService;
 import com.clueride.poc.geotools.TrackStore;
 
 public class DefaultNetworkStoreTest {

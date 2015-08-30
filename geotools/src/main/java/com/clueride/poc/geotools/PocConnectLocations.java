@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.clueride.dao.LoadService;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
-import com.clueride.poc.Network;
+import com.clueride.geo.Network;
 
 /**
  * Purpose of this Proof of Concept is to explore the code required to connect

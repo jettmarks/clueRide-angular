@@ -28,6 +28,7 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
+import com.clueride.domain.GeoNode;
 import com.clueride.domain.SegmentImpl;
 import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.SegmentFactory;
@@ -43,119 +44,157 @@ import com.vividsolutions.jts.geom.LineString;
  */
 public class TranslateUtil {
 
-	/**
-	 * This uses the SegmentTypeBuilder which knows about Segments and their
-	 * specific features.
-	 * 
-	 * @param segments
-	 *            - input
-	 * @return
-	 */
-	public static DefaultFeatureCollection segmentsToFeatureCollection(
-			List<Segment> segments) {
-		SimpleFeatureBuilder segmentFeatureBuilder = new SimpleFeatureBuilder(
-				FeatureType.SEGMENT_FEATURE_TYPE);
-		DefaultFeatureCollection features;
-		features = new DefaultFeatureCollection();
-		for (Segment segment : segments) {
-			SimpleFeature feature = segmentToFeature(segmentFeatureBuilder,
-					segment);
-			features.add(feature);
-		}
-		return features;
-	}
+    private static SimpleFeatureBuilder segmentFeatureBuilder = new SimpleFeatureBuilder(
+            FeatureType.SEGMENT_FEATURE_TYPE);
 
-	/**
-	 * @param segments
-	 * @return
-	 */
-	public static DefaultFeatureCollection segmentsToFeatureCollection(
-			Set<Segment> segments) {
-		List<Segment> segList = new ArrayList<>();
-		segList.addAll(segments);
-		return segmentsToFeatureCollection(segList);
-	}
+    /**
+     * This uses the SegmentTypeBuilder which knows about Segments and their
+     * specific features.
+     * 
+     * @param segments
+     *            - input
+     * @return
+     */
+    public static DefaultFeatureCollection segmentsToFeatureCollection(
+            List<Segment> segments) {
+        SimpleFeatureBuilder segmentFeatureBuilder = new SimpleFeatureBuilder(
+                FeatureType.SEGMENT_FEATURE_TYPE);
+        DefaultFeatureCollection features;
+        features = new DefaultFeatureCollection();
+        for (Segment segment : segments) {
+            SimpleFeature feature = segmentToFeature(segment);
+            features.add(feature);
+        }
+        return features;
+    }
 
-	/**
-	 * @param segmentFeatureBuilder
-	 * @param segment
-	 * @return
-	 */
-	public static SimpleFeature segmentToFeature(
-			SimpleFeatureBuilder segmentFeatureBuilder, Segment segment) {
-		segmentFeatureBuilder.add(segment.getSegId());
-		segmentFeatureBuilder.add(((SegmentImpl) segment).getLineString());
-		segmentFeatureBuilder.add(segment.getName());
-		segmentFeatureBuilder.add(segment.getUrl());
-		SimpleFeature feature = segmentFeatureBuilder.buildFeature(null);
-		return feature;
-	}
+    /**
+     * @param segments
+     * @return
+     */
+    public static DefaultFeatureCollection segmentsToFeatureCollection(
+            Set<Segment> segments) {
+        List<Segment> segList = new ArrayList<>();
+        segList.addAll(segments);
+        return segmentsToFeatureCollection(segList);
+    }
 
-	/**
-	 * This is taking Tracks and turning into Segments rather than LineStrings.
-	 * 
-	 * TODO: Rename this appropriately; hierarchy to find out who is using it.
-	 * 
-	 * @param linesByName
-	 * @return
-	 */
-	public static List<Segment> lineStringToSegment(
-			Map<Track, LineString> linesByName) {
-		List<Segment> segments;
-		segments = new ArrayList<Segment>();
-		int index = 0;
-		for (Entry<Track, LineString> trackEntry : linesByName.entrySet()) {
-			index++;
-			Segment segment = SegmentFactory.getInstance(trackEntry.getValue());
-			segment.setSegId(index);
-			segment.setName(trackEntry.getKey().getDisplayName());
-			segment.setUrl(trackEntry.getKey().getName());
-			segments.add(segment);
-		}
-		return segments;
-	}
+    /**
+     * @param segmentFeatureBuilder
+     * @param segment
+     * @return
+     */
+    public static SimpleFeature segmentToFeature(Segment segment) {
+        segmentFeatureBuilder.add(segment.getSegId());
+        segmentFeatureBuilder.add(((SegmentImpl) segment).getLineString());
+        segmentFeatureBuilder.add(segment.getName());
+        segmentFeatureBuilder.add(segment.getUrl());
+        SimpleFeature feature = segmentFeatureBuilder.buildFeature(null);
+        return feature;
+    }
 
-	/**
-	 * Takes a LineString into a Segment.
-	 * 
-	 * Note that this method doesn't know about the "Feature" aspects of this
-	 * geometry and for that reason is unable to add it to the Segment.
-	 * 
-	 * @param lineString
-	 * @return
-	 */
-	public static Segment lineStringToSegment(LineString lineString) {
-		Segment segment = SegmentFactory.getInstance(lineString);
-		return segment;
-	}
+    /**
+     * @param geoNode
+     * @return
+     */
+    public static SimpleFeature geoNodeToFeature(GeoNode geoNode) {
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(
+                FeatureType.POINT_FEATURE_TYPE);
+        featureBuilder.add(geoNode.getId());
+        featureBuilder.add(geoNode.getName());
+        featureBuilder.add(geoNode.getState());
+        featureBuilder.add(geoNode.getPoint());
+        return featureBuilder.buildFeature(null);
+    }
 
-	/**
-	 * @param feature
-	 * @return
-	 */
-	public static Segment featureToSegment(SimpleFeature feature) {
-		LineString lineString = (LineString) feature.getDefaultGeometry();
-		Segment segment = SegmentFactory.getInstance(lineString);
-		segment.setName((String) feature.getAttribute("name"));
-		segment.setUrl((String) feature.getAttribute("url"));
-		Long idLong = (Long) feature.getAttribute("segId");
-		if (idLong != null) {
-			segment.setSegId(idLong.intValue());
-		}
-		return segment;
-	}
+    /**
+     * @param geoNode
+     * @return
+     */
+    public static DefaultFeatureCollection geoNodeToFeatureCollection(
+            GeoNode geoNode) {
+        DefaultFeatureCollection features = new DefaultFeatureCollection();
+        features.add(geoNodeToFeature(geoNode));
+        for (GeoNode nearByNode : geoNode.getNearByNodes()) {
+            features.add(geoNodeToFeature(nearByNode));
+        }
+        for (Segment segment : geoNode.getSegments()) {
+            features.add(segmentToFeature(segment));
+        }
+        for (SimpleFeature trackFeature : geoNode.getTracks()) {
+            features.add(trackFeature);
+        }
+        return features;
+    }
 
-	/**
-	 * @param features
-	 * @return
-	 */
-	public static Set<Segment> featureCollectionToSegments(
-			DefaultFeatureCollection features) {
-		Set<Segment> segmentSet = new HashSet<>();
-		for (SimpleFeature feature : features) {
-			segmentSet.add(featureToSegment(feature));
-		}
-		return segmentSet;
-	}
+    /**
+     * This is taking Tracks and turning into Segments rather than LineStrings.
+     * 
+     * TODO: Rename this appropriately; hierarchy to find out who is using it.
+     * 
+     * @param linesByName
+     * @return
+     */
+    public static List<Segment> lineStringToSegment(
+            Map<Track, LineString> linesByName) {
+        List<Segment> segments;
+        segments = new ArrayList<Segment>();
+        int index = 0;
+        for (Entry<Track, LineString> trackEntry : linesByName.entrySet()) {
+            index++;
+            Segment segment = SegmentFactory.getInstance(trackEntry.getValue());
+            segment.setSegId(index);
+            segment.setName(trackEntry.getKey().getDisplayName());
+            segment.setUrl(trackEntry.getKey().getName());
+            segments.add(segment);
+        }
+        return segments;
+    }
+
+    /**
+     * Takes a LineString into a Segment.
+     * 
+     * Note that this method doesn't know about the "Feature" aspects of this
+     * geometry and for that reason is unable to add it to the Segment.
+     * 
+     * @param lineString
+     * @return
+     */
+    public static Segment lineStringToSegment(LineString lineString) {
+        Segment segment = SegmentFactory.getInstance(lineString);
+        return segment;
+    }
+
+    /**
+     * @param feature
+     * @return
+     */
+    public static Segment featureToSegment(SimpleFeature feature) {
+        LineString lineString = (LineString) feature.getDefaultGeometry();
+        Segment segment = SegmentFactory.getInstance(lineString);
+        segment.setName((String) feature.getAttribute("name"));
+        segment.setUrl((String) feature.getAttribute("url"));
+        Object segIdObject = feature.getAttribute("segId");
+        if (segIdObject instanceof Integer) {
+            segment.setSegId((Integer) segIdObject);
+        }
+        if (segIdObject instanceof Long) {
+            segment.setSegId(((Long) segIdObject).intValue());
+        }
+        return segment;
+    }
+
+    /**
+     * @param features
+     * @return
+     */
+    public static Set<Segment> featureCollectionToSegments(
+            DefaultFeatureCollection features) {
+        Set<Segment> segmentSet = new HashSet<>();
+        for (SimpleFeature feature : features) {
+            segmentSet.add(featureToSegment(feature));
+        }
+        return segmentSet;
+    }
 
 }

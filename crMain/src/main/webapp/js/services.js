@@ -13,3 +13,13 @@ services.factory('RawSegments', function ($resource) {
         }
     })
 });
+
+services.factory('Locations', function ($resource) {
+	return $resource('/crMain/rest/locations?lat=:lat&lon=:lon', {}, {
+		get: {
+			method: 'GET',
+			params: {},
+			isArray: false
+		}
+	})
+});

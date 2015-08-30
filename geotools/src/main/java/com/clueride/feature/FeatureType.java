@@ -21,7 +21,9 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeatureType;
 
+import com.clueride.domain.dev.NodeNetworkState;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * Support for the Feature Types used in this application.
@@ -30,24 +32,46 @@ import com.vividsolutions.jts.geom.LineString;
  *
  */
 public class FeatureType {
-	public static final SimpleFeatureType SEGMENT_FEATURE_TYPE = buildSegmentInstance();
+    public static final SimpleFeatureType SEGMENT_FEATURE_TYPE = buildSegmentInstance();
+    public static final SimpleFeatureType POINT_FEATURE_TYPE = buildPointInstance();
 
-	public static SimpleFeatureType buildSegmentInstance() {
+    public static SimpleFeatureType buildSegmentInstance() {
 
-		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-		builder.setName("SegmentFeatureType");
-		builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
-														// reference system
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("SegmentFeatureType");
+        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
+                                                       // reference system
 
-		// add attributes in order
-		builder.add("segId", Integer.class);
-		builder.add("the_geom", LineString.class);
-		builder.add("name", String.class);
-		builder.add("url", String.class);
+        // add attributes in order
+        builder.add("segId", Integer.class);
+        builder.add("the_geom", LineString.class);
+        builder.add("name", String.class);
+        builder.add("url", String.class);
 
-		// build the type
-		final SimpleFeatureType featureType = builder.buildFeatureType();
+        // build the type
+        final SimpleFeatureType featureType = builder.buildFeatureType();
 
-		return featureType;
-	}
+        return featureType;
+    }
+
+    /**
+     * @return
+     */
+    public static SimpleFeatureType buildPointInstance() {
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("PointFeatureType");
+        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
+                                                       // reference system
+
+        // add attributes in order
+        builder.add("pointgId", Integer.class);
+        builder.add("name", String.class);
+        builder.add("state", NodeNetworkState.class);
+        builder.add("the_geom", Point.class);
+
+        // build the type
+        final SimpleFeatureType featureType = builder.buildFeatureType();
+
+        return featureType;
+    }
 }

@@ -48,8 +48,8 @@ public class PointFactory {
 				.getCoordinateSequenceFactory();
 		CoordinateSequence coordinateSequence = coordinateSequenceFactory
 				.create(1, 3);
-		coordinateSequence.setOrdinate(0, CoordinateSequence.X, latitude);
-		coordinateSequence.setOrdinate(0, CoordinateSequence.Y, longitude);
+		coordinateSequence.setOrdinate(0, CoordinateSequence.X, longitude);
+		coordinateSequence.setOrdinate(0, CoordinateSequence.Y, latitude);
 		coordinateSequence.setOrdinate(0, CoordinateSequence.Z, elevation);
 		point = geometryFactory.createPoint(coordinateSequence);
 		return point;

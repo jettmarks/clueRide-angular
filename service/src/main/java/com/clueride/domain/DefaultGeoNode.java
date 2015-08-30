@@ -35,167 +35,217 @@ import com.vividsolutions.jts.geom.Point;
  *
  */
 public class DefaultGeoNode implements GeoNode {
-	private Point point;
-	private NodeNetworkState nodeNetworkState = NodeNetworkState.UNDEFINED;
-	private List<Segment> segments = new ArrayList<>();
-	private List<GeoNode> nearByNodes;
-	private List<SimpleFeature> tracks = new ArrayList<>();
+    private Point point;
+    private Integer id;
+    private String name;
+    private NodeNetworkState nodeNetworkState = NodeNetworkState.UNDEFINED;
+    private List<Segment> segments = new ArrayList<>();
+    private List<GeoNode> nearByNodes = new ArrayList<>();
+    private List<SimpleFeature> tracks = new ArrayList<>();
 
-	/**
-	 * @return the point
-	 */
-	public Point getPoint() {
-		return point;
-	}
+    /**
+     * @return the point
+     */
+    public Point getPoint() {
+        return point;
+    }
 
-	/**
-	 * @param point
-	 *            the point to set
-	 */
-	public void setPoint(Point point) {
-		this.point = point;
-	}
+    /**
+     * @param point
+     *            the point to set
+     */
+    public void setPoint(Point point) {
+        this.point = point;
+    }
 
-	/**
-	 * Checks that the underlying coordinates are the same for each instance.
-	 * 
-	 * @see com.clueride.domain.dev.Node#matchesLocation(com.clueride.domain.dev.Node)
-	 */
-	public boolean matchesLocation(Node node) {
-		if (node instanceof DefaultGeoNode) {
-			return (this.point.getCoordinate().equals2D(((GeoNode) node)
-					.getPoint().getCoordinate()));
-		} else {
-			throw new IllegalArgumentException(
-					"Expected DefaultGeoNode implementation, not "
-							+ node.getClass());
-		}
-	}
+    /**
+     * Checks that the underlying coordinates are the same for each instance.
+     * 
+     * @see com.clueride.domain.dev.Node#matchesLocation(com.clueride.domain.dev.Node)
+     */
+    public boolean matchesLocation(Node node) {
+        if (node instanceof DefaultGeoNode) {
+            return (this.point.getCoordinate().equals2D(((GeoNode) node)
+                    .getPoint().getCoordinate()));
+        } else {
+            throw new IllegalArgumentException(
+                    "Expected DefaultGeoNode implementation, not "
+                            + node.getClass());
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "DefaultGeoNode [point=" + point + "@" + getElevation() + "]";
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.clueride.domain.dev.Node#getState()
+     */
+    public NodeNetworkState getState() {
+        return nodeNetworkState;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.clueride.domain.dev.Node#getState()
-	 */
-	public NodeNetworkState getState() {
-		return nodeNetworkState;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.clueride.domain.dev.Node#getSegments()
+     */
+    public List<Segment> getSegments() {
+        return segments;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.clueride.domain.dev.Node#getSegments()
-	 */
-	public List<Segment> getSegments() {
-		return segments;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.clueride.domain.dev.Node#getTracks()
+     */
+    public List<SimpleFeature> getTracks() {
+        return tracks;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.clueride.domain.dev.Node#getTracks()
-	 */
-	public List<SimpleFeature> getTracks() {
-		return tracks;
-	}
+    public Double getLat() {
+        return getPoint().getY();
+    };
 
-	public Double getLat() {
-		return getPoint().getY();
-	};
+    public Double getLon() {
+        return getPoint().getX();
+    };
 
-	public Double getLon() {
-		return getPoint().getX();
-	};
+    public Double getElevation() {
+        return getPoint().getCoordinates()[0].z;
+    }
 
-	public Double getElevation() {
-		return getPoint().getCoordinates()[0].z;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(getPoint()
+                .getCoordinateSequence());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(getPoint()
-				.getCoordinateSequence());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        GeoNode rhs = (GeoNode) obj;
+        return (this.getLat().equals(rhs.getLat()) && this.getLon().equals(
+                rhs.getLon()));
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (obj == this) {
-			return true;
-		}
-		if (obj.getClass() != getClass()) {
-			return false;
-		}
-		GeoNode rhs = (GeoNode) obj;
-		return (this.getLat().equals(rhs.getLat()) && this.getLon().equals(
-				rhs.getLon()));
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.clueride.domain.dev.Node#setState(com.clueride.domain.dev.
+     * NodeNetworkState)
+     */
+    public void setState(NodeNetworkState nodeNetworkState) {
+        this.nodeNetworkState = nodeNetworkState;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.clueride.domain.dev.Node#setState(com.clueride.domain.dev.
-	 * NodeNetworkState)
-	 */
-	public void setState(NodeNetworkState nodeNetworkState) {
-		this.nodeNetworkState = nodeNetworkState;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.clueride.domain.dev.Node#addSegment(com.clueride.domain.dev.Segment)
+     */
+    public void addSegment(Segment segment) {
+        segments.add(segment);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.clueride.domain.dev.Node#addSegment(com.clueride.domain.dev.Segment)
-	 */
-	public void addSegment(Segment segment) {
-		segments.add(segment);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.clueride.domain.GeoNode#setNearbyNodes(java.util.Set)
+     */
+    @Override
+    public void setNearByNodes(List<GeoNode> nearestNodes) {
+        nearByNodes = nearestNodes;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.clueride.domain.GeoNode#setNearbyNodes(java.util.Set)
-	 */
-	@Override
-	public void setNearByNodes(List<GeoNode> nearestNodes) {
-		nearByNodes = nearestNodes;
-	}
+    /**
+     * @see com.clueride.domain.GeoNode#getNearByNodes()
+     */
+    @Override
+    public List<GeoNode> getNearByNodes() {
+        return nearByNodes;
+    }
 
-	/**
-	 * @see com.clueride.domain.GeoNode#getNearByNodes()
-	 */
-	@Override
-	public List<GeoNode> getNearByNodes() {
-		return nearByNodes;
-	}
+    /**
+     * @see com.clueride.domain.GeoNode#addTrack(org.opengis.feature.simple.SimpleFeature)
+     */
+    @Override
+    public void addTrack(SimpleFeature feature) {
+        tracks.add(feature);
+    }
 
-	/**
-	 * @see com.clueride.domain.GeoNode#addTrack(org.opengis.feature.simple.SimpleFeature)
-	 */
-	@Override
-	public void addTrack(SimpleFeature feature) {
-		tracks.add(feature);
-	}
+    /**
+     * @return the id
+     */
+    public Integer getId() {
+        return id;
+    }
+
+    /**
+     * @param id
+     *            the id to set
+     */
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name
+     *            the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @see com.clueride.domain.GeoNode#getNearByNodeCount()
+     */
+    @Override
+    public int getNearByNodeCount() {
+        return nearByNodes.isEmpty() ? 0 : nearByNodes.size();
+    }
+
+    /**
+     * @see com.clueride.domain.GeoNode#getTrackCount()
+     */
+    @Override
+    public int getTrackCount() {
+        return tracks.isEmpty() ? 0 : tracks.size();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DefaultGeoNode [point=" + point + "@" + getElevation() + ": "
+                + getState() + " NbN: " + getNearByNodeCount() + " Tk: "
+                + getTrackCount() + "]";
+    }
 }
