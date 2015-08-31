@@ -34,6 +34,7 @@ import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.SegmentFactory;
 import com.clueride.feature.FeatureType;
 import com.jettmarks.gmaps.encoder.Track;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 
 /**
@@ -86,9 +87,10 @@ public class TranslateUtil {
      */
     public static SimpleFeature segmentToFeature(Segment segment) {
         segmentFeatureBuilder.add(segment.getSegId());
-        segmentFeatureBuilder.add(((SegmentImpl) segment).getLineString());
         segmentFeatureBuilder.add(segment.getName());
         segmentFeatureBuilder.add(segment.getUrl());
+        segmentFeatureBuilder.add(false);
+        segmentFeatureBuilder.add(((SegmentImpl) segment).getLineString());
         SimpleFeature feature = segmentFeatureBuilder.buildFeature(null);
         return feature;
     }
@@ -103,6 +105,7 @@ public class TranslateUtil {
         featureBuilder.add(geoNode.getId());
         featureBuilder.add(geoNode.getName());
         featureBuilder.add(geoNode.getState());
+        featureBuilder.add(geoNode.isSelected());
         featureBuilder.add(geoNode.getPoint());
         return featureBuilder.buildFeature(null);
     }
@@ -118,13 +121,31 @@ public class TranslateUtil {
         for (GeoNode nearByNode : geoNode.getNearByNodes()) {
             features.add(geoNodeToFeature(nearByNode));
         }
+        if (geoNode.getSelectedNode() != null) {
+            features.add(geoNodeToFeature(geoNode.getSelectedNode()));
+        }
         for (Segment segment : geoNode.getSegments()) {
             features.add(segmentToFeature(segment));
         }
         for (SimpleFeature trackFeature : geoNode.getTracks()) {
-            features.add(trackFeature);
+            features.add(trackFeatureToFeature(trackFeature));
         }
         return features;
+    }
+
+    /**
+     * @param trackFeature
+     * @return
+     */
+    private static SimpleFeature trackFeatureToFeature(
+            SimpleFeature trackFeature) {
+        segmentFeatureBuilder.add(trackFeature.getAttribute("id"));
+        segmentFeatureBuilder.add(trackFeature.getAttribute("name"));
+        segmentFeatureBuilder.add(trackFeature.getAttribute("url"));
+        segmentFeatureBuilder.add(false);
+        segmentFeatureBuilder.add((LineString) trackFeature
+                .getDefaultGeometry());
+        return segmentFeatureBuilder.buildFeature(null);
     }
 
     /**
@@ -195,6 +216,36 @@ public class TranslateUtil {
             segmentSet.add(featureToSegment(feature));
         }
         return segmentSet;
+    }
+
+    /**
+     * Splits the lineString at the point closest to c.
+     * 
+     * @param moveSplitToTarget
+     *            true to move the split point to the target; false to leave the
+     *            split point at the closest point on the line to the target
+     */
+    public static LineString[] split(LineString lineString, Coordinate target,
+            boolean moveSplitToTarget) {
+        LengthToPoint lengthToPoint = new LengthToPoint(lineString, target);
+        LengthSubstring lengthSubstring = new LengthSubstring(lineString);
+        LineString[] newLineStrings = new LineString[] {
+                lengthSubstring.getSubstring(0, lengthToPoint.getLength()),
+                lengthSubstring.getSubstring(lengthToPoint.getLength(),
+                        lineString.getLength()) };
+        if (moveSplitToTarget) {
+            newLineStrings[1].getStartPoint().getCoordinate()
+                    .setCoordinate((Coordinate) target.clone());
+        }
+        // Make sure the coordinates are absolutely equal [Jon Aquino
+        // 11/21/2003]
+        newLineStrings[0]
+                .getEndPoint()
+                .getCoordinate()
+                .setCoordinate(
+                        newLineStrings[1].getStartPoint().getCoordinate());
+
+        return newLineStrings;
     }
 
 }

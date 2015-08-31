@@ -21,8 +21,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -131,6 +134,101 @@ public class DefaultNetwork implements Network {
         return false;
     }
 
+    public boolean matchesNetworkNode(GeoNode geoNode) {
+        return nodeSet.contains(geoNode);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.clueride.poc.Network#add(org.opengis.feature.simple.SimpleFeature)
+     */
+    @Override
+    public void add(SimpleFeature simpleFeature) {
+        allSegments.add(simpleFeature);
+        refresh();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.clueride.poc.Network#evaluateState(com.clueride.domain.Node)
+     */
+    @Override
+    public NodeNetworkState evaluateNodeState(GeoNode geoNode) {
+        if (matchesNetworkNode(geoNode)) {
+            geoNode.setState(NodeNetworkState.ON_NETWORK);
+            logger.info(geoNode);
+            return NodeNetworkState.ON_NETWORK;
+        } else if (addCoveringSegments(geoNode)) {
+            geoNode.setState(NodeNetworkState.ON_SEGMENT);
+            logger.info(geoNode);
+            return NodeNetworkState.ON_SEGMENT;
+        } else {
+            addNearestNodes(geoNode);
+            int tracksFound = findMatchingTracks(geoNode);
+            if (tracksFound == 1) {
+                geoNode.setState(NodeNetworkState.ON_SINGLE_TRACK);
+                // proposeSegmentFromTrack(geoNode);
+                logger.info(geoNode);
+            } else if (tracksFound > 1) {
+                geoNode.setState(NodeNetworkState.ON_MULTI_TRACK);
+                logger.info(geoNode);
+            } else {
+                geoNode.setState(NodeNetworkState.OFF_NETWORK);
+                logger.info(geoNode);
+            }
+        }
+        return geoNode.getState();
+    }
+
+    /**
+     * @param geoNode
+     */
+    private void proposeSegmentFromTrack(GeoNode geoNode) {
+        if (geoNode.getTrackCount() != 1) {
+            throw new IllegalArgumentException(
+                    "Expected Node to have exactly one candidate Track");
+        }
+        LineString startingTrack = (LineString) geoNode.getTracks().get(0)
+                .getDefaultGeometry();
+
+        // Start out by lighting up the nearest node.
+        LineString[] splitPair = TranslateUtil.split(startingTrack, geoNode
+                .getPoint().getCoordinate(), true);
+        Map<GeoNode, Double> distanceToNode = new HashMap<>();
+        for (GeoNode node : geoNode.getNearByNodes()) {
+            for (int i = 0; i <= 1; i++) {
+                if (splitPair[i].buffer(0.0001).covers(node.getPoint())) {
+                    distanceToNode.put(node, LengthToPoint.length(splitPair[i],
+                            node.getPoint().getCoordinate()));
+                }
+            }
+        }
+
+        GeoNode selectedNode = null;
+        if (distanceToNode.size() == 1) {
+            selectedNode = distanceToNode.keySet().iterator().next();
+        } else {
+            double closest = Double.MAX_VALUE;
+            System.out.println("Have more than one matching Node");
+            for (Iterator<GeoNode> iter = distanceToNode.keySet().iterator(); iter
+                    .hasNext();) {
+                GeoNode testNode = iter.next();
+                if (closest > distanceToNode.get(testNode)) {
+                    closest = distanceToNode.get(testNode);
+                    selectedNode = testNode;
+                }
+            }
+        }
+        geoNode.setSelectedNode(selectedNode);
+
+        // Find track's intersection with network
+        // Find end of track closest
+        // Walk points between current location and intersection with network
+    }
+
     /**
      * After having found this node is not on the network or a segment, we check
      * the TrackStore for any tracks that cover both this point and the nearest
@@ -175,54 +273,6 @@ public class DefaultNetwork implements Network {
             }
         }
         return geoNode.getTracks().size();
-    }
-
-    public boolean matchesNetworkNode(GeoNode geoNode) {
-        return nodeSet.contains(geoNode);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.clueride.poc.Network#add(org.opengis.feature.simple.SimpleFeature)
-     */
-    @Override
-    public void add(SimpleFeature simpleFeature) {
-        allSegments.add(simpleFeature);
-        refresh();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.clueride.poc.Network#evaluateState(com.clueride.domain.Node)
-     */
-    @Override
-    public NodeNetworkState evaluateNodeState(GeoNode geoNode) {
-        if (matchesNetworkNode(geoNode)) {
-            geoNode.setState(NodeNetworkState.ON_NETWORK);
-            logger.info(geoNode);
-            return NodeNetworkState.ON_NETWORK;
-        } else if (addCoveringSegments(geoNode)) {
-            geoNode.setState(NodeNetworkState.ON_SEGMENT);
-            logger.info(geoNode);
-            return NodeNetworkState.ON_SEGMENT;
-        } else {
-            addNearestNodes(geoNode);
-            int tracksFound = findMatchingTracks(geoNode);
-            if (tracksFound == 1) {
-                geoNode.setState(NodeNetworkState.ON_SINGLE_TRACK);
-                logger.info(geoNode);
-            } else if (tracksFound > 1) {
-                geoNode.setState(NodeNetworkState.ON_MULTI_TRACK);
-                logger.info(geoNode);
-            } else {
-                geoNode.setState(NodeNetworkState.OFF_NETWORK);
-                logger.info(geoNode);
-            }
-        }
-        return geoNode.getState();
     }
 
     /**

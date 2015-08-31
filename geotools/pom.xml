@@ -79,5 +79,10 @@
         	<version>6.9.4</version>
         	<scope>test</scope>
         </dependency>
+        <dependency>
+        	<groupId>com.vividsolutions</groupId>
+        	<artifactId>jcs</artifactId>
+        	<version>1.0.1</version>
+        </dependency>
   </dependencies>
 </project>

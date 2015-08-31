@@ -42,6 +42,8 @@ public class DefaultGeoNode implements GeoNode {
     private List<Segment> segments = new ArrayList<>();
     private List<GeoNode> nearByNodes = new ArrayList<>();
     private List<SimpleFeature> tracks = new ArrayList<>();
+    private GeoNode selectedNode;
+    private Boolean selected = false;
 
     /**
      * @return the point
@@ -247,5 +249,38 @@ public class DefaultGeoNode implements GeoNode {
         return "DefaultGeoNode [point=" + point + "@" + getElevation() + ": "
                 + getState() + " NbN: " + getNearByNodeCount() + " Tk: "
                 + getTrackCount() + "]";
+    }
+
+    /**
+     * @see com.clueride.domain.GeoNode#setSelectedNode(com.clueride.domain.GeoNode)
+     */
+    @Override
+    public void setSelectedNode(GeoNode node) {
+        selectedNode.setSelected(true);
+        selectedNode = node;
+    }
+
+    /**
+     * @see com.clueride.domain.GeoNode#getSelectedNode()
+     */
+    @Override
+    public GeoNode getSelectedNode() {
+        return selectedNode;
+    }
+
+    /**
+     * @see com.clueride.domain.GeoNode#isSelected()
+     */
+    @Override
+    public Boolean isSelected() {
+        return selected;
+    }
+
+    /**
+     * @see com.clueride.domain.GeoNode#setSelected(java.lang.Boolean)
+     */
+    @Override
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
     }
 }

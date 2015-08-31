@@ -44,9 +44,10 @@ public class FeatureType {
 
         // add attributes in order
         builder.add("segId", Integer.class);
-        builder.add("the_geom", LineString.class);
         builder.add("name", String.class);
         builder.add("url", String.class);
+        builder.add("selected", Boolean.class);
+        builder.add("the_geom", LineString.class);
 
         // build the type
         final SimpleFeatureType featureType = builder.buildFeatureType();
@@ -67,6 +68,7 @@ public class FeatureType {
         builder.add("pointgId", Integer.class);
         builder.add("name", String.class);
         builder.add("state", NodeNetworkState.class);
+        builder.add("selected", Boolean.class);
         builder.add("the_geom", Point.class);
 
         // build the type

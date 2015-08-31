@@ -76,4 +76,21 @@ public interface GeoNode extends Node {
     void addTrack(SimpleFeature feature);
 
     List<SimpleFeature> getTracks();
+
+    /**
+     * @param set
+     */
+    void setSelectedNode(GeoNode node);
+
+    GeoNode getSelectedNode();
+
+    /**
+     * @return
+     */
+    Boolean isSelected();
+
+    /**
+     * 
+     */
+    void setSelected(Boolean selected);
 }
