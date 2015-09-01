@@ -39,7 +39,9 @@ import com.clueride.dao.LoadService;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeNetworkState;
+import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.NodeFactory;
+import com.clueride.geo.score.IntersectionScore;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 import com.clueride.poc.geotools.TrackStore;
@@ -69,13 +71,13 @@ public class DefaultNetwork implements Network {
     @Inject
     public DefaultNetwork(DefaultFeatureCollection defaultFeatureCollection) {
         allSegments = defaultFeatureCollection;
-        init();
         try {
             trackStore = LoadService.getInstance().loadTrackStore();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        init();
     }
 
     /**
@@ -167,7 +169,8 @@ public class DefaultNetwork implements Network {
             return NodeNetworkState.ON_SEGMENT;
         } else {
             addNearestNodes(geoNode);
-            int tracksFound = findMatchingTracks(geoNode);
+            IntersectionScore intersectionScore = findMatchingTracks(geoNode);
+            int tracksFound = intersectionScore.getTrackCount();
             if (tracksFound == 1) {
                 geoNode.setState(NodeNetworkState.ON_SINGLE_TRACK);
                 // proposeSegmentFromTrack(geoNode);
@@ -238,41 +241,52 @@ public class DefaultNetwork implements Network {
      * 
      * @param geoNode
      */
-    private int findMatchingTracks(GeoNode geoNode) {
+    private IntersectionScore findMatchingTracks(GeoNode geoNode) {
+        IntersectionScore score = new IntersectionScore(geoNode);
         // Find tracks covering the input node
         List<SimpleFeature> candidateTracks = new ArrayList<>();
-        for (SimpleFeature feature : trackStore.getFeatures()) {
-            LineString lineString = (LineString) feature.getDefaultGeometry();
+        for (SimpleFeature track : trackStore.getFeatures()) {
+            LineString lineString = (LineString) track.getDefaultGeometry();
             if (lineString.buffer(0.0001).covers(geoNode.getPoint())) {
-                candidateTracks.add(feature);
+                candidateTracks.add(track);
             }
         }
 
         // Out of the covering tracks, which pass through our nearest nodes?
-        for (SimpleFeature feature : candidateTracks) {
+        for (SimpleFeature track : candidateTracks) {
             boolean keepTrack = false;
-            LineString lineString = (LineString) feature.getDefaultGeometry();
+            LineString lineString = (LineString) track.getDefaultGeometry();
             // Check our list of nodes
             for (GeoNode node : geoNode.getNearByNodes()) {
                 if (lineString.buffer(0.00001).covers(node.getPoint())) {
+                    score.addTrackConnectingNode(track, node);
                     keepTrack = true;
                 }
             }
-            // Check our list of Segments for intersections
-            for (LineString segmentLineString : allLineStrings) {
-                System.out.println("Checking " + feature.getAttribute("url")
+
+            // Check our list of Segments for crossings and intersections
+            for (SimpleFeature segmentFeature : allSegments) {
+                LineString segmentLineString = (LineString) segmentFeature
+                        .getDefaultGeometry();
+                Segment segment = TranslateUtil
+                        .featureToSegment(segmentFeature);
+                System.out.println("Checking " + track.getAttribute("url")
                         + " against Segment of length "
                         + segmentLineString.getNumPoints());
-                if (segmentLineString.crosses(lineString)
-                        || segmentLineString.intersects(lineString)) {
+                if (segmentLineString.crosses(lineString)) {
+                    score.addCrossingTrack(track, segment);
+                    keepTrack = true;
+                } else if (segmentLineString.intersects(lineString)) {
+                    score.addIntersectingTrack(track, segment);
                     keepTrack = true;
                 }
             }
+
             if (keepTrack) {
-                geoNode.addTrack(feature);
+                geoNode.addTrack(track);
             }
         }
-        return geoNode.getTracks().size();
+        return score;
     }
 
     /**
