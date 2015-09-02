@@ -28,6 +28,7 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
+import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.SegmentImpl;
 import com.clueride.domain.dev.Segment;
@@ -106,6 +107,22 @@ public class TranslateUtil {
         featureBuilder.add(geoNode.getName());
         featureBuilder.add(geoNode.getState());
         featureBuilder.add(geoNode.isSelected());
+        featureBuilder.add(geoNode.getPoint());
+        return featureBuilder.buildFeature(null);
+    }
+
+    /**
+     * @param geoNode
+     * @return
+     */
+    public static SimpleFeature groupNodeToFeature(DefaultNodeGroup geoNode) {
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(
+                FeatureType.NODE_GROUP_FEATURE_TYPE);
+        featureBuilder.add(geoNode.getId());
+        featureBuilder.add(geoNode.getName());
+        featureBuilder.add(geoNode.getState());
+        featureBuilder.add(geoNode.isSelected());
+        featureBuilder.add(geoNode.getRadius());
         featureBuilder.add(geoNode.getPoint());
         return featureBuilder.buildFeature(null);
     }

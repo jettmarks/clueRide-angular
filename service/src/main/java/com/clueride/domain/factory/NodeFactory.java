@@ -18,7 +18,9 @@
 package com.clueride.domain.factory;
 
 import com.clueride.domain.DefaultGeoNode;
+import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.NodeGroup;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -29,19 +31,35 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class NodeFactory {
 
-	/**
-	 * @param point
-	 * @return
-	 */
-	public static GeoNode getInstance(Point point) {
-		DefaultGeoNode node = new DefaultGeoNode();
-		node.setPoint(point);
-		return node;
-	}
+    /**
+     * @param point
+     * @return
+     */
+    public static GeoNode getInstance(Point point) {
+        DefaultGeoNode node = new DefaultGeoNode();
+        node.setPoint(point);
+        return node;
+    }
 
-	public static GeoNode getInstance(double lon, double lat, double elevation) {
-		DefaultGeoNode node = new DefaultGeoNode();
-		node.setPoint(PointFactory.getJtsInstance(lon, lat, elevation));
-		return node;
-	}
+    public static GeoNode getInstance(double lon, double lat, double elevation) {
+        DefaultGeoNode node = new DefaultGeoNode();
+        node.setPoint(PointFactory.getJtsInstance(lon, lat, elevation));
+        return node;
+    }
+
+    /**
+     * @param lat
+     * @param lon
+     * @param elevation
+     * @param radius
+     * @return
+     */
+    public static NodeGroup getGroupInstance(double lat, double lon,
+            double elevation, double radius) {
+        Point underlyingPoint = PointFactory
+                .getJtsInstance(lat, lon, elevation);
+        DefaultNodeGroup nodeGroup = new DefaultNodeGroup(underlyingPoint,
+                radius);
+        return nodeGroup;
+    }
 }

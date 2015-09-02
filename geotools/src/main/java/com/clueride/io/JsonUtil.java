@@ -190,7 +190,22 @@ public class JsonUtil {
             e.printStackTrace();
         }
         return result;
+    }
 
+    /**
+     * @param feature
+     * @return
+     */
+    public String toString(SimpleFeature feature) {
+        String result = "";
+        GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
+        FeatureJSON featureJson = new FeatureJSON(geometryJson);
+        try {
+            result = featureJson.toString(feature);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public String toString(GeoNode geoNode) {

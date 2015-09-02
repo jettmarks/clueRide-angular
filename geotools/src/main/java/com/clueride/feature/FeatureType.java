@@ -34,6 +34,7 @@ import com.vividsolutions.jts.geom.Point;
 public class FeatureType {
     public static final SimpleFeatureType SEGMENT_FEATURE_TYPE = buildSegmentInstance();
     public static final SimpleFeatureType POINT_FEATURE_TYPE = buildPointInstance();
+    public static final SimpleFeatureType NODE_GROUP_FEATURE_TYPE = buildNodeGroupInstance();
 
     public static SimpleFeatureType buildSegmentInstance() {
 
@@ -69,6 +70,29 @@ public class FeatureType {
         builder.add("name", String.class);
         builder.add("state", NodeNetworkState.class);
         builder.add("selected", Boolean.class);
+        builder.add("the_geom", Point.class);
+
+        // build the type
+        final SimpleFeatureType featureType = builder.buildFeatureType();
+
+        return featureType;
+    }
+
+    /**
+     * @return
+     */
+    public static SimpleFeatureType buildNodeGroupInstance() {
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("NodeGroupFeatureType");
+        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
+                                                       // reference system
+
+        // add attributes in order
+        builder.add("nodeGroupId", Integer.class);
+        builder.add("name", String.class);
+        builder.add("state", String.class);
+        builder.add("selected", Boolean.class);
+        builder.add("radius", Double.class);
         builder.add("the_geom", Point.class);
 
         // build the type

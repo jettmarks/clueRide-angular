@@ -13,24 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Aug 27, 2015
+ * Created Sep 1, 2015
  */
-package com.clueride.domain;
+package com.clueride.config;
 
-import com.clueride.domain.dev.Node;
+import java.util.Hashtable;
+import java.util.Properties;
 
 /**
- * Represents a collection of geographically proximate Nodes.
- * 
- * One possible real world criteria for two Nodes belonging to the same group is
- * whether or not you would use the same Bike Rack for both Nodes.
+ * Description.
  *
  * @author jett
  *
  */
-public interface NodeGroup extends Node {
+public class GeoProperties extends Properties {
+    static GeoProperties instance = new GeoProperties();
 
-    // Start out with a definition of the radius and the location as a node
+    static {
+        instance.put("group.radius", 0.0002);
+    }
 
-    Double getRadius();
+    /**
+     * @return
+     */
+    public static Hashtable<Object, Object> getInstance() {
+        return instance;
+    }
 }

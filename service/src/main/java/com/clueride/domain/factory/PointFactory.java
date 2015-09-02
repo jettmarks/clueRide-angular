@@ -40,36 +40,36 @@ import com.vividsolutions.jts.geom.Point;
  * @author jett
  */
 public class PointFactory {
-	public static Point getJtsInstance(double latitude, double longitude,
-			double elevation) {
-		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-		Point point = null;
-		CoordinateSequenceFactory coordinateSequenceFactory = geometryFactory
-				.getCoordinateSequenceFactory();
-		CoordinateSequence coordinateSequence = coordinateSequenceFactory
-				.create(1, 3);
-		coordinateSequence.setOrdinate(0, CoordinateSequence.X, longitude);
-		coordinateSequence.setOrdinate(0, CoordinateSequence.Y, latitude);
-		coordinateSequence.setOrdinate(0, CoordinateSequence.Z, elevation);
-		point = geometryFactory.createPoint(coordinateSequence);
-		return point;
-	}
+    public static Point getJtsInstance(double latitude, double longitude,
+            double elevation) {
+        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+        Point point = null;
+        CoordinateSequenceFactory coordinateSequenceFactory = geometryFactory
+                .getCoordinateSequenceFactory();
+        CoordinateSequence coordinateSequence = coordinateSequenceFactory
+                .create(1, 3);
+        coordinateSequence.setOrdinate(0, CoordinateSequence.X, longitude);
+        coordinateSequence.setOrdinate(0, CoordinateSequence.Y, latitude);
+        coordinateSequence.setOrdinate(0, CoordinateSequence.Z, elevation);
+        point = geometryFactory.createPoint(coordinateSequence);
+        return point;
+    }
 
-	// public static Point getInstance(double lat, double lon, double elevation)
-	// {
-	// GeometryBuilder builder = new GeometryBuilder(
-	// DefaultGeographicCRS.WGS84_3D);
-	// return (Point) builder.createPoint(lat, lon, elevation);
-	// }
+    // public static Point getInstance(double lat, double lon, double elevation)
+    // {
+    // GeometryBuilder builder = new GeometryBuilder(
+    // DefaultGeographicCRS.WGS84_3D);
+    // return (Point) builder.createPoint(lat, lon, elevation);
+    // }
 
-	public static Point getInstance(String wktStringWithElevation)
-			throws ParseException {
-		WKTParser parser = new WKTParser(new GeometryBuilder(
-				DefaultGeographicCRS.WGS84_3D));
-		org.opengis.geometry.primitive.Point point = (org.opengis.geometry.primitive.Point) parser
-				.parse(wktStringWithElevation);
-		DirectPosition position = point.getDirectPosition();
-		return getJtsInstance(position.getOrdinate(1), position.getOrdinate(0),
-				position.getOrdinate(2));
-	}
+    public static Point getInstance(String wktStringWithElevation)
+            throws ParseException {
+        WKTParser parser = new WKTParser(new GeometryBuilder(
+                DefaultGeographicCRS.WGS84_3D));
+        org.opengis.geometry.primitive.Point point = (org.opengis.geometry.primitive.Point) parser
+                .parse(wktStringWithElevation);
+        DirectPosition position = point.getDirectPosition();
+        return getJtsInstance(position.getOrdinate(1), position.getOrdinate(0),
+                position.getOrdinate(2));
+    }
 }

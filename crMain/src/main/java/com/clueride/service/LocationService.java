@@ -17,12 +17,18 @@
  */
 package com.clueride.service;
 
+import org.opengis.feature.simple.SimpleFeature;
+
+import com.clueride.config.GeoProperties;
 import com.clueride.domain.DefaultGeoNode;
+import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeNetworkState;
+import com.clueride.domain.factory.NodeFactory;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.geo.DefaultNetwork;
 import com.clueride.geo.Network;
+import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 import com.vividsolutions.jts.geom.Point;
@@ -47,5 +53,23 @@ public class LocationService {
         NodeNetworkState nodeEvaluation = network.evaluateNodeState(geoNode);
         result = jsonUtil.toString(geoNode);
         return result;
+    }
+
+    /**
+     * @return
+     */
+    public String getLocationGroups() {
+        // Make up our location groups for now
+        double lat = 33.5;
+        double lon = -84.4;
+        double elevation = 300.0;
+        double radius = (double) GeoProperties.getInstance()
+                .get("group.radius");
+
+        DefaultNodeGroup nodeGroup = (DefaultNodeGroup) NodeFactory
+                .getGroupInstance(lat, lon, elevation, radius);
+        SimpleFeature feature = TranslateUtil.groupNodeToFeature(nodeGroup);
+        JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
+        return (jsonUtil.toString(feature));
     }
 }

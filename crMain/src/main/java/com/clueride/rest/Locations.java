@@ -36,8 +36,16 @@ import com.clueride.service.LocationService;
 public class Locations {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("new")
     public String getNewLocation(@QueryParam("lat") Double lat,
             @QueryParam("lon") Double lon) {
         return new LocationService().addNewLocation(lat, lon);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("groups")
+    public String getLocationGroups() {
+        return new LocationService().getLocationGroups();
     }
 }

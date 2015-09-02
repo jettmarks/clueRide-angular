@@ -13,24 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Aug 27, 2015
+ * Created Sep 1, 2015
  */
 package com.clueride.domain;
 
-import com.clueride.domain.dev.Node;
+import com.vividsolutions.jts.geom.Point;
 
 /**
- * Represents a collection of geographically proximate Nodes.
- * 
- * One possible real world criteria for two Nodes belonging to the same group is
- * whether or not you would use the same Bike Rack for both Nodes.
+ * Description.
  *
  * @author jett
  *
  */
-public interface NodeGroup extends Node {
+public class DefaultNodeGroup extends DefaultGeoNode implements NodeGroup {
 
-    // Start out with a definition of the radius and the location as a node
+    private double radius = 0.0002;
 
-    Double getRadius();
+    public DefaultNodeGroup(Point point, Double radius) {
+        this.setPoint(point);
+        this.setName("Temp Group");
+        this.radius = radius;
+    }
+
+    /**
+     * @see com.clueride.domain.NodeGroup#getRadius()
+     */
+    @Override
+    public Double getRadius() {
+        return radius;
+    }
+
 }
