@@ -17,6 +17,9 @@
  */
 package com.clueride.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.config.GeoProperties;
@@ -59,8 +62,10 @@ public class LocationService {
      * @return
      */
     public String getLocationGroups() {
+        List<SimpleFeature> featureList = new ArrayList<>();
+
         // Make up our location groups for now
-        double lat = 33.5;
+        double lat = 33.75;
         double lon = -84.4;
         double elevation = 300.0;
         double radius = (double) GeoProperties.getInstance()
@@ -69,7 +74,25 @@ public class LocationService {
         DefaultNodeGroup nodeGroup = (DefaultNodeGroup) NodeFactory
                 .getGroupInstance(lat, lon, elevation, radius);
         SimpleFeature feature = TranslateUtil.groupNodeToFeature(nodeGroup);
+        featureList.add(feature);
+
+        lon = -84.35;
+        nodeGroup = (DefaultNodeGroup) NodeFactory.getGroupInstance(lat, lon,
+                elevation, radius);
+        feature = TranslateUtil.groupNodeToFeature(nodeGroup);
+        featureList.add(feature);
+
         JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
-        return (jsonUtil.toString(feature));
+        return (jsonUtil.toString(featureList));
+    }
+
+    /**
+     * @param id
+     * @param lat
+     * @param lon
+     * @return
+     */
+    public String setLocationGroup(Integer id, Double lat, Double lon) {
+        return null;
     }
 }

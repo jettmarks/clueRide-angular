@@ -13,6 +13,8 @@
 <link rel="stylesheet" href="./lib/css/leaflet.awesome-markers.css">
 <script src="./js/app.js"></script>
 <script src="./js/services.js"></script>
+<script src="./js/lg/LocGroupModule.js"></script>
+<script src="./js/lg/LocGroupService.js"></script>
 <link rel="stylesheet" href="./lib/css/ionicons.min.css">
 <script src="./js/markers.js"></script>
 <link rel="stylesheet"
@@ -20,7 +22,7 @@
 
 </head>
 
-<body ng-controller="BasicFirstController">
+<body ng-controller="AppController">
   <div class="mapFrame" id="network">
 	<leaflet id="networkMap" layers="layers" center="center" markers="markers"
 	         geojson="gjNetwork" geojson-nested="true"

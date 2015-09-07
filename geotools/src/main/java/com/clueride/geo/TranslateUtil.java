@@ -265,4 +265,15 @@ public class TranslateUtil {
         return newLineStrings;
     }
 
+    /**
+     * @param featureList
+     * @return
+     */
+    public static DefaultFeatureCollection featureListToCollection(
+            List<SimpleFeature> featureList) {
+        DefaultFeatureCollection features = new DefaultFeatureCollection();
+        features.addAll(featureList);
+        return features;
+    }
+
 }

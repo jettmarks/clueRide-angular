@@ -2,9 +2,9 @@
 
 /* Services */
 
-var services = angular.module('crMain.services', ['ngResource']);
+angular.module('crMain.services', ['ngResource']);
 
-services.factory('Network', function ($resource) {
+angular.module('crMain.services').factory('Network', function ($resource) {
     return $resource('/crMain/rest/network', {}, {
         query: {
             method: 'GET',
@@ -14,7 +14,7 @@ services.factory('Network', function ($resource) {
     })
 });
 
-services.factory('RawSegments', function ($resource) {
+angular.module('crMain.services').factory('RawSegments', function ($resource) {
     return $resource('/crMain/rest/segments/raw', {}, {
         query: {
             method: 'GET',
@@ -24,7 +24,7 @@ services.factory('RawSegments', function ($resource) {
     })
 });
 
-services.factory('Locations', function ($resource) {
+angular.module('crMain.services').factory('Locations', function ($resource) {
 	return $resource('/crMain/rest/locations/new?lat=:lat&lon=:lon', {}, {
 		get: {
 			method: 'GET',
@@ -33,3 +33,13 @@ services.factory('Locations', function ($resource) {
 		}
 	})
 });
+
+//angular.module('crMain.services').factory('LocationGroups', function ($resource) {
+//	return $resource('/crMain/rest/locations/groups', {}, {
+//		get: {
+//			method: 'GET',
+//			params: {},
+//			isArray: false
+//		}
+//	})
+//});

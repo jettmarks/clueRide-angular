@@ -1,21 +1,29 @@
-var app = angular.module("crMain", ['leaflet-directive', 'crMain.services']);
-app.controller("BasicFirstController", [ "$scope", 'leafletData', 
-                                         '$http', 'RawSegments', 'Locations', 'Network',
-                                         function($scope, leafletData, $http, RawSegments, Locations, Network) {
+var app = angular.module("crMain", ['leaflet-directive', 'crMain.services', 'LocGroupModule']);
+
+app.controller("AppController", [ 
+		"$scope", 
+        'leafletData', 
+        '$http', 
+        'RawSegments', 
+        'Locations', 
+        'Network', 
+        function($scope, leafletData, $http, RawSegments, Locations, 
+                Network 
+                ) {
 
     $scope.layers = {
 	    baselayers: {
-		ocm: {
-		    name: 'OpenCycleMap',
-		    type: 'xyz',
-		    url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-		    attribution: "All maps &copy; <a href=\"http://www.opencyclemap.org/\">OpenCycleMap</a>"
-		},
-		osm: {
-		    name: 'OpenStreetMap',
-		    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-		    type: 'xyz'
-		}
+			ocm: {
+			    name: 'OpenCycleMap',
+			    type: 'xyz',
+			    url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+			    attribution: "All maps &copy; <a href=\"http://www.opencyclemap.org/\">OpenCycleMap</a>"
+			},
+			osm: {
+			    name: 'OpenStreetMap',
+			    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+			    type: 'xyz'
+			}
 	    }
     }
 
@@ -29,7 +37,8 @@ app.controller("BasicFirstController", [ "$scope", 'leafletData',
 		},
 		gjNetwork: {},
 		gjTracks: {},
-		selectedFeature: {}
+		selectedFeature: {},
+		circles: {}
     });
 
     Network.get({}, function(featureCollection) {
@@ -44,8 +53,6 @@ app.controller("BasicFirstController", [ "$scope", 'leafletData',
 		    }
 		});
     });
-				
-				
 				
     RawSegments.get({}, function(featureCollection) {
 		angular.extend($scope.gjTracks, {
@@ -81,42 +88,42 @@ app.controller("BasicFirstController", [ "$scope", 'leafletData',
 		});
     });
 
-    $http.get("/crMain/tempJson/singleLineSegments.geojson").success(function(data, status) {
-		angular.extend($scope.gjTracks, {
-		    problems: {
-				data: data,
-				style: {
-				    opacity: 0.7,
-				    color: 'red',
-				    weight: 18
-				},
-		
-				onEachFeature: function (feature, layer) {
-		
-				    layer.on('mouseover', function(e) {
-						e.target.setStyle({
-						    weight: 24,
-						    opacity: 1.0
-						});
-						e.target.bringToFront();
-				    });
-		
-				    layer.on('mouseout', function(e) {
-						e.target.setStyle({
-						    weight: 18,
-						    opacity: 0.7
-						});
-						e.target.bringToFront();
-				    });
-		
-				    layer.on('click', function(e) {
-						$scope.selectedFeature = this.feature;
-				    });
-				} 
-		    }
-		});
-    });
-
+//    $http.get("/crMain/tempJson/singleLineSegments.geojson").success(function(data, status) {
+//		angular.extend($scope.gjTracks, {
+//		    problems: {
+//				data: data,
+//				style: {
+//				    opacity: 0.7,
+//				    color: 'red',
+//				    weight: 18
+//				},
+//		
+//				onEachFeature: function (feature, layer) {
+//		
+//				    layer.on('mouseover', function(e) {
+//						e.target.setStyle({
+//						    weight: 24,
+//						    opacity: 1.0
+//						});
+//						e.target.bringToFront();
+//				    });
+//		
+//				    layer.on('mouseout', function(e) {
+//						e.target.setStyle({
+//						    weight: 18,
+//						    opacity: 0.7
+//						});
+//						e.target.bringToFront();
+//				    });
+//		
+//				    layer.on('click', function(e) {
+//						$scope.selectedFeature = this.feature;
+//				    });
+//				} 
+//		    }
+//		});
+//    });
+    
     function checkNewPointLocation(latlng) {
         Locations.get({
             lat: latlng.lat,
@@ -146,10 +153,11 @@ app.controller("BasicFirstController", [ "$scope", 'leafletData',
             });
         });
     }
+
     
-    // Responds to mouse-click to submit lat/lon and return point candidate
-    leafletData.getMap('networkMap').then(function(map) {
-        map.on('click', function(mouseEvent) {
+    leafletData.getMap('networkMap').then(function(networkMap) {
+        // Responds to mouse-click to submit lat/lon and return point candidate
+        networkMap.on('click', function (mouseEvent) {
 	        checkNewPointLocation(mouseEvent.latlng);
         });
     });

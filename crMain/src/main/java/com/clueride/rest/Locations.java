@@ -48,4 +48,12 @@ public class Locations {
     public String getLocationGroups() {
         return new LocationService().getLocationGroups();
     }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("group/set")
+    public String setLocationGroup(@QueryParam("id") Integer id,
+            @QueryParam("lat") Double lat, @QueryParam("lon") Double lon) {
+        return new LocationService().setLocationGroup(id, lat, lon);
+    }
 }

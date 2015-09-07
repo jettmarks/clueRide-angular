@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -220,6 +221,16 @@ public class JsonUtil {
             e.printStackTrace();
         }
         return result;
+    }
+
+    /**
+     * @param featureList
+     * @return
+     */
+    public String toString(List<SimpleFeature> featureList) {
+        DefaultFeatureCollection features = TranslateUtil
+                .featureListToCollection(featureList);
+        return toString(features);
     }
 
 }

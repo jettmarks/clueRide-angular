@@ -31,6 +31,8 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class NodeFactory {
 
+    private static Integer maxId = 0;
+
     /**
      * @param point
      * @return
@@ -60,6 +62,21 @@ public class NodeFactory {
                 .getJtsInstance(lat, lon, elevation);
         DefaultNodeGroup nodeGroup = new DefaultNodeGroup(underlyingPoint,
                 radius);
+        nodeGroup.setId(getNextId());
         return nodeGroup;
+    }
+
+    /**
+     * Assigns the next ID in sequence for Nodes.
+     * 
+     * TODO: Needs to pickup on IDs that are read into memory.
+     * 
+     * @return
+     */
+    public static Integer getNextId() {
+        synchronized (maxId) {
+            maxId++;
+            return maxId;
+        }
     }
 }

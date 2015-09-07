@@ -30,7 +30,7 @@ public class GeoProperties extends Properties {
     static GeoProperties instance = new GeoProperties();
 
     static {
-        instance.put("group.radius", 0.0002);
+        instance.put("group.radius", 50.0);
     }
 
     /**
