@@ -1,35 +1,41 @@
 
 var defaultMarkerIcon = L.AwesomeMarkers.icon({
-    icon: 'coffee',
+//    icon: 'coffee',
     markerColor: 'darkblue'
 });
 
 var mouseoverMarkerIcon = L.AwesomeMarkers.icon({
-    icon: 'coffee',
+//    icon: 'coffee',
     markerColor: 'blue'
 });
 
 var iconMarkerSingleTrack = L.AwesomeMarkers.icon({
-    icon: 'coffee',
+//    icon: 'coffee',
     markerColor: 'darkGreen'
 });
 
+var iconMarkerWithin = L.AwesomeMarkers.icon({
+//    icon: 'coffee',
+    markerColor: 'white'
+});
+
 var iconMarkerOnSegment = L.AwesomeMarkers.icon({
-    icon: 'coffee',
+//    icon: 'coffee',
     markerColor: 'lightGreen'
 });
 
 var iconMarkerOnMultiTrack = L.AwesomeMarkers.icon({
-    icon: 'coffee',
+//    icon: 'coffee',
     markerColor: 'orange'
 });
 
 var iconMarkerOffNetwork = L.AwesomeMarkers.icon({
-    icon: 'coffee',
+//    icon: 'coffee',
     markerColor: 'red'
 });
 
 function getMarkerIcon(state) {
+    console.log(state);
     switch(state) {
     case 'UNDEFINED': 
         return defaultMarkerIcon;
@@ -41,10 +47,14 @@ function getMarkerIcon(state) {
         return iconMarkerOnMultiTrack;
         break;
     case 'ON_SEGMENT': 
+    case 'ON_NETWORK':
         return iconMarkerOnSegment;
         break;
     case 'OFF_NETWORK': 
         return iconMarkerOffNetwork;
+        break;
+    case 'WITHIN_GROUP':
+        return iconMarkerWithin;
         break;
     default: 
         return defaultMarkerIcon;

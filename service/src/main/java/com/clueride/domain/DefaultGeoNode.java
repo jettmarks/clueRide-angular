@@ -35,7 +35,7 @@ import com.vividsolutions.jts.geom.Point;
  *
  */
 public class DefaultGeoNode implements GeoNode {
-    private Point point;
+    protected Point point;
     private Integer id;
     private String name;
     private NodeNetworkState nodeNetworkState = NodeNetworkState.UNDEFINED;
@@ -204,6 +204,7 @@ public class DefaultGeoNode implements GeoNode {
      * @param id
      *            the id to set
      */
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }

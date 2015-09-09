@@ -20,7 +20,7 @@ package com.clueride.domain.factory;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.NodeGroup;
+import com.clueride.domain.dev.NodeGroup;
 import com.vividsolutions.jts.geom.Point;
 
 /**

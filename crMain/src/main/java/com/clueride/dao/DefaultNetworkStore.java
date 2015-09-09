@@ -71,7 +71,7 @@ public class DefaultNetworkStore implements NetworkStore {
      */
     @Override
     public void persistAndReload() throws IOException {
-        JsonUtil networkStorageUtil = new JsonUtil(JsonStoreType.NETWORK);
+        JsonUtil networkStorageUtil = new JsonUtil(ourStoreType);
         DefaultFeatureCollection features = TranslateUtil
                 .segmentsToFeatureCollection(segments);
         networkStorageUtil.writeFeaturesToFile(features, "mainNetwork.geojson");
@@ -89,8 +89,10 @@ public class DefaultNetworkStore implements NetworkStore {
      */
     @Override
     public Set<Segment> getSegments() {
-        if (segments.isEmpty()) {
-            loadFromDefault();
+        synchronized (segments) {
+            if (segments.isEmpty()) {
+                loadFromDefault();
+            }
         }
         return segments;
     }

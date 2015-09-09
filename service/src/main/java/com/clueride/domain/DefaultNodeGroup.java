@@ -17,6 +17,7 @@
  */
 package com.clueride.domain;
 
+import com.clueride.domain.dev.NodeGroup;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -36,11 +37,27 @@ public class DefaultNodeGroup extends DefaultGeoNode implements NodeGroup {
     }
 
     /**
-     * @see com.clueride.domain.NodeGroup#getRadius()
+     * @see com.clueride.domain.dev.NodeGroup#getRadius()
      */
     @Override
     public Double getRadius() {
         return radius;
+    }
+
+    /**
+     * @see com.clueride.domain.dev.NodeGroup#setLat(java.lang.Double)
+     */
+    @Override
+    public void setLat(Double lat) {
+        point.getCoordinates()[0].y = lat;
+    }
+
+    /**
+     * @see com.clueride.domain.dev.NodeGroup#setLon(java.lang.Double)
+     */
+    @Override
+    public void setLon(Double lon) {
+        point.getCoordinates()[0].x = lon;
     }
 
 }

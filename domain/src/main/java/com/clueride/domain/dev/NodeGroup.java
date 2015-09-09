@@ -15,9 +15,7 @@
  *
  * Created Aug 27, 2015
  */
-package com.clueride.domain;
-
-import com.clueride.domain.dev.Node;
+package com.clueride.domain.dev;
 
 /**
  * Represents a collection of geographically proximate Nodes.
@@ -33,4 +31,15 @@ public interface NodeGroup extends Node {
     // Start out with a definition of the radius and the location as a node
 
     Double getRadius();
+
+    /**
+     * @param lat
+     */
+    void setLat(Double lat);
+
+    /**
+     * @param lon
+     */
+    void setLon(Double lon);
+
 }

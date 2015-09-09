@@ -12,7 +12,7 @@ var locationGroups = [],
 
     
 angular.module('LocGroupModule')
-    .factory('LocGroupSvc', function(LocGroupResource, leafletData) {
+    .factory('LocGroupSvc', function(LocGroupResource, LocGroupUpdater, leafletData) {
         var load = function (isEditable) {
             editable = isEditable;
             locationGroups = [];
@@ -64,6 +64,11 @@ angular.module('LocGroupModule')
                         if (activeGroupId !== 0) {
                             console.log(activeGroupId+": "+e.latlng);
                             // TODO: Trigger the update of the lat/lon for this guy
+                            LocGroupUpdater.set({
+                                id: activeGroupId,
+                                lat: e.latlng.lat,
+                                lon: e.latlng.lng
+                            });
                             activeGroupId = 0;
                         }
                     });

@@ -26,19 +26,23 @@ import java.util.List;
  *
  */
 public interface Node {
-	public boolean matchesLocation(Node node);
+    boolean matchesLocation(Node node);
 
-	/**
-	 * Summary of the Node's relationship to a particular Network.
-	 * 
-	 * @return
-	 */
-	public abstract NodeNetworkState getState();
+    /**
+     * Summary of the Node's relationship to a particular Network.
+     * 
+     * @return
+     */
+    NodeNetworkState getState();
 
-	public abstract void setState(NodeNetworkState nodeNetworkState);
+    void setState(NodeNetworkState nodeNetworkState);
 
-	public List<Segment> getSegments();
+    List<Segment> getSegments();
 
-	public void addSegment(Segment segment);
+    void addSegment(Segment segment);
+
+    Integer getId();
+
+    void setId(Integer id);
 
 }

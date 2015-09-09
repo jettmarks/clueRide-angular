@@ -31,5 +31,11 @@ package com.clueride.domain.dev;
  * @author jett
  */
 public enum NodeNetworkState {
-	UNDEFINED, ON_NETWORK, ON_SEGMENT, ON_SINGLE_TRACK, ON_MULTI_TRACK, OFF_NETWORK
+    UNDEFINED,
+    WITHIN_GROUP,
+    ON_NETWORK,
+    ON_SEGMENT,
+    ON_SINGLE_TRACK,
+    ON_MULTI_TRACK,
+    OFF_NETWORK
 }

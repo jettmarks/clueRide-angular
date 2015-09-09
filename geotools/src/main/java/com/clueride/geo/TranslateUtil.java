@@ -31,12 +31,15 @@ import org.opengis.feature.simple.SimpleFeature;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.SegmentImpl;
+import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.Segment;
+import com.clueride.domain.factory.NodeFactory;
 import com.clueride.domain.factory.SegmentFactory;
 import com.clueride.feature.FeatureType;
 import com.jettmarks.gmaps.encoder.Track;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * Methods to translate from one type to another.
@@ -125,6 +128,20 @@ public class TranslateUtil {
         featureBuilder.add(geoNode.getRadius());
         featureBuilder.add(geoNode.getPoint());
         return featureBuilder.buildFeature(null);
+    }
+
+    /**
+     * @param nodeGroups
+     * @return
+     */
+    public static DefaultFeatureCollection groupNodesToFeatureCollection(
+            Set<NodeGroup> nodeGroups) {
+        DefaultFeatureCollection features = new DefaultFeatureCollection();
+        for (NodeGroup nodeGroup : nodeGroups) {
+            SimpleFeature feature = groupNodeToFeature((DefaultNodeGroup) nodeGroup);
+            features.add(feature);
+        }
+        return features;
     }
 
     /**
@@ -223,6 +240,31 @@ public class TranslateUtil {
     }
 
     /**
+     * @param feature
+     * @return
+     */
+    public static NodeGroup featureToNodeGroup(SimpleFeature feature) {
+        Integer id = null;
+        Object idObject = feature.getAttribute("nodeGroupId");
+        if (idObject instanceof Integer) {
+            id = (Integer) idObject;
+        }
+        if (idObject instanceof Long) {
+            id = ((Long) idObject).intValue();
+        }
+        double lat = ((Point) feature.getDefaultGeometry()).getY();
+        double lon = ((Point) feature.getDefaultGeometry()).getX();
+        double elev = ((Point) feature.getDefaultGeometry()).getCoordinates()[0].z;
+        Double radius = (Double) feature.getAttribute("radius");
+
+        DefaultNodeGroup nodeGroup = (DefaultNodeGroup) NodeFactory
+                .getGroupInstance(lat, lon, elev, radius);
+        nodeGroup.setId(id);
+
+        return nodeGroup;
+    }
+
+    /**
      * @param features
      * @return
      */
@@ -233,6 +275,19 @@ public class TranslateUtil {
             segmentSet.add(featureToSegment(feature));
         }
         return segmentSet;
+    }
+
+    /**
+     * @param featureCollection
+     * @return
+     */
+    public static Set<NodeGroup> featureCollectionToNodeGroups(
+            DefaultFeatureCollection featureCollection) {
+        Set<NodeGroup> nodeGroupSet = new HashSet<>();
+        for (SimpleFeature feature : featureCollection) {
+            nodeGroupSet.add(featureToNodeGroup(feature));
+        }
+        return nodeGroupSet;
     }
 
     /**

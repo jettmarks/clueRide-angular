@@ -36,7 +36,7 @@ public class Network {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getNetwork() {
-        return new DefaultNetwork().getNetworkForDisplay();
+        return DefaultNetwork.getInstance().getNetworkForDisplay();
     }
 
 }

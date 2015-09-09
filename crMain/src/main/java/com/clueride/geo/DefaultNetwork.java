@@ -34,10 +34,13 @@ import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 
+import com.clueride.dao.DefaultLocationStore;
 import com.clueride.dao.DefaultNetworkStore;
 import com.clueride.dao.LoadService;
 import com.clueride.dao.NetworkStore;
+import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.NodeFactory;
@@ -47,6 +50,7 @@ import com.clueride.io.JsonUtil;
 import com.clueride.poc.geotools.TrackStore;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * Holds collection of segments that make up the full set of connected Features
@@ -58,10 +62,11 @@ import com.vividsolutions.jts.geom.LineString;
  *
  */
 public class DefaultNetwork implements Network {
-    DefaultFeatureCollection allSegments;
-    List<LineString> allLineStrings = new ArrayList<>();
+    private static DefaultNetwork instance = null;
+    private DefaultFeatureCollection allSegments;
+    private List<LineString> allLineStrings = new ArrayList<>();
     private Set<GeoNode> nodeSet;
-    TrackStore trackStore;
+    private TrackStore trackStore;
 
     private static Logger logger = Logger.getLogger(DefaultNetwork.class);
 
@@ -80,10 +85,19 @@ public class DefaultNetwork implements Network {
         init();
     }
 
+    public static DefaultNetwork getInstance() {
+        synchronized (DefaultNetwork.class) {
+            if (instance == null) {
+                instance = new DefaultNetwork();
+            }
+        }
+        return (instance);
+    }
+
     /**
      * Constructor that loads itself from stored location.
      */
-    public DefaultNetwork() {
+    private DefaultNetwork() {
         NetworkStore networkStore = new DefaultNetworkStore();
         try {
             allSegments = TranslateUtil
@@ -137,6 +151,9 @@ public class DefaultNetwork implements Network {
     }
 
     public boolean matchesNetworkNode(GeoNode geoNode) {
+        if (nodeSet.contains(geoNode)) {
+            return true;
+        }
         return nodeSet.contains(geoNode);
     }
 
@@ -159,14 +176,14 @@ public class DefaultNetwork implements Network {
      */
     @Override
     public NodeNetworkState evaluateNodeState(GeoNode geoNode) {
+        logger.debug("start - evaluateNodeState()");
+        NodeNetworkState result = NodeNetworkState.UNDEFINED;
         if (matchesNetworkNode(geoNode)) {
-            geoNode.setState(NodeNetworkState.ON_NETWORK);
-            logger.info(geoNode);
-            return NodeNetworkState.ON_NETWORK;
+            return recordState(geoNode, NodeNetworkState.ON_NETWORK);
+        } else if (withinLocationGroup(geoNode)) {
+            return recordState(geoNode, NodeNetworkState.WITHIN_GROUP);
         } else if (addCoveringSegments(geoNode)) {
-            geoNode.setState(NodeNetworkState.ON_SEGMENT);
-            logger.info(geoNode);
-            return NodeNetworkState.ON_SEGMENT;
+            return recordState(geoNode, NodeNetworkState.ON_SEGMENT);
         } else {
             addNearestNodes(geoNode);
             IntersectionScore intersectionScore = findMatchingTracks(geoNode);
@@ -184,6 +201,35 @@ public class DefaultNetwork implements Network {
             }
         }
         return geoNode.getState();
+    }
+
+    /**
+     * @param geoNode
+     * @param state
+     * @return
+     */
+    public NodeNetworkState recordState(GeoNode geoNode,
+            NodeNetworkState state) {
+        geoNode.setState(state);
+        logger.info(geoNode);
+        return state;
+    }
+
+    /**
+     * @param geoNode
+     * @return
+     */
+    private boolean withinLocationGroup(GeoNode geoNode) {
+        boolean isWithin = false;
+        Set<NodeGroup> locGroups = DefaultLocationStore.getInstance()
+                .getLocationGroups();
+        for (NodeGroup nodeGroup : locGroups) {
+            Point point = ((DefaultNodeGroup) nodeGroup).getPoint();
+            if (point.buffer(0.00056).covers(geoNode.getPoint())) {
+                isWithin = true;
+            }
+        }
+        return isWithin;
     }
 
     /**

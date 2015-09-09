@@ -18,6 +18,7 @@
 package com.clueride.domain;
 
 import com.clueride.domain.dev.Node;
+import com.clueride.domain.dev.NodeGroup;
 
 /**
  * Description.

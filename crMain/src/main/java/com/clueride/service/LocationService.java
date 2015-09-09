@@ -17,17 +17,20 @@
  */
 package com.clueride.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.clueride.config.GeoProperties;
+import com.clueride.dao.DefaultLocationStore;
+import com.clueride.dao.LocationStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
-import com.clueride.domain.factory.NodeFactory;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.geo.DefaultNetwork;
 import com.clueride.geo.Network;
@@ -44,7 +47,9 @@ import com.vividsolutions.jts.geom.Point;
 public class LocationService {
 
     // TODO: Add Dependency Injection for the NetworkService
-    private Network network = new DefaultNetwork();
+    private Network network = DefaultNetwork.getInstance();
+    private static LocationStore locationStore = DefaultLocationStore
+            .getInstance();
 
     public String addNewLocation(Double lat, Double lon) {
         String result = "";
@@ -65,24 +70,31 @@ public class LocationService {
         List<SimpleFeature> featureList = new ArrayList<>();
 
         // Make up our location groups for now
-        double lat = 33.75;
-        double lon = -84.4;
-        double elevation = 300.0;
-        double radius = (double) GeoProperties.getInstance()
-                .get("group.radius");
+        // double lat = 33.75;
+        // double lon = -84.4;
+        // double elevation = 300.0;
+        // double radius = (double) GeoProperties.getInstance()
+        // .get("group.radius");
+        //
+        // DefaultNodeGroup nodeGroup = (DefaultNodeGroup) NodeFactory
+        // .getGroupInstance(lat, lon, elevation, radius);
+        // SimpleFeature feature = TranslateUtil.groupNodeToFeature(nodeGroup);
+        // featureList.add(feature);
+        //
+        // lon = -84.35;
+        // nodeGroup = (DefaultNodeGroup) NodeFactory.getGroupInstance(lat, lon,
+        // elevation, radius);
+        // feature = TranslateUtil.groupNodeToFeature(nodeGroup);
+        // featureList.add(feature);
 
-        DefaultNodeGroup nodeGroup = (DefaultNodeGroup) NodeFactory
-                .getGroupInstance(lat, lon, elevation, radius);
-        SimpleFeature feature = TranslateUtil.groupNodeToFeature(nodeGroup);
-        featureList.add(feature);
-
-        lon = -84.35;
-        nodeGroup = (DefaultNodeGroup) NodeFactory.getGroupInstance(lat, lon,
-                elevation, radius);
-        feature = TranslateUtil.groupNodeToFeature(nodeGroup);
-        featureList.add(feature);
+        Set<NodeGroup> nodeGroups = locationStore.getLocationGroups();
+        for (NodeGroup nodeGroup : nodeGroups) {
+            featureList.add(TranslateUtil
+                    .groupNodeToFeature((DefaultNodeGroup) nodeGroup));
+        }
 
         JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
+        // return (jsonUtil.toString(featureList));
         return (jsonUtil.toString(featureList));
     }
 
@@ -93,6 +105,15 @@ public class LocationService {
      * @return
      */
     public String setLocationGroup(Integer id, Double lat, Double lon) {
-        return null;
+        NodeGroup nodeGroup = (NodeGroup) locationStore.getNodeById(id);
+        nodeGroup.setLat(lat);
+        nodeGroup.setLon(lon);
+        try {
+            locationStore.persistAndReload();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "{status: failed}";
+        }
+        return "{status: ok}";
     }
 }
