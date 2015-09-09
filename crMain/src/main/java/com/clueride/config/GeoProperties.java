@@ -31,6 +31,7 @@ public class GeoProperties extends Properties {
 
     static {
         instance.put("group.radius", 50.0);
+        instance.put("group.radius.degrees", 0.00056);
     }
 
     /**

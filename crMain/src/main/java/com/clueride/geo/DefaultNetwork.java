@@ -34,10 +34,12 @@ import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 
+import com.clueride.config.GeoProperties;
 import com.clueride.dao.DefaultLocationStore;
 import com.clueride.dao.DefaultNetworkStore;
 import com.clueride.dao.LoadService;
 import com.clueride.dao.NetworkStore;
+import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeGroup;
@@ -62,6 +64,8 @@ import com.vividsolutions.jts.geom.Point;
  *
  */
 public class DefaultNetwork implements Network {
+    private static final Double LOC_GROUP_RADIUS_DEG = (Double) GeoProperties
+            .getInstance().get("group.radius.degrees");
     private static DefaultNetwork instance = null;
     private DefaultFeatureCollection allSegments;
     private List<LineString> allLineStrings = new ArrayList<>();
@@ -208,7 +212,7 @@ public class DefaultNetwork implements Network {
      * @param state
      * @return
      */
-    public NodeNetworkState recordState(GeoNode geoNode,
+    private NodeNetworkState recordState(GeoNode geoNode,
             NodeNetworkState state) {
         geoNode.setState(state);
         logger.info(geoNode);
@@ -225,7 +229,7 @@ public class DefaultNetwork implements Network {
                 .getLocationGroups();
         for (NodeGroup nodeGroup : locGroups) {
             Point point = ((DefaultNodeGroup) nodeGroup).getPoint();
-            if (point.buffer(0.00056).covers(geoNode.getPoint())) {
+            if (point.buffer(LOC_GROUP_RADIUS_DEG).covers(geoNode.getPoint())) {
                 isWithin = true;
             }
         }
@@ -306,6 +310,16 @@ public class DefaultNetwork implements Network {
             for (GeoNode node : geoNode.getNearByNodes()) {
                 if (lineString.buffer(0.00001).covers(node.getPoint())) {
                     score.addTrackConnectingNode(track, node);
+                    keepTrack = true;
+                }
+            }
+
+            // Check our list of Location Groups
+            for (NodeGroup nodeGroup : DefaultLocationStore.getInstance()
+                    .getLocationGroups()) {
+                Point point = ((DefaultGeoNode) nodeGroup).getPoint();
+                if (point.buffer(LOC_GROUP_RADIUS_DEG).intersects(lineString)) {
+                    score.addTrackConnectingNode(track, nodeGroup);
                     keepTrack = true;
                 }
             }

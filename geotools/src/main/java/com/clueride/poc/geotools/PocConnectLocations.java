@@ -21,10 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.clueride.dao.LoadService;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
-import com.clueride.geo.Network;
 
 /**
  * Purpose of this Proof of Concept is to explore the code required to connect
@@ -62,44 +60,44 @@ import com.clueride.geo.Network;
  */
 public class PocConnectLocations {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Network network = null;
-		TrackStore trackStore = null;
-		List<Node> nodes = new ArrayList<>();
-		LoadService service = LoadService.getInstance();
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        Network network = null;
+        TrackStore trackStore = null;
+        List<Node> nodes = new ArrayList<>();
+        LoadService service = LoadService.getInstance();
 
-		try {
-			network = service.loadNetwork();
-			trackStore = service.loadTrackStore();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        try {
+            network = service.loadNetwork();
+            trackStore = service.loadTrackStore();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-		GeoNode connectedNode = trackStore.getFirstPoint();
-		// Once I get more fancy, try a point that is only *near* the network
-		// Node newNode = NodeFactory.getInstance(point);
-		System.out.println("Some Node on the network: " + connectedNode);
+        GeoNode connectedNode = trackStore.getFirstPoint();
+        // Once I get more fancy, try a point that is only *near* the network
+        // Node newNode = NodeFactory.getInstance(point);
+        System.out.println("Some Node on the network: " + connectedNode);
 
-		switch (network.evaluateNodeState(connectedNode)) {
-		case OFF_NETWORK:
-		case ON_MULTI_TRACK:
-		case ON_NETWORK:
-		case ON_SEGMENT:
-		case ON_SINGLE_TRACK:
-		case UNDEFINED:
+        switch (network.evaluateNodeState(connectedNode)) {
+        case OFF_NETWORK:
+        case ON_MULTI_TRACK:
+        case ON_NETWORK:
+        case ON_SEGMENT:
+        case ON_SINGLE_TRACK:
+        case UNDEFINED:
 
-		default:
-			break;
+        default:
+            break;
 
-		}
+        }
 
-		if (network.canReach((GeoNode) connectedNode)) {
-			System.out.println("We're on the network");
-		}
+        if (network.canReach((GeoNode) connectedNode)) {
+            System.out.println("We're on the network");
+        }
 
-	}
+    }
 }
