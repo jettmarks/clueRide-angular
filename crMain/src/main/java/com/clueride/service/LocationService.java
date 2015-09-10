@@ -51,6 +51,15 @@ public class LocationService {
     private static LocationStore locationStore = DefaultLocationStore
             .getInstance();
 
+    /**
+     * Currently creates a brand new GeoNode instance which is then evaluated by
+     * the Network; the Network "decorates" the GeoNode with features that are
+     * then returned to the Map.
+     * 
+     * @param lat
+     * @param lon
+     * @return
+     */
     public String addNewLocation(Double lat, Double lon) {
         String result = "";
         JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);

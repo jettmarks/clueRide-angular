@@ -4,6 +4,11 @@ var defaultMarkerIcon = L.AwesomeMarkers.icon({
     markerColor: 'darkblue'
 });
 
+var selectedMarkerIcon = L.AwesomeMarkers.icon({
+//  icon: 'coffee',
+  markerColor: 'lightblue'
+});
+
 var mouseoverMarkerIcon = L.AwesomeMarkers.icon({
 //    icon: 'coffee',
     markerColor: 'blue'
@@ -34,11 +39,11 @@ var iconMarkerOffNetwork = L.AwesomeMarkers.icon({
     markerColor: 'red'
 });
 
-function getMarkerIcon(state) {
-    console.log(state);
+function getMarkerIcon(state, selected) {
+    console.log(state+": "+selected);
     switch(state) {
     case 'UNDEFINED': 
-        return defaultMarkerIcon;
+        return selected ? selectedMarkerIcon : defaultMarkerIcon;
         break;
     case 'ON_SINGLE_TRACK': 
         return iconMarkerSingleTrack;

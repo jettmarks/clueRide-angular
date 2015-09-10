@@ -181,6 +181,11 @@ public class DefaultNetwork implements Network {
     @Override
     public NodeNetworkState evaluateNodeState(GeoNode geoNode) {
         logger.debug("start - evaluateNodeState()");
+        // First Step is to clear any previous state that may have been
+        // recorded.
+        clearEvaluationState();
+
+        // Now for an evaluation
         NodeNetworkState result = NodeNetworkState.UNDEFINED;
         if (matchesNetworkNode(geoNode)) {
             return recordState(geoNode, NodeNetworkState.ON_NETWORK);
@@ -194,8 +199,8 @@ public class DefaultNetwork implements Network {
             int tracksFound = intersectionScore.getTrackCount();
             if (tracksFound == 1) {
                 geoNode.setState(NodeNetworkState.ON_SINGLE_TRACK);
-                // proposeSegmentFromTrack(geoNode);
                 logger.info(geoNode);
+                proposeSegmentFromTrack(geoNode);
             } else if (tracksFound > 1) {
                 geoNode.setState(NodeNetworkState.ON_MULTI_TRACK);
                 logger.info(geoNode);
@@ -205,6 +210,18 @@ public class DefaultNetwork implements Network {
             }
         }
         return geoNode.getState();
+    }
+
+    /**
+     * Prepare the network state for a new round of evaluations against a new
+     * lat/lon location.
+     * 
+     * At this time, we only clear the selected nodes. There may be more later.
+     */
+    private void clearEvaluationState() {
+        for (GeoNode node : nodeSet) {
+            node.setSelected(false);
+        }
     }
 
     /**
@@ -244,6 +261,9 @@ public class DefaultNetwork implements Network {
             throw new IllegalArgumentException(
                     "Expected Node to have exactly one candidate Track");
         }
+        SimpleFeature candidateTrackFeature = geoNode.getTracks().get(0);
+        logger.info("Candidate Track: "
+                + candidateTrackFeature.getAttribute("name"));
         LineString startingTrack = (LineString) geoNode.getTracks().get(0)
                 .getDefaultGeometry();
 
@@ -263,7 +283,7 @@ public class DefaultNetwork implements Network {
         GeoNode selectedNode = null;
         if (distanceToNode.size() == 1) {
             selectedNode = distanceToNode.keySet().iterator().next();
-        } else {
+        } else if (distanceToNode.size() > 1) {
             double closest = Double.MAX_VALUE;
             System.out.println("Have more than one matching Node");
             for (Iterator<GeoNode> iter = distanceToNode.keySet().iterator(); iter
@@ -274,6 +294,9 @@ public class DefaultNetwork implements Network {
                     selectedNode = testNode;
                 }
             }
+        } else {
+            logger.error("Unexpected that the track would find no overlapping points");
+            return;
         }
         geoNode.setSelectedNode(selectedNode);
 

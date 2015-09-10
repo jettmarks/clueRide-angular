@@ -247,7 +247,9 @@ public class DefaultGeoNode implements GeoNode {
      */
     @Override
     public String toString() {
-        return "DefaultGeoNode [point=" + point + "@" + getElevation() + ": "
+        return "DefaultGeoNode [id=" + id + (selected ? " POINT=" : " point=")
+                + point + "@"
+                + getElevation() + ": "
                 + getState() + " NbN: " + getNearByNodeCount() + " Tk: "
                 + getTrackCount() + "]";
     }
@@ -257,8 +259,8 @@ public class DefaultGeoNode implements GeoNode {
      */
     @Override
     public void setSelectedNode(GeoNode node) {
-        selectedNode.setSelected(true);
         selectedNode = node;
+        selectedNode.setSelected(true);
     }
 
     /**
