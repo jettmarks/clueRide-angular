@@ -24,10 +24,10 @@ import com.clueride.domain.dev.NodeGroup;
 import com.vividsolutions.jts.geom.Point;
 
 /**
- * Description.
+ * Instantiation of both regular Nodes and the Node Group representing a
+ * collection of nodes.
  *
  * @author jett
- *
  */
 public class NodeFactory {
 
@@ -50,6 +50,17 @@ public class NodeFactory {
     }
 
     /**
+     * @param point
+     * @param radius
+     * @return
+     */
+    public static DefaultNodeGroup getGroupInstance(Point point, Double radius) {
+        DefaultNodeGroup nodeGroup = new DefaultNodeGroup(point, radius);
+        nodeGroup.setId(getNextId());
+        return nodeGroup;
+    }
+
+    /**
      * @param lat
      * @param lon
      * @param elevation
@@ -67,9 +78,17 @@ public class NodeFactory {
     }
 
     /**
-     * Assigns the next ID in sequence for Nodes.
+     * When bringing in a set of locations that already have IDs assigned, we
+     * want to know the last ID that has been assigned.
      * 
-     * TODO: Needs to pickup on IDs that are read into memory.
+     * @param maxNodeId
+     */
+    public static void setMaxNodeId(Integer maxNodeId) {
+        maxId = maxNodeId;
+    }
+
+    /**
+     * Assigns the next ID in sequence for Nodes.
      * 
      * @return
      */

@@ -28,6 +28,7 @@ import org.geotools.feature.DefaultFeatureCollection;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.NodeGroup;
+import com.clueride.domain.factory.NodeFactory;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
@@ -41,14 +42,24 @@ import com.clueride.io.JsonUtil;
  */
 public class DefaultLocationStore implements LocationStore {
 
+    /** Storage for Locations; typically the endpoints of Segments. */
+    private static final String LOCATIONS_FILE_NAME = "locations.geojson";
+    /** Storage for LocGroup objects. */
+    private static final String LOCATION_GROUPS_FILE_NAME = "locationGroups.geojson";
+
     private JsonStoreType ourStoreType = JsonStoreType.LOCATION;
     private Integer maxNodeId = 0;
-    private Set<Node> nodes = new HashSet<>();
+    private Set<GeoNode> nodes = new HashSet<>();
     private Set<NodeGroup> nodeGroups = new HashSet<>();
     private Map<Integer, Node> nodeMap = new HashMap<>();
 
     private static DefaultLocationStore instance;
 
+    /**
+     * Singleton used for supplying Locations from our Store.
+     * 
+     * @return LocationStore instance for accessing Locations.
+     */
     public static LocationStore getInstance() {
         if (instance == null) {
             instance = new DefaultLocationStore();
@@ -56,6 +67,9 @@ public class DefaultLocationStore implements LocationStore {
         return instance;
     }
 
+    /**
+     * Use {@link:getInstance()}
+     */
     private DefaultLocationStore() {
     }
 
@@ -84,12 +98,12 @@ public class DefaultLocationStore implements LocationStore {
         DefaultFeatureCollection featureCollection = TranslateUtil
                 .groupNodesToFeatureCollection(nodeGroups);
         storageUtil.writeFeaturesToFile(featureCollection,
-                "locationGroups.geojson");
+                LOCATION_GROUPS_FILE_NAME);
 
         nodeGroups.clear();
 
         featureCollection = storageUtil
-                .readFeatureCollection("locationGroups.geojson");
+                .readFeatureCollection(LOCATION_GROUPS_FILE_NAME);
         nodeGroups = TranslateUtil
                 .featureCollectionToNodeGroups(featureCollection);
     }
@@ -99,8 +113,32 @@ public class DefaultLocationStore implements LocationStore {
      */
     @Override
     public Set<GeoNode> getLocations() {
-        // TODO Auto-generated method stub
-        return null;
+        if (nodes.isEmpty()) {
+            loadLocationsFromDefault();
+        }
+        return nodes;
+    }
+
+    /**
+     * 
+     */
+    private void loadLocationsFromDefault() {
+        JsonUtil storageUtil = new JsonUtil(ourStoreType);
+        DefaultFeatureCollection featureCollection = null;
+        try {
+            featureCollection = storageUtil
+                    .readFeatureCollection(LOCATIONS_FILE_NAME);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        nodes = TranslateUtil.featureCollectionToNodes(featureCollection);
+        for (GeoNode node : nodes) {
+            nodeMap.put(node.getId(), node);
+            if (maxNodeId < node.getId()) {
+                maxNodeId = node.getId();
+            }
+        }
+        NodeFactory.setMaxNodeId(maxNodeId);
     }
 
     /**
@@ -122,7 +160,7 @@ public class DefaultLocationStore implements LocationStore {
         DefaultFeatureCollection featureCollection = null;
         try {
             featureCollection = storageUtil
-                    .readFeatureCollection("locationGroups.geojson");
+                    .readFeatureCollection(LOCATION_GROUPS_FILE_NAME);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -145,12 +183,18 @@ public class DefaultLocationStore implements LocationStore {
     }
 
     /**
+     * Assumption is that this is a newly created node which has not yet
+     * received an ID or has been placed in our datastore.
+     * 
      * @see com.clueride.dao.LocationStore#addNew(com.clueride.domain.dev.Node)
      */
     @Override
     public Integer addNew(Node node) {
-        // TODO Auto-generated method stub
-        return null;
+        Integer nodeId = NodeFactory.getNextId();
+        node.setId(nodeId);
+        nodes.add((GeoNode) node);
+        nodeMap.put(nodeId, node);
+        return nodeId;
     }
 
     /**

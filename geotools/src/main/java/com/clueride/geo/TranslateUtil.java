@@ -28,6 +28,7 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
+import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.SegmentImpl;
@@ -243,25 +244,49 @@ public class TranslateUtil {
      * @param feature
      * @return
      */
-    public static NodeGroup featureToNodeGroup(SimpleFeature feature) {
+    public static GeoNode featureToGeoNode(SimpleFeature feature) {
         Integer id = null;
-        Object idObject = feature.getAttribute("nodeGroupId");
+        Object idObject = feature.getAttribute("");
+        Point point = (Point) feature.getDefaultGeometry();
+        // TODO: Return an interface that has the geometry methods
+        DefaultGeoNode node = (DefaultGeoNode) NodeFactory.getInstance(point);
+        return node;
+    }
+
+    /**
+     * @param feature
+     * @return
+     */
+    public static NodeGroup featureToNodeGroup(SimpleFeature feature) {
+        String idName = "nodeGroupId";
+        Integer id = retrieveIdFromFeature(feature, idName);
+        Point point = (Point) feature.getDefaultGeometry();
+        Double radius = (Double) feature.getAttribute("radius");
+
+        // TODO: Return an interface that has the geometry methods
+        DefaultNodeGroup nodeGroup = (DefaultNodeGroup) NodeFactory
+                .getGroupInstance(point, radius);
+        nodeGroup.setId(id);
+
+        return nodeGroup;
+    }
+
+    /**
+     * @param feature
+     * @param idName
+     * @return
+     */
+    public static Integer retrieveIdFromFeature(SimpleFeature feature,
+            String idName) {
+        Integer id = null;
+        Object idObject = feature.getAttribute(idName);
         if (idObject instanceof Integer) {
             id = (Integer) idObject;
         }
         if (idObject instanceof Long) {
             id = ((Long) idObject).intValue();
         }
-        double lat = ((Point) feature.getDefaultGeometry()).getY();
-        double lon = ((Point) feature.getDefaultGeometry()).getX();
-        double elev = ((Point) feature.getDefaultGeometry()).getCoordinates()[0].z;
-        Double radius = (Double) feature.getAttribute("radius");
-
-        DefaultNodeGroup nodeGroup = (DefaultNodeGroup) NodeFactory
-                .getGroupInstance(lat, lon, elev, radius);
-        nodeGroup.setId(id);
-
-        return nodeGroup;
+        return id;
     }
 
     /**
@@ -275,6 +300,19 @@ public class TranslateUtil {
             segmentSet.add(featureToSegment(feature));
         }
         return segmentSet;
+    }
+
+    /**
+     * @param featureCollection
+     * @return
+     */
+    public static Set<GeoNode> featureCollectionToNodes(
+            DefaultFeatureCollection featureCollection) {
+        Set<GeoNode> set = new HashSet<>();
+        for (SimpleFeature feature : featureCollection) {
+            set.add(featureToGeoNode(feature));
+        }
+        return set;
     }
 
     /**
