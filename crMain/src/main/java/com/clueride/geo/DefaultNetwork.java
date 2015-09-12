@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +37,7 @@ import com.clueride.config.GeoProperties;
 import com.clueride.dao.DefaultLocationStore;
 import com.clueride.dao.DefaultNetworkStore;
 import com.clueride.dao.LoadService;
+import com.clueride.dao.LocationStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
@@ -45,7 +45,6 @@ import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.Segment;
-import com.clueride.domain.factory.NodeFactory;
 import com.clueride.geo.score.IntersectionScore;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
@@ -67,9 +66,12 @@ public class DefaultNetwork implements Network {
     private static final Double LOC_GROUP_RADIUS_DEG = (Double) GeoProperties
             .getInstance().get("group.radius.degrees");
     private static DefaultNetwork instance = null;
-    private DefaultFeatureCollection allSegments;
+    private DefaultFeatureCollection featureCollection;
+    private Set<Segment> allSegments;
     private List<LineString> allLineStrings = new ArrayList<>();
     private Set<GeoNode> nodeSet;
+    private NetworkStore networkStore;
+    private LocationStore locationStore;
     private TrackStore trackStore;
 
     private static Logger logger = Logger.getLogger(DefaultNetwork.class);
@@ -78,12 +80,12 @@ public class DefaultNetwork implements Network {
      * @param defaultFeatureCollection
      */
     @Inject
-    public DefaultNetwork(DefaultFeatureCollection defaultFeatureCollection) {
-        allSegments = defaultFeatureCollection;
+    DefaultNetwork(DefaultFeatureCollection defaultFeatureCollection) {
+        featureCollection = defaultFeatureCollection;
         try {
             trackStore = LoadService.getInstance().loadTrackStore();
+            locationStore = DefaultLocationStore.getInstance();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         init();
@@ -102,11 +104,13 @@ public class DefaultNetwork implements Network {
      * Constructor that loads itself from stored location.
      */
     private DefaultNetwork() {
-        NetworkStore networkStore = new DefaultNetworkStore();
+        networkStore = DefaultNetworkStore.getInstance();
         try {
-            allSegments = TranslateUtil
-                    .segmentsToFeatureCollection(networkStore.getSegments());
+            allSegments = networkStore.getSegments();
+            featureCollection = TranslateUtil
+                    .segmentsToFeatureCollection(allSegments);
             trackStore = LoadService.getInstance().loadTrackStore();
+            locationStore = DefaultLocationStore.getInstance();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -114,21 +118,46 @@ public class DefaultNetwork implements Network {
     }
 
     /**
-	 * 
-	 */
+     * Currently sets up - List of Nodes (but not those with IDs) - List of Line
+     * Strings (but Segments would be better) - Dumps a string summarizing what
+     * we've got.
+     * 
+     * Moving toward nodes with IDs, it would be good to persist the segments
+     * that way, but we're not quite there yet. Dropping in a verification
+     * process that checks the endpoints against the LocationStore's idea of our
+     * node set.
+     * 
+     * TODO: Persist the segments with at least the Node IDs so they can be more
+     * easily verified. This is a move toward how we'll be persisting in the DB.
+     */
     private void init() {
-        nodeSet = new HashSet<>();
+        nodeSet = locationStore.getLocations();
         allLineStrings = new ArrayList<>();
 
-        for (SimpleFeature feature : allSegments) {
+        for (SimpleFeature feature : featureCollection) {
             LineString lineString = (LineString) feature.getDefaultGeometry();
             if (lineString != null) {
                 allLineStrings.add(lineString);
-                nodeSet.add(NodeFactory.getInstance(lineString.getStartPoint()));
-                nodeSet.add(NodeFactory.getInstance(lineString.getEndPoint()));
             }
         }
+        for (Segment segment : allSegments) {
+            verifyNodeIdAssignment((GeoNode) segment.getStart());
+            verifyNodeIdAssignment((GeoNode) segment.getEnd());
+        }
         logger.debug("Initialized : " + this);
+    }
+
+    /**
+     * @param segment
+     */
+    public void verifyNodeIdAssignment(GeoNode endPointNode) {
+        Integer nodeId = matchesNetworkNode(endPointNode);
+        if (nodeId > 0) {
+            endPointNode.setId(nodeId);
+        } else {
+            logger.error("Node " + endPointNode
+                    + " doesn't match stored list of nodes");
+        }
     }
 
     private void refresh() {
@@ -154,11 +183,13 @@ public class DefaultNetwork implements Network {
         return false;
     }
 
-    public boolean matchesNetworkNode(GeoNode geoNode) {
-        if (nodeSet.contains(geoNode)) {
-            return true;
+    public Integer matchesNetworkNode(GeoNode geoNode) {
+        for (GeoNode node : nodeSet) {
+            if (node.matchesLocation(geoNode)) {
+                return node.getId();
+            }
         }
-        return nodeSet.contains(geoNode);
+        return -1;
     }
 
     /*
@@ -166,10 +197,13 @@ public class DefaultNetwork implements Network {
      * 
      * @see
      * com.clueride.poc.Network#add(org.opengis.feature.simple.SimpleFeature)
+     * 
+     * @deprecated - deal in segments rather than features.
      */
     @Override
+    @Deprecated
     public void add(SimpleFeature simpleFeature) {
-        allSegments.add(simpleFeature);
+        featureCollection.add(simpleFeature);
         refresh();
     }
 
@@ -187,7 +221,7 @@ public class DefaultNetwork implements Network {
 
         // Now for an evaluation
         NodeNetworkState result = NodeNetworkState.UNDEFINED;
-        if (matchesNetworkNode(geoNode)) {
+        if (matchesNetworkNode(geoNode) > 0) {
             return recordState(geoNode, NodeNetworkState.ON_NETWORK);
         } else if (withinLocationGroup(geoNode)) {
             return recordState(geoNode, NodeNetworkState.WITHIN_GROUP);
@@ -348,7 +382,7 @@ public class DefaultNetwork implements Network {
             }
 
             // Check our list of Segments for crossings and intersections
-            for (SimpleFeature segmentFeature : allSegments) {
+            for (SimpleFeature segmentFeature : featureCollection) {
                 LineString segmentLineString = (LineString) segmentFeature
                         .getDefaultGeometry();
                 Segment segment = TranslateUtil
@@ -426,7 +460,7 @@ public class DefaultNetwork implements Network {
      */
     private boolean addCoveringSegments(GeoNode geoNode) {
         boolean result = false;
-        for (SimpleFeature feature : allSegments) {
+        for (SimpleFeature feature : featureCollection) {
 
             LineString lineString = (LineString) feature.getDefaultGeometry();
             if (lineString.buffer(0.0001).covers(geoNode.getPoint())) {
@@ -442,7 +476,7 @@ public class DefaultNetwork implements Network {
      */
     @Override
     public String toString() {
-        return "DefaultNetwork [allSegmentsCount=" + allSegments.size()
+        return "DefaultNetwork [allSegmentsCount=" + featureCollection.size()
                 + ", allLineStringsCount=" + allLineStrings.size()
                 + ", nodeSetCount=" + nodeSet.size() + ", trackStoreCount="
                 + trackStore.getFeatures().size() + "]";
@@ -454,7 +488,7 @@ public class DefaultNetwork implements Network {
     public String getNetworkForDisplay() {
         String result = "";
         JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
-        result = jsonUtil.toString(allSegments);
+        result = jsonUtil.toString(featureCollection);
         return result;
     }
 }

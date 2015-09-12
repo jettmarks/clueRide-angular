@@ -41,10 +41,25 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class DefaultNetworkStore implements NetworkStore {
 
-    JsonStoreType ourStoreType = JsonStoreType.NETWORK;
-    Integer maxSegmentId = 0;
-    Set<Segment> segments = new HashSet<>();
-    Map<Integer, Segment> segmentMap = new HashMap<>();
+    private static DefaultNetworkStore instance = null;
+
+    private JsonStoreType ourStoreType = JsonStoreType.NETWORK;
+    private Integer maxSegmentId = 0;
+    private Set<Segment> segments = new HashSet<>();
+    private Map<Integer, Segment> segmentMap = new HashMap<>();
+
+    public static DefaultNetworkStore getInstance() {
+        if (instance == null) {
+            instance = new DefaultNetworkStore();
+        }
+        return instance;
+    }
+
+    /**
+     * Use {@link:getInstance()}
+     */
+    private DefaultNetworkStore() {
+    }
 
     /**
      * @see com.clueride.dao.NetworkStore#getStoreLocation()

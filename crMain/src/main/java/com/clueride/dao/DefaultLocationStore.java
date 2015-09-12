@@ -86,8 +86,28 @@ public class DefaultLocationStore implements LocationStore {
      */
     @Override
     public void persistAndReload() throws IOException {
-        // TODO: persistAndReloadLocations();
+        persistAndReloadLocations();
         persistAndReloadGroups();
+    }
+
+    /**
+     * @throws IOException
+     * 
+     */
+    public void persistAndReloadLocations() throws IOException {
+        JsonUtil storageUtil = new JsonUtil(ourStoreType);
+        DefaultFeatureCollection featureCollection = TranslateUtil
+                .nodesToFeatureCollection(nodes);
+        storageUtil.writeFeaturesToFile(featureCollection,
+                LOCATIONS_FILE_NAME);
+
+        nodes.clear();
+
+        featureCollection = storageUtil
+                .readFeatureCollection(LOCATIONS_FILE_NAME);
+        nodes = TranslateUtil
+                .featureCollectionToNodes(featureCollection);
+
     }
 
     /**

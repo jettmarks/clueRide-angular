@@ -39,8 +39,8 @@ var iconMarkerOffNetwork = L.AwesomeMarkers.icon({
     markerColor: 'red'
 });
 
-function getMarkerIcon(state, selected) {
-    console.log(state+": "+selected);
+function getMarkerIcon(id, state, selected) {
+    console.log(id+": "+state+": "+selected);
     switch(state) {
     case 'UNDEFINED': 
         return selected ? selectedMarkerIcon : defaultMarkerIcon;

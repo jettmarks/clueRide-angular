@@ -116,6 +116,20 @@ public class TranslateUtil {
     }
 
     /**
+     * @param nodes
+     * @return
+     */
+    public static DefaultFeatureCollection nodesToFeatureCollection(
+            Set<GeoNode> nodes) {
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
+        for (GeoNode geoNode : nodes) {
+            SimpleFeature feature = geoNodeToFeature(geoNode);
+            featureCollection.add(feature);
+        }
+        return featureCollection;
+    }
+
+    /**
      * @param geoNode
      * @return
      */
@@ -245,11 +259,11 @@ public class TranslateUtil {
      * @return
      */
     public static GeoNode featureToGeoNode(SimpleFeature feature) {
-        Integer id = null;
-        Object idObject = feature.getAttribute("");
+        Integer id = retrieveIdFromFeature(feature, "pointId");
         Point point = (Point) feature.getDefaultGeometry();
         // TODO: Return an interface that has the geometry methods
         DefaultGeoNode node = (DefaultGeoNode) NodeFactory.getInstance(point);
+        node.setId(id);
         return node;
     }
 

@@ -134,7 +134,10 @@ app.controller("AppController", [
                     data: pointFeature,
 	                pointToLayer: function(feature, latlng) {
 	                    marker = new L.marker(latlng, {
-	                        icon: getMarkerIcon(feature.properties.state, feature.properties.selected),
+	                        icon: getMarkerIcon(
+	                                feature.properties.pointId, 
+	                                feature.properties.state, 
+	                                feature.properties.selected),
 	                        draggable: (feature.properties.name === 'candidate')
 	                    });
 		                marker.on({
