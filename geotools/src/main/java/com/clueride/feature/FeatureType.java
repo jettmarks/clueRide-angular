@@ -66,7 +66,7 @@ public class FeatureType {
                                                        // reference system
 
         // add attributes in order
-        builder.add("pointgId", Integer.class);
+        builder.add("pointId", Integer.class);
         builder.add("name", String.class);
         builder.add("state", NodeNetworkState.class);
         builder.add("selected", Boolean.class);
