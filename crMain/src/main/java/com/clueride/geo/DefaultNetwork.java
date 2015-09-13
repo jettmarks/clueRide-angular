@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -45,6 +46,7 @@ import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.Segment;
+import com.clueride.domain.factory.NodeFactory;
 import com.clueride.geo.score.IntersectionScore;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
@@ -234,7 +236,7 @@ public class DefaultNetwork implements Network {
             if (tracksFound == 1) {
                 geoNode.setState(NodeNetworkState.ON_SINGLE_TRACK);
                 logger.info(geoNode);
-                proposeSegmentFromTrack(geoNode);
+                proposeSegmentFromTrack(geoNode, intersectionScore);
             } else if (tracksFound > 1) {
                 geoNode.setState(NodeNetworkState.ON_MULTI_TRACK);
                 logger.info(geoNode);
@@ -290,31 +292,52 @@ public class DefaultNetwork implements Network {
     /**
      * @param geoNode
      */
-    private void proposeSegmentFromTrack(GeoNode geoNode) {
+    private void proposeSegmentFromTrack(GeoNode geoNode,
+            IntersectionScore intersectionScore) {
+        // Validate we've just got a single track
         if (geoNode.getTrackCount() != 1) {
             throw new IllegalArgumentException(
                     "Expected Node to have exactly one candidate Track");
         }
+
+        // Pick out that track
         SimpleFeature candidateTrackFeature = geoNode.getTracks().get(0);
         logger.info("Candidate Track: "
                 + candidateTrackFeature.getAttribute("name"));
         LineString startingTrack = (LineString) geoNode.getTracks().get(0)
                 .getDefaultGeometry();
 
-        // Start out by lighting up the nearest node.
+        // Break the track into two pieces, each running away from the geoNode
+        // toward either endpoint
         LineString[] splitPair = TranslateUtil.split(startingTrack, geoNode
                 .getPoint().getCoordinate(), true);
-        Map<GeoNode, Double> distanceToNode = new HashMap<>();
-        for (GeoNode node : geoNode.getNearByNodes()) {
-            for (int i = 0; i <= 1; i++) {
-                if (splitPair[i].buffer(0.0001).covers(node.getPoint())) {
-                    distanceToNode.put(node, LengthToPoint.length(splitPair[i],
-                            node.getPoint().getCoordinate()));
-                }
-            }
+        LineString lineStringToStart = (LineString) splitPair[0].reverse();
+        LineString lineStringToEnd = splitPair[1];
+
+        // Finds intersecting node out of the network's set of nodes plus any
+        // candidate nodes we may come up with via intersections and crossings
+        List<GeoNode> nodesToMeasure = new ArrayList<>(geoNode.getNearByNodes());
+
+        // Now to see if we intersect the network, and if so, at what point
+        // intersectionScore will hold the interesting segment for us to search.
+        List<Segment> networkSegment = intersectionScore
+                .getIntersectingSegments(candidateTrackFeature);
+        LineString lineString = (LineString) TranslateUtil.segmentToFeature(
+                networkSegment.get(0)).getDefaultGeometry();
+        findIntersectingNode(lineStringToStart, nodesToMeasure, networkSegment,
+                lineString);
+        findIntersectingNode(lineStringToEnd, nodesToMeasure, networkSegment,
+                lineString);
+
+        Map<GeoNode, Double> distanceToNode = evaluateDistanceMapPerNode(
+                lineStringToStart, lineStringToEnd, nodesToMeasure);
+
+        for (Entry<GeoNode, Double> entry : distanceToNode.entrySet()) {
+            logger.debug(entry.getKey().getId() + ": " + entry.getValue());
         }
 
         GeoNode selectedNode = null;
+
         if (distanceToNode.size() == 1) {
             selectedNode = distanceToNode.keySet().iterator().next();
         } else if (distanceToNode.size() > 1) {
@@ -340,11 +363,77 @@ public class DefaultNetwork implements Network {
     }
 
     /**
+     * @param splitPair
+     * @param nodesToMeasure
+     * @param networkSegment
+     * @param lineString
+     * @param i
+     */
+    public void findIntersectingNode(LineString subLineString,
+            List<GeoNode> nodesToMeasure, List<Segment> networkSegment,
+            LineString lineString) {
+        if (subLineString.buffer(0.0001).intersects(lineString)) {
+            logger.info("This side of the track intersects with segment "
+                    + networkSegment.get(0).getSegId());
+            // We do intersect and can walk the lineString to find the node
+            int numberPoints = subLineString.getNumPoints();
+            for (int p = 0; p < numberPoints; p++) {
+                Point walkingPoint = subLineString.getPointN(p);
+                if (lineString.buffer(0.0001).covers(walkingPoint)) {
+                    logger.info("We like point " + walkingPoint);
+                    nodesToMeasure.add(NodeFactory
+                            .getInstance(walkingPoint));
+                    // Stop as soon as we find something interesting
+                    break;
+                    // geoNode.setSelectedNode(selectedNode);
+                    // return;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param lineStringToStartsplitPair
+     * @param nodesToMeasure
+     * @return
+     */
+    public Map<GeoNode, Double> evaluateDistanceMapPerNode(
+            LineString lineStringToStart, LineString lineStringToEnd,
+            List<GeoNode> nodesToMeasure) {
+        Map<GeoNode, Double> distanceToNode = new HashMap<>();
+        for (GeoNode node : nodesToMeasure) {
+            determineDistance(lineStringToStart, distanceToNode, node);
+            determineDistance(lineStringToEnd, distanceToNode, node);
+        }
+        return distanceToNode;
+    }
+
+    /**
+     * @param lineStringToStart
+     * @param distanceToNode
+     * @param node
+     */
+    public void determineDistance(LineString lineStringToStart,
+            Map<GeoNode, Double> distanceToNode, GeoNode node) {
+        if (lineStringToStart.buffer(0.0001).covers(node.getPoint())) {
+            double distance = LengthToPoint.length(lineStringToStart, node
+                    .getPoint().getCoordinate());
+            logger.debug("Node: " + node.getName()
+                    + " at a distance of "
+                    + distance);
+            distanceToNode.put(node, distance);
+        }
+    }
+
+    /**
      * After having found this node is not on the network or a segment, we check
      * the TrackStore for any tracks that cover both this point and the nearest
      * nodes on the network.
      * 
      * Those are then added to the node.
+     * 
+     * If we find matching tracks, record the segments/nodes where the
+     * intersection occurs to avoid having to perform another search later.
      * 
      * @param geoNode
      */
@@ -403,6 +492,7 @@ public class DefaultNetwork implements Network {
                 geoNode.addTrack(track);
             }
         }
+        logger.info(score);
         return score;
     }
 

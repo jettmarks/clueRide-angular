@@ -63,4 +63,40 @@ public class TrackScore {
     public void addIntersectingSegments(Segment segment) {
         intersectingSegments.add(segment);
     }
+
+    /**
+     * @return the track
+     */
+    public SimpleFeature getTrack() {
+        return track;
+    }
+
+    /**
+     * @return the subjectGeoNode
+     */
+    public GeoNode getSubjectGeoNode() {
+        return subjectGeoNode;
+    }
+
+    /**
+     * @return the networkNodes
+     */
+    public List<Node> getNetworkNodes() {
+        return networkNodes;
+    }
+
+    /**
+     * @return the crossingSegments
+     */
+    public List<Segment> getCrossingSegments() {
+        return crossingSegments;
+    }
+
+    /**
+     * @return the intersectingSegments
+     */
+    public List<Segment> getIntersectingSegments() {
+        return intersectingSegments;
+    }
+
 }

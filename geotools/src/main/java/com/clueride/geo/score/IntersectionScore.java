@@ -18,6 +18,7 @@
 package com.clueride.geo.score;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opengis.feature.simple.SimpleFeature;
@@ -104,5 +105,31 @@ public class IntersectionScore {
 
     public int getTrackCount() {
         return allTracks.size();
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("IntersectionScore [id=").append(id).append(
+                ", subjectGeoNode=").append(subjectGeoNode).append(
+                ", tracksWithNetworkNodesCount=").append(
+                tracksWithNetworkNodes.size())
+                .append(", tracksIntersectingSegmentsCount=").append(
+                        tracksIntersectingSegments.size())
+                .append(", tracksCrossingSegmentsCount=").append(
+                        tracksCrossingSegments.size())
+                .append(", allTracksCount=").append(allTracks.size())
+                .append("]");
+        return builder.toString();
+    }
+
+    /**
+     * @return
+     */
+    public List<Segment> getIntersectingSegments(SimpleFeature track) {
+        return fetchTrackScore(track).getIntersectingSegments();
     }
 }
