@@ -67,6 +67,7 @@ import com.vividsolutions.jts.geom.Point;
 public class DefaultNetwork implements Network {
     private static final Double LOC_GROUP_RADIUS_DEG = (Double) GeoProperties
             .getInstance().get("group.radius.degrees");
+    private static final double BUFFER_TOLERANCE = 0.00007;
     private static DefaultNetwork instance = null;
     private DefaultFeatureCollection featureCollection;
     private Set<Segment> allSegments;
@@ -372,14 +373,14 @@ public class DefaultNetwork implements Network {
     public void findIntersectingNode(LineString subLineString,
             List<GeoNode> nodesToMeasure, List<Segment> networkSegment,
             LineString lineString) {
-        if (subLineString.buffer(0.0001).intersects(lineString)) {
+        if (subLineString.buffer(BUFFER_TOLERANCE).intersects(lineString)) {
             logger.info("This side of the track intersects with segment "
                     + networkSegment.get(0).getSegId());
             // We do intersect and can walk the lineString to find the node
             int numberPoints = subLineString.getNumPoints();
             for (int p = 0; p < numberPoints; p++) {
                 Point walkingPoint = subLineString.getPointN(p);
-                if (lineString.buffer(0.0001).covers(walkingPoint)) {
+                if (lineString.buffer(BUFFER_TOLERANCE).covers(walkingPoint)) {
                     logger.info("We like point " + walkingPoint);
                     nodesToMeasure.add(NodeFactory
                             .getInstance(walkingPoint));
@@ -415,7 +416,7 @@ public class DefaultNetwork implements Network {
      */
     public void determineDistance(LineString lineStringToStart,
             Map<GeoNode, Double> distanceToNode, GeoNode node) {
-        if (lineStringToStart.buffer(0.0001).covers(node.getPoint())) {
+        if (lineStringToStart.buffer(BUFFER_TOLERANCE).covers(node.getPoint())) {
             double distance = LengthToPoint.length(lineStringToStart, node
                     .getPoint().getCoordinate());
             logger.debug("Node: " + node.getName()
@@ -443,7 +444,7 @@ public class DefaultNetwork implements Network {
         List<SimpleFeature> candidateTracks = new ArrayList<>();
         for (SimpleFeature track : trackStore.getFeatures()) {
             LineString lineString = (LineString) track.getDefaultGeometry();
-            if (lineString.buffer(0.0001).covers(geoNode.getPoint())) {
+            if (lineString.buffer(BUFFER_TOLERANCE).covers(geoNode.getPoint())) {
                 candidateTracks.add(track);
             }
         }
@@ -553,7 +554,7 @@ public class DefaultNetwork implements Network {
         for (SimpleFeature feature : featureCollection) {
 
             LineString lineString = (LineString) feature.getDefaultGeometry();
-            if (lineString.buffer(0.0001).covers(geoNode.getPoint())) {
+            if (lineString.buffer(BUFFER_TOLERANCE).covers(geoNode.getPoint())) {
                 geoNode.addSegment(TranslateUtil.featureToSegment(feature));
                 result = true;
             }
