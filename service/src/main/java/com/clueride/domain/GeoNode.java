@@ -22,6 +22,7 @@ import java.util.List;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Node;
+import com.clueride.domain.dev.Segment;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -93,4 +94,24 @@ public interface GeoNode extends Node {
      * 
      */
     void setSelected(Boolean selected);
+
+    /**
+     * @param lineStringToSegment
+     */
+    void setProposedSegment(Segment lineStringToSegment);
+
+    /**
+     * Holds the recommended segment from this point to the network using some
+     * portion of a Track.
+     * 
+     * @return
+     */
+    Segment getProposedSegment();
+
+    /**
+     * Evaluation of whether or not we have a proposed segment.
+     * 
+     * @return
+     */
+    boolean hasProposedSegment();
 }

@@ -323,6 +323,10 @@ public class DefaultNetwork implements Network {
         // intersectionScore will hold the interesting segment for us to search.
         List<Segment> networkSegment = intersectionScore
                 .getIntersectingSegments(candidateTrackFeature);
+        if (networkSegment.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Expected to have intersected the network");
+        }
         LineString lineString = (LineString) TranslateUtil.segmentToFeature(
                 networkSegment.get(0)).getDefaultGeometry();
         findIntersectingNode(lineStringToStart, nodesToMeasure, networkSegment,
@@ -358,9 +362,24 @@ public class DefaultNetwork implements Network {
         }
         geoNode.setSelectedNode(selectedNode);
 
-        // Find track's intersection with network
-        // Find end of track closest
-        // Walk points between current location and intersection with network
+        // Node is now chosen; see which part of track to recommend
+        LineString lsProposalForSegment;
+        if (lineStringToStart.buffer(BUFFER_TOLERANCE).covers(
+                selectedNode.getPoint())) {
+            lsProposalForSegment = TranslateUtil.split(lineStringToStart,
+                    selectedNode.getPoint().getCoordinate(), true)[0];
+        } else if (lineStringToEnd.buffer(BUFFER_TOLERANCE).covers(
+                selectedNode.getPoint())) {
+            lsProposalForSegment = TranslateUtil.split(lineStringToEnd,
+                    selectedNode.getPoint().getCoordinate(), true)[0];
+        } else {
+            logger.error("Did not expect that neither segment was suitable");
+            return;
+        }
+
+        geoNode.setProposedSegment(TranslateUtil
+                .lineStringToSegment(lsProposalForSegment));
+        geoNode.getProposedSegment().setName("Proposed");
     }
 
     /**

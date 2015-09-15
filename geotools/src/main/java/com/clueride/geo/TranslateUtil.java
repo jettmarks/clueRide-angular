@@ -179,6 +179,9 @@ public class TranslateUtil {
         for (SimpleFeature trackFeature : geoNode.getTracks()) {
             features.add(trackFeatureToFeature(trackFeature));
         }
+        if (geoNode.hasProposedSegment()) {
+            features.add(segmentToFeature(geoNode.getProposedSegment()));
+        }
         return features;
     }
 

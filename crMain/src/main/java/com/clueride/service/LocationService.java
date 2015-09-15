@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.dao.DefaultLocationStore;
@@ -46,6 +47,9 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class LocationService {
 
+    private static final Logger logger = Logger
+            .getLogger(LocationService.class);
+
     // TODO: Add Dependency Injection for the NetworkService
     private Network network = DefaultNetwork.getInstance();
     private static LocationStore locationStore = DefaultLocationStore
@@ -69,6 +73,7 @@ public class LocationService {
         geoNode.setName("candidate");
         NodeNetworkState nodeEvaluation = network.evaluateNodeState(geoNode);
         result = jsonUtil.toString(geoNode);
+        logger.debug("At the requested Location: " + geoNode);
         return result;
     }
 

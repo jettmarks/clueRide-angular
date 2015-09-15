@@ -44,6 +44,7 @@ public class DefaultGeoNode implements GeoNode {
     private List<SimpleFeature> tracks = new ArrayList<>();
     private GeoNode selectedNode;
     private Boolean selected = false;
+    private Segment proposedSegment;
 
     /**
      * @return the point
@@ -250,8 +251,10 @@ public class DefaultGeoNode implements GeoNode {
         return "DefaultGeoNode [id=" + id + (selected ? " POINT=" : " point=")
                 + point + "@"
                 + getElevation() + ": "
-                + getState() + " NbN: " + getNearByNodeCount() + " Tk: "
-                + getTrackCount() + "]";
+                + getState()
+                + " NbN: " + getNearByNodeCount()
+                + " Tk: " + getTrackCount()
+                + " Prop?: " + hasProposedSegment() + "]";
     }
 
     /**
@@ -285,5 +288,28 @@ public class DefaultGeoNode implements GeoNode {
     @Override
     public void setSelected(Boolean selected) {
         this.selected = selected;
+    }
+
+    /**
+     * @return the proposedSegment
+     */
+    public Segment getProposedSegment() {
+        return proposedSegment;
+    }
+
+    /**
+     * @see com.clueride.domain.GeoNode#setProposedSegment(com.clueride.domain.dev.Segment)
+     */
+    @Override
+    public void setProposedSegment(Segment proposedSegment) {
+        this.proposedSegment = proposedSegment;
+    }
+
+    /**
+     * @see com.clueride.domain.GeoNode#hasProposedSegment()
+     */
+    @Override
+    public boolean hasProposedSegment() {
+        return (this.proposedSegment != null);
     }
 }

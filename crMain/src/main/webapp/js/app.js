@@ -128,11 +128,11 @@ app.controller("AppController", [
         Locations.get({
             lat: latlng.lat,
             lon: latlng.lng
-        }, function(pointFeature) {
+        }, function (pointFeature) {
             angular.extend($scope.gjNetwork, {
                 newPoints: {
                     data: pointFeature,
-	                pointToLayer: function(feature, latlng) {
+	                pointToLayer: function (feature, latlng) {
 	                    marker = new L.marker(latlng, {
 	                        icon: getMarkerIcon(
 	                                feature.properties.pointId, 
@@ -144,13 +144,29 @@ app.controller("AppController", [
 	                    // Not able to modify the icon once dragging is turned on
 	//                        mouseover: pointMouseover,
 	//                        mouseout: pointMouseout
-	                          dragend: function(e) {
+	                          dragend: function (e) {
 	                              console.log(e.target.getLatLng());
                                   e.target.setLatLng(e.target.getLatLng()).update();
                                   checkNewPointLocation(e.target.getLatLng());
 	                          }
 		                });
 	                    return marker;
+	                },
+	                onEachFeature: function (feature, layer) {
+	                    if (feature.geometry.type === 'LineString') {
+		                    layer.setStyle({
+		                        color: 'green',
+		                        opacity: 0.5,
+		                        weight: 4
+		                    });
+	                    }
+	                    if (feature.properties.name === 'Proposed') {
+	                        layer.setStyle({
+	                            color: '#7F7',
+	                            opacity: 0.8,
+	                            weight: 10
+	                        });
+	                    }
 	                }
                 }
             });
