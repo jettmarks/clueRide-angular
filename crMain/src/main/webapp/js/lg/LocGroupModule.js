@@ -1,7 +1,7 @@
 'use strict';
 
 var LocGroupModule = angular
-	.module('LocGroupModule', [
+	.module('crNetEdit.LocGroupModule', [
 	      'leaflet-directive', 
 	      'ngResource'
           ]);
@@ -11,7 +11,7 @@ var locationGroups = [],
     editable = true;
 
     
-angular.module('LocGroupModule')
+angular.module('crNetEdit.LocGroupModule')
     .factory('LocGroupSvc', function(LocGroupResource, LocGroupUpdater, leafletData) {
         var load = function (isEditable) {
             editable = isEditable;

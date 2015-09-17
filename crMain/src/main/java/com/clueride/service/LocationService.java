@@ -71,6 +71,7 @@ public class LocationService {
         GeoNode geoNode = new DefaultGeoNode();
         geoNode.setPoint(point);
         geoNode.setName("candidate");
+        // TODO: Move toward use of the nodeEvaluation instance
         NodeNetworkState nodeEvaluation = network.evaluateNodeState(geoNode);
         result = jsonUtil.toString(geoNode);
         logger.debug("At the requested Location: " + geoNode);

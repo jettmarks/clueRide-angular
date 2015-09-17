@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('LocGroupModule')
+angular.module('crNetEdit.LocGroupModule')
 	.factory('LocGroupResource', function ($resource) {
 	    return $resource('/crMain/rest/locations/groups', {}, {
 	        get: {
@@ -11,7 +11,7 @@ angular.module('LocGroupModule')
 	    });
 	});
 
-angular.module('LocGroupModule')
+angular.module('crNetEdit.LocGroupModule')
 .factory('LocGroupUpdater', function ($resource) {
     return $resource('/crMain/rest/locations/group/set?id=:id&lat=:lat&lon=:lon', {}, {
         set: {

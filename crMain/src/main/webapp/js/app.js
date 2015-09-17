@@ -1,13 +1,18 @@
-var app = angular.module("crMain", ['leaflet-directive', 'crMain.services', 'LocGroupModule']);
+var crNetEdit = angular.module("crNetEdit", [
+        'leaflet-directive', 
+        'crMain.services',
+        'crNetEdit.LocGroupModule',
+        'crNetEdit.LocModule'
+        ]);
 
-app.controller("AppController", [ 
+crNetEdit.controller("AppController", [ 
 		"$scope", 
         'leafletData', 
         '$http', 
         'RawSegments', 
-        'Locations', 
+        'LocResource', 
         'Network', 
-        function($scope, leafletData, $http, RawSegments, Locations, 
+        function($scope, leafletData, $http, RawSegments, LocResource, 
                 Network 
                 ) {
 
@@ -88,44 +93,9 @@ app.controller("AppController", [
 		});
     });
 
-//    $http.get("/crMain/tempJson/singleLineSegments.geojson").success(function(data, status) {
-//		angular.extend($scope.gjTracks, {
-//		    problems: {
-//				data: data,
-//				style: {
-//				    opacity: 0.7,
-//				    color: 'red',
-//				    weight: 18
-//				},
-//		
-//				onEachFeature: function (feature, layer) {
-//		
-//				    layer.on('mouseover', function(e) {
-//						e.target.setStyle({
-//						    weight: 24,
-//						    opacity: 1.0
-//						});
-//						e.target.bringToFront();
-//				    });
-//		
-//				    layer.on('mouseout', function(e) {
-//						e.target.setStyle({
-//						    weight: 18,
-//						    opacity: 0.7
-//						});
-//						e.target.bringToFront();
-//				    });
-//		
-//				    layer.on('click', function(e) {
-//						$scope.selectedFeature = this.feature;
-//				    });
-//				} 
-//		    }
-//		});
-//    });
-    
+    // TODO: Move this into the LocModule
     function checkNewPointLocation(latlng) {
-        Locations.get({
+        LocResource.request({
             lat: latlng.lat,
             lon: latlng.lng
         }, function (pointFeature) {
@@ -157,15 +127,20 @@ app.controller("AppController", [
 		                    layer.setStyle({
 		                        color: 'green',
 		                        opacity: 0.5,
-		                        weight: 4
+		                        weight: 1
 		                    });
 	                    }
 	                    if (feature.properties.name === 'Proposed') {
 	                        layer.setStyle({
 	                            color: '#7F7',
 	                            opacity: 0.8,
-	                            weight: 10
+	                            weight: 14
 	                        });
+	                        layer.on('click', function(e) {
+	                            console.log("Selecting the recommended Segment");
+	                            LocResource.confirm({});
+	                        });
+//	                        layer.bringToFront();
 	                    }
 	                }
                 }
@@ -174,6 +149,7 @@ app.controller("AppController", [
     }
 
     
+    // TODO: Set this up so we can turn on/off the response (goes in LocModule)
     leafletData.getMap('networkMap').then(function(networkMap) {
         // Responds to mouse-click to submit lat/lon and return point candidate
         networkMap.on('click', function (mouseEvent) {

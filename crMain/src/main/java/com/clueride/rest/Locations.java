@@ -17,12 +17,16 @@
  */
 package com.clueride.rest;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.clueride.rest.dto.LatLonPair;
 import com.clueride.service.LocationService;
 
 /**
@@ -34,12 +38,49 @@ import com.clueride.service.LocationService;
  */
 @Path("locations")
 public class Locations {
+    /**
+     * This version is used for diagnostics from the browser address, but
+     * performs the same functions as {@link getNewLocationPost}.
+     * 
+     * @param lat
+     * @param lon
+     * @return
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
     public String getNewLocation(@QueryParam("lat") Double lat,
             @QueryParam("lon") Double lon) {
         return new LocationService().addNewLocation(lat, lon);
+    }
+
+    /**
+     * Accepts LatLonPair (in JSON) representing a new node we want to add to
+     * the network, and returns potential links to the existing network.
+     * 
+     * @param pair
+     * @return
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("new")
+    public String getNewLocationPost(LatLonPair pair) {
+        return new LocationService().addNewLocation(pair.lat, pair.lon);
+    }
+
+    /**
+     * After having recommended a segment, the response to clicking on that
+     * segment results in a call to this "PUT" to confirm that we're accepting
+     * the proposed segment.
+     * 
+     * Data regarding the segment is held server-side for performing the actions
+     * required to add the segment to the network.
+     */
+    @PUT
+    @Path("new")
+    public void confirmProposedSegment() {
+        System.out.println("Hey, we've got a connection.");
     }
 
     @GET
@@ -56,4 +97,5 @@ public class Locations {
             @QueryParam("lat") Double lat, @QueryParam("lon") Double lon) {
         return new LocationService().setLocationGroup(id, lat, lon);
     }
+
 }
