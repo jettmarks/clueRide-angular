@@ -32,23 +32,23 @@ import com.clueride.domain.dev.NodeNetworkState;
  */
 public interface Network {
 
-	/**
-	 * @param connectedNode
-	 * @return
-	 */
-	public abstract boolean canReach(GeoNode connectedNode);
+    /**
+     * @param connectedNode
+     * @return
+     */
+    public abstract boolean canReach(GeoNode connectedNode);
 
-	/**
-	 * @param simpleFeature
-	 */
-	public abstract void add(SimpleFeature simpleFeature);
+    /**
+     * @param simpleFeature
+     */
+    public abstract void add(SimpleFeature simpleFeature);
 
-	/**
-	 * @param connectedNode
-	 * @return
-	 */
-	public abstract NodeNetworkState evaluateNodeState(GeoNode connectedNode);
+    /**
+     * @param connectedNode
+     * @return
+     */
+    public abstract NodeNetworkState evaluateNodeState(GeoNode connectedNode);
 
-	public abstract List<GeoNode> getSortedNodes(GeoNode geoNode);
+    public abstract List<GeoNode> getSortedNodes(GeoNode geoNode);
 
 }

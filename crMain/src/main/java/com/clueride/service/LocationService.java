@@ -30,8 +30,11 @@ import com.clueride.dao.LocationStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.NetworkState;
+import com.clueride.domain.dev.NodeEvaluationStatus;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
+import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.geo.DefaultNetwork;
 import com.clueride.geo.Network;
@@ -76,6 +79,43 @@ public class LocationService {
         result = jsonUtil.toString(geoNode);
         logger.debug("At the requested Location: " + geoNode);
         return result;
+    }
+
+    /**
+     * User has indicated that our last Node is the one we want to connect.
+     * 
+     * Bring in the last evaluation we made and use that data to construct the
+     * new Network objects.
+     * 
+     * Invokes the Segment service as needed to add any new segments that are
+     * involved, but we handle our Nodes here.
+     */
+    public void confirmNewLocation() {
+        NodeEvaluationStatus nodeEvaluation = NetworkState
+                .getLastNodeEvaluation();
+
+        // As a first cut, we're assuming a new segment, two new nodes, and that
+        // we're splitting the original segment at the end node of the first
+        // segment.
+
+        Segment brandNewSegment = nodeEvaluation.getProposedSegmentFromTrack();
+        GeoNode startNode = (GeoNode) brandNewSegment.getStart();
+        GeoNode endNode = (GeoNode) brandNewSegment.getEnd();
+
+        // Save our new nodes
+        locationStore.addNew(startNode);
+        locationStore.addNew(endNode);
+        try {
+            locationStore.persistAndReload();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Add and save our new segments (using SegmentService)
+        SegmentService.addSegment(brandNewSegment);
+        Segment existingSegmentToSplit = nodeEvaluation.getIntersectedSegment();
+        SegmentService.splitSegment(existingSegmentToSplit, endNode);
+        SegmentService.saveChanges();
     }
 
     /**

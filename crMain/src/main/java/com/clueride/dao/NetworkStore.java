@@ -31,62 +31,63 @@ import com.vividsolutions.jts.geom.Point;
  *
  */
 public interface NetworkStore {
-	/**
-	 * Tells us where the network data can be found.
-	 * 
-	 * @return
-	 */
-	String getStoreLocation();
 
-	/**
-	 * Takes the current state of the network, saves it to the store's location
-	 * (with backup preferably), and then reloads from that store.
-	 * 
-	 * Can be used to initially load as well if the memory copy is empty.
-	 * 
-	 * @throws IOException
-	 */
-	void persistAndReload() throws IOException;
+    /**
+     * Tells us where the network data can be found.
+     * 
+     * @return
+     */
+    String getStoreLocation();
 
-	/**
-	 * This holds the segments -- if we need them, this is the place to go.
-	 * 
-	 * @return
-	 */
-	Set<Segment> getSegments();
+    /**
+     * Takes the current state of the network, saves it to the store's location
+     * (with backup preferably), and then reloads from that store.
+     * 
+     * Can be used to initially load as well if the memory copy is empty.
+     * 
+     * @throws IOException
+     */
+    void persistAndReload() throws IOException;
 
-	/**
-	 * Choose a particular segment by its ID.
-	 * 
-	 * @param id
-	 * @return
-	 */
-	Segment getSegmentById(Integer id);
+    /**
+     * This holds the segments -- if we need them, this is the place to go.
+     * 
+     * @return
+     */
+    Set<Segment> getSegments();
 
-	/**
-	 * Brings the geometry and other details for creation of a new Segment along
-	 * with the assignment of an ID.
-	 * 
-	 * @param segment
-	 * @return
-	 */
-	Integer addNew(Segment segment);
+    /**
+     * Choose a particular segment by its ID.
+     * 
+     * @param id
+     * @return
+     */
+    Segment getSegmentById(Integer id);
 
-	/**
-	 * When it's time to split one of these, we want the Store to know about it.
-	 * 
-	 * @param id
-	 * @param geoNode
-	 */
-	void splitSegment(Integer id, GeoNode geoNode);
+    /**
+     * Brings the geometry and other details for creation of a new Segment along
+     * with the assignment of an ID.
+     * 
+     * @param segment
+     * @return
+     */
+    Integer addNew(Segment segment);
 
-	/**
-	 * When it's time to split one of these, we want the Store to know about it.
-	 * 
-	 * This version knows how to work with a Point.
-	 * 
-	 * @param id
-	 * @param point
-	 */
-	void splitSegment(Integer id, Point point);
+    /**
+     * When it's time to split one of these, we want the Store to know about it.
+     * 
+     * @param id
+     * @param geoNode
+     */
+    void splitSegment(Integer id, GeoNode geoNode);
+
+    /**
+     * When it's time to split one of these, we want the Store to know about it.
+     * 
+     * This version knows how to work with a Point.
+     * 
+     * @param id
+     * @param point
+     */
+    void splitSegment(Integer id, Point point);
 }

@@ -21,6 +21,10 @@ import java.io.IOException;
 
 import org.geotools.feature.DefaultFeatureCollection;
 
+import com.clueride.dao.DefaultNetworkStore;
+import com.clueride.dao.NetworkStore;
+import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.Segment;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 
@@ -31,21 +35,50 @@ import com.clueride.io.JsonUtil;
  *
  */
 public class SegmentService {
+    private static NetworkStore networkStore = DefaultNetworkStore
+            .getInstance();
 
-	/**
-	 * @param raw
-	 * @return
-	 */
-	public static String getFeatureCollection(JsonStoreType type) {
-		String result = "";
-		JsonUtil jsonUtil = new JsonUtil(type);
-		try {
-			DefaultFeatureCollection features = jsonUtil
-					.readFeatureCollection();
-			result = jsonUtil.toString(features);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
+    /**
+     * @param raw
+     * @return
+     */
+    public static String getFeatureCollection(JsonStoreType type) {
+        String result = "";
+        JsonUtil jsonUtil = new JsonUtil(type);
+        try {
+            DefaultFeatureCollection features = jsonUtil
+                    .readFeatureCollection();
+            result = jsonUtil.toString(features);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * @param brandNewSegment
+     */
+    public static void addSegment(Segment segment) {
+        networkStore.addNew(segment);
+    }
+
+    /**
+     * @param existingSegmentToSplit
+     * @param endNode
+     */
+    public static void splitSegment(Segment segmentToSplit,
+            GeoNode endNode) {
+        networkStore.splitSegment(segmentToSplit.getSegId(), endNode);
+    }
+
+    /**
+     * 
+     */
+    public static void saveChanges() {
+        try {
+            networkStore.persistAndReload();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

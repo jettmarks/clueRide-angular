@@ -76,11 +76,13 @@ public class Locations {
      * 
      * Data regarding the segment is held server-side for performing the actions
      * required to add the segment to the network.
+     * 
+     * Considering using an ID to select the particular data instance involved.
      */
     @PUT
     @Path("new")
     public void confirmProposedSegment() {
-        System.out.println("Hey, we've got a connection.");
+        new LocationService().confirmNewLocation();
     }
 
     @GET

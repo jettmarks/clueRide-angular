@@ -43,6 +43,8 @@ import com.clueride.dao.NetworkStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.NetworkState;
+import com.clueride.domain.dev.NodeEvaluationStatus;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.Segment;
@@ -380,6 +382,13 @@ public class DefaultNetwork implements Network {
         geoNode.setProposedSegment(TranslateUtil
                 .lineStringToSegment(lsProposalForSegment));
         geoNode.getProposedSegment().setName("Proposed");
+
+        // Before we head back, let's build out the NodeEvaluationStatus object
+        NodeEvaluationStatus nodeEvaluation = NetworkState
+                .getNodeEvaluationInstance();
+        nodeEvaluation
+                .setProposedSegmentFromTrack(geoNode.getProposedSegment());
+        nodeEvaluation.setIntersectedSegment(networkSegment.get(0));
     }
 
     /**

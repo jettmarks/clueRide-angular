@@ -31,6 +31,7 @@ import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -161,8 +162,19 @@ public class DefaultNetworkStore implements NetworkStore {
      */
     @Override
     public void splitSegment(Integer id, GeoNode geoNode) {
-        // TODO Auto-generated method stub
-
+        LineString originalLineString = (LineString) TranslateUtil
+                .segmentToFeature(segmentMap.get(id)).getDefaultGeometry();
+        LineString[] splitPair = TranslateUtil.split(originalLineString,
+                geoNode.getPoint().getCoordinate(), true);
+        Segment segmentA = TranslateUtil.lineStringToSegment(splitPair[0]);
+        Segment segmentB = TranslateUtil.lineStringToSegment(splitPair[1]);
+        segmentA.setUrl(segmentMap.get(id).getUrl());
+        segmentA.setName(segmentMap.get(id).getName());
+        segmentB.setUrl(segmentMap.get(id).getUrl());
+        segmentB.setName(segmentMap.get(id).getName());
+        addNew(segmentA);
+        addNew(segmentB);
+        segmentMap.remove(id);
     }
 
     /**
