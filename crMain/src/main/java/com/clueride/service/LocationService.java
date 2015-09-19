@@ -112,6 +112,7 @@ public class LocationService {
         }
 
         // Add and save our new segments (using SegmentService)
+        brandNewSegment.setName("unnamed");
         SegmentService.addSegment(brandNewSegment);
         Segment existingSegmentToSplit = nodeEvaluation.getIntersectedSegment();
         SegmentService.splitSegment(existingSegmentToSplit, endNode);

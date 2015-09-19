@@ -98,6 +98,7 @@ public class DefaultNetworkStore implements NetworkStore {
         features = networkStorageUtil
                 .readFeatureCollection("mainNetwork.geojson");
         segments = TranslateUtil.featureCollectionToSegments(features);
+        refreshSegmentData();
     }
 
     /**
@@ -127,6 +128,22 @@ public class DefaultNetworkStore implements NetworkStore {
             e.printStackTrace();
         }
         segments = TranslateUtil.featureCollectionToSegments(features);
+        refreshSegmentData();
+    }
+
+    /**
+     * 
+     */
+    private void refreshSegmentData() {
+        maxSegmentId = 0;
+        segmentMap.clear();
+        for (Segment segment : segments) {
+            int segmentId = segment.getSegId();
+            if (segmentId > maxSegmentId) {
+                maxSegmentId = segmentId;
+            }
+            segmentMap.put(segmentId, segment);
+        }
     }
 
     /**
@@ -174,6 +191,7 @@ public class DefaultNetworkStore implements NetworkStore {
         segmentB.setName(segmentMap.get(id).getName());
         addNew(segmentA);
         addNew(segmentB);
+        segments.remove(segmentMap.get(id));
         segmentMap.remove(id);
     }
 

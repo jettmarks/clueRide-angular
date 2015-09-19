@@ -2,7 +2,8 @@ var crNetEdit = angular.module("crNetEdit", [
         'leaflet-directive', 
         'crMain.services',
         'crNetEdit.LocGroupModule',
-        'crNetEdit.LocModule'
+        'crNetEdit.LocModule',
+        'where'
         ]);
 
 crNetEdit.controller("AppController", [ 
@@ -11,7 +12,7 @@ crNetEdit.controller("AppController", [
         '$http', 
         'RawSegments', 
         'LocResource', 
-        'Network', 
+        'Network',
         function($scope, leafletData, $http, RawSegments, LocResource, 
                 Network 
                 ) {
@@ -32,7 +33,6 @@ crNetEdit.controller("AppController", [
 	    }
     }
 
-
     angular.extend($scope, {
 		center: {
 		    lat: 33.7627,
@@ -43,7 +43,10 @@ crNetEdit.controller("AppController", [
 		gjNetwork: {},
 		gjTracks: {},
 		selectedFeature: {},
-		circles: {}
+		circles: {},
+		mouse: {
+		    location: [33.0, -84.0]
+		}
     });
 
     Network.get({}, function(featureCollection) {
@@ -154,6 +157,9 @@ crNetEdit.controller("AppController", [
         // Responds to mouse-click to submit lat/lon and return point candidate
         networkMap.on('click', function (mouseEvent) {
 	        checkNewPointLocation(mouseEvent.latlng);
+        });
+        networkMap.on('mousemove', function (mouseEvent) {
+            $scope.mouse.location = mouseEvent.latlng;
         });
     });
 
