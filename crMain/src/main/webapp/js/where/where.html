@@ -1,5 +1,5 @@
 <script src='js/where/where.css'></script>
 
 <div class="where">
-  Lat/Lon: {{mouse.location}}
+  Lat/Lon: {{mouse.location.lat | number:5}}, {{mouse.location.lng | number:5}}
 </div>
