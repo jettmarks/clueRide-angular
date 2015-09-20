@@ -26,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.clueride.geo.DefaultNetwork;
 import com.clueride.rest.dto.LatLonPair;
 import com.clueride.service.LocationService;
 
@@ -80,9 +81,10 @@ public class Locations {
      * Considering using an ID to select the particular data instance involved.
      */
     @PUT
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
-    public void confirmProposedSegment() {
-        new LocationService().confirmNewLocation();
+    public String confirmProposedSegment() {
+        return DefaultNetwork.getInstance().confirmNewLocation();
     }
 
     @GET

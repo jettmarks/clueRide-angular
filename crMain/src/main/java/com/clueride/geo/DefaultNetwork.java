@@ -53,6 +53,7 @@ import com.clueride.geo.score.IntersectionScore;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 import com.clueride.poc.geotools.TrackStore;
+import com.clueride.service.SegmentService;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
@@ -523,6 +524,51 @@ public class DefaultNetwork implements Network {
         }
         logger.info(score);
         return score;
+    }
+
+    /**
+     * User has indicated that our last Node is the one we want to connect.
+     * 
+     * Bring in the last evaluation we made and use that data to construct the
+     * new Network objects.
+     * 
+     * Invokes the Segment service as needed to add any new segments that are
+     * involved, but we handle our Nodes here.
+     * 
+     * @return
+     */
+    public String confirmNewLocation() {
+        NodeEvaluationStatus nodeEvaluation = NetworkState
+                .getLastNodeEvaluation();
+
+        // As a first cut, we're assuming a new segment, two new nodes, and that
+        // we're splitting the original segment at the end node of the first
+        // segment.
+
+        Segment brandNewSegment = nodeEvaluation.getProposedSegmentFromTrack();
+        GeoNode startNode = (GeoNode) brandNewSegment.getStart();
+        GeoNode endNode = (GeoNode) brandNewSegment.getEnd();
+
+        // Save our new nodes
+        locationStore.addNew(startNode);
+        locationStore.addNew(endNode);
+        try {
+            locationStore.persistAndReload();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Add and save our new segments (using SegmentService)
+        brandNewSegment.setName("unnamed");
+        SegmentService.addSegment(brandNewSegment);
+        Segment existingSegmentToSplit = nodeEvaluation.getIntersectedSegment();
+        SegmentService.splitSegment(existingSegmentToSplit, endNode);
+        SegmentService.saveChanges();
+        allSegments = networkStore.getSegments();
+        featureCollection = TranslateUtil
+                .segmentsToFeatureCollection(allSegments);
+        refresh();
+        return "{status: 'OK'}";
     }
 
     /**

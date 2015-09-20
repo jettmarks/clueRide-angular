@@ -3,7 +3,8 @@ var crNetEdit = angular.module("crNetEdit", [
         'crMain.services',
         'crNetEdit.LocGroupModule',
         'crNetEdit.LocModule',
-        'where'
+        'where',
+        'network'
         ]);
 
 crNetEdit.controller("AppController", [ 
@@ -12,9 +13,10 @@ crNetEdit.controller("AppController", [
         '$http', 
         'RawSegments', 
         'LocResource', 
-        'Network',
+        'NetworkResource',
+        'NetworkRefresh',
         function($scope, leafletData, $http, RawSegments, LocResource, 
-                Network 
+                NetworkResource, NetworkRefresh
                 ) {
 
     $scope.layers = {
@@ -45,23 +47,17 @@ crNetEdit.controller("AppController", [
 		selectedFeature: {},
 		circles: {},
 		mouse: {
-		    location: [33.0, -84.0]
+		    location: {
+		        lat: 33.0,
+		        lng: -84.0
+		    }
 		}
     });
-
-    Network.get({}, function(featureCollection) {
-		angular.extend($scope.gjNetwork, {
-		    segments: {
-				data: featureCollection,
-				style: {
-				    opacity: 0.7,
-				    color: '#030',
-				    weight: 4,
-				}
-		    }
-		});
-    });
-				
+    
+    // Bind the scope's segments with the service's segments
+    NetworkRefresh.refresh();
+    $scope.gjNetwork.segments = NetworkRefresh.segments();
+    
     RawSegments.get({}, function(featureCollection) {
 		angular.extend($scope.gjTracks, {
 		    segments: {
@@ -141,7 +137,14 @@ crNetEdit.controller("AppController", [
 	                        });
 	                        layer.on('click', function(e) {
 	                            console.log("Selecting the recommended Segment");
-	                            LocResource.confirm({});
+	                            LocResource.confirm({}, function (confirmResponse) {
+	                                if (confirmResponse.status === 'OK') {
+	                                    alert("Changes accepted");
+	                                    NetworkRefresh.refresh();
+	                                } else {
+	                                    alert("Sorry, problem on the server");
+	                                }
+	                            });
 	                        });
 //	                        layer.bringToFront();
 	                    }

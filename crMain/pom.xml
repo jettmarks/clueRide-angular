@@ -22,6 +22,22 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.kelveden</groupId>
+                <artifactId>maven-karma-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>runTests</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <configFile>full/path/to/the/file/my.custom.karma.conf.js</configFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

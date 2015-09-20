@@ -15,6 +15,8 @@
 <script src="./js/services.js"></script>
 <script src="./js/loc/LocModule.js"></script>
 <script src="./js/loc/LocService.js"></script>
+<script src="./js/network/NetworkModule.js"></script>
+<script src="./js/network/NetworkService.js"></script>
 <script src="./js/lg/LocGroupModule.js"></script>
 <script src="./js/lg/LocGroupService.js"></script>
 <script src="./js/where/where.js"></script>
@@ -45,5 +47,7 @@
 	Starting Point: <span ng-bind="selectedFeature.geometry.coordinates[0]"></span>
 	Ending Point: <span ng-bind="selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length-1]"></span>
 	<where-am-i></where-am-i>
+	<p> <span><button ng-click="NetworkRefresh.refresh()">Refresh</button></span>
+	<p> Network Segments: <span ng-bind="NetworkRefresh.segments()"></span><p>
 </body>
 </html>
