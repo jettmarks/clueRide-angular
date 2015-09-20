@@ -45,6 +45,7 @@ crNetEdit.controller("AppController", [
 		gjNetwork: {},
 		gjTracks: {},
 		selectedFeature: {},
+		selectedSegment: {},
 		circles: {},
 		mouse: {
 		    location: {
@@ -57,6 +58,7 @@ crNetEdit.controller("AppController", [
     // Bind the scope's segments with the service's segments
     NetworkRefresh.refresh();
     $scope.gjNetwork.segments = NetworkRefresh.segments();
+    $scope.selectedSegment = NetworkRefresh.selectedSegment();
     
     RawSegments.get({}, function(featureCollection) {
 		angular.extend($scope.gjTracks, {
