@@ -9,6 +9,6 @@ var LocModule = angular
 var locallyScopedVars;
 
 LocModule
-    .factory('crNetEdit.LocSvc', function (){
+    .factory('crNetEdit.LocSvc', function () {
         
     });
