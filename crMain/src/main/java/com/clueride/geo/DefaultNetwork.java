@@ -50,6 +50,7 @@ import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.NodeFactory;
 import com.clueride.geo.score.IntersectionScore;
+import com.clueride.geo.score.TrackScore;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 import com.clueride.poc.geotools.TrackStore;
@@ -304,7 +305,11 @@ public class DefaultNetwork implements Network {
                     "Expected Node to have exactly one candidate Track");
         }
 
-        // Pick out that track
+        // Pick out that track and best node
+        TrackScore trackScore = intersectionScore.fetchBestTrackScore();
+        trackScore.refreshIndices();
+        System.out.println(trackScore.dumpScores());
+        geoNode.addScoredNode(trackScore.getProposedNode());
         SimpleFeature candidateTrackFeature = geoNode.getTracks().get(0);
         logger.info("Candidate Track: "
                 + candidateTrackFeature.getAttribute("name"));
@@ -324,17 +329,20 @@ public class DefaultNetwork implements Network {
 
         // Now to see if we intersect the network, and if so, at what point
         // intersectionScore will hold the interesting segment for us to search.
+        Segment bestSegment = intersectionScore.getBestSegment();
         List<Segment> networkSegment = intersectionScore
                 .getIntersectingSegments(candidateTrackFeature);
         if (networkSegment.isEmpty()) {
             throw new IllegalArgumentException(
                     "Expected to have intersected the network");
         }
-        LineString lineString = (LineString) TranslateUtil.segmentToFeature(
-                networkSegment.get(0)).getDefaultGeometry();
-        findIntersectingNode(lineStringToStart, nodesToMeasure, networkSegment,
+        // LineString lineString = (LineString) TranslateUtil.segmentToFeature(
+        // networkSegment.get(0)).getDefaultGeometry();
+        LineString lineString = (LineString) TranslateUtil
+                .segmentToFeature(bestSegment).getDefaultGeometry();
+        findIntersectingNode(lineStringToStart, nodesToMeasure, bestSegment,
                 lineString);
-        findIntersectingNode(lineStringToEnd, nodesToMeasure, networkSegment,
+        findIntersectingNode(lineStringToEnd, nodesToMeasure, bestSegment,
                 lineString);
 
         Map<GeoNode, Double> distanceToNode = evaluateDistanceMapPerNode(
@@ -389,7 +397,7 @@ public class DefaultNetwork implements Network {
                 .getNodeEvaluationInstance();
         nodeEvaluation
                 .setProposedSegmentFromTrack(geoNode.getProposedSegment());
-        nodeEvaluation.setIntersectedSegment(networkSegment.get(0));
+        nodeEvaluation.setIntersectedSegment(bestSegment);
     }
 
     /**
@@ -400,11 +408,11 @@ public class DefaultNetwork implements Network {
      * @param i
      */
     public void findIntersectingNode(LineString subLineString,
-            List<GeoNode> nodesToMeasure, List<Segment> networkSegment,
+            List<GeoNode> nodesToMeasure, Segment bestSegment,
             LineString lineString) {
         if (subLineString.buffer(BUFFER_TOLERANCE).intersects(lineString)) {
             logger.info("This side of the track intersects with segment "
-                    + networkSegment.get(0).getSegId());
+                    + bestSegment.getSegId());
             // We do intersect and can walk the lineString to find the node
             int numberPoints = subLineString.getNumPoints();
             for (int p = 0; p < numberPoints; p++) {
@@ -506,15 +514,20 @@ public class DefaultNetwork implements Network {
                         .getDefaultGeometry();
                 Segment segment = TranslateUtil
                         .featureToSegment(segmentFeature);
-                System.out.println("Checking " + track.getAttribute("url")
-                        + " against Segment of length "
+                System.out.print("Checking " + track.getAttribute("url")
+                        + " against Segment " + segment.getSegId()
+                        + " of length "
                         + segmentLineString.getNumPoints());
                 if (segmentLineString.crosses(lineString)) {
                     score.addCrossingTrack(track, segment);
                     keepTrack = true;
+                    System.out.println(" Crosses");
                 } else if (segmentLineString.intersects(lineString)) {
                     score.addIntersectingTrack(track, segment);
                     keepTrack = true;
+                    System.out.println(" Intersects");
+                } else {
+                    System.out.println();
                 }
             }
 

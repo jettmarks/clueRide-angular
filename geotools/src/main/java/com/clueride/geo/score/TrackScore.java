@@ -18,18 +18,34 @@
 package com.clueride.geo.score;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.Segment;
+import com.clueride.domain.factory.NodeFactory;
+import com.clueride.domain.factory.PointFactory;
+import com.clueride.geo.LengthToPoint;
+import com.clueride.geo.TranslateUtil;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * For a given Track, score how well it provides a connection between a proposed
  * point and the network as represented by nodes and segments that either cross
  * or intersect with this track.
+ * 
+ * Early version merely collected the data. Now we score the various segments to
+ * determine which provides best (usually closest) connection for the track.
+ * 
+ * This also looks for new candidate nodes by walking the track and locating
+ * spots where the track crosses or intersects the network.
  *
  * @author jett
  *
@@ -41,6 +57,15 @@ public class TrackScore {
     private List<Node> networkNodes = new ArrayList<>();
     private List<Segment> crossingSegments = new ArrayList<>();
     private List<Segment> intersectingSegments = new ArrayList<>();
+
+    /** Lowest score is best. */
+    private double score = Double.MAX_VALUE;
+    private GeoNode proposedNode = null;
+    private static List<GeoNode> nodeProposals = new ArrayList<>();
+    private Segment bestSegment = null;
+
+    private static final Map<Integer, Segment> segmentIndex = new HashMap<>();
+    private static final Map<Integer, Double> scorePerSegment = new HashMap<>();
 
     public TrackScore(SimpleFeature track, GeoNode geoNode) {
         this.track = track;
@@ -99,4 +124,119 @@ public class TrackScore {
         return intersectingSegments;
     }
 
+    public int getIntersectingSegmentCount() {
+        return intersectingSegments.size();
+    }
+
+    public int getCrossingSegmentCount() {
+        return crossingSegments.size();
+    }
+
+    /**
+     * Laziness: re-index everything when the caller wants it to be re-indexed.
+     * 
+     * @return
+     */
+    public int refreshIndices() {
+        segmentIndex.clear();
+        scorePerSegment.clear();
+        nodeProposals.clear();
+        GeoNode lowScoreNode = null;
+        Integer lowScoreSegId = null;
+
+        int segCount = 0;
+        Double calculatedScore = Double.MAX_VALUE;
+        for (Segment segment : intersectingSegments) {
+            segmentIndex.put(segment.getSegId(), segment);
+            calculatedScore = score(segment);
+            if (calculatedScore < score) {
+                score = calculatedScore;
+                lowScoreNode = proposedNode;
+                lowScoreSegId = segment.getSegId();
+                bestSegment = segment;
+            }
+            scorePerSegment.put(segment.getSegId(), calculatedScore);
+            segCount++;
+        }
+        for (Segment segment : crossingSegments) {
+            segmentIndex.put(segment.getSegId(), segment);
+            calculatedScore = score(segment);
+            if (calculatedScore < score) {
+                score = calculatedScore;
+                lowScoreNode = proposedNode;
+                lowScoreSegId = segment.getSegId();
+                bestSegment = segment;
+            }
+            scorePerSegment.put(segment.getSegId(), calculatedScore);
+            segCount++;
+        }
+        System.out.println("Low Score Segment: " + lowScoreSegId);
+        proposedNode = lowScoreNode;
+        return segCount;
+    }
+
+    /**
+     * First cut at this is to follow the track from the node to the segment and
+     * add up the distance.
+     * 
+     * @param segment
+     * @return
+     */
+    private Double score(Segment segment) {
+        Double distance = 0.0;
+        // Walk the track up to the segment and if this isn't a node, add it
+        // as a proposed node.
+        LineString trackLineString = (LineString) track.getDefaultGeometry();
+        LineString segmentLineString = (LineString) TranslateUtil
+                .segmentToFeature(segment).getDefaultGeometry();
+        Coordinate coordinateIntersection = null;
+        for (Coordinate coordinate : trackLineString.getCoordinates()) {
+            Point point = PointFactory.getJtsInstance(coordinate.y,
+                    coordinate.x, coordinate.z);
+            if (segmentLineString.buffer(0.00007).covers(point)) {
+                GeoNode newGeoNode = NodeFactory.getInstance(point);
+                coordinateIntersection = coordinate;
+                nodeProposals.add(newGeoNode);
+                proposedNode = newGeoNode;
+                break;
+            }
+        }
+        distance = LengthToPoint
+                .length(trackLineString, coordinateIntersection);
+        return distance;
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "TrackScore [getIntersectingSegmentCount()="
+                + getIntersectingSegmentCount()
+                + ", getCrossingSegmentCount()=" + getCrossingSegmentCount()
+                + "]";
+    }
+
+    public String dumpScores() {
+        StringBuffer buffer = new StringBuffer();
+        for (Entry<Integer, Double> entry : scorePerSegment.entrySet()) {
+            buffer.append("ID: ").append(entry.getKey())
+                    .append(" Score: ").append(entry.getValue()).append("\n");
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * @return the proposedNode
+     */
+    public GeoNode getProposedNode() {
+        return proposedNode;
+    }
+
+    /**
+     * @return
+     */
+    public Segment getBestSegment() {
+        return bestSegment;
+    }
 }

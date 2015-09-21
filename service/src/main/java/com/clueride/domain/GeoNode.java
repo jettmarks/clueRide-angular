@@ -114,4 +114,9 @@ public interface GeoNode extends Node {
      * @return
      */
     boolean hasProposedSegment();
+
+    /**
+     * @param proposedNode
+     */
+    void addScoredNode(GeoNode proposedNode);
 }

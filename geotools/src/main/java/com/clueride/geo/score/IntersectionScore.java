@@ -20,6 +20,7 @@ package com.clueride.geo.score;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -114,9 +115,11 @@ public class IntersectionScore {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("IntersectionScore [id=").append(id).append(
-                ", subjectGeoNode=").append(subjectGeoNode).append(
-                ", tracksWithNetworkNodesCount=").append(
-                tracksWithNetworkNodes.size())
+                ", trackScore=").append(fetchBestTrackScore())
+                .append(
+                        ", subjectGeoNode=").append(subjectGeoNode).append(
+                        ", tracksWithNetworkNodesCount=").append(
+                        tracksWithNetworkNodes.size())
                 .append(", tracksIntersectingSegmentsCount=").append(
                         tracksIntersectingSegments.size())
                 .append(", tracksCrossingSegmentsCount=").append(
@@ -127,9 +130,31 @@ public class IntersectionScore {
     }
 
     /**
+     * Temporary method to provide a summary TrackScore for the Intersections.
+     * 
+     * Just grabs the first one or returns null -- we're only paying attention
+     * to single track recommendations at this time (Sept 2015).
+     * 
+     * @return
+     */
+    public TrackScore fetchBestTrackScore() {
+        for (Entry<SimpleFeature, TrackScore> entry : allTracks.entrySet()) {
+            return fetchTrackScore(entry.getKey());
+        }
+        return null;
+    }
+
+    /**
      * @return
      */
     public List<Segment> getIntersectingSegments(SimpleFeature track) {
         return fetchTrackScore(track).getIntersectingSegments();
+    }
+
+    /**
+     * @return
+     */
+    public Segment getBestSegment() {
+        return fetchBestTrackScore().getBestSegment();
     }
 }

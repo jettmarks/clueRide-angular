@@ -312,4 +312,12 @@ public class DefaultGeoNode implements GeoNode {
     public boolean hasProposedSegment() {
         return (this.proposedSegment != null);
     }
+
+    /**
+     * @see com.clueride.domain.GeoNode#addScoredNode(com.clueride.domain.GeoNode)
+     */
+    @Override
+    public void addScoredNode(GeoNode proposedNode) {
+        this.nearByNodes.add(proposedNode);
+    }
 }
