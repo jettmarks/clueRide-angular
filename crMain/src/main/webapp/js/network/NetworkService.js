@@ -27,7 +27,7 @@ module
 				            style: {
 				                opacity: 0.7,
 				                color: '#030',
-				                weight: 4,
+				                weight: 4
 				            },
 				            onEachFeature: function (feature, layer) {
 				                layer.on('click', function (e){

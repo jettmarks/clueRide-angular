@@ -330,12 +330,12 @@ public class DefaultNetwork implements Network {
         // Now to see if we intersect the network, and if so, at what point
         // intersectionScore will hold the interesting segment for us to search.
         Segment bestSegment = intersectionScore.getBestSegment();
-        List<Segment> networkSegment = intersectionScore
-                .getIntersectingSegments(candidateTrackFeature);
-        if (networkSegment.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Expected to have intersected the network");
-        }
+        // List<Segment> networkSegment = intersectionScore
+        // .getIntersectingSegments(candidateTrackFeature);
+        // if (networkSegment.isEmpty()) {
+        // throw new IllegalArgumentException(
+        // "Expected to have intersected the network");
+        // }
         // LineString lineString = (LineString) TranslateUtil.segmentToFeature(
         // networkSegment.get(0)).getDefaultGeometry();
         LineString lineString = (LineString) TranslateUtil
@@ -581,7 +581,7 @@ public class DefaultNetwork implements Network {
         featureCollection = TranslateUtil
                 .segmentsToFeatureCollection(allSegments);
         refresh();
-        return "{status: 'OK'}";
+        return "{\"status\": \"OK\"}";
     }
 
     /**

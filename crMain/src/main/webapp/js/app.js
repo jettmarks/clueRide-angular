@@ -140,8 +140,10 @@ crNetEdit.controller("AppController", [
 	                        layer.on('click', function(e) {
 	                            console.log("Selecting the recommended Segment");
 	                            LocResource.confirm({}, function (confirmResponse) {
-	                                if (confirmResponse.status === 'OK') {
-	                                    alert("Changes accepted");
+	                                var response = {};
+	                                angular.extend(response, confirmResponse);
+	                                if (response.status === 'OK') {
+//	                                    alert("Changes accepted");
 	                                    NetworkRefresh.refresh();
 	                                } else {
 	                                    alert("Sorry, problem on the server");
