@@ -25,12 +25,14 @@ import java.util.Map.Entry;
 
 import org.opengis.feature.simple.SimpleFeature;
 
+import com.clueride.config.GeoProperties;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.NodeFactory;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.geo.LengthToPoint;
+import com.clueride.geo.SplitLineString;
 import com.clueride.geo.TranslateUtil;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
@@ -179,21 +181,41 @@ public class TrackScore {
      * First cut at this is to follow the track from the node to the segment and
      * add up the distance.
      * 
+     * Trouble spot is knowing which direction to go and whether or not the
+     * track has to be reversed.
+     * 
+     * More trouble occurs when each end of the track intersects the network; we
+     * only return a single score at this time; tossing a RuntimeException until
+     * I can get my head wrapped around this.
+     * 
      * @param segment
      * @return
+     * @throws RuntimeException
+     *             if both ends of the track connect to the network.
+     * 
+     *             TODO: We want to handle the situation where two end both
+     *             connect.
      */
-    private Double score(Segment segment) {
+    private Double score(Segment segment) throws RuntimeException {
         Double distance = 0.0;
-        // Walk the track up to the segment and if this isn't a node, add it
-        // as a proposed node.
+        // TODO: we don't need to split the track every time we score a
+        // "segment"
+
+        // Walk each end of the track up to the segment and if this isn't a
+        // node, add it as a proposed node.
         LineString trackLineString = (LineString) track.getDefaultGeometry();
-        LineString segmentLineString = (LineString) TranslateUtil
-                .segmentToFeature(segment).getDefaultGeometry();
+        SplitLineString splitLineString = new SplitLineString(trackLineString,
+                subjectGeoNode);
+        LineString segmentLineString = TranslateUtil
+                .segmentToLineString(segment);
+
+        // TODO: Split into pair and check each of these
         Coordinate coordinateIntersection = null;
         for (Coordinate coordinate : trackLineString.getCoordinates()) {
             Point point = PointFactory.getJtsInstance(coordinate.y,
                     coordinate.x, coordinate.z);
-            if (segmentLineString.buffer(0.00007).covers(point)) {
+            if (segmentLineString.buffer(GeoProperties.BUFFER_TOLERANCE)
+                    .covers(point)) {
                 GeoNode newGeoNode = NodeFactory.getInstance(point);
                 coordinateIntersection = coordinate;
                 nodeProposals.add(newGeoNode);

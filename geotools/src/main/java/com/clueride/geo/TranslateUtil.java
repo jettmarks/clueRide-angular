@@ -386,4 +386,14 @@ public class TranslateUtil {
         return features;
     }
 
+    /**
+     * Extracts the feature and geometry (which is a LineString) from a Segment.
+     * 
+     * @param segment
+     * @return LineString corresponding to the Segment.
+     */
+    public static LineString segmentToLineString(Segment segment) {
+        return (LineString) segmentToFeature(segment).getDefaultGeometry();
+    }
+
 }

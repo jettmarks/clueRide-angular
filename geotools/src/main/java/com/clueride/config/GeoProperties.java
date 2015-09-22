@@ -21,13 +21,19 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 /**
- * Description.
+ * Mix of configured constants and hardcoded constants until I see a reason to
+ * break this out further.
  *
  * @author jett
  *
  */
 public class GeoProperties extends Properties {
+    /**  */
+    private static final long serialVersionUID = 3618933981252565451L;
+
     static GeoProperties instance = new GeoProperties();
+
+    public static final double BUFFER_TOLERANCE = 0.00007;
 
     static {
         instance.put("group.radius", 50.0);
