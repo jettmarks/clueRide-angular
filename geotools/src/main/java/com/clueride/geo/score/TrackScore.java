@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.inject.Inject;
+
+import org.apache.log4j.Logger;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.config.GeoProperties;
@@ -54,6 +57,8 @@ import com.vividsolutions.jts.geom.Polygon;
  *
  */
 public class TrackScore {
+    private static final Logger logger = Logger.getLogger(TrackScore.class);
+
     private SimpleFeature track;
     private GeoNode subjectGeoNode;
 
@@ -62,9 +67,6 @@ public class TrackScore {
     private List<Segment> intersectingSegments = new ArrayList<>();
 
     /** Lowest score is best. */
-    private double scoreOverall = Double.MAX_VALUE;
-    private double scoreTowardStart = Double.MAX_VALUE;
-    private double scoreTowardEnd = Double.MAX_VALUE;
     private GeoNode proposedNode = null;
     private static List<GeoNode> nodeProposals = new ArrayList<>();
     private Segment bestSegment = null;
@@ -74,6 +76,7 @@ public class TrackScore {
     private static final Map<Integer, Segment> segmentIndex = new HashMap<>();
     private static final Map<Integer, SubTrackScore> scorePerSegment = new HashMap<>();
 
+    @Inject
     public TrackScore(SimpleFeature track, GeoNode geoNode) {
         this.track = track;
         this.subjectGeoNode = geoNode;
@@ -174,6 +177,7 @@ public class TrackScore {
         SubTrackScore selectedScore;
         // TODO: Handle returning both segments
         if (lowScoreTowardStart.hasScore() && lowScoreTowardEnd.hasScore()) {
+            logger.info("Found two intersections with the network");
             // Choose between the two
             selectedScore = (lowScoreTowardStart.getScore() < lowScoreTowardEnd
                     .getScore()) ?
@@ -186,7 +190,7 @@ public class TrackScore {
             throw new RuntimeException(
                     "Didn't find any intersecting/crossing nodes");
         }
-        System.out.println("Low Score Segment: "
+        logger.info("Low Score Segment: "
                 + selectedScore.getBestSegment().getSegId());
         proposedNode = selectedScore.getBestNode();
         return allSegments.size();
@@ -201,7 +205,7 @@ public class TrackScore {
      * @param
      * @return
      */
-    public SubTrackScore proposeBestScore(LineString subTrackLineString,
+    SubTrackScore proposeBestScore(LineString subTrackLineString,
             List<Segment> allSegments) {
         GeoNode lowScoreNode = null;
         double score = Double.MAX_VALUE;
@@ -233,7 +237,7 @@ public class TrackScore {
      *            - the subTrack to be scored.
      * @return SubTrackScore representing the node, segment and score.
      */
-    private SubTrackScore score(Segment segment, LineString subTrackLineString)
+    SubTrackScore score(Segment segment, LineString subTrackLineString)
             throws RuntimeException {
 
         // Walk this subTrack up to the segment and if this isn't a
