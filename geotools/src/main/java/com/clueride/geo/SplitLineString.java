@@ -17,6 +17,8 @@
  */
 package com.clueride.geo;
 
+import org.opengis.feature.simple.SimpleFeature;
+
 import com.clueride.domain.GeoNode;
 import com.google.inject.Inject;
 import com.vividsolutions.jts.geom.LineString;
@@ -39,6 +41,14 @@ public final class SplitLineString {
                 .getPoint().getCoordinate(), true);
         toStart = (LineString) lineStringPair[0].reverse();
         toEnd = lineStringPair[1];
+    }
+
+    /**
+     * @param track
+     * @param geoNode
+     */
+    public SplitLineString(SimpleFeature track, GeoNode geoNode) {
+        this((LineString) track.getDefaultGeometry(), geoNode);
     }
 
     public LineString getLineStringToStart() {

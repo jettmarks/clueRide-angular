@@ -25,6 +25,7 @@ import org.geotools.geometry.text.WKTParser;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.geometry.DirectPosition;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -71,5 +72,15 @@ public class PointFactory {
         DirectPosition position = point.getDirectPosition();
         return getJtsInstance(position.getOrdinate(1), position.getOrdinate(0),
                 position.getOrdinate(2));
+    }
+
+    /**
+     * Accepts a Coordinate and returns a Point.
+     * 
+     * @param coordinate
+     * @return
+     */
+    public static Point getInstance(Coordinate coordinate) {
+        return getJtsInstance(coordinate.y, coordinate.x, coordinate.z);
     }
 }

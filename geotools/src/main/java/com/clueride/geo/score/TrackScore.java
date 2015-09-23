@@ -37,6 +37,7 @@ import com.clueride.geo.TranslateUtil;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * For a given Track, score how well it provides a connection between a proposed
@@ -61,17 +62,22 @@ public class TrackScore {
     private List<Segment> intersectingSegments = new ArrayList<>();
 
     /** Lowest score is best. */
-    private double score = Double.MAX_VALUE;
+    private double scoreOverall = Double.MAX_VALUE;
+    private double scoreTowardStart = Double.MAX_VALUE;
+    private double scoreTowardEnd = Double.MAX_VALUE;
     private GeoNode proposedNode = null;
     private static List<GeoNode> nodeProposals = new ArrayList<>();
     private Segment bestSegment = null;
 
+    // Holds the two pieces from the node out to each end of the track
+    private final SplitLineString splitLineString;
     private static final Map<Integer, Segment> segmentIndex = new HashMap<>();
-    private static final Map<Integer, Double> scorePerSegment = new HashMap<>();
+    private static final Map<Integer, SubTrackScore> scorePerSegment = new HashMap<>();
 
     public TrackScore(SimpleFeature track, GeoNode geoNode) {
         this.track = track;
         this.subjectGeoNode = geoNode;
+        splitLineString = new SplitLineString(track, geoNode);
     }
 
     /**
@@ -137,44 +143,77 @@ public class TrackScore {
     /**
      * Laziness: re-index everything when the caller wants it to be re-indexed.
      * 
+     * TODO: Lump the two sets of segments together for this evaluation; we only
+     * need to treat them different in the case we might have trouble finding a
+     * node to represent the intersection for crossing segments.
+     * 
      * @return
      */
     public int refreshIndices() {
         segmentIndex.clear();
         scorePerSegment.clear();
         nodeProposals.clear();
-        GeoNode lowScoreNode = null;
-        Integer lowScoreSegId = null;
 
-        int segCount = 0;
-        Double calculatedScore = Double.MAX_VALUE;
-        for (Segment segment : intersectingSegments) {
-            segmentIndex.put(segment.getSegId(), segment);
-            calculatedScore = score(segment);
-            if (calculatedScore < score) {
-                score = calculatedScore;
-                lowScoreNode = proposedNode;
-                lowScoreSegId = segment.getSegId();
+        // Bundle all segments into a list
+        List<Segment> allSegments = new ArrayList<>(intersectingSegments);
+        allSegments.addAll(crossingSegments);
+
+        // TODO: Come back to these later
+        // segmentIndex.put(segment.getSegId(), segment);
+        // scorePerSegment.put(segment.getSegId(), calculatedScore);
+
+        SubTrackScore lowScoreTowardStart = proposeBestScore(
+                splitLineString.getLineStringToStart(), allSegments);
+        SubTrackScore lowScoreTowardEnd = proposeBestScore(
+                splitLineString.getLineStringToEnd(), allSegments);
+
+        // Have one score if we found something on one end, but two if there
+        // were segments on both ends. We choose the closer one to recommend
+        // first.
+
+        SubTrackScore selectedScore;
+        // TODO: Handle returning both segments
+        if (lowScoreTowardStart.hasScore() && lowScoreTowardEnd.hasScore()) {
+            // Choose between the two
+            selectedScore = (lowScoreTowardStart.getScore() < lowScoreTowardEnd
+                    .getScore()) ?
+                    lowScoreTowardStart : lowScoreTowardEnd;
+        } else if (lowScoreTowardStart.hasScore()) {
+            selectedScore = lowScoreTowardStart;
+        } else if (lowScoreTowardEnd.hasScore()) {
+            selectedScore = lowScoreTowardEnd;
+        } else {
+            throw new RuntimeException(
+                    "Didn't find any intersecting/crossing nodes");
+        }
+        System.out.println("Low Score Segment: "
+                + selectedScore.getBestSegment().getSegId());
+        proposedNode = selectedScore.getBestNode();
+        return allSegments.size();
+    }
+
+    /**
+     * For a given subTrack, run through the list of segments to score and
+     * record any nodes we might want to create.
+     * 
+     * @param allSegments
+     *            - list of segments to run through.
+     * @param
+     * @return
+     */
+    public SubTrackScore proposeBestScore(LineString subTrackLineString,
+            List<Segment> allSegments) {
+        GeoNode lowScoreNode = null;
+        double score = Double.MAX_VALUE;
+        for (Segment segment : allSegments) {
+            SubTrackScore calculatedScore = score(segment, subTrackLineString);
+            if (calculatedScore.getScore() < score) {
+                score = calculatedScore.getScore();
+                lowScoreNode = calculatedScore.getBestNode();
                 bestSegment = segment;
             }
-            scorePerSegment.put(segment.getSegId(), calculatedScore);
-            segCount++;
         }
-        for (Segment segment : crossingSegments) {
-            segmentIndex.put(segment.getSegId(), segment);
-            calculatedScore = score(segment);
-            if (calculatedScore < score) {
-                score = calculatedScore;
-                lowScoreNode = proposedNode;
-                lowScoreSegId = segment.getSegId();
-                bestSegment = segment;
-            }
-            scorePerSegment.put(segment.getSegId(), calculatedScore);
-            segCount++;
-        }
-        System.out.println("Low Score Segment: " + lowScoreSegId);
-        proposedNode = lowScoreNode;
-        return segCount;
+        return new SubTrackScore(bestSegment, lowScoreNode, score);
     }
 
     /**
@@ -189,43 +228,41 @@ public class TrackScore {
      * I can get my head wrapped around this.
      * 
      * @param segment
-     * @return
-     * @throws RuntimeException
-     *             if both ends of the track connect to the network.
-     * 
-     *             TODO: We want to handle the situation where two end both
-     *             connect.
+     *            - the existing network segment to evaluate.
+     * @param lineString
+     *            - the subTrack to be scored.
+     * @return SubTrackScore representing the node, segment and score.
      */
-    private Double score(Segment segment) throws RuntimeException {
-        Double distance = 0.0;
-        // TODO: we don't need to split the track every time we score a
-        // "segment"
+    private SubTrackScore score(Segment segment, LineString subTrackLineString)
+            throws RuntimeException {
 
-        // Walk each end of the track up to the segment and if this isn't a
+        // Walk this subTrack up to the segment and if this isn't a
         // node, add it as a proposed node.
-        LineString trackLineString = (LineString) track.getDefaultGeometry();
-        SplitLineString splitLineString = new SplitLineString(trackLineString,
-                subjectGeoNode);
         LineString segmentLineString = TranslateUtil
                 .segmentToLineString(segment);
 
-        // TODO: Split into pair and check each of these
         Coordinate coordinateIntersection = null;
-        for (Coordinate coordinate : trackLineString.getCoordinates()) {
-            Point point = PointFactory.getJtsInstance(coordinate.y,
-                    coordinate.x, coordinate.z);
-            if (segmentLineString.buffer(GeoProperties.BUFFER_TOLERANCE)
-                    .covers(point)) {
-                GeoNode newGeoNode = NodeFactory.getInstance(point);
+        GeoNode newGeoNode = null;
+        Double distance = Double.MAX_VALUE;
+        Polygon segmentWithBuffer = (Polygon) segmentLineString
+                .buffer(GeoProperties.BUFFER_TOLERANCE);
+
+        boolean foundIntersection = false;
+        for (Coordinate coordinate : subTrackLineString.getCoordinates()) {
+            Point point = PointFactory.getInstance(coordinate);
+            if (segmentWithBuffer.covers(point)) {
+                newGeoNode = NodeFactory.getInstance(point);
                 coordinateIntersection = coordinate;
                 nodeProposals.add(newGeoNode);
-                proposedNode = newGeoNode;
+                foundIntersection = true;
                 break;
             }
         }
-        distance = LengthToPoint
-                .length(trackLineString, coordinateIntersection);
-        return distance;
+        if (foundIntersection) {
+            distance = LengthToPoint
+                    .length(subTrackLineString, coordinateIntersection);
+        }
+        return new SubTrackScore(segment, newGeoNode, distance);
     }
 
     /**
@@ -239,9 +276,51 @@ public class TrackScore {
                 + "]";
     }
 
+    private class SubTrackScore {
+        private final Segment bestSegment;
+        private GeoNode bestNode = null;
+        private final double score;
+
+        public SubTrackScore(Segment bestSegment, GeoNode bestNode, double score) {
+            this.bestSegment = bestSegment;
+            this.bestNode = bestNode;
+            this.score = score;
+        }
+
+        /**
+         * @return
+         */
+        public boolean hasScore() {
+            // TODO: handle this better - null vs. final
+            return (bestNode != null);
+        }
+
+        /**
+         * @return the bestSegment
+         */
+        public Segment getBestSegment() {
+            return bestSegment;
+        }
+
+        /**
+         * @return the bestNode
+         */
+        public GeoNode getBestNode() {
+            return bestNode;
+        }
+
+        /**
+         * @return the score
+         */
+        public double getScore() {
+            return score;
+        }
+
+    }
+
     public String dumpScores() {
         StringBuffer buffer = new StringBuffer();
-        for (Entry<Integer, Double> entry : scorePerSegment.entrySet()) {
+        for (Entry<Integer, SubTrackScore> entry : scorePerSegment.entrySet()) {
             buffer.append("ID: ").append(entry.getKey())
                     .append(" Score: ").append(entry.getValue()).append("\n");
         }
