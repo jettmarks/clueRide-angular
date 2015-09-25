@@ -227,9 +227,10 @@ public class TrackScore {
      * Trouble spot is knowing which direction to go and whether or not the
      * track has to be reversed.
      * 
-     * More trouble occurs when each end of the track intersects the network; we
-     * only return a single score at this time; tossing a RuntimeException until
-     * I can get my head wrapped around this.
+     * Another trouble spot for this method is two segments that cross, but the
+     * points are not within the tolerance. The incoming subTrack should be
+     * prepared to cross the segments with a coordinate within the tolerance at
+     * the point of intersection. The existing segment will cover that point.
      * 
      * @param segment
      *            - the existing network segment to evaluate.
@@ -278,48 +279,6 @@ public class TrackScore {
                 + getIntersectingSegmentCount()
                 + ", getCrossingSegmentCount()=" + getCrossingSegmentCount()
                 + "]";
-    }
-
-    private class SubTrackScore {
-        private final Segment bestSegment;
-        private GeoNode bestNode = null;
-        private final double score;
-
-        public SubTrackScore(Segment bestSegment, GeoNode bestNode, double score) {
-            this.bestSegment = bestSegment;
-            this.bestNode = bestNode;
-            this.score = score;
-        }
-
-        /**
-         * @return
-         */
-        public boolean hasScore() {
-            // TODO: handle this better - null vs. final
-            return (bestNode != null);
-        }
-
-        /**
-         * @return the bestSegment
-         */
-        public Segment getBestSegment() {
-            return bestSegment;
-        }
-
-        /**
-         * @return the bestNode
-         */
-        public GeoNode getBestNode() {
-            return bestNode;
-        }
-
-        /**
-         * @return the score
-         */
-        public double getScore() {
-            return score;
-        }
-
     }
 
     public String dumpScores() {
