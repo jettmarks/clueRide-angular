@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>50</x>
+      <y>40</y>
+      <w>190</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>IntersectionScore
+--
+Map&lt;Track, TrackScore&gt;</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
