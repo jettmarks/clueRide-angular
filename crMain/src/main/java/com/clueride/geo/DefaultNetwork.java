@@ -247,6 +247,7 @@ public class DefaultNetwork implements Network {
             } else if (tracksFound > 1) {
                 geoNode.setState(NodeNetworkState.ON_MULTI_TRACK);
                 logger.info(geoNode);
+                proposeSegmentFromTrack(geoNode, intersectionScore);
             } else {
                 geoNode.setState(NodeNetworkState.OFF_NETWORK);
                 logger.info(geoNode);
@@ -262,6 +263,7 @@ public class DefaultNetwork implements Network {
      * At this time, we only clear the selected nodes. There may be more later.
      */
     private void clearEvaluationState() {
+        // TODO: move this toward the NetworkProposal
         for (GeoNode node : nodeSet) {
             node.setSelected(false);
         }
@@ -303,13 +305,7 @@ public class DefaultNetwork implements Network {
             IntersectionScore intersectionScore) {
         logger.info("start - proposeSegmentFromTrack()");
 
-        // Validate we've just got a single track
-        if (geoNode.getTrackCount() != 1) {
-            throw new IllegalArgumentException(
-                    "Expected Node to have exactly one candidate Track");
-        }
-
-        // Pick out that track and best node
+        // Pick out best track and best node
         TrackScore trackScore = intersectionScore.fetchBestTrackScore();
         trackScore.refreshIndices();
         System.out.println(trackScore.dumpScores());
@@ -334,14 +330,6 @@ public class DefaultNetwork implements Network {
         // Now to see if we intersect the network, and if so, at what point
         // intersectionScore will hold the interesting segment for us to search.
         Segment bestSegment = intersectionScore.getBestSegment();
-        // List<Segment> networkSegment = intersectionScore
-        // .getIntersectingSegments(candidateTrackFeature);
-        // if (networkSegment.isEmpty()) {
-        // throw new IllegalArgumentException(
-        // "Expected to have intersected the network");
-        // }
-        // LineString lineString = (LineString) TranslateUtil.segmentToFeature(
-        // networkSegment.get(0)).getDefaultGeometry();
         LineString lineString = (LineString) TranslateUtil
                 .segmentToFeature(bestSegment).getDefaultGeometry();
         findIntersectingNode(lineStringToStart, nodesToMeasure, bestSegment,
@@ -530,7 +518,7 @@ public class DefaultNetwork implements Network {
                     System.out.println(" Crosses");
                     LineString intersectingTrackLineString = crossingTrackToIntersectingTrack(
                             geoNode, lineString, segmentLineString);
-                    score.addCrossingTrack(track, segment);
+                    // score.addCrossingTrack(track, segment);
                     // TODO: simplify this
                     score.addIntersectingTrack(
                             TranslateUtil
