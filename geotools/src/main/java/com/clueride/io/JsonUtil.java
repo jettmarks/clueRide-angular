@@ -34,6 +34,7 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.GeoNode;
 import com.clueride.geo.TranslateUtil;
+import com.vividsolutions.jts.geom.LineString;
 
 /**
  * Utility for working with the file-based JSON datastore.
@@ -231,6 +232,16 @@ public class JsonUtil {
         DefaultFeatureCollection features = TranslateUtil
                 .featureListToCollection(featureList);
         return toString(features);
+    }
+
+    /**
+     * @param lineString
+     * @return
+     */
+    public static String toString(LineString lineString) {
+        // TODO: we could probably instantiate this once and synchronize
+        GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
+        return geometryJson.toString(lineString);
     }
 
 }

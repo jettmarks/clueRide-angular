@@ -19,6 +19,7 @@ package com.clueride.geo;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -55,6 +56,9 @@ import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 import com.clueride.poc.geotools.TrackStore;
 import com.clueride.service.SegmentService;
+import com.vividsolutions.jts.algorithm.LineIntersector;
+import com.vividsolutions.jts.algorithm.RobustLineIntersector;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
@@ -479,6 +483,9 @@ public class DefaultNetwork implements Network {
      * If we find matching tracks, record the segments/nodes where the
      * intersection occurs to avoid having to perform another search later.
      * 
+     * If the track is a crossing track, modify the track so it becomes an
+     * intersecting track -- insert the point into the track.
+     * 
      * @param geoNode
      */
     private IntersectionScore findMatchingTracks(GeoNode geoNode) {
@@ -494,6 +501,7 @@ public class DefaultNetwork implements Network {
 
             // Check our list of nodes
             for (GeoNode node : geoNode.getNearByNodes()) {
+                // TODO: Move this out to config/constants
                 if (lineString.buffer(0.00001).covers(node.getPoint())) {
                     score.addTrackConnectingNode(track, node);
                     keepTrack = true;
@@ -521,9 +529,17 @@ public class DefaultNetwork implements Network {
                         + " of length "
                         + segmentLineString.getNumPoints());
                 if (segmentLineString.crosses(lineString)) {
-                    score.addCrossingTrack(track, segment);
-                    keepTrack = true;
                     System.out.println(" Crosses");
+                    LineString intersectingTrackLineString = crossingTrackToIntersectingTrack(
+                            geoNode, lineString, segmentLineString);
+                    score.addCrossingTrack(track, segment);
+                    // TODO: simplify this
+                    score.addIntersectingTrack(
+                            TranslateUtil
+                                    .segmentToFeature(TranslateUtil
+                                            .lineStringToSegment(intersectingTrackLineString)),
+                            segment);
+                    keepTrack = true;
                 } else if (segmentLineString.intersects(lineString)) {
                     score.addIntersectingTrack(track, segment);
                     keepTrack = true;
@@ -539,6 +555,118 @@ public class DefaultNetwork implements Network {
         }
         logger.info(score);
         return score;
+    }
+
+    /**
+     * Accepts the business objects SimpleFeature (wrapping LineString Geometry)
+     * and a Segment (also wrapping a LineString Geometry) which have been
+     * confirmed to *cross* each other, and will insert the intersecting point
+     * into the SimpleFeature's geometry to come up with an intersecting pair.
+     * 
+     * There are a number of ways to do this. The approach taken here is to walk
+     * the track and chop off leading points until we find a remaining
+     * LineString that no longer crosses the segment. That last pair of
+     * coordinates will be one of the line segments that we hold onto for a
+     * subsequent step of determining the crossing point.
+     * 
+     * Then, based on the boundary of that line segment, we look at points on
+     * the Segment which lie within the boundary. If we don't have at least two,
+     * we increase the size of the boundary until we do have two. If we have
+     * more than two, we walk those points using the same crossing algorithm.
+     * 
+     * At this point, we should have two line segments, each consisting of a
+     * single pair of coordinates. Those four coordinates are what is passed to
+     * the LineIntesector tool. That tool can provide us with the point where
+     * the two line segments cross, and thus the point that we're looking for.
+     * 
+     * Once we have that point, we insert it into the track at the appropriate
+     * point, and then test that the track and segment are intersecting.
+     * 
+     * @param geoNode
+     *            - Location which we're attempting to connect to the network
+     * @param track
+     *            - SimpleFeature representing the track we've already
+     *            determined crosses the network segment.
+     * @param segment
+     *            - Segment which is already part of the network.
+     * @return SimpleFeature - wrapping a LineString that holds the original
+     *         track with the intersecting point inserted.
+     */
+    private LineString crossingTrackToIntersectingTrack(GeoNode geoNode,
+            LineString trackLineString,
+            LineString segmentLineString) {
+
+        // Obtain the underlying LineStrings
+        SplitLineString splitPair = new SplitLineString(trackLineString,
+                geoNode);
+
+        LineString segmentCrossingSubLineString;
+
+        LineString workingLineString;
+        if (splitPair.getLineStringToStart().crosses(segmentLineString)) {
+            workingLineString = splitPair.getLineStringToStart();
+        } else if (splitPair.getLineStringToEnd().crosses(segmentLineString)) {
+            workingLineString = splitPair.getLineStringToEnd();
+        } else {
+            throw new RuntimeException("Unexpected that track doesn't cross");
+        }
+
+        int trackIndex = IntersectionUtil.findCrossingIndex(workingLineString,
+                segmentLineString);
+        LineString trackPiece = IntersectionUtil.retrieveCrossingPair(
+                workingLineString, trackIndex);
+        LineString segmentPiece = IntersectionUtil.findCrossingPair(
+                segmentLineString,
+                trackPiece);
+
+        // Now we have two 2-point LineStrings which we can pass to the
+        // LineIntersector
+
+        LineIntersector lineIntersector = new RobustLineIntersector();
+        lineIntersector.computeIntersection(
+                trackPiece.getStartPoint().getCoordinate(),
+                trackPiece.getEndPoint().getCoordinate(),
+                segmentPiece.getStartPoint().getCoordinate(),
+                segmentPiece.getEndPoint().getCoordinate()
+                );
+        System.out.println(trackPiece);
+        System.out.println(segmentPiece);
+
+        Coordinate intersect = lineIntersector.getIntersection(0);
+        System.out.println("Intersection at " + intersect);
+
+        Coordinate[] originalCoordinates = workingLineString.getCoordinates();
+        List<Coordinate> reconstructionCoordinates = new ArrayList<>();
+        reconstructionCoordinates.addAll(Arrays.asList(Arrays.copyOfRange(
+                originalCoordinates, 0, trackIndex)));
+        reconstructionCoordinates.add(intersect);
+        reconstructionCoordinates.addAll(Arrays.asList(Arrays.copyOfRange(
+                originalCoordinates, trackIndex, originalCoordinates.length)));
+
+        // Check lengths; should be one point longer than before
+        int lengthDiff = reconstructionCoordinates.size()
+                - originalCoordinates.length;
+        System.out.println("Difference in length is " + lengthDiff);
+
+        Coordinate[] coord = new Coordinate[reconstructionCoordinates.size()];
+        reconstructionCoordinates.toArray(coord);
+
+        LineString reconstructedLineString = segmentLineString.getFactory()
+                .createLineString(coord);
+
+        // Check that the intersection now occurs
+
+        return reconstructedLineString;
+    }
+
+    /**
+     * @param reconstructionCoordinates
+     */
+    private void dumpCoordinates(List<Coordinate> coordinates) {
+        int i = 0;
+        for (Coordinate coordinate : coordinates) {
+            System.out.println(i++ + ": " + coordinate);
+        }
     }
 
     /**
