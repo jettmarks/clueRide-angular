@@ -46,4 +46,9 @@ public class GeoProperties extends Properties {
     public static Hashtable<Object, Object> getInstance() {
         return instance;
     }
+
+    /**
+     * 
+     */
+    public static final double NODE_TOLERANCE = 0.00001;
 }
