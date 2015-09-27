@@ -501,8 +501,8 @@ public class DefaultNetwork implements Network {
 
             // Check our list of nodes
             for (GeoNode node : geoNode.getNearByNodes()) {
-                // TODO: Move this out to config/constants
-                if (lineString.buffer(0.00001).covers(node.getPoint())) {
+                if (lineString.buffer(GeoProperties.NODE_TOLERANCE).covers(
+                        node.getPoint())) {
                     score.addTrackConnectingNode(track, node);
                     keepTrack = true;
                 }
