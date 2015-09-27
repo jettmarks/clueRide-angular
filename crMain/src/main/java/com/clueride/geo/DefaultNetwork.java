@@ -138,8 +138,6 @@ public class DefaultNetwork implements Network {
      * process that checks the endpoints against the LocationStore's idea of our
      * node set.
      * 
-     * TODO: Persist the segments with at least the Node IDs so they can be more
-     * easily verified. This is a move toward how we'll be persisting in the DB.
      */
     private void init() {
         nodeSet = locationStore.getLocations();
@@ -743,6 +741,8 @@ public class DefaultNetwork implements Network {
      * 
      * We'll also be interested in a similar algorithm with Tracks and the
      * intersection of those tracks with nearby segments containing the nodes.
+     * 
+     * TODO: Prepare nearest nodes instead of all of them.
      * 
      * @param geoNode
      */
