@@ -85,7 +85,7 @@ public class DefaultNetwork implements Network {
     private LocationStore locationStore;
     private TrackStore trackStore;
 
-    private static Logger logger = Logger.getLogger(DefaultNetwork.class);
+    private static final Logger LOGGER = Logger.getLogger(DefaultNetwork.class);
 
     /**
      * @param defaultFeatureCollection
@@ -153,7 +153,7 @@ public class DefaultNetwork implements Network {
             verifyNodeIdAssignment((GeoNode) segment.getStart());
             verifyNodeIdAssignment((GeoNode) segment.getEnd());
         }
-        logger.debug("Initialized : " + this);
+        LOGGER.debug("Initialized : " + this);
     }
 
     /**
@@ -164,7 +164,7 @@ public class DefaultNetwork implements Network {
         if (nodeId > 0) {
             endPointNode.setId(nodeId);
         } else {
-            logger.error("Node " + endPointNode
+            LOGGER.error("Node " + endPointNode
                     + " doesn't match stored list of nodes");
         }
     }
@@ -223,7 +223,7 @@ public class DefaultNetwork implements Network {
      */
     @Override
     public NodeNetworkState evaluateNodeState(GeoNode geoNode) {
-        logger.debug("start - evaluateNodeState()");
+        LOGGER.debug("start - evaluateNodeState()");
         // First Step is to clear any previous state that may have been
         // recorded.
         clearEvaluationState();
@@ -242,15 +242,15 @@ public class DefaultNetwork implements Network {
             int tracksFound = intersectionScore.getTrackCount();
             if (tracksFound == 1) {
                 geoNode.setState(NodeNetworkState.ON_SINGLE_TRACK);
-                logger.info(geoNode);
+                LOGGER.info(geoNode);
                 proposeSegmentFromTrack(geoNode, intersectionScore);
             } else if (tracksFound > 1) {
                 geoNode.setState(NodeNetworkState.ON_MULTI_TRACK);
-                logger.info(geoNode);
+                LOGGER.info(geoNode);
                 proposeSegmentFromTrack(geoNode, intersectionScore);
             } else {
                 geoNode.setState(NodeNetworkState.OFF_NETWORK);
-                logger.info(geoNode);
+                LOGGER.info(geoNode);
             }
         }
         return geoNode.getState();
@@ -277,7 +277,7 @@ public class DefaultNetwork implements Network {
     private NodeNetworkState recordState(GeoNode geoNode,
             NodeNetworkState state) {
         geoNode.setState(state);
-        logger.info(geoNode);
+        LOGGER.info(geoNode);
         return state;
     }
 
@@ -303,7 +303,7 @@ public class DefaultNetwork implements Network {
      */
     private void proposeSegmentFromTrack(GeoNode geoNode,
             IntersectionScore intersectionScore) {
-        logger.info("start - proposeSegmentFromTrack()");
+        LOGGER.info("start - proposeSegmentFromTrack()");
 
         // Pick out best track and best node
         TrackScore trackScore = intersectionScore.fetchBestTrackScore();
@@ -311,7 +311,7 @@ public class DefaultNetwork implements Network {
         System.out.println(trackScore.dumpScores());
         geoNode.addScoredNode(trackScore.getProposedNode());
         SimpleFeature candidateTrackFeature = geoNode.getTracks().get(0);
-        logger.info("Candidate Track: "
+        LOGGER.info("Candidate Track: "
                 + candidateTrackFeature.getAttribute("name"));
         LineString startingTrack = (LineString) geoNode.getTracks().get(0)
                 .getDefaultGeometry();
@@ -341,7 +341,7 @@ public class DefaultNetwork implements Network {
                 lineStringToStart, lineStringToEnd, nodesToMeasure);
 
         for (Entry<GeoNode, Double> entry : distanceToNode.entrySet()) {
-            logger.debug(entry.getKey().getId() + ": " + entry.getValue());
+            LOGGER.debug(entry.getKey().getId() + ": " + entry.getValue());
         }
 
         GeoNode selectedNode = null;
@@ -360,7 +360,7 @@ public class DefaultNetwork implements Network {
                 }
             }
         } else {
-            logger.error("Unexpected that the track would find no overlapping points");
+            LOGGER.error("Unexpected that the track would find no overlapping points");
             return;
         }
         geoNode.setSelectedNode(selectedNode);
@@ -377,7 +377,7 @@ public class DefaultNetwork implements Network {
             lsProposalForSegment = TranslateUtil.split(lineStringToEnd,
                     selectedNode.getPoint().getCoordinate(), true)[0];
         } else {
-            logger.error("Did not expect that neither segment was suitable");
+            LOGGER.error("Did not expect that neither segment was suitable");
             return;
         }
 
@@ -405,7 +405,7 @@ public class DefaultNetwork implements Network {
             LineString lineString) {
         if (subLineString.buffer(GeoProperties.BUFFER_TOLERANCE).intersects(
                 lineString)) {
-            logger.info("This side of the track intersects with segment "
+            LOGGER.info("This side of the track intersects with segment "
                     + bestSegment.getSegId());
             // We do intersect and can walk the lineString to find the node
             int numberPoints = subLineString.getNumPoints();
@@ -413,7 +413,7 @@ public class DefaultNetwork implements Network {
                 Point walkingPoint = subLineString.getPointN(p);
                 if (lineString.buffer(GeoProperties.BUFFER_TOLERANCE).covers(
                         walkingPoint)) {
-                    logger.info("We like point " + walkingPoint);
+                    LOGGER.info("We like point " + walkingPoint);
                     nodesToMeasure.add(NodeFactory
                             .getInstance(walkingPoint));
                     // Stop as soon as we find something interesting
@@ -452,7 +452,7 @@ public class DefaultNetwork implements Network {
                 node.getPoint())) {
             double distance = LengthToPoint.length(lineStringToStart, node
                     .getPoint().getCoordinate());
-            logger.debug("Node: " + node.getName()
+            LOGGER.debug("Node: " + node.getName()
                     + " at a distance of "
                     + distance);
             distanceToNode.put(node, distance);
@@ -475,7 +475,7 @@ public class DefaultNetwork implements Network {
      * @param geoNode
      */
     private IntersectionScore findMatchingTracks(GeoNode geoNode) {
-        logger.info("start - findMatchingTracks");
+        LOGGER.info("start - findMatchingTracks");
         IntersectionScore score = new IntersectionScore(geoNode);
         // Find tracks covering the input node
         List<SimpleFeature> candidateTracks = findTracksThroughNode(geoNode);
@@ -514,7 +514,13 @@ public class DefaultNetwork implements Network {
                         + " against Segment " + segment.getSegId()
                         + " of length "
                         + segmentLineString.getNumPoints());
-                if (segmentLineString.crosses(lineString)) {
+
+                // Test for Intersect (more restrictive) first - CRANG-13
+                if (segmentLineString.intersects(lineString)) {
+                    System.out.println(" Intersects");
+                    score.addIntersectingTrack(track, segment);
+                    keepTrack = true;
+                } else if (segmentLineString.crosses(lineString)) {
                     System.out.println(" Crosses");
                     LineString intersectingTrackLineString = crossingTrackToIntersectingTrack(
                             geoNode, lineString, segmentLineString);
@@ -526,10 +532,6 @@ public class DefaultNetwork implements Network {
                                             .lineStringToSegment(intersectingTrackLineString)),
                             segment);
                     keepTrack = true;
-                } else if (segmentLineString.intersects(lineString)) {
-                    score.addIntersectingTrack(track, segment);
-                    keepTrack = true;
-                    System.out.println(" Intersects");
                 } else {
                     System.out.println();
                 }
@@ -539,7 +541,7 @@ public class DefaultNetwork implements Network {
                 geoNode.addTrack(track);
             }
         }
-        logger.info(score);
+        LOGGER.info(score);
         return score;
     }
 
