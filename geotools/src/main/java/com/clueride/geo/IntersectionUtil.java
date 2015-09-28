@@ -19,6 +19,8 @@ package com.clueride.geo;
 
 import java.util.Arrays;
 
+import org.apache.log4j.Logger;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
@@ -31,6 +33,9 @@ import com.vividsolutions.jts.geom.LineString;
  * @author jett
  */
 public class IntersectionUtil {
+
+    private static final Logger LOGGER = Logger
+            .getLogger(IntersectionUtil.class);
 
     public static int findCrossingIndex(LineString inputLineString,
             LineString fixedLineString) {
@@ -87,8 +92,11 @@ public class IntersectionUtil {
     public static LineString findCrossingPair(LineString lineStringA,
             LineString lineStringB) {
         int indexOfCrossing = findCrossingIndex(lineStringA, lineStringB);
-        if (indexOfCrossing < 0)
+        if (indexOfCrossing < 0) {
+            LOGGER.error("Problematic LineStrings: \n  " + lineStringA + "\n  "
+                    + lineStringB);
             throw new RuntimeException("Crossing Index not found");
+        }
         return retrieveCrossingPair(lineStringA, indexOfCrossing);
     }
 
