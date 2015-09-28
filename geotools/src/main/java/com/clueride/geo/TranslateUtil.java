@@ -396,4 +396,15 @@ public class TranslateUtil {
         return (LineString) segmentToFeature(segment).getDefaultGeometry();
     }
 
+    /**
+     * Two hops from lineString to Segment, and then Segment to Feature.
+     * 
+     * @param intersectingTrackLineString
+     * @return
+     */
+    public static SimpleFeature lineStringToFeature(
+            LineString lineString) {
+        return segmentToFeature(lineStringToSegment(lineString));
+    }
+
 }

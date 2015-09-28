@@ -524,12 +524,8 @@ public class DefaultNetwork implements Network {
                     System.out.println(" Crosses");
                     LineString intersectingTrackLineString = crossingTrackToIntersectingTrack(
                             geoNode, lineString, segmentLineString);
-                    // score.addCrossingTrack(track, segment);
-                    // TODO: simplify this
-                    score.addIntersectingTrack(
-                            TranslateUtil
-                                    .segmentToFeature(TranslateUtil
-                                            .lineStringToSegment(intersectingTrackLineString)),
+                    score.addIntersectingTrack(TranslateUtil
+                            .lineStringToFeature(intersectingTrackLineString),
                             segment);
                     keepTrack = true;
                 } else {
