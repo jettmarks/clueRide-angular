@@ -17,6 +17,8 @@
  */
 package com.clueride.domain.dev.rec;
 
+import com.clueride.domain.dev.Segment;
+
 /**
  * Description.
  *
@@ -24,5 +26,5 @@ package com.clueride.domain.dev.rec;
  *
  */
 public interface OnSegment extends Rec {
-
+    Segment getSegment();
 }

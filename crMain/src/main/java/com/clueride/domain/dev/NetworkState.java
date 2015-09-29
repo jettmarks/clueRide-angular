@@ -19,6 +19,9 @@ package com.clueride.domain.dev;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.log4j.Logger;
 
 /**
  * Global spot for the NodeEvaluationStatus.
@@ -29,6 +32,8 @@ import java.util.Map;
  *
  */
 public class NetworkState {
+    private static final Logger LOGGER = Logger.getLogger(NetworkState.class);
+
     private static final Map<Integer, NodeEvaluationStatus> nodeEvaluationMap = new HashMap<>();
     private static Integer lastEvalId;
 
@@ -36,10 +41,23 @@ public class NetworkState {
         NodeEvaluationStatus nodeEvaluation = new NodeEvaluationStatus();
         nodeEvaluationMap.put(nodeEvaluation.getId(), nodeEvaluation);
         lastEvalId = nodeEvaluation.getId();
+        dumpMap();
         return nodeEvaluation;
     }
 
+    /**
+     * Provides some feedback on what is happening with the NetworkProposals.
+     */
+    private static void dumpMap() {
+        for (Entry<Integer, NodeEvaluationStatus> entry : nodeEvaluationMap
+                .entrySet()) {
+            LOGGER.info(entry.getKey() + ": " + entry.getValue());
+        }
+        LOGGER.info("LastEvalID: " + lastEvalId);
+    }
+
     public static NodeEvaluationStatus getLastNodeEvaluation() {
+        dumpMap();
         return nodeEvaluationMap.get(lastEvalId);
     }
 }

@@ -13,18 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Sep 27, 2015
+ * Created Sep 28, 2015
  */
 package com.clueride.domain.dev.rec;
 
-import com.clueride.domain.GeoNode;
-
 /**
- * Description.
+ * Represents the leaves of the class tree representing Network Recommendations.
  *
  * @author jett
  *
  */
-public interface OnNode extends Rec {
-    GeoNode getNetworkNode();
+public enum NetworkRecType {
+    UNDEFINED,
+    OFF_NETWORK,
+    ON_SEGMENT,
+    ON_NODE,
+    TRACK_TO_NODE,
+    TRACK_TO_SEGMENT,
+    TRACK_TO_SEGMENT_AND_NODE,
+    TRACK_TO_2_NODES,
+    TRACK_TO_2_SEGMENTS
+
 }

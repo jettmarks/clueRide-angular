@@ -13,18 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Sep 27, 2015
+ * Created Sep 28, 2015
  */
 package com.clueride.domain.dev.rec;
+
+import static com.clueride.domain.dev.rec.NetworkRecType.OFF_NETWORK;
 
 import com.clueride.domain.GeoNode;
 
 /**
- * Description.
- *
+ * Implementation which records that the requested node is not on the network
+ * and furthermore, we don't have a suitable Track in our catalog that is able
+ * to connect the node to the network.
+ * 
  * @author jett
- *
  */
-public interface OnNode extends Rec {
-    GeoNode getNetworkNode();
+public class OffNetworkImpl extends RecImpl implements OffNetwork {
+
+    /**
+     * @param requestedNode
+     */
+    public OffNetworkImpl(GeoNode requestedNode) {
+        super(requestedNode);
+    }
+
+    /**
+     * @see com.clueride.domain.dev.rec.NetworkRecImpl#getRecType()
+     */
+    @Override
+    public NetworkRecType getRecType() {
+        return OFF_NETWORK;
+    }
+
 }

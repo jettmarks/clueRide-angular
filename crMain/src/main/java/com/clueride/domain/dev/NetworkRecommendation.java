@@ -17,6 +17,8 @@
  */
 package com.clueride.domain.dev;
 
+import com.clueride.domain.dev.rec.NetworkRecType;
+
 /**
  * Holds information regarding one particular Recommendation within a Proposal.
  * 
@@ -30,4 +32,6 @@ public interface NetworkRecommendation {
     Integer getId();
 
     String getName();
+
+    NetworkRecType getRecType();
 }

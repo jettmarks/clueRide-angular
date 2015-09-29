@@ -106,4 +106,20 @@ public class NodeEvaluationStatus {
         return id;
     }
 
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("NodeEvaluationStatus [id=").append(id).append(
+                ", proposedSegmentFromTrack=").append(proposedSegmentFromTrack)
+                .append(", startNode=").append(startNode).append(", endNode=")
+                .append(endNode).append(", intersectedSegment=").append(
+                        intersectedSegment).append(", subSegmentA=").append(
+                        subSegmentA).append(", subSegmentB=").append(
+                        subSegmentB).append("]");
+        return builder.toString();
+    }
+
 }

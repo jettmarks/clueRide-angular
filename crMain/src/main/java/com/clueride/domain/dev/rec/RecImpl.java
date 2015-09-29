@@ -13,18 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Sep 27, 2015
+ * Created Sep 28, 2015
  */
 package com.clueride.domain.dev.rec;
 
 import com.clueride.domain.GeoNode;
 
 /**
- * Description.
+ * Implementation of a NetworkRecommendation based on a new Location, but since
+ * this is the primary one at this time, we're getting away with just calling it
+ * 'Rec' instead of 'NewLocRec'.
  *
  * @author jett
  *
  */
-public interface OnNode extends Rec {
-    GeoNode getNetworkNode();
+public class RecImpl extends NetworkRecImpl implements Rec {
+    private GeoNode newLoc;
+
+    /**
+     * Should only be called by subclasses.
+     * 
+     * @param requestedNode
+     */
+    protected RecImpl(GeoNode requestedNode) {
+        this.newLoc = requestedNode;
+    }
+
+    /**
+     * @see com.clueride.domain.dev.rec.Rec#getNewLoc()
+     */
+    @Override
+    public GeoNode getNewLoc() {
+        return newLoc;
+    }
+
 }
