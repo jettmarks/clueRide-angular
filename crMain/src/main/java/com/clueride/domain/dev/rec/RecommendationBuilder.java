@@ -33,13 +33,19 @@ import com.clueride.domain.dev.Segment;
  * 
  * @author jett
  */
-public class RecommendationBuilder {
+public class RecommendationBuilder implements countNetworkConnections {
     /** The requested node which we're making a recommendation for. */
     private GeoNode requestedNode;
     /** Existing node, if the requested node is found within tolerance. */
     private GeoNode onNetworkNode;
     private Segment onNetworkSegment;
     private SimpleFeature onTrack;
+
+    /** Connections of a Track to the network (valid when there is a track). */
+    private GeoNode singleNode;
+    private GeoNode secondNode;
+    private Segment singleSegment;
+    private Segment secondSegment;
 
     /** */
 
@@ -80,7 +86,78 @@ public class RecommendationBuilder {
         // That takes care of the first (simpler) layer of instances; if we
         // reach this point, we've got a track-based instance.
 
-        return null;
+        if (noNetworkConnection()) {
+            throw new IllegalStateException(
+                    "When specifying a Track, the connection to existing network must be given as well");
+        }
+
+        if (tooManyNetworkConnections()) {
+            throw new IllegalStateException(
+                    "When specifying a Track, no more than two network connections are accepted");
+        }
+
+        // ToSegmentAndNodeImpl
+        if (singleNode != null && singleSegment != null) {
+            return new ToSegmentAndNodeImpl(requestedNode, onTrack,
+                    singleSegment, singleNode);
+        }
+
+        // ToTwoNodesImpl
+        if (singleNode != null && secondNode != null) {
+            return new ToTwoNodesImpl(requestedNode, onTrack, singleNode,
+                    secondNode);
+        }
+
+        // ToTwoSegmentsImpl
+        if (singleSegment != null && secondSegment != null) {
+            return new ToTwoSegmentsImpl(requestedNode, onTrack, singleSegment,
+                    secondSegment);
+        }
+
+        // ToNodeImpl
+        if (singleNode != null) {
+            return new ToNodeImpl(requestedNode, onTrack, singleNode);
+        }
+
+        // ToSegmentImpl
+        if (singleSegment != null) {
+            return new ToSegmentImpl(requestedNode, onTrack, singleSegment);
+        }
+
+        throw new IllegalStateException(
+                "Unexpected combination of build components");
+    }
+
+    /**
+     * @return
+     */
+    private boolean tooManyNetworkConnections() {
+        int specCount = countNetworkConnections();
+        return (specCount > 2);
+    }
+
+    /**
+     * @return
+     */
+    private boolean noNetworkConnection() {
+        int specCount = countNetworkConnections();
+        return (specCount == 0);
+    }
+
+    /**
+     * @return
+     */
+    private int countNetworkConnections() {
+        int specCount = 0;
+        if (singleNode != null)
+            specCount++;
+        if (secondNode != null)
+            specCount++;
+        if (singleSegment != null)
+            specCount++;
+        if (secondSegment != null)
+            specCount++;
+        return specCount;
     }
 
     /**
@@ -129,4 +206,50 @@ public class RecommendationBuilder {
         this.requestedNode = requestedNode;
         return this;
     }
+
+    /**
+     * @param track
+     * @return
+     */
+    public RecommendationBuilder addTrack(SimpleFeature track) {
+        this.onTrack = track;
+        return this;
+    }
+
+    /**
+     * @param singleNode
+     * @return
+     */
+    public RecommendationBuilder addSingleNode(GeoNode singleNode) {
+        this.singleNode = singleNode;
+        return this;
+    }
+
+    /**
+     * @param secondNode
+     * @return
+     */
+    public RecommendationBuilder addSecondNode(GeoNode secondNode) {
+        this.secondNode = secondNode;
+        return this;
+    }
+
+    /**
+     * @param singleSegment
+     * @return
+     */
+    public RecommendationBuilder addSingleSegment(Segment singleSegment) {
+        this.singleSegment = singleSegment;
+        return this;
+    }
+
+    /**
+     * @param secondSegment
+     * @return
+     */
+    public RecommendationBuilder addSecondSegment(Segment secondSegment) {
+        this.secondSegment = secondSegment;
+        return this;
+    }
+
 }

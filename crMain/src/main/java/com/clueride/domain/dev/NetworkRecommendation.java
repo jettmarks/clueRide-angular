@@ -34,4 +34,9 @@ public interface NetworkRecommendation {
     String getName();
 
     NetworkRecType getRecType();
+
+    /**
+     * @return
+     */
+    Double getScore();
 }
