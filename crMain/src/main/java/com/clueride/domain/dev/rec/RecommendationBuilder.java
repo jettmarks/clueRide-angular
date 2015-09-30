@@ -33,7 +33,7 @@ import com.clueride.domain.dev.Segment;
  * 
  * @author jett
  */
-public class RecommendationBuilder implements countNetworkConnections {
+public class RecommendationBuilder {
     /** The requested node which we're making a recommendation for. */
     private GeoNode requestedNode;
     /** Existing node, if the requested node is found within tolerance. */

@@ -56,4 +56,12 @@ public class OnNodeImpl extends RecImpl implements OnNode {
         return onNetworkNode;
     }
 
+    /**
+     * @see com.clueride.domain.dev.rec.RecImpl#getScore()
+     */
+    @Override
+    public Double getScore() {
+        return null;
+    }
+
 }

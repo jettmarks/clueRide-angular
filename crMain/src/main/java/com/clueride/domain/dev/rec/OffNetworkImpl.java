@@ -45,4 +45,12 @@ public class OffNetworkImpl extends RecImpl implements OffNetwork {
         return OFF_NETWORK;
     }
 
+    /**
+     * @see com.clueride.domain.dev.rec.RecImpl#getScore()
+     */
+    @Override
+    public Double getScore() {
+        return null;
+    }
+
 }

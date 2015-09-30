@@ -27,7 +27,7 @@ import com.clueride.domain.dev.NetworkRecommendation;
  * @author jett
  *
  */
-public class NetworkRecImpl implements NetworkRecommendation {
+public abstract class NetworkRecImpl implements NetworkRecommendation {
 
     private Integer id;
     private String name;
@@ -55,5 +55,4 @@ public class NetworkRecImpl implements NetworkRecommendation {
     public NetworkRecType getRecType() {
         return UNDEFINED;
     }
-
 }

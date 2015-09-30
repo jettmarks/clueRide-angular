@@ -27,7 +27,7 @@ import com.clueride.domain.GeoNode;
  * @author jett
  *
  */
-public class RecImpl extends NetworkRecImpl implements Rec {
+public abstract class RecImpl extends NetworkRecImpl implements Rec {
     private GeoNode newLoc;
 
     /**
@@ -46,5 +46,11 @@ public class RecImpl extends NetworkRecImpl implements Rec {
     public GeoNode getNewLoc() {
         return newLoc;
     }
+
+    /**
+     * @see com.clueride.domain.dev.NetworkRecommendation#getScore()
+     */
+    @Override
+    public abstract Double getScore();
 
 }

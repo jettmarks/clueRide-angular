@@ -61,4 +61,12 @@ public class OnSegmentImpl extends RecImpl implements OnSegment {
         return ON_SEGMENT;
     }
 
+    /**
+     * @see com.clueride.domain.dev.rec.RecImpl#getScore()
+     */
+    @Override
+    public Double getScore() {
+        return null;
+    }
+
 }
