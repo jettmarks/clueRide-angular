@@ -34,6 +34,7 @@ public class TrackImpl extends RecImpl implements OnTrack {
     public TrackImpl(GeoNode reqNode, SimpleFeature track) {
         super(reqNode);
         this.track = track;
+        addFeature(track);
     }
 
     /**

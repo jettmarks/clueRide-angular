@@ -17,7 +17,12 @@
  */
 package com.clueride.domain.dev.rec;
 
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
+
 import com.clueride.domain.GeoNode;
+import com.clueride.geo.TranslateUtil;
 
 /**
  * Implementation of a NetworkRecommendation based on a new Location, but since
@@ -29,6 +34,7 @@ import com.clueride.domain.GeoNode;
  */
 public abstract class RecImpl extends NetworkRecImpl implements Rec {
     private GeoNode newLoc;
+    private DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
 
     /**
      * Should only be called by subclasses.
@@ -37,6 +43,7 @@ public abstract class RecImpl extends NetworkRecImpl implements Rec {
      */
     protected RecImpl(GeoNode requestedNode) {
         this.newLoc = requestedNode;
+        addFeature(TranslateUtil.geoNodeToFeature(requestedNode));
     }
 
     /**
@@ -53,4 +60,15 @@ public abstract class RecImpl extends NetworkRecImpl implements Rec {
     @Override
     public abstract Double getScore();
 
+    /**
+     * @see com.clueride.domain.dev.NetworkRecommendation#getFeatureCollection()
+     */
+    @Override
+    public FeatureCollection<?, ?> getFeatureCollection() {
+        return featureCollection;
+    }
+
+    protected void addFeature(SimpleFeature feature) {
+        featureCollection.add(feature);
+    }
 }

@@ -46,69 +46,67 @@ import com.vividsolutions.jts.geom.LineString;
  */
 public class TrackUtil {
 
-	/**
-	 * @param tag
-	 * @return
-	 */
-	public static List<Track> getTracksForTag(String tag) {
-		List<Track> tracks = new ArrayList<Track>();
-		RouteSource localRouteSource = RouteSourceBase
-				.getInstance("Local Drive");
-		String[] tagList = new String[1];
-		tagList[0] = tag;
-		for (int routeId : LocalRoutes.getRouteIds(tag)) {
-			String routeName = routeId + ".gpx";
-			String sUrl = localRouteSource.getRouteURL(routeName, tagList);
-			String rawGPX = ResourceManager.getResource(sUrl);
-			ParseGPX parser = new ParseGPX();
-			Track track = parser.getTrackFromGPX(rawGPX);
-			track.setName("" + routeId);
-			tracks.add(track);
-		}
-		return tracks;
-	}
+    /**
+     * @param tag
+     * @return
+     */
+    public static List<Track> getTracksForTag(String tag) {
+        List<Track> tracks = new ArrayList<Track>();
+        RouteSource localRouteSource = RouteSourceBase
+                .getInstance("Local Drive");
+        String[] tagList = new String[1];
+        tagList[0] = tag;
+        for (int routeId : LocalRoutes.getRouteIds(tag)) {
+            String routeName = routeId + ".gpx";
+            String sUrl = localRouteSource.getRouteURL(routeName, tagList);
+            String rawGPX = ResourceManager.getResource(sUrl);
+            ParseGPX parser = new ParseGPX();
+            Track track = parser.getTrackFromGPX(rawGPX);
+            track.setName("" + routeId);
+            tracks.add(track);
+        }
+        return tracks;
+    }
 
-	/**
-	 * @param track
-	 * @return
-	 */
-	public static LineString getLineString(Track track) {
-		LineString lineString = null;
-		List<Coordinate> positions = new ArrayList<Coordinate>();
-		for (Trackpoint trackPoint : track.getTrackpoints()) {
-			Coordinate coordinate = new Coordinate(
-					// trackPoint.getLatDouble(),
-					// trackPoint.getLonDouble());
-					trackPoint.getLonDouble(), trackPoint.getLatDouble(),
-					trackPoint.getAltitude());
-			positions.add(coordinate);
-		}
-		// Hints hints = new Hints();
-		// hints.put(Hints.CRS, DefaultGeographicCRS.WGS84_3D);
+    /**
+     * @param track
+     * @return
+     */
+    public static LineString getLineString(Track track) {
+        LineString lineString = null;
+        List<Coordinate> positions = new ArrayList<Coordinate>();
+        for (Trackpoint trackPoint : track.getTrackpoints()) {
+            Coordinate coordinate = new Coordinate(
+                    trackPoint.getLonDouble(), trackPoint.getLatDouble(),
+                    trackPoint.getAltitude());
+            positions.add(coordinate);
+        }
+        // Hints hints = new Hints();
+        // hints.put(Hints.CRS, DefaultGeographicCRS.WGS84_3D);
 
-		Coordinate[] posArray = new Coordinate[positions.size()];
-		GeometryFactory geometryFactory = JTSFactoryFinder
-				.getGeometryFactory(null);
-		lineString = geometryFactory.createLineString(positions
-				.toArray(posArray));
-		return lineString;
-	}
+        Coordinate[] posArray = new Coordinate[positions.size()];
+        GeometryFactory geometryFactory = JTSFactoryFinder
+                .getGeometryFactory(null);
+        lineString = geometryFactory.createLineString(positions
+                .toArray(posArray));
+        return lineString;
+    }
 
-	/**
-	 * @param tracks
-	 * @return
-	 */
-	public static Map<Track, LineString> trackToLineString(List<Track> tracks) {
-		Map<Track, LineString> linesByName = new HashMap<Track, LineString>();
-		// int maxNumberOfTracks = 23;
-		// int numberOfTracks = 0;
-		for (Track track : tracks) {
-			// if (numberOfTracks++ > maxNumberOfTracks)
-			// break;
-			LineString lineString = getLineString(track);
-			linesByName.put(track, lineString);
-		}
-		return linesByName;
-	}
+    /**
+     * @param tracks
+     * @return
+     */
+    public static Map<Track, LineString> trackToLineString(List<Track> tracks) {
+        Map<Track, LineString> linesByName = new HashMap<Track, LineString>();
+        // int maxNumberOfTracks = 23;
+        // int numberOfTracks = 0;
+        for (Track track : tracks) {
+            // if (numberOfTracks++ > maxNumberOfTracks)
+            // break;
+            LineString lineString = getLineString(track);
+            linesByName.put(track, lineString);
+        }
+        return linesByName;
+    }
 
 }

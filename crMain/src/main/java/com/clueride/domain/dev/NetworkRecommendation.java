@@ -17,6 +17,8 @@
  */
 package com.clueride.domain.dev;
 
+import org.geotools.feature.FeatureCollection;
+
 import com.clueride.domain.dev.rec.NetworkRecType;
 
 /**
@@ -39,4 +41,6 @@ public interface NetworkRecommendation {
      * @return
      */
     Double getScore();
+
+    FeatureCollection<?, ?> getFeatureCollection();
 }

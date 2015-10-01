@@ -37,93 +37,93 @@ import com.clueride.poc.geotools.TrackStore;
  */
 public class LoadService {
 
-	private static LoadService instance;
-	private static TrackStore trackStore = null;
+    private static LoadService instance;
+    private static TrackStore trackStore = null;
 
-	/**
-	 * @return
-	 */
-	public static LoadService getInstance() {
-		if (instance == null) {
-			instance = new LoadService();
-		}
-		return instance;
-	}
+    /**
+     * @return
+     */
+    public static LoadService getInstance() {
+        if (instance == null) {
+            instance = new LoadService();
+        }
+        return instance;
+    }
 
-	/**
-	 * For the time being, we don't have one; building an empty one from
-	 * scratch.
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	public Network loadNetwork() throws IOException {
-		Network network = new DefaultNetwork(new DefaultFeatureCollection());
+    /**
+     * For the time being, we don't have one; building an empty one from
+     * scratch.
+     * 
+     * @return
+     * @throws IOException
+     */
+    public Network loadNetwork() throws IOException {
+        Network network = DefaultNetwork.getInstance();
 
-		if (trackStore == null) {
-			loadTrackStore();
-		}
+        if (trackStore == null) {
+            loadTrackStore();
+        }
 
-		network.add(trackStore.getFirstFeature());
-		return network;
-	}
+        network.add(trackStore.getFirstFeature());
+        return network;
+    }
 
-	/**
-	 * @param i
-	 * @return
-	 * @throws IOException
-	 */
-	public Network loadNetwork(int index) throws IOException {
-		Network network = new DefaultNetwork(new DefaultFeatureCollection());
+    /**
+     * @param i
+     * @return
+     * @throws IOException
+     */
+    public Network loadNetwork(int index) throws IOException {
+        Network network = DefaultNetwork.getInstance();
 
-		if (trackStore == null) {
-			loadTrackStore();
-		}
+        if (trackStore == null) {
+            loadTrackStore();
+        }
 
-		network.add(trackStore.getTrackPerId(index));
-		return network;
-	}
+        network.add(trackStore.getTrackPerId(index));
+        return network;
+    }
 
-	/**
-	 * @return
-	 * @throws IOException
-	 */
-	public TrackStore loadTrackStore() throws IOException {
-		if (trackStore == null) {
-			JsonUtil jsonUtil = new JsonUtil(JsonStoreType.RAW);
-			DefaultFeatureCollection features = jsonUtil
-					.readFeatureCollection();
-			trackStore = new TrackStore(features);
-		}
-		return trackStore;
-	}
+    /**
+     * @return
+     * @throws IOException
+     */
+    public TrackStore loadTrackStore() throws IOException {
+        if (trackStore == null) {
+            JsonUtil jsonUtil = new JsonUtil(JsonStoreType.RAW);
+            DefaultFeatureCollection features = jsonUtil
+                    .readFeatureCollection();
+            trackStore = new TrackStore(features);
+        }
+        return trackStore;
+    }
 
-	/**
-	 * Temporary method for picking up a track for testing.
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	private SimpleFeature getFirstFeature() throws IOException {
-		if (trackStore == null) {
-			loadTrackStore();
-		}
-		return trackStore.getFirstFeature();
-	}
+    /**
+     * Temporary method for picking up a track for testing.
+     * 
+     * @return
+     * @throws IOException
+     */
+    private SimpleFeature getFirstFeature() throws IOException {
+        if (trackStore == null) {
+            loadTrackStore();
+        }
+        return trackStore.getFirstFeature();
+    }
 
-	/**
-	 * @param trackIds
-	 * @return
-	 * @throws IOException
-	 */
-	public Network loadNetwork(List<Integer> trackIds) throws IOException {
-		Network network = new DefaultNetwork(new DefaultFeatureCollection());
-		if (trackStore == null) {
-			loadTrackStore();
-		}
-		for (Integer trackId : trackIds) {
-			network.add(trackStore.getTrackPerId(trackId));
-		}
-		return network;
-	}
+    /**
+     * @param trackIds
+     * @return
+     * @throws IOException
+     */
+    public Network loadNetwork(List<Integer> trackIds) throws IOException {
+        Network network = DefaultNetwork.getInstance();
+        if (trackStore == null) {
+            loadTrackStore();
+        }
+        for (Integer trackId : trackIds) {
+            network.add(trackStore.getTrackPerId(trackId));
+        }
+        return network;
+    }
 }

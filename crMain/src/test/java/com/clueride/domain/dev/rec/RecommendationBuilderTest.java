@@ -22,6 +22,12 @@ import org.testng.annotations.Test;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.domain.dev.Segment;
+import com.clueride.domain.factory.PointFactory;
+import com.clueride.geo.TranslateUtil;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 
 public class RecommendationBuilderTest {
 
@@ -37,13 +43,22 @@ public class RecommendationBuilderTest {
     private Segment singleSegment;
     private Segment secondSegment;
 
+    private Point pointA;
+    private Point pointB;
+    private Point pointR;
+
     @BeforeMethod
     public void setUp() throws Exception {
         initMocks(this);
         networkSegment = Mockito.mock(Segment.class);
         networkNode = Mockito.mock(GeoNode.class);
         requestedNode = Mockito.mock(GeoNode.class);
-        track = Mockito.mock(SimpleFeature.class);
+        // track = Mockito.mock(SimpleFeature.class);
+        track = getTestTrack();
+
+        pointA = PointFactory.getJtsInstance(33.0, -84.0, 300.0);
+        pointB = PointFactory.getJtsInstance(33.0, -83.0, 300.0);
+        pointR = PointFactory.getJtsInstance(33.0, -83.5, 300.0);
 
         singleNode = Mockito.mock(GeoNode.class);
         secondNode = Mockito.mock(GeoNode.class);
@@ -51,6 +66,20 @@ public class RecommendationBuilderTest {
         secondSegment = Mockito.mock(Segment.class);
 
         toTest = new RecommendationBuilder();
+    }
+
+    /**
+     * @return
+     */
+    private SimpleFeature getTestTrack() {
+        Coordinate[] coordinates = {
+                new Coordinate(-84.0, 33.0, 300.0),
+                new Coordinate(-84.0, 33.1, 300.0),
+                new Coordinate(-84.0, 33.2, 300.0),
+        };
+        LineString lineString = new GeometryFactory()
+                .createLineString(coordinates);
+        return TranslateUtil.lineStringToFeature(lineString);
     }
 
     @Test(expectedExceptions = IllegalStateException.class,
@@ -226,5 +255,22 @@ public class RecommendationBuilderTest {
         assertEquals(actual.getRecType(), TRACK_TO_SEGMENT_AND_NODE);
         assertTrue(actual instanceof ToSegmentAndNode);
         assertTrue(actual.getScore() != null);
+    }
+
+    // Series of tests checking the JSON build
+    @Test
+    public void buildToNodeFeatureCollection() {
+        when(requestedNode.getId()).thenReturn(42);
+        when(requestedNode.getPoint()).thenReturn(pointR);
+        when(singleNode.getId()).thenReturn(84);
+        when(singleNode.getPoint()).thenReturn(pointA);
+        NetworkRecommendation actual = toTest
+                .requestNetworkNode(requestedNode)
+                .addTrack(track)
+                .addSingleNode(singleNode)
+                .build();
+        assertNotNull(actual);
+
+        assertEquals(actual.getFeatureCollection().size(), 3);
     }
 }
