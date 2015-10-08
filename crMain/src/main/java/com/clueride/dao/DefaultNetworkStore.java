@@ -26,12 +26,16 @@ import java.util.Set;
 import org.geotools.feature.DefaultFeatureCollection;
 
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Segment;
+import com.clueride.domain.EdgeImpl;
+import com.clueride.domain.dev.TrackImpl;
+import com.clueride.feature.Edge;
+import com.clueride.feature.LineFeature;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
-import com.vividsolutions.jts.geom.LineString;
+import com.clueride.service.EdgeIDProvider;
+import com.clueride.service.MemoryBasedEdgeIDProvider;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -45,9 +49,10 @@ public class DefaultNetworkStore implements NetworkStore {
     private static DefaultNetworkStore instance = null;
 
     private JsonStoreType ourStoreType = JsonStoreType.NETWORK;
-    private Integer maxSegmentId = 0;
-    private Set<Segment> segments = new HashSet<>();
-    private Map<Integer, Segment> segmentMap = new HashMap<>();
+
+    private Set<LineFeature> lineFeatures = new HashSet<>();
+    private Map<Integer, LineFeature> featureMap = new HashMap<>();
+    private EdgeIDProvider idProvider = new DataBasedEdgeIDProvider();
 
     public static DefaultNetworkStore getInstance() {
         if (instance == null) {
@@ -89,29 +94,40 @@ public class DefaultNetworkStore implements NetworkStore {
     public void persistAndReload() throws IOException {
         JsonUtil networkStorageUtil = new JsonUtil(ourStoreType);
         DefaultFeatureCollection features = TranslateUtil
-                .segmentsToFeatureCollection(segments);
+                .lineFeatureSetToFeatureCollection(lineFeatures);
+        // DefaultFeatureCollection features = TranslateUtil
+        // .segmentsToFeatureCollection(lineFeatures);
         networkStorageUtil.writeFeaturesToFile(features, "mainNetwork.geojson");
 
-        segments.clear();
+        lineFeatures.clear();
 
         // DefaultFeatureCollection features = networkStorageUtil
         features = networkStorageUtil
                 .readFeatureCollection("mainNetwork.geojson");
-        segments = TranslateUtil.featureCollectionToSegments(features);
+        lineFeatures = TranslateUtil.featureCollectionToLineFeatures(features);
         refreshSegmentData();
     }
 
     /**
-     * @see com.clueride.dao.NetworkStore#getSegments()
+     * @see com.clueride.dao.NetworkStore#getEdges()
      */
     @Override
-    public Set<Segment> getSegments() {
-        synchronized (segments) {
-            if (segments.isEmpty()) {
+    public Set<Edge> getEdges() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * @see com.clueride.dao.NetworkStore#getLineFeatures()
+     */
+    @Override
+    public Set<LineFeature> getLineFeatures() {
+        synchronized (lineFeatures) {
+            if (lineFeatures.isEmpty()) {
                 loadFromDefault();
             }
         }
-        return segments;
+        return lineFeatures;
     }
 
     /**
@@ -127,34 +143,35 @@ public class DefaultNetworkStore implements NetworkStore {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        segments = TranslateUtil.featureCollectionToSegments(features);
+        lineFeatures = TranslateUtil.featureCollectionToLineFeatures(features);
         refreshSegmentData();
     }
 
     /**
-     * 
+     * Builds some internal data structures based on a refreshed set of
+     * LineFeatures.
      */
     private void refreshSegmentData() {
-        maxSegmentId = 0;
-        segmentMap.clear();
-        for (Segment segment : segments) {
-            int segmentId = segment.getSegId();
-            if (segmentId > maxSegmentId) {
-                maxSegmentId = segmentId;
-            }
-            segmentMap.put(segmentId, segment);
+        featureMap.clear();
+        for (LineFeature lineFeature : lineFeatures) {
+            int id = lineFeature.getId();
+            idProvider.registerId(id);
+            featureMap.put(id, lineFeature);
         }
     }
 
     /**
-     * @see com.clueride.dao.NetworkStore#getSegmentById(java.lang.Integer)
+     * @see com.clueride.dao.NetworkStore#getEdgeById(java.lang.Integer)
      */
     @Override
-    public Segment getSegmentById(Integer id) {
-        return segmentMap.get(id);
+    public Edge getEdgeById(Integer id) {
+        return (Edge) featureMap.get(id);
     }
 
     /**
+     * Part of the Use Case where an additional Edge is being added to the
+     * network, but there are probably existing Edges whose ID must be avoided.
+     * 
      * Ignores the incoming segment ID if there is one and replaces it with the
      * next in sequence.
      * 
@@ -162,47 +179,78 @@ public class DefaultNetworkStore implements NetworkStore {
      * assigning PKs.
      * 
      * @return
-     * @see com.clueride.dao.NetworkStore#addNew(com.clueride.domain.dev.Segment)
+     * @see com.clueride.dao.NetworkStore#addNew(com.com.clueride.feature.Edge)
      */
     @Override
-    public Integer addNew(Segment segment) {
-        maxSegmentId++;
-        segment.setSegId(maxSegmentId);
-        segments.add(segment);
-        segmentMap.put(maxSegmentId, segment);
-        return maxSegmentId;
+    public Integer addNew(Edge edge) {
+        // For creation of new instance, we make a copy TODO: Looks cumbersome
+        TrackImpl newTrack = new TrackImpl(edge.getDisplayName(), edge.getUrl());
+        Integer id = newTrack.getId();
+        Edge newEdge = new EdgeImpl(newTrack,
+                edge.getLineString());
+
+        lineFeatures.add(newEdge);
+        featureMap.put(id, newEdge);
+        return id;
     }
 
     /**
      * @see com.clueride.dao.NetworkStore#splitSegment(java.lang.Integer,
      *      com.clueride.domain.GeoNode)
+     * @Override public void splitSegment(Integer id, GeoNode geoNode) {
+     *           LineString originalLineString = (LineString) TranslateUtil
+     *           .segmentToFeature(segmentMap.get(id)).getDefaultGeometry();
+     *           LineString[] splitPair =
+     *           TranslateUtil.split(originalLineString,
+     *           geoNode.getPoint().getCoordinate(), true); Segment segmentA =
+     *           TranslateUtil.lineStringToSegment(splitPair[0]); Segment
+     *           segmentB = TranslateUtil.lineStringToSegment(splitPair[1]);
+     *           segmentA.setUrl(segmentMap.get(id).getUrl());
+     *           segmentA.setName(segmentMap.get(id).getName());
+     *           segmentB.setUrl(segmentMap.get(id).getUrl());
+     *           segmentB.setName(segmentMap.get(id).getName());
+     *           addNew(segmentA); addNew(segmentB);
+     *           segments.remove(segmentMap.get(id)); segmentMap.remove(id); }
      */
-    @Override
-    public void splitSegment(Integer id, GeoNode geoNode) {
-        LineString originalLineString = (LineString) TranslateUtil
-                .segmentToFeature(segmentMap.get(id)).getDefaultGeometry();
-        LineString[] splitPair = TranslateUtil.split(originalLineString,
-                geoNode.getPoint().getCoordinate(), true);
-        Segment segmentA = TranslateUtil.lineStringToSegment(splitPair[0]);
-        Segment segmentB = TranslateUtil.lineStringToSegment(splitPair[1]);
-        segmentA.setUrl(segmentMap.get(id).getUrl());
-        segmentA.setName(segmentMap.get(id).getName());
-        segmentB.setUrl(segmentMap.get(id).getUrl());
-        segmentB.setName(segmentMap.get(id).getName());
-        addNew(segmentA);
-        addNew(segmentB);
-        segments.remove(segmentMap.get(id));
-        segmentMap.remove(id);
-    }
 
     /**
-     * @see com.clueride.dao.NetworkStore#splitSegment(java.lang.Integer,
+     * @see com.clueride.dao.NetworkStore#splitEdge(java.lang.Integer,
      *      com.vividsolutions.jts.geom.Point)
      */
     @Override
-    public void splitSegment(Integer id, Point point) {
+    public void splitEdge(Integer id, Point point) {
         // TODO Auto-generated method stub
 
+    }
+
+    /**
+     * @see com.clueride.dao.NetworkStore#splitEdge(java.lang.Integer,
+     *      com.clueride.domain.GeoNode)
+     */
+    @Override
+    public void splitEdge(Integer id, GeoNode geoNode) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * 
+     */
+    public void setTestMode(boolean isInTest) {
+        if (isInTest) {
+            idProvider = new MemoryBasedEdgeIDProvider();
+            TrackImpl.defineIdProvider(idProvider);
+        } else {
+            idProvider = new DataBasedEdgeIDProvider();
+            TrackImpl.defineIdProvider(idProvider);
+        }
+    }
+
+    /**
+     * @return
+     */
+    public int getLastEdgeId() {
+        return idProvider.getLastId();
     }
 
 }

@@ -22,7 +22,7 @@ import java.util.List;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Node;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -98,7 +98,7 @@ public interface GeoNode extends Node {
     /**
      * @param lineStringToSegment
      */
-    void setProposedSegment(Segment lineStringToSegment);
+    void setProposedSegment(Edge lineStringToSegment);
 
     /**
      * Holds the recommended segment from this point to the network using some
@@ -106,7 +106,7 @@ public interface GeoNode extends Node {
      * 
      * @return
      */
-    Segment getProposedSegment();
+    Edge getProposedSegment();
 
     /**
      * Evaluation of whether or not we have a proposed segment.

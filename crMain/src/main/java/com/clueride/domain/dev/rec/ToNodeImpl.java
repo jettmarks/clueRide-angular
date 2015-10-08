@@ -19,9 +19,8 @@ package com.clueride.domain.dev.rec;
 
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_NODE;
 
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.GeoNode;
+import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
 
 /**
@@ -33,9 +32,9 @@ import com.clueride.geo.TranslateUtil;
 public class ToNodeImpl extends TrackImpl implements ToNode {
     private GeoNode node;
 
-    public ToNodeImpl(GeoNode reqNode, SimpleFeature track,
+    public ToNodeImpl(GeoNode reqNode, TrackFeature onTrack,
             GeoNode node) {
-        super(reqNode, track);
+        super(reqNode, onTrack);
         this.node = node;
         addFeature(TranslateUtil.geoNodeToFeature(node));
     }

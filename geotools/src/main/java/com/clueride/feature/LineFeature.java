@@ -13,21 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Sep 27, 2015
+ * Created Aug 15, 2015
  */
-package com.clueride.domain.dev.rec;
+package com.clueride.feature;
 
-import com.clueride.feature.TrackFeature;
+import org.opengis.feature.simple.SimpleFeature;
+
+import com.clueride.domain.MappableFeature;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 
 /**
- * Represents New Location which is connected somehow to the Network; extensions
- * describe how this track is connected.
+ * Just as a PointFeature combines geometrical and non-geometrical properties
+ * for a Node/Location, the LineFeature does the same for Segments.
  *
  * @author jett
  *
  */
-public interface OnTrack extends Rec {
-    Integer getTrackId();
+public interface LineFeature extends MappableFeature {
 
-    TrackFeature getTrack();
+    LineString getLineString();
+
+    void setLineString(LineString lineString);
+
+    Geometry getGeometry();
+
+    SimpleFeature getFeature();
+
+    Integer getId();
+
 }

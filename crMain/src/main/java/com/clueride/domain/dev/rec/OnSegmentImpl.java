@@ -20,7 +20,7 @@ package com.clueride.domain.dev.rec;
 import static com.clueride.domain.dev.rec.NetworkRecType.ON_SEGMENT;
 
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
 
 /**
  * Implementation supporting the case where we have a Node that lands in the
@@ -34,13 +34,13 @@ import com.clueride.domain.dev.Segment;
  */
 public class OnSegmentImpl extends RecImpl implements OnSegment {
 
-    private final Segment onNetworkSegment;
+    private final Edge onNetworkSegment;
 
     /**
      * @param requestedNode
      * @param onNetworkSegment
      */
-    public OnSegmentImpl(GeoNode requestedNode, Segment onNetworkSegment) {
+    public OnSegmentImpl(GeoNode requestedNode, Edge onNetworkSegment) {
         super(requestedNode);
         this.onNetworkSegment = onNetworkSegment;
     }
@@ -49,7 +49,7 @@ public class OnSegmentImpl extends RecImpl implements OnSegment {
      * @see com.clueride.domain.dev.rec.OnSegment#getSegment()
      */
     @Override
-    public Segment getSegment() {
+    public Edge getSegment() {
         return onNetworkSegment;
     }
 

@@ -18,14 +18,14 @@
 package com.clueride.geo.score;
 
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
 
 class SubTrackScore {
-    private final Segment bestSegment;
+    private final Edge bestSegment;
     private GeoNode bestNode = null;
     private final double score;
 
-    public SubTrackScore(Segment bestSegment, GeoNode bestNode, double score) {
+    public SubTrackScore(Edge bestSegment, GeoNode bestNode, double score) {
         this.bestSegment = bestSegment;
         this.bestNode = bestNode;
         this.score = score;
@@ -42,7 +42,7 @@ class SubTrackScore {
     /**
      * @return the bestSegment
      */
-    public Segment getBestSegment() {
+    public Edge getBestSegment() {
         return bestSegment;
     }
 

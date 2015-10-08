@@ -13,29 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Aug 22, 2015
+ * Created Oct 2, 2015
  */
-package com.clueride.geo;
-
-import com.clueride.domain.GeoNode;
-import com.clueride.domain.factory.NodeFactory;
-import com.clueride.domain.factory.PointFactory;
+package com.clueride.domain;
 
 /**
- * Various transformations on geometry objects, often in support of testing.
+ * Description.
  *
  * @author jett
  *
  */
-public class TransformUtil {
-
-	public static GeoNode adjustNode(GeoNode node, double latOffset,
-			double lonOffset) {
-		double lat = node.getLat() + latOffset;
-		double lon = node.getLon() + lonOffset;
-		double elevation = node.getElevation();
-		return NodeFactory.getInstance(PointFactory.getJtsInstance(lon, lat,
-				elevation));
-	}
-
+public interface MappableFeature {
+    String getGeoJson();
 }

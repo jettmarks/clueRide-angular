@@ -24,7 +24,7 @@ import org.geotools.feature.DefaultFeatureCollection;
 import com.clueride.dao.DefaultNetworkStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 
@@ -58,7 +58,7 @@ public class SegmentService {
     /**
      * @param brandNewSegment
      */
-    public static void addSegment(Segment segment) {
+    public static void addSegment(Edge segment) {
         networkStore.addNew(segment);
     }
 
@@ -66,9 +66,9 @@ public class SegmentService {
      * @param existingSegmentToSplit
      * @param endNode
      */
-    public static void splitSegment(Segment segmentToSplit,
+    public static void splitSegment(Edge segmentToSplit,
             GeoNode endNode) {
-        networkStore.splitSegment(segmentToSplit.getSegId(), endNode);
+        networkStore.splitEdge(segmentToSplit.getId(), endNode);
     }
 
     /**

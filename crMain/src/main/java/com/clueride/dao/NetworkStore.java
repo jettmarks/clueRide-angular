@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.util.Set;
 
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
+import com.clueride.feature.LineFeature;
+import com.clueride.feature.SegmentFeature;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -50,11 +52,28 @@ public interface NetworkStore {
     void persistAndReload() throws IOException;
 
     /**
-     * This holds the segments -- if we need them, this is the place to go.
+     * This holds the LineFeatures (Segments); when we need them, this is the
+     * place to get them.
+     * 
+     * @return
+     * @deprecated - Use either {@link getEdges()} or {@link
+     *             getSegmentFeatures()} at this time.
+     */
+    // Set<LineFeature> getLineFeatures();
+
+    /**
+     * SegmentFeatures and not {@link Edge}s.
      * 
      * @return
      */
-    Set<Segment> getSegments();
+    Set<LineFeature> getLineFeatures();
+
+    /**
+     * Edges and not {@link SegmentFeature}s.
+     * 
+     * @return Set of the Edges defined for the network.
+     */
+    Set<Edge> getEdges();
 
     /**
      * Choose a particular segment by its ID.
@@ -62,24 +81,27 @@ public interface NetworkStore {
      * @param id
      * @return
      */
-    Segment getSegmentById(Integer id);
+    Edge getEdgeById(Integer id);
 
     /**
      * Brings the geometry and other details for creation of a new Segment along
      * with the assignment of an ID.
      * 
-     * @param segment
+     * @param edge
      * @return
      */
-    Integer addNew(Segment segment);
+    Integer addNew(Edge edge);
 
     /**
      * When it's time to split one of these, we want the Store to know about it.
      * 
+     * The NetworkStore would be removing the existing Edge, and replacing it
+     * with a new pair of Edges.
+     * 
      * @param id
      * @param geoNode
      */
-    void splitSegment(Integer id, GeoNode geoNode);
+    void splitEdge(Integer id, GeoNode geoNode);
 
     /**
      * When it's time to split one of these, we want the Store to know about it.
@@ -89,5 +111,6 @@ public interface NetworkStore {
      * @param id
      * @param point
      */
-    void splitSegment(Integer id, Point point);
+    void splitEdge(Integer id, Point point);
+
 }

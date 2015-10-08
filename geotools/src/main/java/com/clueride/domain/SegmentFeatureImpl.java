@@ -19,8 +19,9 @@ package com.clueride.domain;
 
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.clueride.domain.dev.Node;
-import com.vividsolutions.jts.geom.LineString;
+import com.clueride.domain.dev.Segment;
+import com.clueride.feature.LineFeature;
+import com.clueride.feature.SegmentFeature;
 
 /**
  * Implementation which understands the specific data we save with a
@@ -32,91 +33,101 @@ import com.vividsolutions.jts.geom.LineString;
  * @author jett
  *
  */
-public class DefaultLineFeature implements LineFeature {
+public class SegmentFeatureImpl extends EdgeImpl implements
+        LineFeature, Segment, SegmentFeature {
 
-	private int id;
-	private String name;
-	private LineString lineString;
+    /**
+     * Constructor where the SimpleFeature has the Segment information which
+     * will allow us to instantiate the Segment portion of this instance.
+     * 
+     * Otherwise, use {@link SegmentFeatureImpl(Segment, SimpleFeature)}.
+     * 
+     * @param lineStringFeature
+     */
+    public SegmentFeatureImpl(SimpleFeature lineStringFeature) {
+        super(lineStringFeature);
+    }
 
-	/**
-	 * @param simpleLineStringFeature
-	 */
-	public DefaultLineFeature(SimpleFeature simpleLineStringFeature) {
-		Object obj = simpleLineStringFeature.getDefaultGeometry();
-		if (!(obj instanceof LineString)) {
-			throw new IllegalArgumentException(
-					"Expecting geometry to be LineString instead of "
-							+ obj.getClass());
-		}
-		this.lineString = (LineString) obj;
-		this.id = Integer.parseInt((String) simpleLineStringFeature
-				.getAttribute(1));
-		this.name = (String) simpleLineStringFeature.getAttribute(0);
-	}
+    /**
+     * Build a Feature from the Segment details and a Geometry instance. TODO:
+     * Come back to this.
+     * 
+     * @param segment
+     * @param lineString
+     *            public SegmentFeatureImpl(Segment segment, LineString
+     *            lineString) {
+     * 
+     *            }
+     */
 
-	/**
-	 * @see com.clueride.domain.LineFeature#getId()
-	 */
-	@Override
-	public int getSegId() {
-		return id;
-	}
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SegmentFeatureImpl [id=");
+        builder.append(getId());
+        builder.append(", name=");
+        builder.append(getDisplayName());
+        builder.append(", lineString=");
+        builder.append(getLineString());
+        builder.append("]");
+        return builder.toString();
+    }
 
-	/**
-	 * @see com.clueride.domain.LineFeature#setId(int)
-	 */
-	@Override
-	public void setSegId(int id) {
-		this.id = id;
-	}
+    /**
+     * @see com.clueride.domain.MappableFeature#getGeoJson()
+     */
+    @Override
+    public String getGeoJson() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	/**
-	 * @see com.clueride.domain.LineFeature#getName()
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
+    /**
+     * @see com.com.clueride.feature.Edge#isOneWay()
+     */
+    @Override
+    public boolean isOneWay() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	/**
-	 * @see com.clueride.domain.LineFeature#setName(java.lang.String)
-	 */
-	@Override
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @see com.com.clueride.feature.Edge#setOneWay(boolean)
+     */
+    @Override
+    public void setOneWay(boolean oneWay) {
+        // TODO Auto-generated method stub
 
-	/**
-	 * @see com.clueride.domain.LineFeature#getStart()
-	 */
-	@Override
-	public Node getStart() {
-		return null;
-	}
+    }
 
-	/**
-	 * @see com.clueride.domain.LineFeature#getEnd()
-	 */
-	@Override
-	public Node getEnd() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /**
+     * @see com.com.clueride.feature.Edge#getRating()
+     */
+    @Override
+    public Rating getRating() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("DefaultLineFeature [id=");
-		builder.append(id);
-		builder.append(", name=");
-		builder.append(name);
-		builder.append(", lineString=");
-		builder.append(lineString);
-		builder.append("]");
-		return builder.toString();
-	}
+    /**
+     * @see com.com.clueride.feature.Edge#setRating(com.clueride.domain.Rating)
+     */
+    @Override
+    public void setRating(Rating rating) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * @see com.com.clueride.feature.Edge#getDistanceMiles()
+     */
+    @Override
+    public double getDistanceMiles() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
 }

@@ -5,24 +5,32 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.AssertJUnit.assertTrue;
 
 import org.mockito.Mock;
-import org.opengis.feature.simple.SimpleFeature;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Segment;
+import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.domain.factory.PointFactory;
+import com.clueride.feature.Edge;
+import com.clueride.feature.SegmentFeature;
+import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.gpx.EasyTrack;
 import com.clueride.gpx.TrackUtil;
 import com.jettmarks.gmaps.encoder.Trackpoint;
 import com.vividsolutions.jts.geom.LineString;
 
+/**
+ * TODO: Come back to this.
+ *
+ * @author jett
+ *
+ */
 public class TrackScoreTest {
 
     private TrackScore toTest;
-    private Segment mockSegmentEast;
+    private Edge mockSegmentEast;
     private LineString trackLineString;
     private LineString[] mockSubLineString;
 
@@ -30,11 +38,11 @@ public class TrackScoreTest {
     private GeoNode mockGeoNode;
 
     @Mock
-    private SimpleFeature mockTrack;
+    private TrackFeature mockTrack;
 
     @Mock
-    private Segment mockSegmentNWxSE;
-    private Segment mockSegmentNExSW;
+    private SegmentFeature mockSegmentNWxSE;
+    private SegmentFeature mockSegmentNExSW;
 
     @Mock
     private SubTrackScore expected;
@@ -46,15 +54,16 @@ public class TrackScoreTest {
                 new Trackpoint(-83.0, 33.0),
                 new Trackpoint(-83.0, 34.0));
         LineString eastLineString = TrackUtil.getLineString(eastTrack);
-        mockSegmentEast = TranslateUtil.lineStringToSegment(eastLineString);
-        mockSegmentEast.setSegId(14);
-        mockSegmentEast.setName("East");
+        // mockSegmentEast = TranslateUtil.lineStringToSegment(eastLineString);
+        // mockSegmentEast = new SegmentFeatureImpl(eastLineString);
+        mockSegmentEast = (Edge) LineFeatureFactory.getProposal(eastLineString);
+        mockSegmentEast.setDisplayName("East");
 
         com.jettmarks.gmaps.encoder.Track testTrack = new EasyTrack(
                 new Trackpoint(-84.0, 33.7),
                 new Trackpoint(-83.0, 33.7));
         trackLineString = TrackUtil.getLineString(testTrack);
-        when(mockTrack.getDefaultGeometry()).thenReturn(trackLineString);
+        when(mockTrack.getLineString()).thenReturn(trackLineString);
 
     }
 

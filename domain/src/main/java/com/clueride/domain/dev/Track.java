@@ -38,5 +38,20 @@ import java.util.List;
  * @author jett
  */
 public interface Track {
-	List<Node> getNodeList();
+    Integer getId();
+
+    String getDisplayName();
+
+    void setDisplayName(String displayName);
+
+    /**
+     * Many of these tracks are brought into this tool via RideWithGPS tracks;
+     * this refers back to the URL where the track can be retrieved. TODO: May
+     * be a spot we could use the Optional<String> type.
+     * 
+     * @return String representing the URL of the source track.
+     */
+    String getUrl();
+
+    List<Node> getNodeList();
 }

@@ -44,12 +44,18 @@ import com.clueride.dao.NetworkStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.SegmentFeatureImpl;
+import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.dev.NetworkState;
 import com.clueride.domain.dev.NodeEvaluationStatus;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
-import com.clueride.domain.dev.Segment;
+import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.domain.factory.NodeFactory;
+import com.clueride.feature.Edge;
+import com.clueride.feature.LineFeature;
+import com.clueride.feature.SegmentFeature;
+import com.clueride.feature.TrackFeature;
 import com.clueride.geo.score.IntersectionScore;
 import com.clueride.geo.score.TrackScore;
 import com.clueride.io.JsonStoreType;
@@ -78,7 +84,7 @@ public class DefaultNetwork implements Network {
     // private static final double BUFFER_TOLERANCE = 0.00007;
     private static DefaultNetwork instance = null;
     private DefaultFeatureCollection featureCollection;
-    private Set<Segment> allSegments;
+    private Set<LineFeature> allLineFeatures;
     private List<LineString> allLineStrings = new ArrayList<>();
     private Set<GeoNode> nodeSet;
     private NetworkStore networkStore;
@@ -117,9 +123,10 @@ public class DefaultNetwork implements Network {
     private DefaultNetwork() {
         networkStore = DefaultNetworkStore.getInstance();
         try {
-            allSegments = networkStore.getSegments();
+            allLineFeatures = networkStore.getLineFeatures();
             featureCollection = TranslateUtil
-                    .segmentsToFeatureCollection(allSegments);
+                    .lineFeatureSetToFeatureCollection(allLineFeatures);
+
             trackStore = LoadService.getInstance().loadTrackStore();
             locationStore = DefaultLocationStore.getInstance();
         } catch (IOException e) {
@@ -149,14 +156,18 @@ public class DefaultNetwork implements Network {
                 allLineStrings.add(lineString);
             }
         }
-        for (Segment segment : allSegments) {
-            verifyNodeIdAssignment((GeoNode) segment.getStart());
-            verifyNodeIdAssignment((GeoNode) segment.getEnd());
+        for (LineFeature lineFeature : allLineFeatures) {
+            // TODO: Put this back in.
+            // verifyNodeIdAssignment((GeoNode) lineFeature.getStart());
+            // verifyNodeIdAssignment((GeoNode) lineFeature.getEnd());
         }
         LOGGER.debug("Initialized : " + this);
     }
 
     /**
+     * TODO: Turn this into a method that accepts Edge. TODO: Factor this into a
+     * separate class.
+     * 
      * @param segment
      */
     public void verifyNodeIdAssignment(GeoNode endPointNode) {
@@ -329,7 +340,7 @@ public class DefaultNetwork implements Network {
 
         // Now to see if we intersect the network, and if so, at what point
         // intersectionScore will hold the interesting segment for us to search.
-        Segment bestSegment = intersectionScore.getBestSegment();
+        Edge bestSegment = intersectionScore.getBestSegment();
         LineString lineString = (LineString) TranslateUtil
                 .segmentToFeature(bestSegment).getDefaultGeometry();
         findIntersectingNode(lineStringToStart, nodesToMeasure, bestSegment,
@@ -381,9 +392,9 @@ public class DefaultNetwork implements Network {
             return;
         }
 
-        geoNode.setProposedSegment(TranslateUtil
-                .lineStringToSegment(lsProposalForSegment));
-        geoNode.getProposedSegment().setName("Proposed");
+        geoNode.setProposedSegment(LineFeatureFactory
+                .getProposal(lsProposalForSegment));
+        geoNode.getProposedSegment().setDisplayName("Proposed");
 
         // Before we head back, let's build out the NodeEvaluationStatus object
         NodeEvaluationStatus nodeEvaluation = NetworkState
@@ -401,12 +412,12 @@ public class DefaultNetwork implements Network {
      * @param i
      */
     public void findIntersectingNode(LineString subLineString,
-            List<GeoNode> nodesToMeasure, Segment bestSegment,
+            List<GeoNode> nodesToMeasure, Edge bestSegment,
             LineString lineString) {
         if (subLineString.buffer(GeoProperties.BUFFER_TOLERANCE).intersects(
                 lineString)) {
             LOGGER.info("This side of the track intersects with segment "
-                    + bestSegment.getSegId());
+                    + bestSegment.getId());
             // We do intersect and can walk the lineString to find the node
             int numberPoints = subLineString.getNumPoints();
             for (int p = 0; p < numberPoints; p++) {
@@ -489,7 +500,7 @@ public class DefaultNetwork implements Network {
             for (GeoNode node : geoNode.getNearByNodes()) {
                 if (lineString.buffer(GeoProperties.NODE_TOLERANCE).covers(
                         node.getPoint())) {
-                    score.addTrackConnectingNode(track, node);
+                    score.addTrackConnectingNode((TrackFeature) track, node);
                     keepTrack = true;
                 }
             }
@@ -499,34 +510,38 @@ public class DefaultNetwork implements Network {
                     .getLocationGroups()) {
                 Point point = ((DefaultGeoNode) nodeGroup).getPoint();
                 if (point.buffer(LOC_GROUP_RADIUS_DEG).intersects(lineString)) {
-                    score.addTrackConnectingNode(track, nodeGroup);
+                    score.addTrackConnectingNode((TrackFeature) track,
+                            nodeGroup);
                     keepTrack = true;
                 }
             }
 
             // Check our list of Segments for crossings and intersections
-            for (SimpleFeature segmentFeature : featureCollection) {
-                LineString segmentLineString = (LineString) segmentFeature
-                        .getDefaultGeometry();
-                Segment segment = TranslateUtil
-                        .featureToSegment(segmentFeature);
+            for (SimpleFeature simpleFeature : featureCollection) {
+                SegmentFeature segmentFeature = new SegmentFeatureImpl(
+                        simpleFeature);
+                LineString segmentLineString = segmentFeature.getLineString();
+                // Segment segment = TranslateUtil
+                // .featureToSegment(segmentFeature);
                 System.out.print("Checking " + track.getAttribute("url")
-                        + " against Segment " + segment.getSegId()
+                        + " against Segment " + segmentFeature.getId()
                         + " of length "
                         + segmentLineString.getNumPoints());
 
                 // Test for Intersect (more restrictive) first - CRANG-13
                 if (segmentLineString.intersects(lineString)) {
                     System.out.println(" Intersects");
-                    score.addIntersectingTrack(track, segment);
+                    score.addIntersectingTrack(
+                            (Edge) new EdgeImpl(
+                                    track), segmentFeature);
                     keepTrack = true;
                 } else if (segmentLineString.crosses(lineString)) {
                     System.out.println(" Crosses");
                     LineString intersectingTrackLineString = crossingTrackToIntersectingTrack(
                             geoNode, lineString, segmentLineString);
-                    score.addIntersectingTrack(TranslateUtil
-                            .lineStringToFeature(intersectingTrackLineString),
-                            segment);
+                    score.addIntersectingTrack(LineFeatureFactory
+                            .getProposal(intersectingTrackLineString),
+                            segmentFeature);
                     keepTrack = true;
                 } else {
                     System.out.println();
@@ -584,7 +599,7 @@ public class DefaultNetwork implements Network {
         SplitLineString splitPair = new SplitLineString(trackLineString,
                 geoNode);
 
-        LineString segmentCrossingSubLineString;
+        // LineString segmentCrossingSubLineString;
 
         LineString workingLineString;
         if (splitPair.getLineStringToStart().crosses(segmentLineString)) {
@@ -644,8 +659,11 @@ public class DefaultNetwork implements Network {
     }
 
     /**
+     * TODO: Move to separate class.
+     * 
      * @param reconstructionCoordinates
      */
+    @SuppressWarnings("unused")
     private void dumpCoordinates(List<Coordinate> coordinates) {
         int i = 0;
         for (Coordinate coordinate : coordinates) {
@@ -688,7 +706,8 @@ public class DefaultNetwork implements Network {
         // we're splitting the original segment at the end node of the first
         // segment.
 
-        Segment brandNewSegment = nodeEvaluation.getProposedSegmentFromTrack();
+        Edge brandNewSegment = nodeEvaluation
+                .getProposedSegmentFromTrack();
         GeoNode startNode = (GeoNode) brandNewSegment.getStart();
         GeoNode endNode = (GeoNode) brandNewSegment.getEnd();
 
@@ -702,14 +721,14 @@ public class DefaultNetwork implements Network {
         }
 
         // Add and save our new segments (using SegmentService)
-        brandNewSegment.setName("unnamed");
+        brandNewSegment.setDisplayName("unnamed");
         SegmentService.addSegment(brandNewSegment);
-        Segment existingSegmentToSplit = nodeEvaluation.getIntersectedSegment();
+        Edge existingSegmentToSplit = nodeEvaluation.getIntersectedSegment();
         SegmentService.splitSegment(existingSegmentToSplit, endNode);
         SegmentService.saveChanges();
-        allSegments = networkStore.getSegments();
+        allLineFeatures = networkStore.getLineFeatures();
         featureCollection = TranslateUtil
-                .segmentsToFeatureCollection(allSegments);
+                .lineFeatureSetToFeatureCollection(allLineFeatures);
         refresh();
         return "{\"status\": \"OK\"}";
     }
@@ -733,7 +752,7 @@ public class DefaultNetwork implements Network {
      * @param geoNode
      */
     private void addNearestNodes(GeoNode geoNode) {
-        List<GeoNode> nearestNodes = new ArrayList<>();
+        // List<GeoNode> nearestNodes = new ArrayList<>();
         // Trying to sort the nodes
         List<GeoNode> orderedNodes = getSortedNodes(geoNode);
         geoNode.setNearByNodes(orderedNodes);
@@ -775,7 +794,7 @@ public class DefaultNetwork implements Network {
             LineString lineString = (LineString) feature.getDefaultGeometry();
             if (lineString.buffer(GeoProperties.BUFFER_TOLERANCE).covers(
                     geoNode.getPoint())) {
-                geoNode.addSegment(TranslateUtil.featureToSegment(feature));
+                geoNode.addSegment(new EdgeImpl(feature));
                 result = true;
             }
         }

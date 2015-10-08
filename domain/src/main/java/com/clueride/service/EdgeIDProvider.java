@@ -13,36 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Jul 28, 2015
+ * Created Oct 5, 2015
  */
-package com.clueride.domain.dev;
-
-import java.util.List;
+package com.clueride.service;
 
 /**
- * Description.
- *
+ * Support for populating the private final ID for instances of TrackImpl and
+ * its derivatives.
+ * 
  * @author jett
  *
  */
-public interface Node {
-    boolean matchesLocation(Node node);
-
+public interface EdgeIDProvider {
     /**
-     * Summary of the Node's relationship to a particular Network.
+     * Whenever the Constructors for TrackImpl and derivatives ask for a new ID,
+     * this service will be invoked to obtain that ID.
      * 
      * @return
      */
-    NodeNetworkState getState();
-
-    void setState(NodeNetworkState nodeNetworkState);
-
-    List<UnratedSegment> getSegments();
-
-    void addSegment(UnratedSegment segment);
-
     Integer getId();
 
-    void setId(Integer id);
+    /**
+     * Only used by providers that handle pre-assigned IDs.
+     * 
+     * @param id
+     */
+    void registerId(Integer id);
+
+    /**
+     * Provides the current state; what is the most recently provided ID?
+     * 
+     * @return
+     */
+    int getLastId();
 
 }

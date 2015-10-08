@@ -15,15 +15,15 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
 import org.mockito.Mockito;
-import org.opengis.feature.simple.SimpleFeature;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkRecommendation;
-import com.clueride.domain.dev.Segment;
+import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.domain.factory.PointFactory;
-import com.clueride.geo.TranslateUtil;
+import com.clueride.feature.Edge;
+import com.clueride.feature.TrackFeature;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
@@ -33,15 +33,15 @@ public class RecommendationBuilderTest {
 
     private RecommendationBuilder toTest;
 
-    private Segment networkSegment;
+    private Edge networkSegment;
     private GeoNode networkNode;
     private GeoNode requestedNode;
-    private SimpleFeature track;
+    private TrackFeature track;
 
     private GeoNode singleNode;
     private GeoNode secondNode;
-    private Segment singleSegment;
-    private Segment secondSegment;
+    private Edge singleSegment;
+    private Edge secondSegment;
 
     private Point pointA;
     private Point pointB;
@@ -50,7 +50,7 @@ public class RecommendationBuilderTest {
     @BeforeMethod
     public void setUp() throws Exception {
         initMocks(this);
-        networkSegment = Mockito.mock(Segment.class);
+        networkSegment = Mockito.mock(Edge.class);
         networkNode = Mockito.mock(GeoNode.class);
         requestedNode = Mockito.mock(GeoNode.class);
         // track = Mockito.mock(SimpleFeature.class);
@@ -62,16 +62,21 @@ public class RecommendationBuilderTest {
 
         singleNode = Mockito.mock(GeoNode.class);
         secondNode = Mockito.mock(GeoNode.class);
-        singleSegment = Mockito.mock(Segment.class);
-        secondSegment = Mockito.mock(Segment.class);
+        singleSegment = Mockito.mock(Edge.class);
+        secondSegment = Mockito.mock(Edge.class);
 
         toTest = new RecommendationBuilder();
+
+        when(requestedNode.getId()).thenReturn(42);
+        when(requestedNode.getPoint()).thenReturn(pointR);
+        when(singleNode.getId()).thenReturn(84);
+        when(singleNode.getPoint()).thenReturn(pointA);
     }
 
     /**
      * @return
      */
-    private SimpleFeature getTestTrack() {
+    private TrackFeature getTestTrack() {
         Coordinate[] coordinates = {
                 new Coordinate(-84.0, 33.0, 300.0),
                 new Coordinate(-84.0, 33.1, 300.0),
@@ -79,7 +84,8 @@ public class RecommendationBuilderTest {
         };
         LineString lineString = new GeometryFactory()
                 .createLineString(coordinates);
-        return TranslateUtil.lineStringToFeature(lineString);
+        // return TranslateUtil.lineStringToFeature(lineString);
+        return (TrackFeature) LineFeatureFactory.getProposal(lineString);
     }
 
     @Test(expectedExceptions = IllegalStateException.class,
@@ -116,7 +122,6 @@ public class RecommendationBuilderTest {
 
     @Test
     public void buildOffNetwork() {
-        when(requestedNode.getId()).thenReturn(42);
         NetworkRecommendation actual = toTest
                 .requestNetworkNode(requestedNode)
                 .build();
@@ -127,7 +132,6 @@ public class RecommendationBuilderTest {
 
     @Test
     public void buildOnSegment() {
-        when(requestedNode.getId()).thenReturn(42);
         NetworkRecommendation actual = toTest
                 .addOnNetworkSegment(networkSegment)
                 .requestNetworkNode(requestedNode)
@@ -139,7 +143,6 @@ public class RecommendationBuilderTest {
 
     @Test
     public void buildOnNode() {
-        when(requestedNode.getId()).thenReturn(42);
         NetworkRecommendation actual = toTest
                 .addOnNetworkNode(networkNode)
                 .requestNetworkNode(requestedNode)
@@ -153,7 +156,6 @@ public class RecommendationBuilderTest {
             expectedExceptions = IllegalStateException.class,
             expectedExceptionsMessageRegExp = ".* existing network must be given .*")
     public void buildTrackOnlyException() {
-        when(requestedNode.getId()).thenReturn(42);
         toTest
                 .requestNetworkNode(requestedNode)
                 .addTrack(track)
@@ -162,7 +164,6 @@ public class RecommendationBuilderTest {
 
     @Test
     public void buildToNode() {
-        when(requestedNode.getId()).thenReturn(42);
         NetworkRecommendation actual = toTest
                 .requestNetworkNode(requestedNode)
                 .addTrack(track)
@@ -175,7 +176,6 @@ public class RecommendationBuilderTest {
 
     @Test
     public void buildToSegment() {
-        when(requestedNode.getId()).thenReturn(42);
         NetworkRecommendation actual = toTest
                 .requestNetworkNode(requestedNode)
                 .addTrack(track)
@@ -188,7 +188,6 @@ public class RecommendationBuilderTest {
 
     @Test
     public void buildToTwoNodes() {
-        when(requestedNode.getId()).thenReturn(42);
         NetworkRecommendation actual = toTest
                 .requestNetworkNode(requestedNode)
                 .addTrack(track)
@@ -202,7 +201,6 @@ public class RecommendationBuilderTest {
 
     @Test
     public void buildToTwoSegments() {
-        when(requestedNode.getId()).thenReturn(42);
         NetworkRecommendation actual = toTest
                 .requestNetworkNode(requestedNode)
                 .addTrack(track)
@@ -216,7 +214,6 @@ public class RecommendationBuilderTest {
 
     @Test
     public void buildToSegmentAndNode() {
-        when(requestedNode.getId()).thenReturn(42);
         NetworkRecommendation actual = toTest
                 .requestNetworkNode(requestedNode)
                 .addTrack(track)
@@ -232,7 +229,6 @@ public class RecommendationBuilderTest {
             expectedExceptions = IllegalStateException.class,
             expectedExceptionsMessageRegExp = ".* no more than two network connections .*")
     public void buildToTooMuch() {
-        when(requestedNode.getId()).thenReturn(42);
         toTest
                 .requestNetworkNode(requestedNode)
                 .addTrack(track)
@@ -244,7 +240,6 @@ public class RecommendationBuilderTest {
 
     @Test
     public void buildExpectScore() {
-        when(requestedNode.getId()).thenReturn(42);
         NetworkRecommendation actual = toTest
                 .requestNetworkNode(requestedNode)
                 .addTrack(track)
@@ -260,17 +255,27 @@ public class RecommendationBuilderTest {
     // Series of tests checking the JSON build
     @Test
     public void buildToNodeFeatureCollection() {
-        when(requestedNode.getId()).thenReturn(42);
-        when(requestedNode.getPoint()).thenReturn(pointR);
-        when(singleNode.getId()).thenReturn(84);
-        when(singleNode.getPoint()).thenReturn(pointA);
         NetworkRecommendation actual = toTest
                 .requestNetworkNode(requestedNode)
                 .addTrack(track)
                 .addSingleNode(singleNode)
                 .build();
         assertNotNull(actual);
-
         assertEquals(actual.getFeatureCollection().size(), 3);
     }
+
+    @Test
+    public void buildToSegmentFeatureCollection() {
+        NetworkRecommendation actual = toTest
+                .requestNetworkNode(requestedNode)
+                .addTrack(track)
+                .addSingleSegment(singleSegment)
+                .addSplittingNode(singleNode)
+                .build();
+        assertNotNull(actual);
+
+        // ReqNode, Track, Segment, SplittingNode
+        assertEquals(actual.getFeatureCollection().size(), 4);
+    }
+
 }

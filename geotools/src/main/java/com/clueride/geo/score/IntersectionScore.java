@@ -22,11 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
+import com.clueride.feature.LineFeature;
+import com.clueride.feature.SegmentFeature;
+import com.clueride.feature.TrackFeature;
 
 /**
  * Ways of measuring potential new connections to an existing network.
@@ -50,10 +51,10 @@ public class IntersectionScore {
 
     private Integer id;
     private GeoNode subjectGeoNode;
-    private Map<SimpleFeature, Node> tracksWithNetworkNodes = new HashMap<>();
-    private Map<SimpleFeature, Segment> tracksIntersectingSegments = new HashMap<>();
-    private Map<SimpleFeature, Segment> tracksCrossingSegments = new HashMap<>();
-    private Map<SimpleFeature, TrackScore> allTracks = new HashMap<>();
+    private Map<LineFeature, Node> tracksWithNetworkNodes = new HashMap<>();
+    private Map<LineFeature, Edge> tracksIntersectingSegments = new HashMap<>();
+    private Map<LineFeature, Edge> tracksCrossingSegments = new HashMap<>();
+    private Map<LineFeature, TrackScore> allTracks = new HashMap<>();
 
     /**
      * @param geoNode
@@ -68,7 +69,7 @@ public class IntersectionScore {
      * @param track
      * @param node
      */
-    public void addTrackConnectingNode(SimpleFeature track, Node node) {
+    public void addTrackConnectingNode(TrackFeature track, Node node) {
         TrackScore trackScore = fetchTrackScore(track);
         trackScore.addNode(node);
     }
@@ -76,11 +77,12 @@ public class IntersectionScore {
     /**
      * Collect list of tracks that intersect (overlap) with network segments.
      * 
-     * @param track
+     * @param edge
      * @param segment
      */
-    public void addIntersectingTrack(SimpleFeature track, Segment segment) {
-        TrackScore trackScore = fetchTrackScore(track);
+    public void addIntersectingTrack(
+            Edge edge, SegmentFeature segment) {
+        TrackScore trackScore = fetchTrackScore(edge);
         trackScore.addIntersectingSegments(segment);
     }
 
@@ -90,20 +92,22 @@ public class IntersectionScore {
      * @param track
      * @param segment
      */
-    public void addCrossingTrack(SimpleFeature track, Segment segment) {
+    public void addCrossingTrack(LineFeature track, Edge segment) {
         TrackScore trackScore = fetchTrackScore(track);
         trackScore.addCrossingSegment(segment);
     }
 
     /**
-     * @param track
+     * @param trackFeature
      * @return
      */
-    private TrackScore fetchTrackScore(SimpleFeature track) {
-        if (!allTracks.containsKey(track)) {
-            allTracks.put(track, new TrackScore(track, subjectGeoNode));
+    private TrackScore fetchTrackScore(
+            LineFeature trackFeature) {
+        if (!allTracks.containsKey(trackFeature)) {
+            allTracks.put(trackFeature, new TrackScore(
+                    trackFeature, subjectGeoNode));
         }
-        return allTracks.get(track);
+        return allTracks.get(trackFeature);
     }
 
     public int getTrackCount() {
@@ -140,7 +144,7 @@ public class IntersectionScore {
      * @return
      */
     public TrackScore fetchBestTrackScore() {
-        for (Entry<SimpleFeature, TrackScore> entry : allTracks.entrySet()) {
+        for (Entry<LineFeature, TrackScore> entry : allTracks.entrySet()) {
             return fetchTrackScore(entry.getKey());
         }
         return null;
@@ -149,14 +153,14 @@ public class IntersectionScore {
     /**
      * @return
      */
-    public List<Segment> getIntersectingSegments(SimpleFeature track) {
+    public List<Edge> getIntersectingSegments(TrackFeature track) {
         return fetchTrackScore(track).getIntersectingSegments();
     }
 
     /**
      * @return
      */
-    public Segment getBestSegment() {
+    public Edge getBestSegment() {
         return fetchBestTrackScore().getBestSegment();
     }
 }

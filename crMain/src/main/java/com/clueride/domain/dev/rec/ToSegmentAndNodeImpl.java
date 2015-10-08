@@ -19,10 +19,9 @@ package com.clueride.domain.dev.rec;
 
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_SEGMENT_AND_NODE;
 
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
+import com.clueride.feature.TrackFeature;
 
 /**
  * Description.
@@ -32,11 +31,11 @@ import com.clueride.domain.dev.Segment;
 public class ToSegmentAndNodeImpl extends TrackImpl implements
         ToSegmentAndNode {
 
-    private Segment segment;
+    private Edge segment;
     private GeoNode node;
 
-    public ToSegmentAndNodeImpl(GeoNode reqNode, SimpleFeature track,
-            Segment segment, GeoNode node) {
+    public ToSegmentAndNodeImpl(GeoNode reqNode, TrackFeature track,
+            Edge segment, GeoNode node) {
         super(reqNode, track);
         this.segment = segment;
         this.node = node;
@@ -53,7 +52,7 @@ public class ToSegmentAndNodeImpl extends TrackImpl implements
     /**
      * @return the segment
      */
-    public Segment getSegment() {
+    public Edge getSegment() {
         return segment;
     }
 

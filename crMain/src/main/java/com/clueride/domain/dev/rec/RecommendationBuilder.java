@@ -17,11 +17,10 @@
  */
 package com.clueride.domain.dev.rec;
 
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkRecommendation;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
+import com.clueride.feature.TrackFeature;
 
 /**
  * Builder for a Recommendation that becomes part of a Proposal.
@@ -38,14 +37,17 @@ public class RecommendationBuilder {
     private GeoNode requestedNode;
     /** Existing node, if the requested node is found within tolerance. */
     private GeoNode onNetworkNode;
-    private Segment onNetworkSegment;
-    private SimpleFeature onTrack;
+    private Edge onNetworkSegment;
+    private TrackFeature onTrack;
 
     /** Connections of a Track to the network (valid when there is a track). */
     private GeoNode singleNode;
     private GeoNode secondNode;
-    private Segment singleSegment;
-    private Segment secondSegment;
+    private Edge singleSegment;
+    private Edge secondSegment;
+    private GeoNode splittingNode;
+    private GeoNode splittingNodeStart;
+    private GeoNode splittingNodeEnd;
 
     /** */
 
@@ -121,7 +123,8 @@ public class RecommendationBuilder {
 
         // ToSegmentImpl
         if (singleSegment != null) {
-            return new ToSegmentImpl(requestedNode, onTrack, singleSegment);
+            return new ToSegmentImpl(requestedNode, onTrack, singleSegment,
+                    splittingNode);
         }
 
         throw new IllegalStateException(
@@ -193,7 +196,7 @@ public class RecommendationBuilder {
      * @param networkSegment
      * @return
      */
-    public RecommendationBuilder addOnNetworkSegment(Segment networkSegment) {
+    public RecommendationBuilder addOnNetworkSegment(Edge networkSegment) {
         this.onNetworkSegment = networkSegment;
         return this;
     }
@@ -211,7 +214,7 @@ public class RecommendationBuilder {
      * @param track
      * @return
      */
-    public RecommendationBuilder addTrack(SimpleFeature track) {
+    public RecommendationBuilder addTrack(TrackFeature track) {
         this.onTrack = track;
         return this;
     }
@@ -238,7 +241,7 @@ public class RecommendationBuilder {
      * @param singleSegment
      * @return
      */
-    public RecommendationBuilder addSingleSegment(Segment singleSegment) {
+    public RecommendationBuilder addSingleSegment(Edge singleSegment) {
         this.singleSegment = singleSegment;
         return this;
     }
@@ -247,8 +250,17 @@ public class RecommendationBuilder {
      * @param secondSegment
      * @return
      */
-    public RecommendationBuilder addSecondSegment(Segment secondSegment) {
+    public RecommendationBuilder addSecondSegment(Edge secondSegment) {
         this.secondSegment = secondSegment;
+        return this;
+    }
+
+    /**
+     * @param singleNode2
+     * @return
+     */
+    public RecommendationBuilder addSplittingNode(GeoNode splittingNode) {
+        this.splittingNode = splittingNode;
         return this;
     }
 

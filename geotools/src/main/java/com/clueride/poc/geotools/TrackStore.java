@@ -26,9 +26,9 @@ import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.LineFeature;
 import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.domain.factory.NodeFactory;
+import com.clueride.feature.LineFeature;
 import com.vividsolutions.jts.geom.LineString;
 
 /**

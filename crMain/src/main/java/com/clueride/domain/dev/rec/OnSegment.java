@@ -17,7 +17,7 @@
  */
 package com.clueride.domain.dev.rec;
 
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
 
 /**
  * Description.
@@ -26,5 +26,5 @@ import com.clueride.domain.dev.Segment;
  *
  */
 public interface OnSegment extends Rec {
-    Segment getSegment();
+    Edge getSegment();
 }

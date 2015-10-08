@@ -17,19 +17,6 @@
  */
 package com.clueride.apps;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-
-import org.opengis.feature.simple.SimpleFeature;
-
-import com.clueride.domain.dev.Segment;
-import com.clueride.geo.TranslateUtil;
-import com.clueride.gpx.TrackUtil;
-import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
-import com.jettmarks.gmaps.encoder.Track;
-import com.vividsolutions.jts.geom.LineString;
 
 /**
  * This reads GPX files and turns them into a JSON Feature file for each.
@@ -46,32 +33,30 @@ public class GPXtoFeature {
     private static String tag = "bikeTrain";
 
     /**
+     * Very useful utility, but I'll resurrect it when I need it.
+     * 
      * @param args
+     *            public static void main(String[] args) { if (args.length > 0)
+     *            { tag = args[0]; } System.out.println("Using the tag: " +
+     *            tag); File directory = new File(tag); if
+     *            (!directory.isDirectory()) { directory.mkdir(); }
+     * 
+     *            List<Track> tracks = TrackUtil.getTracksForTag(tag);
+     *            System.out.println("Number of tracks: " + tracks.size());
+     * 
+     *            Map<Track, LineString> linesByName = TrackUtil
+     *            .trackToLineString(tracks);
+     * 
+     *            List<Segment> segments =
+     *            TranslateUtil.lineStringToSegment(linesByName);
+     * 
+     *            JsonUtil jsonUtilRaw = new JsonUtil(JsonStoreType.SEGMENTS);
+     *            for (Segment segment : segments) { // TODO: Move to new way of
+     *            doing things // SimpleFeature feature =
+     *            TranslateUtil.segmentToFeature(segment); SimpleFeature feature
+     *            = null; jsonUtilRaw.writeFeatureToFile(feature, tag +
+     *            File.separator + segment.getUrl() + ".geojson"); }
+     * 
+     *            }
      */
-    public static void main(String[] args) {
-        if (args.length > 0) {
-            tag = args[0];
-        }
-        System.out.println("Using the tag: " + tag);
-        File directory = new File(tag);
-        if (!directory.isDirectory()) {
-            directory.mkdir();
-        }
-
-        List<Track> tracks = TrackUtil.getTracksForTag(tag);
-        System.out.println("Number of tracks: " + tracks.size());
-
-        Map<Track, LineString> linesByName = TrackUtil
-                .trackToLineString(tracks);
-
-        List<Segment> segments = TranslateUtil.lineStringToSegment(linesByName);
-
-        JsonUtil jsonUtilRaw = new JsonUtil(JsonStoreType.SEGMENTS);
-        for (Segment segment : segments) {
-            SimpleFeature feature = TranslateUtil.segmentToFeature(segment);
-            jsonUtilRaw.writeFeatureToFile(feature, tag + File.separator
-                    + segment.getUrl() + ".geojson");
-        }
-
-    }
 }

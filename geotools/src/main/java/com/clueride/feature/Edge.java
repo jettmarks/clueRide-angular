@@ -13,21 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Sep 27, 2015
+ * Created Oct 5, 2015
  */
-package com.clueride.domain.dev.rec;
+package com.clueride.feature;
 
-import com.clueride.feature.TrackFeature;
+import com.clueride.domain.dev.UnratedSegment;
 
 /**
- * Represents New Location which is connected somehow to the Network; extensions
- * describe how this track is connected.
+ * This interface steps in at the point we'd be calling this an
+ * "UnratedSegmentFeature", but this name is a whole lot easier to get the head
+ * wrapped around.
+ * 
+ * The name is also something that makes more sense to someone who is used to
+ * working with networks: an edge connects two vertices or {@link Node}s in our
+ * domain.
  *
  * @author jett
  *
  */
-public interface OnTrack extends Rec {
-    Integer getTrackId();
+public interface Edge extends UnratedSegment, LineFeature {
 
-    TrackFeature getTrack();
 }

@@ -31,12 +31,13 @@ import org.opengis.feature.simple.SimpleFeature;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.SegmentImpl;
+import com.clueride.domain.SegmentFeatureImpl;
 import com.clueride.domain.dev.NodeGroup;
-import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.NodeFactory;
-import com.clueride.domain.factory.SegmentFactory;
+import com.clueride.feature.Edge;
 import com.clueride.feature.FeatureType;
+import com.clueride.feature.LineFeature;
+import com.clueride.poc.geotools.TempSegmentImpl;
 import com.jettmarks.gmaps.encoder.Track;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
@@ -60,14 +61,16 @@ public class TranslateUtil {
      * @param segments
      *            - input
      * @return
+     * @deprecated - Move toward List<LineFeature>
      */
     public static DefaultFeatureCollection segmentsToFeatureCollection(
-            List<Segment> segments) {
-        SimpleFeatureBuilder segmentFeatureBuilder = new SimpleFeatureBuilder(
-                FeatureType.SEGMENT_FEATURE_TYPE);
+            List<Edge> segments) {
+        // SimpleFeatureBuilder segmentFeatureBuilder = new
+        // SimpleFeatureBuilder(
+        // FeatureType.SEGMENT_FEATURE_TYPE);
         DefaultFeatureCollection features;
         features = new DefaultFeatureCollection();
-        for (Segment segment : segments) {
+        for (Edge segment : segments) {
             SimpleFeature feature = segmentToFeature(segment);
             features.add(feature);
         }
@@ -77,10 +80,11 @@ public class TranslateUtil {
     /**
      * @param segments
      * @return
+     * @deprecated - Move toward Set<LineFeature>
      */
     public static DefaultFeatureCollection segmentsToFeatureCollection(
-            Set<Segment> segments) {
-        List<Segment> segList = new ArrayList<>();
+            Set<Edge> segments) {
+        List<Edge> segList = new ArrayList<>();
         segList.addAll(segments);
         return segmentsToFeatureCollection(segList);
     }
@@ -89,13 +93,14 @@ public class TranslateUtil {
      * @param segmentFeatureBuilder
      * @param segment
      * @return
+     * @deprecated - Move toward LineFeature
      */
-    public static SimpleFeature segmentToFeature(Segment segment) {
-        segmentFeatureBuilder.add(segment.getSegId());
-        segmentFeatureBuilder.add(segment.getName());
+    public static SimpleFeature segmentToFeature(Edge segment) {
+        segmentFeatureBuilder.add(segment.getId());
+        segmentFeatureBuilder.add(segment.getDisplayName());
         segmentFeatureBuilder.add(segment.getUrl());
         segmentFeatureBuilder.add(false);
-        segmentFeatureBuilder.add(((SegmentImpl) segment).getLineString());
+        // segmentFeatureBuilder.add(((SegmentImpl) segment).getLineString());
         SimpleFeature feature = segmentFeatureBuilder.buildFeature(null);
         return feature;
     }
@@ -160,6 +165,10 @@ public class TranslateUtil {
     }
 
     /**
+     * TODO: Replace this with the Recommendation class structure which is
+     * intended to carry all this information over to a JSON string to be sent
+     * to the client.
+     * 
      * @param geoNode
      * @return
      */
@@ -173,14 +182,15 @@ public class TranslateUtil {
         if (geoNode.getSelectedNode() != null) {
             features.add(geoNodeToFeature(geoNode.getSelectedNode()));
         }
-        for (Segment segment : geoNode.getSegments()) {
-            features.add(segmentToFeature(segment));
-        }
+        // TODO: Find where these were being added; they're in the wrong spot
+        // for (Edge segment : geoNode.getSegments()) {
+        // features.add(segment.getFeature());
+        // }
         for (SimpleFeature trackFeature : geoNode.getTracks()) {
             features.add(trackFeatureToFeature(trackFeature));
         }
         if (geoNode.hasProposedSegment()) {
-            features.add(segmentToFeature(geoNode.getProposedSegment()));
+            features.add(geoNode.getProposedSegment().getFeature());
         }
         return features;
     }
@@ -208,18 +218,19 @@ public class TranslateUtil {
      * @param linesByName
      * @return
      */
-    public static List<Segment> lineStringToSegment(
+    public static List<Edge> lineStringToSegment(
             Map<Track, LineString> linesByName) {
-        List<Segment> segments;
-        segments = new ArrayList<Segment>();
+        List<Edge> segments;
+        segments = new ArrayList<Edge>();
         int index = 0;
         for (Entry<Track, LineString> trackEntry : linesByName.entrySet()) {
             index++;
-            Segment segment = SegmentFactory.getInstance(trackEntry.getValue());
-            segment.setSegId(index);
-            segment.setName(trackEntry.getKey().getDisplayName());
+            // Segment segment =
+            // SegmentFactory.getInstance(trackEntry.getValue());
+            TempSegmentImpl segment = new TempSegmentImpl(index);
+            segment.setDisplayName(trackEntry.getKey().getDisplayName());
             segment.setUrl(trackEntry.getKey().getName());
-            segments.add(segment);
+            segments.add((Edge) segment);
         }
         return segments;
     }
@@ -232,30 +243,26 @@ public class TranslateUtil {
      * 
      * @param lineString
      * @return
+     * @deprecated public static Segment lineStringToSegment(LineString
+     *             lineString) { Segment segment =
+     *             SegmentFactory.getInstance(lineString); return segment; }
      */
-    public static Segment lineStringToSegment(LineString lineString) {
-        Segment segment = SegmentFactory.getInstance(lineString);
-        return segment;
-    }
 
     /**
      * @param feature
      * @return
+     * @deprecated - Replace with Constructor accepting Feature. public static
+     *             Segment featureToSegment(SimpleFeature feature) { LineString
+     *             lineString = (LineString) feature.getDefaultGeometry();
+     *             Segment segment = SegmentFactory.getInstance(lineString);
+     *             segment.setDisplayName((String)
+     *             feature.getAttribute("name")); segment.setUrl((String)
+     *             feature.getAttribute("url")); Object segIdObject =
+     *             feature.getAttribute("segId"); if (segIdObject instanceof
+     *             Integer) { segment.setId((Integer) segIdObject); } if
+     *             (segIdObject instanceof Long) { segment.setId(((Long)
+     *             segIdObject).intValue()); } return segment; }
      */
-    public static Segment featureToSegment(SimpleFeature feature) {
-        LineString lineString = (LineString) feature.getDefaultGeometry();
-        Segment segment = SegmentFactory.getInstance(lineString);
-        segment.setName((String) feature.getAttribute("name"));
-        segment.setUrl((String) feature.getAttribute("url"));
-        Object segIdObject = feature.getAttribute("segId");
-        if (segIdObject instanceof Integer) {
-            segment.setSegId((Integer) segIdObject);
-        }
-        if (segIdObject instanceof Long) {
-            segment.setSegId(((Long) segIdObject).intValue());
-        }
-        return segment;
-    }
 
     /**
      * @param feature
@@ -310,13 +317,13 @@ public class TranslateUtil {
      * @param features
      * @return
      */
-    public static Set<Segment> featureCollectionToSegments(
+    public static Set<LineFeature> featureCollectionToLineFeatures(
             DefaultFeatureCollection features) {
-        Set<Segment> segmentSet = new HashSet<>();
+        Set<LineFeature> lineFeatureSet = new HashSet<>();
         for (SimpleFeature feature : features) {
-            segmentSet.add(featureToSegment(feature));
+            lineFeatureSet.add(new SegmentFeatureImpl(feature));
         }
-        return segmentSet;
+        return lineFeatureSet;
     }
 
     /**
@@ -392,7 +399,7 @@ public class TranslateUtil {
      * @param segment
      * @return LineString corresponding to the Segment.
      */
-    public static LineString segmentToLineString(Segment segment) {
+    public static LineString segmentToLineString(Edge segment) {
         return (LineString) segmentToFeature(segment).getDefaultGeometry();
     }
 
@@ -400,11 +407,31 @@ public class TranslateUtil {
      * Two hops from lineString to Segment, and then Segment to Feature.
      * 
      * @param intersectingTrackLineString
+     * @return public static SimpleFeature lineStringToFeature( LineString
+     *         lineString) { return
+     *         segmentToFeature(lineStringToSegment(lineString)); }
+     */
+
+    /**
+     * @param allLineFeatures
+     * @return public static DefaultFeatureCollection
+     *         lineFeaturesToFeatureCollection( Set<LineFeature>
+     *         allLineFeatures) { DefaultFeatureCollection featureCollection =
+     *         new DefaultFeatureCollection(); for (LineFeature lineFeature :
+     *         allLineFeatures) { featureCollection.add(lineFeature.); } return
+     *         null; }
+     */
+
+    /**
+     * @param lineFeatures
      * @return
      */
-    public static SimpleFeature lineStringToFeature(
-            LineString lineString) {
-        return segmentToFeature(lineStringToSegment(lineString));
+    public static DefaultFeatureCollection lineFeatureSetToFeatureCollection(
+            Set<LineFeature> allLineFeatures) {
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
+        for (LineFeature lineFeature : allLineFeatures) {
+            featureCollection.add(lineFeature.getFeature());
+        }
+        return featureCollection;
     }
-
 }

@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Sep 27, 2015
+ * Created Oct 4, 2015
  */
-package com.clueride.domain.dev.rec;
+package com.clueride.feature;
 
-import com.clueride.feature.TrackFeature;
+import com.clueride.domain.dev.Segment;
 
 /**
- * Represents New Location which is connected somehow to the Network; extensions
- * describe how this track is connected.
+ * Description.
  *
  * @author jett
  *
  */
-public interface OnTrack extends Rec {
-    Integer getTrackId();
+public interface SegmentFeature extends LineFeature, Segment {
 
-    TrackFeature getTrack();
 }

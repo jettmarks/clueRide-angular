@@ -19,10 +19,9 @@ package com.clueride.domain.dev.rec;
 
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_SEGMENTS;
 
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
+import com.clueride.feature.TrackFeature;
 
 /**
  * Description.
@@ -31,12 +30,12 @@ import com.clueride.domain.dev.Segment;
  *
  */
 public class ToTwoSegmentsImpl extends TrackImpl implements ToTwoSegments {
-    private Segment segment1;
-    private Segment segment2;
+    private Edge segment1;
+    private Edge segment2;
 
-    public ToTwoSegmentsImpl(GeoNode reqNode, SimpleFeature track,
-            Segment segment1, Segment segment2) {
-        super(reqNode, track);
+    public ToTwoSegmentsImpl(GeoNode reqNode, TrackFeature onTrack,
+            Edge segment1, Edge segment2) {
+        super(reqNode, onTrack);
         this.segment1 = segment1;
         this.segment2 = segment2;
     }
@@ -44,14 +43,14 @@ public class ToTwoSegmentsImpl extends TrackImpl implements ToTwoSegments {
     /**
      * @return the segment1
      */
-    public Segment getSegment1() {
+    public Edge getSegment1() {
         return segment1;
     }
 
     /**
      * @return the segment2
      */
-    public Segment getSegment2() {
+    public Edge getSegment2() {
         return segment2;
     }
 

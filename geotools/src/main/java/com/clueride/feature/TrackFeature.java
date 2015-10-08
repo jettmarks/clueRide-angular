@@ -13,29 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Aug 15, 2015
+ * Created Oct 4, 2015
  */
-package com.clueride.domain;
+package com.clueride.feature;
 
-import com.clueride.domain.dev.Node;
+import com.clueride.domain.dev.Track;
 
 /**
- * Just as a PointFeature combines geometrical and non-geometrical properties
- * for a Node/Location, the LineFeature does the same for Segments.
+ * Description.
  *
  * @author jett
  *
  */
-public interface LineFeature {
-	public int getSegId();
+public interface TrackFeature extends Track, LineFeature {
 
-	public void setSegId(int id);
-
-	public String getName();
-
-	public void setName(String name);
-
-	public Node getStart();
-
-	public Node getEnd();
 }

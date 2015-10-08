@@ -17,9 +17,8 @@
  */
 package com.clueride.domain.dev.rec;
 
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.GeoNode;
+import com.clueride.feature.TrackFeature;
 
 /**
  * Description.
@@ -29,12 +28,12 @@ import com.clueride.domain.GeoNode;
  */
 public class TrackImpl extends RecImpl implements OnTrack {
 
-    private SimpleFeature track;
+    private TrackFeature track;
 
-    public TrackImpl(GeoNode reqNode, SimpleFeature track) {
+    public TrackImpl(GeoNode reqNode, TrackFeature track) {
         super(reqNode);
         this.track = track;
-        addFeature(track);
+        addFeature(track.getFeature());
     }
 
     /**
@@ -60,7 +59,7 @@ public class TrackImpl extends RecImpl implements OnTrack {
      * @see com.clueride.domain.dev.rec.OnTrack#getTrack()
      */
     @Override
-    public SimpleFeature getTrack() {
+    public TrackFeature getTrack() {
         return track;
     }
 

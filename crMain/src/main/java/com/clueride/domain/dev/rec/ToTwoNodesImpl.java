@@ -19,9 +19,8 @@ package com.clueride.domain.dev.rec;
 
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_NODES;
 
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.GeoNode;
+import com.clueride.feature.TrackFeature;
 
 /**
  * Description.
@@ -33,7 +32,7 @@ public class ToTwoNodesImpl extends TrackImpl implements ToTwoNodes {
     private GeoNode node1;
     private GeoNode node2;
 
-    public ToTwoNodesImpl(GeoNode reqNode, SimpleFeature track,
+    public ToTwoNodesImpl(GeoNode reqNode, TrackFeature track,
             GeoNode node1, GeoNode node2) {
         super(reqNode, track);
         this.node1 = node1;

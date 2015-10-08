@@ -19,10 +19,10 @@ package com.clueride.domain.dev.rec;
 
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_SEGMENT;
 
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
+import com.clueride.feature.TrackFeature;
+import com.clueride.geo.TranslateUtil;
 
 /**
  * Description.
@@ -31,18 +31,24 @@ import com.clueride.domain.dev.Segment;
  *
  */
 public class ToSegmentImpl extends TrackImpl implements ToSegment {
-    private Segment segment;
+    /** Existing portion of network where track intersects. */
+    private Edge segment;
+    /** Node on segment and track where the segment is proposed to be split. */
+    private GeoNode splittingNode;
 
-    public ToSegmentImpl(GeoNode reqNode, SimpleFeature track,
-            Segment segment) {
-        super(reqNode, track);
+    public ToSegmentImpl(GeoNode reqNode, TrackFeature onTrack,
+            Edge segment, GeoNode splittingNode) {
+        super(reqNode, onTrack);
         this.segment = segment;
+        addFeature(TranslateUtil.segmentToFeature(segment));
+        this.splittingNode = splittingNode;
+        addFeature(TranslateUtil.geoNodeToFeature(splittingNode));
     }
 
     /**
      * @return the segment
      */
-    public Segment getSegment() {
+    public Edge getSegment() {
         return segment;
     }
 

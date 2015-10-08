@@ -26,17 +26,17 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.config.GeoProperties;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
-import com.clueride.domain.dev.Segment;
 import com.clueride.domain.factory.NodeFactory;
 import com.clueride.domain.factory.PointFactory;
+import com.clueride.feature.Edge;
+import com.clueride.feature.LineFeature;
+import com.clueride.feature.SegmentFeature;
 import com.clueride.geo.LengthToPoint;
 import com.clueride.geo.SplitLineString;
-import com.clueride.geo.TranslateUtil;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
@@ -59,25 +59,25 @@ import com.vividsolutions.jts.geom.Polygon;
 public class TrackScore {
     private static final Logger logger = Logger.getLogger(TrackScore.class);
 
-    private SimpleFeature track;
+    private LineFeature track;
     private GeoNode subjectGeoNode;
 
     private List<Node> networkNodes = new ArrayList<>();
-    private List<Segment> crossingSegments = new ArrayList<>();
-    private List<Segment> intersectingSegments = new ArrayList<>();
+    private List<Edge> crossingSegments = new ArrayList<>();
+    private List<Edge> intersectingSegments = new ArrayList<>();
 
     /** Lowest score is best. */
     private GeoNode proposedNode = null;
     private static List<GeoNode> nodeProposals = new ArrayList<>();
-    private Segment bestSegment = null;
+    private Edge bestSegment = null;
 
     // Holds the two pieces from the node out to each end of the track
     private final SplitLineString splitLineString;
-    private static final Map<Integer, Segment> segmentIndex = new HashMap<>();
+    private static final Map<Integer, Edge> segmentIndex = new HashMap<>();
     private static final Map<Integer, SubTrackScore> scorePerSegment = new HashMap<>();
 
     @Inject
-    public TrackScore(SimpleFeature track, GeoNode geoNode) {
+    public TrackScore(LineFeature track, GeoNode geoNode) {
         this.track = track;
         this.subjectGeoNode = geoNode;
         splitLineString = new SplitLineString(track, geoNode);
@@ -92,18 +92,18 @@ public class TrackScore {
         networkNodes.add(node);
     }
 
-    public void addCrossingSegment(Segment segment) {
+    public void addCrossingSegment(Edge segment) {
         crossingSegments.add(segment);
     }
 
-    public void addIntersectingSegments(Segment segment) {
-        intersectingSegments.add(segment);
+    public void addIntersectingSegments(SegmentFeature segment) {
+        intersectingSegments.add((Edge) segment);
     }
 
     /**
      * @return the track
      */
-    public SimpleFeature getTrack() {
+    public LineFeature getTrack() {
         return track;
     }
 
@@ -124,14 +124,14 @@ public class TrackScore {
     /**
      * @return the crossingSegments
      */
-    public List<Segment> getCrossingSegments() {
+    public List<Edge> getCrossingSegments() {
         return crossingSegments;
     }
 
     /**
      * @return the intersectingSegments
      */
-    public List<Segment> getIntersectingSegments() {
+    public List<Edge> getIntersectingSegments() {
         return intersectingSegments;
     }
 
@@ -158,7 +158,7 @@ public class TrackScore {
         nodeProposals.clear();
 
         // Bundle all segments into a list
-        List<Segment> allSegments = new ArrayList<>(intersectingSegments);
+        List<Edge> allSegments = new ArrayList<>(intersectingSegments);
         allSegments.addAll(crossingSegments);
 
         // TODO: Come back to these later
@@ -191,7 +191,7 @@ public class TrackScore {
                     "Didn't find any intersecting/crossing nodes");
         }
         logger.info("Low Score Segment: "
-                + selectedScore.getBestSegment().getSegId());
+                + selectedScore.getBestSegment().getId());
         proposedNode = selectedScore.getBestNode();
         return allSegments.size();
     }
@@ -206,10 +206,10 @@ public class TrackScore {
      * @return
      */
     SubTrackScore proposeBestScore(LineString subTrackLineString,
-            List<Segment> allSegments) {
+            List<Edge> allSegments) {
         GeoNode lowScoreNode = null;
         double score = Double.MAX_VALUE;
-        for (Segment segment : allSegments) {
+        for (Edge segment : allSegments) {
             SubTrackScore calculatedScore = score(segment, subTrackLineString);
             if (calculatedScore.getScore() < score) {
                 score = calculatedScore.getScore();
@@ -238,13 +238,13 @@ public class TrackScore {
      *            - the subTrack to be scored.
      * @return SubTrackScore representing the node, segment and score.
      */
-    SubTrackScore score(Segment segment, LineString subTrackLineString)
+    SubTrackScore score(Edge segment,
+            LineString subTrackLineString)
             throws RuntimeException {
 
         // Walk this subTrack up to the segment and if this isn't a
         // node, add it as a proposed node.
-        LineString segmentLineString = TranslateUtil
-                .segmentToLineString(segment);
+        LineString segmentLineString = segment.getLineString();
 
         Coordinate coordinateIntersection = null;
         GeoNode newGeoNode = null;
@@ -300,7 +300,7 @@ public class TrackScore {
     /**
      * @return
      */
-    public Segment getBestSegment() {
+    public Edge getBestSegment() {
         return bestSegment;
     }
 }

@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Jul 28, 2015
+ * Created Oct 4, 2015
  */
 package com.clueride.domain.dev;
-
-import java.util.List;
 
 /**
  * Description.
@@ -25,24 +23,31 @@ import java.util.List;
  * @author jett
  *
  */
-public interface Node {
-    boolean matchesLocation(Node node);
+public class UnratedSegmentImpl extends TrackImpl implements UnratedSegment {
+
+    private Node startNode;
+    private Node endNode;
 
     /**
-     * Summary of the Node's relationship to a particular Network.
-     * 
-     * @return
+     * @param displayName
+     * @param url
      */
-    NodeNetworkState getState();
+    public UnratedSegmentImpl(String displayName, String url) {
+        super(displayName, url);
+    }
 
-    void setState(NodeNetworkState nodeNetworkState);
+    /**
+     * @see com.clueride.domain.dev.UnratedSegment#getStart()
+     */
+    public Node getStart() {
+        return startNode;
+    }
 
-    List<UnratedSegment> getSegments();
-
-    void addSegment(UnratedSegment segment);
-
-    Integer getId();
-
-    void setId(Integer id);
+    /**
+     * @see com.clueride.domain.dev.UnratedSegment#getEnd()
+     */
+    public Node getEnd() {
+        return endNode;
+    }
 
 }

@@ -25,11 +25,15 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.NodeNetworkState;
-import com.clueride.domain.dev.Segment;
+import com.clueride.domain.dev.UnratedSegment;
+import com.clueride.feature.Edge;
 import com.vividsolutions.jts.geom.Point;
 
 /**
  * Description.
+ * 
+ * TODO: Needs to take advantage of the Recommendation Structure to get rid of a
+ * lot of the baggage being carried around by this implementation class.
  *
  * @author jett
  *
@@ -39,12 +43,12 @@ public class DefaultGeoNode implements GeoNode {
     private Integer id;
     private String name;
     private NodeNetworkState nodeNetworkState = NodeNetworkState.UNDEFINED;
-    private List<Segment> segments = new ArrayList<>();
+    private List<UnratedSegment> segments = new ArrayList<>();
     private List<GeoNode> nearByNodes = new ArrayList<>();
     private List<SimpleFeature> tracks = new ArrayList<>();
     private GeoNode selectedNode;
     private Boolean selected = false;
-    private Segment proposedSegment;
+    private Edge proposedSegment;
 
     /**
      * @return the point
@@ -91,7 +95,7 @@ public class DefaultGeoNode implements GeoNode {
      * 
      * @see com.clueride.domain.dev.Node#getSegments()
      */
-    public List<Segment> getSegments() {
+    public List<UnratedSegment> getSegments() {
         return segments;
     }
 
@@ -164,8 +168,8 @@ public class DefaultGeoNode implements GeoNode {
      * @see
      * com.clueride.domain.dev.Node#addSegment(com.clueride.domain.dev.Segment)
      */
-    public void addSegment(Segment segment) {
-        segments.add(segment);
+    public void addSegment(Edge segment) {
+        segments.add((UnratedSegment) segment);
     }
 
     /*
@@ -293,15 +297,15 @@ public class DefaultGeoNode implements GeoNode {
     /**
      * @return the proposedSegment
      */
-    public Segment getProposedSegment() {
+    public Edge getProposedSegment() {
         return proposedSegment;
     }
 
     /**
-     * @see com.clueride.domain.GeoNode#setProposedSegment(com.clueride.domain.dev.Segment)
+     * @see com.clueride.domain.GeoNode#setProposedSegment(com.com.clueride.feature.Edge)
      */
     @Override
-    public void setProposedSegment(Segment proposedSegment) {
+    public void setProposedSegment(Edge proposedSegment) {
         this.proposedSegment = proposedSegment;
     }
 
@@ -319,5 +323,14 @@ public class DefaultGeoNode implements GeoNode {
     @Override
     public void addScoredNode(GeoNode proposedNode) {
         this.nearByNodes.add(proposedNode);
+    }
+
+    /**
+     * @see com.clueride.domain.dev.Node#addSegment(com.clueride.domain.dev.UnratedSegment)
+     */
+    @Override
+    public void addSegment(UnratedSegment segment) {
+        // TODO Auto-generated method stub
+
     }
 }

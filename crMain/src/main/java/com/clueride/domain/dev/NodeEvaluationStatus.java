@@ -18,6 +18,7 @@
 package com.clueride.domain.dev;
 
 import com.clueride.domain.GeoNode;
+import com.clueride.feature.Edge;
 
 /**
  * Holds information about the proposed new node along with the data presented
@@ -34,17 +35,17 @@ import com.clueride.domain.GeoNode;
  */
 public class NodeEvaluationStatus {
     private Integer id = NodeEvaluationStatusIdentifier.getNextId();
-    private Segment proposedSegmentFromTrack;
+    private Edge proposedSegmentFromTrack;
     private GeoNode startNode;
     private GeoNode endNode;
-    private Segment intersectedSegment;
-    private Segment subSegmentA;
-    private Segment subSegmentB;
+    private Edge intersectedSegment;
+    private Edge subSegmentA;
+    private Edge subSegmentB;
 
     /**
      * @return the proposedSegmentFromTrack
      */
-    public Segment getProposedSegmentFromTrack() {
+    public Edge getProposedSegmentFromTrack() {
         return proposedSegmentFromTrack;
     }
 
@@ -52,14 +53,15 @@ public class NodeEvaluationStatus {
      * @param proposedSegmentFromTrack
      *            the proposedSegmentFromTrack to set
      */
-    public void setProposedSegmentFromTrack(Segment proposedSegmentFromTrack) {
+    public void setProposedSegmentFromTrack(
+            Edge proposedSegmentFromTrack) {
         this.proposedSegmentFromTrack = proposedSegmentFromTrack;
     }
 
     /**
      * @return the intersectedSegment
      */
-    public Segment getIntersectedSegment() {
+    public Edge getIntersectedSegment() {
         return intersectedSegment;
     }
 
@@ -67,7 +69,7 @@ public class NodeEvaluationStatus {
      * @param intersectedSegment
      *            the intersectedSegment to set
      */
-    public void setIntersectedSegment(Segment intersectedSegment) {
+    public void setIntersectedSegment(Edge intersectedSegment) {
         this.intersectedSegment = intersectedSegment;
     }
 
@@ -88,14 +90,14 @@ public class NodeEvaluationStatus {
     /**
      * @return the subSegmentA
      */
-    public Segment getSubSegmentA() {
+    public Edge getSubSegmentA() {
         return subSegmentA;
     }
 
     /**
      * @return the subSegmentB
      */
-    public Segment getSubSegmentB() {
+    public Edge getSubSegmentB() {
         return subSegmentB;
     }
 

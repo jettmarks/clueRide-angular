@@ -24,7 +24,7 @@ import com.clueride.dao.DefaultLocationStore;
 import com.clueride.dao.DefaultNetworkStore;
 import com.clueride.dao.LocationStore;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Segment;
+import com.clueride.feature.Edge;
 
 /**
  * One-time utility to load up the segments, find their endpoints, assign IDs to
@@ -39,9 +39,9 @@ public class PersistInitialNodes {
      * @param args
      */
     public static void main(String[] args) {
-        Set<Segment> segments = DefaultNetworkStore.getInstance().getSegments();
+        Set<Edge> segments = DefaultNetworkStore.getInstance().getEdges();
         LocationStore locationStore = DefaultLocationStore.getInstance();
-        for (Segment segment : segments) {
+        for (Edge segment : segments) {
             locationStore.addNew((GeoNode) segment.getStart());
             locationStore.addNew((GeoNode) segment.getEnd());
         }

@@ -84,5 +84,10 @@
         	<artifactId>jcs</artifactId>
         	<version>1.0.1</version>
         </dependency>
+        <dependency>
+        	<groupId>com.clueride</groupId>
+        	<artifactId>domain</artifactId>
+        	<version>0.0.1-SNAPSHOT</version>
+        </dependency>
   </dependencies>
 </project>

@@ -17,7 +17,6 @@
  */
 package com.clueride.domain.dev;
 
-import com.clueride.domain.LineFeature;
 import com.clueride.domain.Rating;
 
 /**
@@ -28,55 +27,41 @@ import com.clueride.domain.Rating;
  * That Segment will have a Facility Type which is scored according to certain
  * characteristics of that Facility. Essentially, the score is used to calculate
  * preferences of one Path over another between two Locations/Nodes.
+ * 
+ * This represents the properties. The "Geometry" is represented by an object
+ * that contains this set of properties as well as a representation of the list
+ * of points that allow us to draw this segment on a map.
  *
  * @author jett
  *
  */
-public interface Segment extends LineFeature {
+public interface Segment extends UnratedSegment {
 
-	/**
-	 * @return the track
-	 */
-	public abstract Track getTrack();
+    /**
+     * @return the oneWay
+     */
+    boolean isOneWay();
 
-	/**
-	 * @param track
-	 *            the track to set
-	 */
-	public abstract void setTrack(Track track);
+    /**
+     * @param oneWay
+     *            the oneWay to set
+     */
+    void setOneWay(boolean oneWay);
 
-	/**
-	 * @return the oneWay
-	 */
-	public abstract boolean isOneWay();
+    /**
+     * @return the rating
+     */
+    Rating getRating();
 
-	/**
-	 * @param oneWay
-	 *            the oneWay to set
-	 */
-	public abstract void setOneWay(boolean oneWay);
+    /**
+     * @param rating
+     *            the rating to set
+     */
+    void setRating(Rating rating);
 
-	/**
-	 * @return the rating
-	 */
-	public abstract Rating getRating();
-
-	/**
-	 * @param rating
-	 *            the rating to set
-	 */
-	public abstract void setRating(Rating rating);
-
-	/**
-	 * @return the distanceMiles
-	 */
-	public abstract double getDistanceMiles();
-
-	/**
-	 * @return
-	 */
-	public abstract String getUrl();
-
-	public abstract void setUrl(String url);
+    /**
+     * @return the distanceMiles
+     */
+    double getDistanceMiles();
 
 }
