@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Aug 16, 2015
+ * Created Oct 8, 2015
  */
-package com.clueride.io;
+package com.clueride.config;
 
 /**
- * Description.
+ * Formal way of recognizing that a class can run in test mode.
  *
  * @author jett
  *
  */
-public enum JsonStoreType {
-    UNKNOWN, OTHER, BASE, SEGMENTS, RAW, EDGE, NETWORK, LOCATION, LOCATION_GROUP;
+public interface TestModeAware {
+
+    /**
+     * Implemented by classes which can run in Test Mode.
+     */
+    void setTestMode(boolean isInTest);
+
+    boolean isTestMode();
+
 }

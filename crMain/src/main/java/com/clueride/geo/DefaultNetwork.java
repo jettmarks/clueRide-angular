@@ -43,9 +43,10 @@ import com.clueride.dao.LocationStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
+import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.SegmentFeatureImpl;
-import com.clueride.domain.EdgeImpl;
+import com.clueride.domain.TrackFeatureImpl;
 import com.clueride.domain.dev.NetworkState;
 import com.clueride.domain.dev.NodeEvaluationStatus;
 import com.clueride.domain.dev.NodeGroup;
@@ -500,7 +501,8 @@ public class DefaultNetwork implements Network {
             for (GeoNode node : geoNode.getNearByNodes()) {
                 if (lineString.buffer(GeoProperties.NODE_TOLERANCE).covers(
                         node.getPoint())) {
-                    score.addTrackConnectingNode((TrackFeature) track, node);
+                    score.addTrackConnectingNode(new TrackFeatureImpl(track),
+                            node);
                     keepTrack = true;
                 }
             }

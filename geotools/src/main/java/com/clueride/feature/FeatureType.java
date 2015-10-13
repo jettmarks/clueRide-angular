@@ -27,19 +27,47 @@ import com.vividsolutions.jts.geom.Point;
 
 /**
  * Support for the Feature Types used in this application.
+ * 
+ * NOTE: The string "id" is not recognized when it occurs in the JSON file; it
+ * behaves like it is an undocumented "reserved" word and is silently ignored.
  *
  * @author jett
  *
  */
 public class FeatureType {
+    // TODO: Split this out to accommodate the Segment attributes
+    public static final SimpleFeatureType EDGE_FEATURE_TYPE = buildEdgeInstance();
     public static final SimpleFeatureType SEGMENT_FEATURE_TYPE = buildSegmentInstance();
     public static final SimpleFeatureType POINT_FEATURE_TYPE = buildPointInstance();
     public static final SimpleFeatureType NODE_GROUP_FEATURE_TYPE = buildNodeGroupInstance();
+    public static final SimpleFeatureType TRACK_FEATURE_TYPE = buildTrackInstance();
+
+    public static SimpleFeatureType buildEdgeInstance() {
+
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("EdgeFeatureType");
+        builder.setNamespaceURI("http://clueride.com/");
+        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
+                                                       // reference system
+
+        // add attributes in order
+        builder.add("edgeId", Integer.class);
+        builder.add("name", String.class);
+        builder.add("url", String.class);
+        builder.add("selected", Boolean.class);
+        builder.add("the_geom", LineString.class);
+
+        // build the type
+        final SimpleFeatureType featureType = builder.buildFeatureType();
+
+        return featureType;
+    }
 
     public static SimpleFeatureType buildSegmentInstance() {
 
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName("SegmentFeatureType");
+        builder.setNamespaceURI("http://clueride.com/");
         builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
                                                        // reference system
 
@@ -62,6 +90,7 @@ public class FeatureType {
     public static SimpleFeatureType buildPointInstance() {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName("PointFeatureType");
+        builder.setNamespaceURI("http://clueride.com/");
         builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
                                                        // reference system
 
@@ -84,6 +113,7 @@ public class FeatureType {
     public static SimpleFeatureType buildNodeGroupInstance() {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName("NodeGroupFeatureType");
+        builder.setNamespaceURI("http://clueride.com/");
         builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
                                                        // reference system
 
@@ -94,6 +124,28 @@ public class FeatureType {
         builder.add("selected", Boolean.class);
         builder.add("radius", Double.class);
         builder.add("the_geom", Point.class);
+
+        // build the type
+        final SimpleFeatureType featureType = builder.buildFeatureType();
+
+        return featureType;
+    }
+
+    /**
+     * @return
+     */
+    public static SimpleFeatureType buildTrackInstance() {
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("TrackFeatureType");
+        builder.setNamespaceURI("http://clueride.com/");
+        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
+                                                       // reference system
+
+        // add attributes in order
+        builder.add("trackId", Integer.class);
+        builder.add("name", String.class);
+        builder.add("url", String.class);
+        builder.add("the_geom", LineString.class);
 
         // build the type
         final SimpleFeatureType featureType = builder.buildFeatureType();

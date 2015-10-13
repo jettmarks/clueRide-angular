@@ -59,6 +59,10 @@ public class TrackFeatureImpl implements TrackFeature {
      */
     public TrackFeatureImpl(SimpleFeature lineStringFeature) {
         Object obj = lineStringFeature.getDefaultGeometry();
+        if (obj == null) {
+            throw new IllegalArgumentException(
+                    "Expecting geometry to be non-null");
+        }
         if (!(obj instanceof LineString)) {
             throw new IllegalArgumentException(
                     "Expecting geometry to be LineString instead of "

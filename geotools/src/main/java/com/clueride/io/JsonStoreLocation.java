@@ -20,52 +20,80 @@ package com.clueride.io;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.clueride.config.TestModeAware;
+
 /**
  * Maps between the Store Types and Locations on disk.
  *
  * @author jett
  *
  */
-public class JsonStoreLocation {
-	private static Map<JsonStoreType, String> map;
-	private static Map<JsonStoreType, String> testMap;
-	private static boolean testMode = false;
+public class JsonStoreLocation implements TestModeAware {
+    private static Map<JsonStoreType, String> map;
+    private static Map<JsonStoreType, String> testMap;
+    private static boolean testMode = false;
 
-	static {
-		map = new HashMap<JsonStoreType, String>();
-		map.put(JsonStoreType.BASE, "/home/jett/jsonFeatures");
-		map.put(JsonStoreType.SEGMENTS, "/home/jett/jsonFeatures/segments");
-		map.put(JsonStoreType.RAW, "/home/jett/jsonFeatures/segments/raw");
-		map.put(JsonStoreType.NETWORK,
-				"/home/jett/jsonFeatures/segments/network");
-		map.put(JsonStoreType.LOCATION, "/home/jett/jsonFeatures/locations");
+    static {
+        map = new HashMap<JsonStoreType, String>();
+        map.put(JsonStoreType.BASE, "/home/jett/jsonFeatures");
+        map.put(JsonStoreType.SEGMENTS, "/home/jett/jsonFeatures/segments");
+        map.put(JsonStoreType.RAW, "/home/jett/jsonFeatures/segments/raw");
+        map.put(JsonStoreType.EDGE, "/home/jett/jsonFeatures/segments/edge");
+        map.put(JsonStoreType.NETWORK,
+                "/home/jett/jsonFeatures/segments/network");
+        map.put(JsonStoreType.LOCATION, "/home/jett/jsonFeatures/locations");
 
-		testMap = new HashMap<JsonStoreType, String>();
-		testMap.put(JsonStoreType.BASE, "/home/jett/jsonFeatures-test");
-		testMap.put(JsonStoreType.SEGMENTS,
-				"/home/jett/jsonFeatures-test/segments");
-		testMap.put(JsonStoreType.RAW,
-				"/home/jett/jsonFeatures-test/segments/raw");
-		testMap.put(JsonStoreType.NETWORK,
-				"/home/jett/jsonFeatures-test/segments/network");
-		testMap.put(JsonStoreType.LOCATION,
-				"/home/jett/jsonFeatures-test/locations");
+        testMap = new HashMap<JsonStoreType, String>();
+        testMap.put(JsonStoreType.BASE, "/home/jett/jsonFeatures-test");
+        testMap.put(JsonStoreType.SEGMENTS,
+                "/home/jett/jsonFeatures-test/segments");
+        testMap.put(JsonStoreType.RAW,
+                "/home/jett/jsonFeatures-test/segments/raw");
+        testMap.put(JsonStoreType.EDGE,
+                "/home/jett/jsonFeatures-test/segments/edge");
+        testMap.put(JsonStoreType.NETWORK,
+                "/home/jett/jsonFeatures-test/segments/network");
+        testMap.put(JsonStoreType.LOCATION,
+                "/home/jett/jsonFeatures-test/locations");
 
-	}
+    }
 
-	public static String toString(JsonStoreType jsonStoreType) {
-		if (testMode) {
-			return testMap.get(jsonStoreType);
-		} else {
-			return map.get(jsonStoreType);
-		}
-	}
+    public static String toString(JsonStoreType jsonStoreType) {
+        if (testMode) {
+            return testMap.get(jsonStoreType);
+        } else {
+            return map.get(jsonStoreType);
+        }
+    }
 
-	public static void clearTestMode() {
-		testMode = false;
-	}
+    public static void clearTestMode() {
+        testMode = false;
+    }
 
-	public static void setTestMode() {
-		testMode = true;
-	}
+    public static void setTestMode() {
+        testMode = true;
+    }
+
+    /**
+     * TODO: Either convert to a static method, or figure out a better way to
+     * get this in the state we want.
+     * 
+     * @see com.clueride.config.TestModeAware#setTestMode(boolean)
+     */
+    @Override
+    public void setTestMode(boolean isInTest) {
+        if (isInTest) {
+            setTestMode();
+        } else {
+            clearTestMode();
+        }
+    }
+
+    /**
+     * @see com.clueride.config.TestModeAware#isTestMode()
+     */
+    @Override
+    public boolean isTestMode() {
+        return testMode;
+    }
 }

@@ -21,18 +21,27 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
+import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.SegmentFeatureImpl;
+import com.clueride.domain.TrackFeatureImpl;
+import com.clueride.feature.FeatureType;
+import com.clueride.feature.LineFeature;
 import com.clueride.geo.TranslateUtil;
 import com.vividsolutions.jts.geom.LineString;
 
@@ -43,11 +52,14 @@ import com.vividsolutions.jts.geom.LineString;
  *
  */
 public class JsonUtil {
+    private static final Logger LOGGER = Logger.getLogger(JsonUtil.class);
 
     private static int DIGITS_OF_PRECISION = 5;
 
     private JsonStoreType currentType = JsonStoreType.SEGMENTS;
     private String currentPath = JsonStoreLocation.toString(currentType);
+
+    private boolean haveSchema = false;
 
     public JsonUtil(JsonStoreType storeType) {
         currentType = storeType;
@@ -60,21 +72,87 @@ public class JsonUtil {
     }
 
     /**
-     * Brings in all the files in the current location to a FeatureCollection.
+     * Brings in all the files in the current location to a FeatureCollection,
+     * one feature per file.
      * 
-     * @return
+     * @return all features -- without our specific FeatureType -- in a
+     *         DefaultFeatureCollection.
      * @throws IOException
      */
     public DefaultFeatureCollection readFeatureCollection() throws IOException {
         DefaultFeatureCollection features = new DefaultFeatureCollection();
         // Get a list of the files
-        File file = new File(JsonStoreLocation.toString(currentType));
-        for (File child : file.listFiles()) {
-            // System.out.println(child.getCanonicalPath());
+        File directory = new File(JsonStoreLocation.toString(currentType));
+        for (File child : directory.listFiles(new GeoJsonFileFilter())) {
+            LOGGER.debug("Reading from: " + child.getCanonicalPath());
             SimpleFeature feature = readFeature(child);
             features.add(feature);
         }
         return features;
+    }
+
+    /**
+     * Creates FeatureType-based instances from single-record files in the
+     * Store's directory.
+     * 
+     * TODO: This is more of a factory-type of thing that could be moved out to
+     * a different class.
+     * 
+     * @return
+     * @throws IOException
+     */
+    public List<LineFeature> readLineFeatures() throws IOException {
+        List<LineFeature> resultSet = new ArrayList<>();
+        File directory = new File(JsonStoreLocation.toString(currentType));
+        for (File child : directory.listFiles(new GeoJsonFileFilter())) {
+            LOGGER.debug("Reading LineFeature from: "
+                    + child.getCanonicalPath());
+            SimpleFeature feature = readFeature(child);
+            // TODO: Factory part here may come out
+            resultSet.add(getInstance(feature));
+        }
+        return resultSet;
+    }
+
+    /**
+     * Limit the file names being read to those ending with the extension
+     * 'geojson'.
+     * 
+     * Shared locally amongst a few methods.
+     *
+     * @author jett
+     */
+    class GeoJsonFileFilter implements FilenameFilter {
+        @Override
+        public boolean accept(File dir, String name) {
+            return (name.endsWith("geojson"));
+        }
+    }
+
+    /**
+     * Give a feature, instantiate a LineFeature instance that supports the
+     * FeatureType being read.
+     * 
+     * TODO: Anonymous instance of this class may work better.
+     * 
+     * TODO: This doesn't follow the maps I've created to help with this.
+     * 
+     * @param feature
+     * @return
+     */
+    private LineFeature getInstance(SimpleFeature feature) {
+        LineFeature lineFeature = null;
+        switch (currentType) {
+        case EDGE:
+            lineFeature = new EdgeImpl(feature);
+            break;
+        case NETWORK:
+            lineFeature = new SegmentFeatureImpl(feature);
+            break;
+        default:
+            lineFeature = new TrackFeatureImpl(feature);
+        }
+        return lineFeature;
     }
 
     public DefaultFeatureCollection readFeatureCollection(String fileName)
@@ -84,6 +162,9 @@ public class JsonUtil {
         DefaultFeatureCollection features = new DefaultFeatureCollection();
         GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
         FeatureJSON featureJson = new FeatureJSON(geometryJson);
+        if (haveSchema) {
+            featureJson.setFeatureType(FeatureType.SEGMENT_FEATURE_TYPE);
+        }
         FeatureIterator<SimpleFeature> featureIterator = featureJson
                 .streamFeatureCollection(file.getCanonicalFile());
         while (featureIterator.hasNext()) {
@@ -93,13 +174,16 @@ public class JsonUtil {
     }
 
     /**
+     * Package visibility to facilitate testing.
+     * 
      * @param child
      * @return
      */
-    private SimpleFeature readFeature(File child) {
+    SimpleFeature readFeature(File child) {
         SimpleFeature feature = null;
         GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
         FeatureJSON featureJson = new FeatureJSON(geometryJson);
+        featureJson.setFeatureType(JsonSchemaTypeMap.getSchema(currentType));
         InputStream iStream = null;
         try {
             iStream = new FileInputStream(child);
@@ -147,13 +231,21 @@ public class JsonUtil {
     }
 
     /**
-     * @param features
-     * @param string
+     * Writes a feature out to the filename supplied using the Schema and
+     * location mapped to the {@link currentType}.
+     * 
+     * @param SimpleFeature
+     *            representing a feature of the type that matches the
+     *            {@link currentType}.
+     * @param String
+     *            representation of the simple file name with extension, but not
+     *            the directory.
      */
     public void writeFeatureToFile(SimpleFeature feature, String fileName) {
 
         GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
         FeatureJSON featureJson = new FeatureJSON(geometryJson);
+        featureJson.setFeatureType(JsonSchemaTypeMap.getSchema(currentType));
 
         File outFile = new File(JsonStoreLocation.toString(currentType)
                 + File.separator + fileName);
@@ -242,6 +334,33 @@ public class JsonUtil {
         // TODO: we could probably instantiate this once and synchronize
         GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
         return geometryJson.toString(lineString);
+    }
+
+    /**
+     * @param file
+     * @return
+     */
+    public SimpleFeatureType readSchema(File file) {
+        GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
+        FeatureJSON featureJson = new FeatureJSON(geometryJson);
+        File directory = new File(JsonStoreLocation.toString(currentType));
+        String fullPath;
+        try {
+            fullPath = directory.getCanonicalPath() + File.separatorChar
+                    + file.getName();
+            InputStream inputStream = new FileInputStream(fullPath);
+            return featureJson.readFeatureCollectionSchema(inputStream, false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 
+     */
+    public void setSchemaType() {
+        haveSchema = true;
     }
 
 }

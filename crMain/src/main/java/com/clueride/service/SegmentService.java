@@ -39,7 +39,9 @@ public class SegmentService {
             .getInstance();
 
     /**
-     * @param raw
+     * @param type
+     *            represents both the type and by extension, the location of the
+     *            data to be retrieved.
      * @return
      */
     public static String getFeatureCollection(JsonStoreType type) {

@@ -48,18 +48,17 @@ public interface NetworkStore {
      * Can be used to initially load as well if the memory copy is empty.
      * 
      * @throws IOException
+     * @deprecated - Use {@link persist()} instead.
      */
     void persistAndReload() throws IOException;
 
     /**
-     * This holds the LineFeatures (Segments); when we need them, this is the
-     * place to get them.
+     * Updates the disk with the state of what's in memory.
      * 
-     * @return
-     * @deprecated - Use either {@link getEdges()} or {@link
-     *             getSegmentFeatures()} at this time.
+     * Since each record is immutable, changes are implemented by removing the
+     * old record and writing a new record; no longer a need for Reload.
      */
-    // Set<LineFeature> getLineFeatures();
+    void persist() throws IOException;
 
     /**
      * SegmentFeatures and not {@link Edge}s.

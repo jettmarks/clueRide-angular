@@ -18,15 +18,20 @@
 package com.clueride.dao;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 
-import com.clueride.domain.GeoNode;
+import com.clueride.config.TestModeAware;
 import com.clueride.domain.EdgeImpl;
+import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.TrackImpl;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
@@ -44,16 +49,28 @@ import com.vividsolutions.jts.geom.Point;
  * @author jett
  *
  */
-public class DefaultNetworkStore implements NetworkStore {
+public class DefaultNetworkStore implements NetworkStore, TestModeAware {
+    private static final Logger LOGGER = Logger
+            .getLogger(DefaultNetworkStore.class);
 
     private static DefaultNetworkStore instance = null;
 
-    private JsonStoreType ourStoreType = JsonStoreType.NETWORK;
+    // TODO: EDGE for unrated segments, NETWORK for fully-formed SegmentFeature.
+    // private JsonStoreType ourStoreType = JsonStoreType.NETWORK;
+    private JsonStoreType ourStoreType = JsonStoreType.EDGE;
 
     private Set<LineFeature> lineFeatures = new HashSet<>();
     private Map<Integer, LineFeature> featureMap = new HashMap<>();
     private EdgeIDProvider idProvider = new DataBasedEdgeIDProvider();
 
+    private boolean testMode;
+
+    /**
+     * Preferred method of obtaining an instance which allows lazy
+     * initialization of the network.
+     * 
+     * @return
+     */
     public static DefaultNetworkStore getInstance() {
         if (instance == null) {
             instance = new DefaultNetworkStore();
@@ -68,15 +85,7 @@ public class DefaultNetworkStore implements NetworkStore {
     }
 
     /**
-     * @see com.clueride.dao.NetworkStore#getStoreLocation()
-     */
-    @Override
-    public String getStoreLocation() {
-        return JsonStoreLocation.toString(ourStoreType);
-    }
-
-    /**
-     * Write our segments out to disk.
+     * Write our edges out to disk. TODO: Segments too.
      * 
      * This implementation is dependent on the org.geotools.gt-referencing
      * package, although it is far from clear that this is the case because it
@@ -85,27 +94,110 @@ public class DefaultNetworkStore implements NetworkStore {
      * be pulled up, why write it out when you know it can't be read back in?
      * Ugh.
      * 
-     * Creating a Stack Overflow ticket for this.
+     * TODO: Creating a Stack Overflow ticket for this.
+     * 
+     * TODO: Is this why I was having trouble getting the Schema to be read
+     * automatically?
+     * 
+     * This is being revamped. It had been reading from a single file which gets
+     * updated, but now, we're moving toward use of a file per record. This
+     * means that we've got a whole bunch of records to keep track of.
+     * 
+     * It may make sense to bring in a copy of at least the IDs, figure out what
+     * changes are required, and then persist just the changes. This also means
+     * however, that we're not really reloading and the name of this method
+     * should change.
      * 
      * @throws IOException
      * @see com.clueride.dao.NetworkStore#persistAndReload()
+     * @deprecated
      */
     @Override
     public void persistAndReload() throws IOException {
         JsonUtil networkStorageUtil = new JsonUtil(ourStoreType);
         DefaultFeatureCollection features = TranslateUtil
                 .lineFeatureSetToFeatureCollection(lineFeatures);
-        // DefaultFeatureCollection features = TranslateUtil
-        // .segmentsToFeatureCollection(lineFeatures);
         networkStorageUtil.writeFeaturesToFile(features, "mainNetwork.geojson");
 
         lineFeatures.clear();
 
-        // DefaultFeatureCollection features = networkStorageUtil
         features = networkStorageUtil
                 .readFeatureCollection("mainNetwork.geojson");
         lineFeatures = TranslateUtil.featureCollectionToLineFeatures(features);
         refreshSegmentData();
+    }
+
+    /**
+     * This stores both the Segments and Edges out to disk by comparing what is
+     * in memory per ID with what is on disk by ID.
+     * 
+     * It is understood that each particular record is immutable; if we need
+     * changes, the change is a new record with new ID and the old record/file
+     * is removed.
+     * 
+     * @throws IOException
+     */
+    public void persist() throws IOException {
+        List<Integer> inMemoryIDs = new ArrayList<>();
+        List<Integer> onDiskIDs = new ArrayList<>();
+
+        for (LineFeature feature : lineFeatures) {
+            inMemoryIDs.add(feature.getId());
+        }
+        dumpList("In Memory IDs", inMemoryIDs);
+
+        JsonUtil jsonUtilEdges = new JsonUtil(JsonStoreType.EDGE);
+        List<LineFeature> edges = jsonUtilEdges.readLineFeatures();
+        for (LineFeature feature : edges) {
+            onDiskIDs.add(feature.getId());
+        }
+        dumpList("On Disk IDs", onDiskIDs);
+
+        List<Integer> toBeAdded = new ArrayList<>();
+        for (Integer rec : inMemoryIDs) {
+            if (!onDiskIDs.contains(rec)) {
+                toBeAdded.add(rec);
+                LOGGER.info("Adding " + rec);
+            }
+        }
+
+        List<Integer> toBeRemoved = new ArrayList<>();
+        for (Integer rec : onDiskIDs) {
+            if (!inMemoryIDs.contains(rec)) {
+                toBeRemoved.add(rec);
+                LOGGER.info("Removing " + rec);
+            }
+        }
+
+        if (toBeAdded.isEmpty()) {
+            LOGGER.info("No records to be Added");
+        } else {
+            // Add the instances to be Added
+        }
+
+        if (toBeRemoved.isEmpty()) {
+            LOGGER.info("No records to be Removed");
+        } else {
+            // Delete files for the records to be removed
+        }
+
+    }
+
+    /**
+     * Lists out in order the values in the passed list.
+     * 
+     * Package visibility for diagnostics and testing.
+     * 
+     * @param string
+     * @param toBeRemoved
+     */
+    void dumpList(String message, List<Integer> listToDump) {
+        System.out.println(message);
+        List<Integer> sortedList = new ArrayList<>(listToDump);
+        Collections.sort(sortedList);
+        for (Integer id : sortedList) {
+            System.out.println(id);
+        }
     }
 
     /**
@@ -124,15 +216,36 @@ public class DefaultNetworkStore implements NetworkStore {
     public Set<LineFeature> getLineFeatures() {
         synchronized (lineFeatures) {
             if (lineFeatures.isEmpty()) {
-                loadFromDefault();
+                loadAllFeatures();
             }
         }
         return lineFeatures;
     }
 
     /**
-     * @throws IOException
+     * Brings in both the Network/Segment/Rated {@link LineString} features as
+     * well as the yet-unrated Segments otherwise known as {@link Edge}s.
      * 
+     * This version reads the format where there is a single record per file.
+     * 
+     * Package visibility for testing.
+     */
+    void loadAllFeatures() {
+        try {
+            JsonUtil jsonUtilNetwork = new JsonUtil(JsonStoreType.NETWORK);
+            // TODO: Once we have rated segments, we can turn this back on
+            // lineFeatures.addAll(jsonUtilNetwork.readLineFeatures());
+            JsonUtil jsonUtilEdge = new JsonUtil(JsonStoreType.EDGE);
+            lineFeatures.addAll(jsonUtilEdge.readLineFeatures());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        refreshSegmentData();
+    }
+
+    /**
+     * @throws IOException
+     * @deprecated - use {@link loadAllFeatures()} instead.
      */
     private void loadFromDefault() {
         JsonUtil networkStorageUtil = new JsonUtil(JsonStoreType.NETWORK);
@@ -234,9 +347,11 @@ public class DefaultNetworkStore implements NetworkStore {
     }
 
     /**
-     * 
+     * @see com.clueride.config.TestModeAware#setTestMode(boolean)
      */
+    @Override
     public void setTestMode(boolean isInTest) {
+        testMode = isInTest;
         if (isInTest) {
             idProvider = new MemoryBasedEdgeIDProvider();
             TrackImpl.defineIdProvider(idProvider);
@@ -247,10 +362,45 @@ public class DefaultNetworkStore implements NetworkStore {
     }
 
     /**
+     * @see com.clueride.config.TestModeAware#isTestMode()
+     */
+    @Override
+    public boolean isTestMode() {
+        return testMode;
+    }
+
+    /**
+     * Allows checking the current directory where network info is pulled from.
+     * 
+     * @see com.clueride.dao.NetworkStore#getStoreLocation()
+     */
+    @Override
+    public String getStoreLocation() {
+        return JsonStoreLocation.toString(ourStoreType);
+    }
+
+    /**
      * @return
      */
     public int getLastEdgeId() {
         return idProvider.getLastId();
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DefaultNetworkStore [ourStoreType=").append(
+                ourStoreType).append(", lineFeatures.size()=").append(
+                lineFeatures.size())
+                .append(", idProvider=").append(idProvider).append(
+                        ", testMode=").append(testMode).append(
+                        ", getStoreLocation()=").append(getStoreLocation())
+                .append(", getLastEdgeId()=").append(getLastEdgeId()).append(
+                        "]");
+        return builder.toString();
     }
 
 }
