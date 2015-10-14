@@ -31,24 +31,25 @@ import com.vividsolutions.jts.geom.LineString;
  * that had been written by the library.
  *
  * @author jett
+ * @deprecated - use the com.clueride.feature package of the geotools project.
  *
  */
 public class SegmentTypeBuilder {
-	public static SimpleFeatureType buildInstance() {
+    public static SimpleFeatureType buildInstance() {
 
-		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-		builder.setName("SegmentFeatureType");
-		builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
-														// reference system
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("SegmentFeatureType");
+        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
+                                                       // reference system
 
-		// add attributes in order
-		builder.add("the_geom", LineString.class);
-		builder.add("name", String.class);
-		builder.add("segId", Integer.class);
+        // add attributes in order
+        builder.add("the_geom", LineString.class);
+        builder.add("name", String.class);
+        builder.add("segId", Integer.class);
 
-		// build the type
-		final SimpleFeatureType featureType = builder.buildFeatureType();
+        // build the type
+        final SimpleFeatureType featureType = builder.buildFeatureType();
 
-		return featureType;
-	}
+        return featureType;
+    }
 }

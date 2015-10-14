@@ -23,7 +23,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
  * SimpleFeatureType specific to Segments.
  *
  * @author jett
- *
+ * @deprecated - use the com.
  */
 public interface SegmentFeatureType extends SimpleFeatureType {
 
