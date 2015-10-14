@@ -15,7 +15,6 @@ import org.testng.annotations.Test;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.feature.Edge;
 import com.clueride.io.JsonStoreLocation;
-import com.clueride.io.JsonStoreType;
 import com.clueride.poc.geotools.TrackStore;
 import com.clueride.service.EdgeIDProvider;
 
@@ -103,14 +102,6 @@ public class DefaultNetworkStoreTest {
         Set<Edge> actual = toTest.getEdges();
     }
 
-    // @Test
-    public void getStoreLocation() {
-        // TODO: There are now two locations, so not sure what this test means
-        String expected = JsonStoreLocation.toString(JsonStoreType.NETWORK);
-        String actual = toTest.getStoreLocation();
-        assertEquals(actual, expected);
-    }
-
     @Test
     public void persist() throws Exception {
         JsonStoreLocation.clearTestMode();
@@ -147,4 +138,6 @@ public class DefaultNetworkStoreTest {
     public void splitSegmentIntegerPoint() {
         // throw new RuntimeException("Test not implemented");
     }
+
+    // TODO: Try a test where a segment is retrieved as an Edge and vice versa
 }

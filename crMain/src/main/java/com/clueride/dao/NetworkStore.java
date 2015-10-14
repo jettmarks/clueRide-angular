@@ -27,6 +27,14 @@ import com.clueride.feature.SegmentFeature;
 import com.vividsolutions.jts.geom.Point;
 
 /**
+ * Definition of how to pull -- and add -- records for the NetworkStore.
+ * 
+ * 
+ *
+ * @author jett
+ *
+ */
+/**
  * Description.
  *
  * @author jett
@@ -39,7 +47,7 @@ public interface NetworkStore {
      * 
      * @return
      */
-    String getStoreLocation();
+    String[] getStoreLocations();
 
     /**
      * Takes the current state of the network, saves it to the store's location
@@ -61,7 +69,8 @@ public interface NetworkStore {
     void persist() throws IOException;
 
     /**
-     * SegmentFeatures and not {@link Edge}s.
+     * All Line Features in the network: {@link SegmentFeature}s as well as
+     * {@link Edge}s.
      * 
      * @return
      */
@@ -75,7 +84,14 @@ public interface NetworkStore {
     Set<Edge> getEdges();
 
     /**
-     * Choose a particular segment by its ID.
+     * Segments and not {@link Edge}s.
+     * 
+     * @return
+     */
+    Set<SegmentFeature> getSegments();
+
+    /**
+     * Choose a particular Edge by its ID.
      * 
      * @param id
      * @return
@@ -83,8 +99,19 @@ public interface NetworkStore {
     Edge getEdgeById(Integer id);
 
     /**
+     * Choose a particular segment by its ID.
+     * 
+     * @param id
+     * @return
+     */
+    SegmentFeature getSegmentById(Integer id);
+
+    /**
      * Brings the geometry and other details for creation of a new Segment along
      * with the assignment of an ID.
+     * 
+     * To be officially added to the network, the LineFeature must be at least
+     * an Edge if not a (rated) Segment.
      * 
      * @param edge
      * @return

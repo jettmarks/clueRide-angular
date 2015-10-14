@@ -19,6 +19,7 @@ package com.clueride.dao;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +36,7 @@ import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.TrackImpl;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
+import com.clueride.feature.SegmentFeature;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
@@ -44,7 +46,7 @@ import com.clueride.service.MemoryBasedEdgeIDProvider;
 import com.vividsolutions.jts.geom.Point;
 
 /**
- * Description.
+ * TODO: Description.
  *
  * @author jett
  *
@@ -54,14 +56,24 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
             .getLogger(DefaultNetworkStore.class);
 
     private static DefaultNetworkStore instance = null;
+    private EdgeIDProvider idProvider = new DataBasedEdgeIDProvider();
 
     // TODO: EDGE for unrated segments, NETWORK for fully-formed SegmentFeature.
-    // private JsonStoreType ourStoreType = JsonStoreType.NETWORK;
-    private JsonStoreType ourStoreType = JsonStoreType.EDGE;
 
-    private Set<LineFeature> lineFeatures = new HashSet<>();
-    private Map<Integer, LineFeature> featureMap = new HashMap<>();
-    private EdgeIDProvider idProvider = new DataBasedEdgeIDProvider();
+    private Set<LineFeature> allLineFeatures = new HashSet<>();
+    private Set<Edge> allEdges = new HashSet<>();
+    private Set<SegmentFeature> allSegments = new HashSet<>();
+
+    private static String[] storeLocations = {
+            JsonStoreLocation.toString(JsonStoreType.EDGE),
+            JsonStoreLocation.toString(JsonStoreType.SEGMENTS)
+    };
+
+    private static JsonUtil jsonUtilEdge = new JsonUtil(JsonStoreType.EDGE);
+    private static JsonUtil jsonUtilNetwork = new JsonUtil(
+            JsonStoreType.NETWORK);
+
+    private Map<Integer, LineFeature> allFeatureMap = new HashMap<>();
 
     private boolean testMode;
 
@@ -108,28 +120,34 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * however, that we're not really reloading and the name of this method
      * should change.
      * 
+     * Temporarily (maybe?) moved to OTHER directory.
+     * 
      * @throws IOException
      * @see com.clueride.dao.NetworkStore#persistAndReload()
      * @deprecated
      */
     @Override
     public void persistAndReload() throws IOException {
-        JsonUtil networkStorageUtil = new JsonUtil(ourStoreType);
+        JsonUtil jsonUtilOther = new JsonUtil(JsonStoreType.OTHER);
         DefaultFeatureCollection features = TranslateUtil
-                .lineFeatureSetToFeatureCollection(lineFeatures);
-        networkStorageUtil.writeFeaturesToFile(features, "mainNetwork.geojson");
+                .lineFeatureSetToFeatureCollection(allLineFeatures);
+        jsonUtilOther.writeFeaturesToFile(features, "mainNetwork.geojson");
 
-        lineFeatures.clear();
+        allLineFeatures.clear();
 
-        features = networkStorageUtil
+        features = jsonUtilOther
                 .readFeatureCollection("mainNetwork.geojson");
-        lineFeatures = TranslateUtil.featureCollectionToLineFeatures(features);
+        allLineFeatures = TranslateUtil
+                .featureCollectionToLineFeatures(features);
         refreshSegmentData();
     }
 
     /**
      * This stores both the Segments and Edges out to disk by comparing what is
      * in memory per ID with what is on disk by ID.
+     * 
+     * Edges and Segments are held in two separate locations and are compared
+     * independently of each other.
      * 
      * It is understood that each particular record is immutable; if we need
      * changes, the change is a new record with new ID and the old record/file
@@ -141,7 +159,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
         List<Integer> inMemoryIDs = new ArrayList<>();
         List<Integer> onDiskIDs = new ArrayList<>();
 
-        for (LineFeature feature : lineFeatures) {
+        for (LineFeature feature : allLineFeatures) {
             inMemoryIDs.add(feature.getId());
         }
         dumpList("In Memory IDs", inMemoryIDs);
@@ -205,8 +223,31 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      */
     @Override
     public Set<Edge> getEdges() {
-        // TODO Auto-generated method stub
-        return null;
+        return allEdges;
+    }
+
+    /**
+     * @see com.clueride.dao.NetworkStore#getEdgeById(java.lang.Integer)
+     */
+    @Override
+    public Edge getEdgeById(Integer id) {
+        return (Edge) allFeatureMap.get(id);
+    }
+
+    /**
+     * @see com.clueride.dao.NetworkStore#getSegments()
+     */
+    @Override
+    public Set<SegmentFeature> getSegments() {
+        return allSegments;
+    }
+
+    /**
+     * @see com.clueride.dao.NetworkStore#getSegmentById(java.lang.Integer)
+     */
+    @Override
+    public SegmentFeature getSegmentById(Integer id) {
+        return (SegmentFeature) allFeatureMap.get(id);
     }
 
     /**
@@ -214,12 +255,12 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      */
     @Override
     public Set<LineFeature> getLineFeatures() {
-        synchronized (lineFeatures) {
-            if (lineFeatures.isEmpty()) {
+        synchronized (allLineFeatures) {
+            if (allLineFeatures.isEmpty()) {
                 loadAllFeatures();
             }
         }
-        return lineFeatures;
+        return allLineFeatures;
     }
 
     /**
@@ -230,13 +271,16 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * 
      * Package visibility for testing.
      */
+    @SuppressWarnings("unchecked")
     void loadAllFeatures() {
         try {
-            JsonUtil jsonUtilNetwork = new JsonUtil(JsonStoreType.NETWORK);
-            // TODO: Once we have rated segments, we can turn this back on
-            // lineFeatures.addAll(jsonUtilNetwork.readLineFeatures());
-            JsonUtil jsonUtilEdge = new JsonUtil(JsonStoreType.EDGE);
-            lineFeatures.addAll(jsonUtilEdge.readLineFeatures());
+            allSegments
+                    .addAll((Collection<? extends SegmentFeature>) jsonUtilNetwork
+                            .readLineFeatures());
+            allLineFeatures.addAll(allSegments);
+            allEdges.addAll((Collection<? extends Edge>) jsonUtilEdge
+                    .readLineFeatures());
+            allLineFeatures.addAll(allEdges);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -256,7 +300,8 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        lineFeatures = TranslateUtil.featureCollectionToLineFeatures(features);
+        allLineFeatures = TranslateUtil
+                .featureCollectionToLineFeatures(features);
         refreshSegmentData();
     }
 
@@ -265,20 +310,12 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * LineFeatures.
      */
     private void refreshSegmentData() {
-        featureMap.clear();
-        for (LineFeature lineFeature : lineFeatures) {
+        allFeatureMap.clear();
+        for (LineFeature lineFeature : allLineFeatures) {
             int id = lineFeature.getId();
             idProvider.registerId(id);
-            featureMap.put(id, lineFeature);
+            allFeatureMap.put(id, lineFeature);
         }
-    }
-
-    /**
-     * @see com.clueride.dao.NetworkStore#getEdgeById(java.lang.Integer)
-     */
-    @Override
-    public Edge getEdgeById(Integer id) {
-        return (Edge) featureMap.get(id);
     }
 
     /**
@@ -302,8 +339,8 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
         Edge newEdge = new EdgeImpl(newTrack,
                 edge.getLineString());
 
-        lineFeatures.add(newEdge);
-        featureMap.put(id, newEdge);
+        allLineFeatures.add(newEdge);
+        allFeatureMap.put(id, newEdge);
         return id;
     }
 
@@ -375,8 +412,8 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * @see com.clueride.dao.NetworkStore#getStoreLocation()
      */
     @Override
-    public String getStoreLocation() {
-        return JsonStoreLocation.toString(ourStoreType);
+    public String[] getStoreLocations() {
+        return storeLocations;
     }
 
     /**
@@ -392,12 +429,10 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("DefaultNetworkStore [ourStoreType=").append(
-                ourStoreType).append(", lineFeatures.size()=").append(
-                lineFeatures.size())
+        builder.append("DefaultNetworkStore [lineFeatures.size()=").append(
+                allLineFeatures.size())
                 .append(", idProvider=").append(idProvider).append(
-                        ", testMode=").append(testMode).append(
-                        ", getStoreLocation()=").append(getStoreLocation())
+                        ", testMode=").append(testMode)
                 .append(", getLastEdgeId()=").append(getLastEdgeId()).append(
                         "]");
         return builder.toString();

@@ -42,6 +42,7 @@ public class JsonStoreLocation implements TestModeAware {
         map.put(JsonStoreType.NETWORK,
                 "/home/jett/jsonFeatures/segments/network");
         map.put(JsonStoreType.LOCATION, "/home/jett/jsonFeatures/locations");
+        map.put(JsonStoreType.OTHER, "/home/jett/jsonFeatures/other");
 
         testMap = new HashMap<JsonStoreType, String>();
         testMap.put(JsonStoreType.BASE, "/home/jett/jsonFeatures-test");
@@ -55,6 +56,7 @@ public class JsonStoreLocation implements TestModeAware {
                 "/home/jett/jsonFeatures-test/segments/network");
         testMap.put(JsonStoreType.LOCATION,
                 "/home/jett/jsonFeatures-test/locations");
+        testMap.put(JsonStoreType.OTHER, "/home/jett/jsonFeatures-test/other");
 
     }
 

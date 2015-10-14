@@ -101,7 +101,8 @@ public class JsonUtil {
      * @return
      * @throws IOException
      */
-    public List<LineFeature> readLineFeatures() throws IOException {
+    public List<LineFeature> readLineFeatures()
+            throws IOException {
         List<LineFeature> resultSet = new ArrayList<>();
         File directory = new File(JsonStoreLocation.toString(currentType));
         for (File child : directory.listFiles(new GeoJsonFileFilter())) {

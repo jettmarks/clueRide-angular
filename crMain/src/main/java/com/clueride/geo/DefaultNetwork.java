@@ -91,6 +91,7 @@ public class DefaultNetwork implements Network {
     private NetworkStore networkStore;
     private LocationStore locationStore;
     private TrackStore trackStore;
+    private int count;
 
     private static final Logger LOGGER = Logger.getLogger(DefaultNetwork.class);
 
@@ -235,7 +236,7 @@ public class DefaultNetwork implements Network {
      */
     @Override
     public NodeNetworkState evaluateNodeState(GeoNode geoNode) {
-        LOGGER.debug("start - evaluateNodeState()");
+        LOGGER.debug("start - evaluateNodeState()" + count++);
         // First Step is to clear any previous state that may have been
         // recorded.
         clearEvaluationState();
@@ -342,8 +343,8 @@ public class DefaultNetwork implements Network {
         // Now to see if we intersect the network, and if so, at what point
         // intersectionScore will hold the interesting segment for us to search.
         Edge bestSegment = intersectionScore.getBestSegment();
-        LineString lineString = (LineString) TranslateUtil
-                .segmentToFeature(bestSegment).getDefaultGeometry();
+        LineString lineString = (LineString) bestSegment.getFeature()
+                .getDefaultGeometry();
         findIntersectingNode(lineStringToStart, nodesToMeasure, bestSegment,
                 lineString);
         findIntersectingNode(lineStringToEnd, nodesToMeasure, bestSegment,
