@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.clueride.domain.EdgeImpl;
 import com.clueride.feature.Edge;
 import com.clueride.io.JsonStoreLocation;
 import com.clueride.poc.geotools.TrackStore;
@@ -111,23 +110,23 @@ public class DefaultNetworkStoreTest {
     }
 
     // @Test
-    public void persistAndReload() throws Exception {
-        Set<Edge> expected = new HashSet<>();
-        for (Integer trackId : testTracks) {
-            Edge seg = (Edge) new EdgeImpl(trackStore
-                    .getTrackPerId(trackId));
-            // Edge seg = TranslateUtil.featureToSegment(trackStore
-            // .getTrackPerId(trackId));
-            expected.add(seg);
-            toTest.addNew(seg);
-        }
-        Set<Edge> firstActual = toTest.getEdges();
-        assertEquals(firstActual, expected);
-
-        toTest.persistAndReload();
-        Set<Edge> secondActual = toTest.getEdges();
-        assertEquals(secondActual, expected);
-    }
+    // public void persistAndReload() throws Exception {
+    // Set<Edge> expected = new HashSet<>();
+    // for (Integer trackId : testTracks) {
+    // Edge seg = (Edge) new EdgeImpl(trackStore
+    // .getTrackPerId(trackId));
+    // // Edge seg = TranslateUtil.featureToSegment(trackStore
+    // // .getTrackPerId(trackId));
+    // expected.add(seg);
+    // toTest.addNew(seg);
+    // }
+    // Set<Edge> firstActual = toTest.getEdges();
+    // assertEquals(firstActual, expected);
+    //
+    // toTest.persistAndReload();
+    // Set<Edge> secondActual = toTest.getEdges();
+    // assertEquals(secondActual, expected);
+    // }
 
     // @Test
     public void splitSegmentIntegerGeoNode() {

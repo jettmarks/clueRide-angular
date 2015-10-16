@@ -19,10 +19,9 @@ package com.clueride.geo;
 
 import java.util.List;
 
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.NodeNetworkState;
+import com.clueride.domain.dev.NetworkProposal;
+import com.clueride.feature.TrackFeature;
 
 /**
  * Abstraction of a Network - the body of connected Segments and Nodes.
@@ -39,15 +38,15 @@ public interface Network {
     public abstract boolean canReach(GeoNode connectedNode);
 
     /**
-     * @param simpleFeature
+     * @param trackFeature
      */
-    public abstract void add(SimpleFeature simpleFeature);
+    public abstract void add(TrackFeature trackFeature);
 
     /**
      * @param connectedNode
      * @return
      */
-    public abstract NodeNetworkState evaluateNodeState(GeoNode connectedNode);
+    public abstract NetworkProposal evaluateNodeState(GeoNode connectedNode);
 
     public abstract List<GeoNode> getSortedNodes(GeoNode geoNode);
 

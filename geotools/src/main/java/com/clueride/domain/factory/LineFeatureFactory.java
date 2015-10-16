@@ -20,10 +20,10 @@ package com.clueride.domain.factory;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.SegmentFeatureImpl;
-import com.clueride.domain.EdgeImpl;
+import com.clueride.domain.TrackFeatureImpl;
 import com.clueride.domain.dev.TrackImpl;
-import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
+import com.clueride.feature.TrackFeature;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 
@@ -60,11 +60,11 @@ public class LineFeatureFactory {
      * @param lsProposalForSegment
      * @return
      */
-    public static Edge getProposal(
+    public static TrackFeature getProposal(
             LineString lineString) {
 
         TrackImpl emptyTrackImpl = new TrackImpl("Unnamed - new", "undefined");
-        return (Edge) new EdgeImpl(emptyTrackImpl, lineString);
+        return new TrackFeatureImpl(emptyTrackImpl, lineString);
     }
 
 }

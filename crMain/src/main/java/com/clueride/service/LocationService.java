@@ -30,6 +30,7 @@ import com.clueride.dao.LocationStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.factory.PointFactory;
@@ -72,7 +73,8 @@ public class LocationService {
         geoNode.setPoint(point);
         geoNode.setName("candidate");
         // TODO: Move toward use of the nodeEvaluation instance
-        NodeNetworkState nodeEvaluation = network.evaluateNodeState(geoNode);
+        NetworkProposal networkProposal = network.evaluateNodeState(geoNode);
+        NodeNetworkState nodeEvaluation = networkProposal.getNodeNetworkState();
         result = jsonUtil.toString(geoNode);
         logger.debug("At the requested Location: " + geoNode);
         return result;

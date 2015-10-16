@@ -35,4 +35,9 @@ public interface NetworkProposal {
     List<NetworkRecommendation> getRecommendations();
 
     String toJson();
+
+    /**
+     * @return
+     */
+    NodeNetworkState getNodeNetworkState();
 }

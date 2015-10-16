@@ -55,7 +55,8 @@ public class DefaultNetworkTest {
 
         geoNode = trackStore.getFirstPointOfTrack(trackId);
 
-        NodeNetworkState actual = toTest.evaluateNodeState(geoNode);
+        NodeNetworkState actual = toTest.evaluateNodeState(geoNode)
+                .getNodeNetworkState();
         assertEquals(actual, expected);
         assertEquals(geoNode.getState(), expected);
     }
@@ -70,7 +71,8 @@ public class DefaultNetworkTest {
 
         geoNode = trackStore.getMidPoint(trackId);
 
-        NodeNetworkState actual = toTest.evaluateNodeState(geoNode);
+        NodeNetworkState actual = toTest.evaluateNodeState(geoNode)
+                .getNodeNetworkState();
         assertEquals(actual, expected);
         assertEquals(geoNode.getState(), expected);
         assertNotNull(geoNode.getSegments());
@@ -91,7 +93,8 @@ public class DefaultNetworkTest {
         geoNode = TransformUtil.adjustNode(trackStore.getMidPoint(trackId),
                 0.000007, 0.000007);
 
-        NodeNetworkState actual = toTest.evaluateNodeState(geoNode);
+        NodeNetworkState actual = toTest.evaluateNodeState(geoNode)
+                .getNodeNetworkState();
         assertEquals(actual, expected);
         assertEquals(geoNode.getState(), expected);
         assertNotNull(geoNode.getSegments());
@@ -109,7 +112,8 @@ public class DefaultNetworkTest {
         geoNode = TransformUtil.adjustNode(trackStore.getMidPoint(trackId),
                 1.0000, 1.0000);
 
-        NodeNetworkState actual = toTest.evaluateNodeState(geoNode);
+        NodeNetworkState actual = toTest.evaluateNodeState(geoNode)
+                .getNodeNetworkState();
         assertEquals(actual, expected);
         assertEquals(geoNode.getState(), expected);
         assertEquals(geoNode.getSegments(), Collections.emptyList());
@@ -134,7 +138,8 @@ public class DefaultNetworkTest {
         // Start of Track 809889
         geoNode = NodeFactory.getInstance(-84.35873, 33.77385, 297.7);
 
-        NodeNetworkState actual = toTest.evaluateNodeState(geoNode);
+        NodeNetworkState actual = toTest.evaluateNodeState(geoNode)
+                .getNodeNetworkState();
         assertEquals(actual, expected);
         assertTrue(geoNode.getTracks().size() > 0);
         assertEquals(geoNode.getTracks().get(0).getAttribute("url"), "809889");

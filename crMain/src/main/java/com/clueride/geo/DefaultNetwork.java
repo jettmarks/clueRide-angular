@@ -45,17 +45,17 @@ import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.SegmentFeatureImpl;
-import com.clueride.domain.TrackFeatureImpl;
+import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NetworkState;
+import com.clueride.domain.dev.NewLocProposal;
 import com.clueride.domain.dev.NodeEvaluationStatus;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
+import com.clueride.domain.dev.rec.NewLocRecBuilder;
 import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.domain.factory.NodeFactory;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
-import com.clueride.feature.SegmentFeature;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.score.IntersectionScore;
 import com.clueride.geo.score.TrackScore;
@@ -84,6 +84,7 @@ public class DefaultNetwork implements Network {
             .getInstance().get("group.radius.degrees");
     // private static final double BUFFER_TOLERANCE = 0.00007;
     private static DefaultNetwork instance = null;
+    // TODO: Move from featureCollection to reliance on the Stores
     private DefaultFeatureCollection featureCollection;
     private Set<LineFeature> allLineFeatures;
     private List<LineString> allLineStrings = new ArrayList<>();
@@ -100,6 +101,7 @@ public class DefaultNetwork implements Network {
      */
     @Inject
     DefaultNetwork(DefaultFeatureCollection defaultFeatureCollection) {
+        // TODO: Move from featureCollection to reliance on the Stores
         featureCollection = defaultFeatureCollection;
         try {
             trackStore = LoadService.getInstance().loadTrackStore();
@@ -126,6 +128,7 @@ public class DefaultNetwork implements Network {
         networkStore = DefaultNetworkStore.getInstance();
         try {
             allLineFeatures = networkStore.getLineFeatures();
+            // TODO: Move from featureCollection to reliance on the Stores
             featureCollection = TranslateUtil
                     .lineFeatureSetToFeatureCollection(allLineFeatures);
 
@@ -152,6 +155,7 @@ public class DefaultNetwork implements Network {
         nodeSet = locationStore.getLocations();
         allLineStrings = new ArrayList<>();
 
+        // TODO: Move from featureCollection to reliance on the Stores
         for (SimpleFeature feature : featureCollection) {
             LineString lineString = (LineString) feature.getDefaultGeometry();
             if (lineString != null) {
@@ -220,12 +224,14 @@ public class DefaultNetwork implements Network {
      * @see
      * com.clueride.poc.Network#add(org.opengis.feature.simple.SimpleFeature)
      * 
-     * @deprecated - deal in segments rather than features.
+     * @deprecated - deal in edges and segmentFeatures rather than
+     * simpleFeatures.
      */
     @Override
     @Deprecated
-    public void add(SimpleFeature simpleFeature) {
-        featureCollection.add(simpleFeature);
+    public void add(TrackFeature trackFeature) {
+        // TODO: Move from featureCollection to reliance on the Stores
+        featureCollection.add(trackFeature.getFeature());
         refresh();
     }
 
@@ -235,22 +241,36 @@ public class DefaultNetwork implements Network {
      * @see com.clueride.poc.Network#evaluateState(com.clueride.domain.Node)
      */
     @Override
-    public NodeNetworkState evaluateNodeState(GeoNode geoNode) {
+    public NetworkProposal evaluateNodeState(GeoNode geoNode) {
         LOGGER.debug("start - evaluateNodeState()" + count++);
-        // First Step is to clear any previous state that may have been
-        // recorded.
-        clearEvaluationState();
+        NewLocProposal newLocProposal = new NewLocProposal();
+        NewLocRecBuilder recBuilder = new NewLocRecBuilder(geoNode);
 
-        // Now for an evaluation
-        NodeNetworkState result = NodeNetworkState.UNDEFINED;
-        if (matchesNetworkNode(geoNode) > 0) {
-            return recordState(geoNode, NodeNetworkState.ON_NETWORK);
-        } else if (withinLocationGroup(geoNode)) {
-            return recordState(geoNode, NodeNetworkState.WITHIN_GROUP);
+        // TODO: Consider collapsing down the NodeNetworkState and the {@link
+        // NetworkRecType}
+
+        // Check if our node happens to already be on the network list of nodes
+        Integer matchingNodeId = matchesNetworkNode(geoNode);
+        if (matchingNodeId > 0) {
+            // Found matching node; add as a recommendation
+            newLocProposal.add(recBuilder.onNode(matchingNodeId));
+            return recordState(newLocProposal, NodeNetworkState.ON_NETWORK);
+        }
+
+        // Check if our node happens to be on the network list of node groups
+        Integer matchingNodeGroupId = withinLocationGroup(geoNode);
+        if (matchingNodeGroupId > 0) {
+            newLocProposal.add(recBuilder.onNode(matchingNodeGroupId));
+            return recordState(newLocProposal, NodeNetworkState.WITHIN_GROUP);
         } else if (addCoveringSegments(geoNode)) {
-            return recordState(geoNode, NodeNetworkState.ON_SEGMENT);
+            return recordState(newLocProposal, NodeNetworkState.ON_SEGMENT);
         } else {
+            // TODO: Nodes probably should be picked up inside the
+            // track/intersection evaluation.
+            // TODO: NearByNodes
             addNearestNodes(geoNode);
+
+            // TODO: Move each of these toward NetworkRecommendation proposals
             IntersectionScore intersectionScore = findMatchingTracks(geoNode);
             int tracksFound = intersectionScore.getTrackCount();
             if (tracksFound == 1) {
@@ -266,7 +286,8 @@ public class DefaultNetwork implements Network {
                 LOGGER.info(geoNode);
             }
         }
-        return geoNode.getState();
+        // return geoNode.getState();
+        return newLocProposal;
     }
 
     /**
@@ -274,41 +295,37 @@ public class DefaultNetwork implements Network {
      * lat/lon location.
      * 
      * At this time, we only clear the selected nodes. There may be more later.
+     * private void clearEvaluationState() { for (GeoNode node : nodeSet) {
+     * node.setSelected(false); } }
      */
-    private void clearEvaluationState() {
-        // TODO: move this toward the NetworkProposal
-        for (GeoNode node : nodeSet) {
-            node.setSelected(false);
-        }
-    }
 
     /**
-     * @param geoNode
+     * @param newLocProposal
      * @param state
      * @return
      */
-    private NodeNetworkState recordState(GeoNode geoNode,
+    private NetworkProposal recordState(NewLocProposal newLocProposal,
             NodeNetworkState state) {
-        geoNode.setState(state);
-        LOGGER.info(geoNode);
-        return state;
+        newLocProposal.setNodeNetworkState(state);
+        LOGGER.info(newLocProposal);
+        return newLocProposal;
     }
 
     /**
      * @param geoNode
      * @return
      */
-    private boolean withinLocationGroup(GeoNode geoNode) {
-        boolean isWithin = false;
+    private Integer withinLocationGroup(GeoNode geoNode) {
+        Integer matchingId = -1;
         Set<NodeGroup> locGroups = DefaultLocationStore.getInstance()
                 .getLocationGroups();
         for (NodeGroup nodeGroup : locGroups) {
             Point point = ((DefaultNodeGroup) nodeGroup).getPoint();
             if (point.buffer(LOC_GROUP_RADIUS_DEG).covers(geoNode.getPoint())) {
-                isWithin = true;
+                matchingId = nodeGroup.getId();
             }
         }
-        return isWithin;
+        return matchingId;
     }
 
     /**
@@ -394,15 +411,15 @@ public class DefaultNetwork implements Network {
             return;
         }
 
-        geoNode.setProposedSegment(LineFeatureFactory
+        geoNode.setProposedTrack(LineFeatureFactory
                 .getProposal(lsProposalForSegment));
-        geoNode.getProposedSegment().setDisplayName("Proposed");
+        geoNode.getProposedTrack().setDisplayName("Proposed");
 
         // Before we head back, let's build out the NodeEvaluationStatus object
         NodeEvaluationStatus nodeEvaluation = NetworkState
                 .getNodeEvaluationInstance();
         nodeEvaluation
-                .setProposedSegmentFromTrack(geoNode.getProposedSegment());
+                .setProposedSegmentFromTrack(geoNode.getProposedTrack());
         nodeEvaluation.setIntersectedSegment(bestSegment);
     }
 
@@ -479,6 +496,8 @@ public class DefaultNetwork implements Network {
      * 
      * Those are then added to the node.
      * 
+     * TODO: Add them to the NetworkRecommendation instead of the node.
+     * 
      * If we find matching tracks, record the segments/nodes where the
      * intersection occurs to avoid having to perform another search later.
      * 
@@ -491,19 +510,19 @@ public class DefaultNetwork implements Network {
         LOGGER.info("start - findMatchingTracks");
         IntersectionScore score = new IntersectionScore(geoNode);
         // Find tracks covering the input node
-        List<SimpleFeature> candidateTracks = findTracksThroughNode(geoNode);
+        List<TrackFeature> candidateTracks = findTracksThroughNode(geoNode);
 
         // Out of the covering tracks, which pass through our nearest nodes?
-        for (SimpleFeature track : candidateTracks) {
+        for (TrackFeature trackFeature : candidateTracks) {
             boolean keepTrack = false;
-            LineString lineString = (LineString) track.getDefaultGeometry();
+            LineString trackLineString = trackFeature.getLineString();
 
             // Check our list of nodes
+            // TODO: NearByNodes
             for (GeoNode node : geoNode.getNearByNodes()) {
-                if (lineString.buffer(GeoProperties.NODE_TOLERANCE).covers(
-                        node.getPoint())) {
-                    score.addTrackConnectingNode(new TrackFeatureImpl(track),
-                            node);
+                if (trackLineString.buffer(GeoProperties.NODE_TOLERANCE)
+                        .covers(node.getPoint())) {
+                    score.addTrackConnectingNode(trackFeature, node);
                     keepTrack = true;
                 }
             }
@@ -512,39 +531,40 @@ public class DefaultNetwork implements Network {
             for (NodeGroup nodeGroup : DefaultLocationStore.getInstance()
                     .getLocationGroups()) {
                 Point point = ((DefaultGeoNode) nodeGroup).getPoint();
-                if (point.buffer(LOC_GROUP_RADIUS_DEG).intersects(lineString)) {
-                    score.addTrackConnectingNode((TrackFeature) track,
-                            nodeGroup);
+                if (point.buffer(LOC_GROUP_RADIUS_DEG).intersects(
+                        trackLineString)) {
+                    score.addTrackConnectingNode(trackFeature, nodeGroup);
                     keepTrack = true;
                 }
             }
 
             // Check our list of Segments for crossings and intersections
-            for (SimpleFeature simpleFeature : featureCollection) {
-                SegmentFeature segmentFeature = new SegmentFeatureImpl(
-                        simpleFeature);
-                LineString segmentLineString = segmentFeature.getLineString();
-                // Segment segment = TranslateUtil
-                // .featureToSegment(segmentFeature);
-                System.out.print("Checking " + track.getAttribute("url")
-                        + " against Segment " + segmentFeature.getId()
+            // TODO: SimpleFeature -> Edge
+            // TODO: This only handles the edges and ignores the segments;
+            // Segments as edges?
+            // TODO: Move from featureCollection to reliance on the Stores
+            for (Edge edge : DefaultNetworkStore.getInstance()
+                    .getEdges()) {
+                // SegmentFeature segmentFeature = new SegmentFeatureImpl(
+                // edge);
+                LineString segmentLineString = edge.getLineString();
+                System.out.print("Checking " + trackFeature.getUrl()
+                        + " against Edge " + edge.getId()
                         + " of length "
                         + segmentLineString.getNumPoints());
 
                 // Test for Intersect (more restrictive) first - CRANG-13
-                if (segmentLineString.intersects(lineString)) {
+                if (segmentLineString.intersects(trackLineString)) {
                     System.out.println(" Intersects");
-                    score.addIntersectingTrack(
-                            (Edge) new EdgeImpl(
-                                    track), segmentFeature);
+                    score.addIntersectingTrack(trackFeature, edge);
                     keepTrack = true;
-                } else if (segmentLineString.crosses(lineString)) {
+                } else if (segmentLineString.crosses(trackLineString)) {
                     System.out.println(" Crosses");
                     LineString intersectingTrackLineString = crossingTrackToIntersectingTrack(
-                            geoNode, lineString, segmentLineString);
+                            geoNode, trackLineString, segmentLineString);
                     score.addIntersectingTrack(LineFeatureFactory
                             .getProposal(intersectingTrackLineString),
-                            segmentFeature);
+                            edge);
                     keepTrack = true;
                 } else {
                     System.out.println();
@@ -552,7 +572,7 @@ public class DefaultNetwork implements Network {
             }
 
             if (keepTrack) {
-                geoNode.addTrack(track);
+                geoNode.addTrack(trackFeature);
             }
         }
         LOGGER.info(score);
@@ -675,13 +695,25 @@ public class DefaultNetwork implements Network {
     }
 
     /**
+     * For a given location -- not on the existing network -- search for a list
+     * of {@link TrackFeature}s that "cover" the node, tracks that could serve
+     * as potential new {@link Edge}s for the {@link Network}.
+     * 
+     * NOTE: THIS IS PROBABLY BETTER OFF BEING MOVED TO A DIFFERENT CLASS that
+     * is responsible for building track-based recommendations.
+     * 
+     * TODO: This will be more useful once we have it do a couple of things: -
+     * Produce the starting point for Track-based NetworkRecommendations - Go
+     * ahead with the {@link SplitLineString} so we have the full list.
+     * 
      * @param geoNode
      * @return
      */
-    private List<SimpleFeature> findTracksThroughNode(GeoNode geoNode) {
-        List<SimpleFeature> candidateTracks = new ArrayList<>();
-        for (SimpleFeature track : trackStore.getFeatures()) {
-            LineString lineString = (LineString) track.getDefaultGeometry();
+    private List<TrackFeature> findTracksThroughNode(GeoNode geoNode) {
+        List<TrackFeature> candidateTracks = new ArrayList<>();
+        for (TrackFeature track : trackStore.getFeatures()) {
+            LineString lineString = (LineString) track.getFeature()
+                    .getDefaultGeometry();
             if (lineString.buffer(GeoProperties.BUFFER_TOLERANCE).covers(
                     geoNode.getPoint())) {
                 candidateTracks.add(track);
@@ -730,6 +762,7 @@ public class DefaultNetwork implements Network {
         SegmentService.splitSegment(existingSegmentToSplit, endNode);
         SegmentService.saveChanges();
         allLineFeatures = networkStore.getLineFeatures();
+        // TODO: Move from featureCollection to reliance on the Stores
         featureCollection = TranslateUtil
                 .lineFeatureSetToFeatureCollection(allLineFeatures);
         refresh();
@@ -792,6 +825,7 @@ public class DefaultNetwork implements Network {
      */
     private boolean addCoveringSegments(GeoNode geoNode) {
         boolean result = false;
+        // TODO: Move from featureCollection to reliance on the Stores
         for (SimpleFeature feature : featureCollection) {
 
             LineString lineString = (LineString) feature.getDefaultGeometry();
@@ -809,6 +843,7 @@ public class DefaultNetwork implements Network {
      */
     @Override
     public String toString() {
+        // TODO: Move from featureCollection to reliance on the Stores
         return "DefaultNetwork [allSegmentsCount=" + featureCollection.size()
                 + ", allLineStringsCount=" + allLineStrings.size()
                 + ", nodeSetCount=" + nodeSet.size() + ", trackStoreCount="
@@ -821,6 +856,7 @@ public class DefaultNetwork implements Network {
     public String getNetworkForDisplay() {
         String result = "";
         JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
+        // TODO: Move from featureCollection to reliance on the Stores
         result = jsonUtil.toString(featureCollection);
         return result;
     }

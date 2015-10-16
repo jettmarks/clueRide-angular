@@ -29,12 +29,13 @@ import org.apache.log4j.Logger;
 
 import com.clueride.config.GeoProperties;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.factory.NodeFactory;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
-import com.clueride.feature.SegmentFeature;
+import com.clueride.feature.TrackFeature;
 import com.clueride.geo.LengthToPoint;
 import com.clueride.geo.SplitLineString;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -56,11 +57,17 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author jett
  *
  */
-public class TrackScore {
+public class TrackScoreImpl implements TrackScore {
     private static final Logger logger = Logger.getLogger(TrackScore.class);
 
-    private LineFeature track;
+    // TODO: Review this class's use of the new LineFeature hierarchy.
+    /** The TrackFeature we're evaluating. */
+    private TrackFeature track;
+    /** Location on the track we're connecting to the network. */
     private GeoNode subjectGeoNode;
+
+    /** Holds the two pieces from the node out to each end of the track. */
+    private final SplitLineString splitLineString;
 
     private List<Node> networkNodes = new ArrayList<>();
     private List<Edge> crossingSegments = new ArrayList<>();
@@ -71,13 +78,20 @@ public class TrackScore {
     private static List<GeoNode> nodeProposals = new ArrayList<>();
     private Edge bestSegment = null;
 
-    // Holds the two pieces from the node out to each end of the track
-    private final SplitLineString splitLineString;
     private static final Map<Integer, Edge> segmentIndex = new HashMap<>();
     private static final Map<Integer, SubTrackScore> scorePerSegment = new HashMap<>();
 
+    /**
+     * Constructor accepting what we need to score the track.
+     * 
+     * @param track
+     *            - TrackFeature for which we're computing the score.
+     * @param geoNode
+     *            - GeoNode -- which is on the track -- that we're trying to
+     *            connect to the network.
+     */
     @Inject
-    public TrackScore(LineFeature track, GeoNode geoNode) {
+    public TrackScoreImpl(TrackFeature track, GeoNode geoNode) {
         this.track = track;
         this.subjectGeoNode = geoNode;
         splitLineString = new SplitLineString(track, geoNode);
@@ -92,12 +106,12 @@ public class TrackScore {
         networkNodes.add(node);
     }
 
-    public void addCrossingSegment(Edge segment) {
-        crossingSegments.add(segment);
+    public void addCrossingSegment(Edge edge) {
+        crossingSegments.add(edge);
     }
 
-    public void addIntersectingSegments(SegmentFeature segment) {
-        intersectingSegments.add((Edge) segment);
+    public void addIntersectingSegments(Edge edge) {
+        intersectingSegments.add(edge);
     }
 
     /**
@@ -302,5 +316,14 @@ public class TrackScore {
      */
     public Edge getBestSegment() {
         return bestSegment;
+    }
+
+    /**
+     * @see com.clueride.geo.score.TrackScore#getNetworkRecommendation()
+     */
+    @Override
+    public NetworkRecommendation getNetworkRecommendation() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

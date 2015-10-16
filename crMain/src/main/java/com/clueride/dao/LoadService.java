@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.geotools.feature.DefaultFeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
 
+import com.clueride.feature.TrackFeature;
 import com.clueride.geo.DefaultNetwork;
 import com.clueride.geo.Network;
 import com.clueride.io.JsonStoreType;
@@ -104,7 +104,7 @@ public class LoadService {
      * @return
      * @throws IOException
      */
-    private SimpleFeature getFirstFeature() throws IOException {
+    private TrackFeature getFirstFeature() throws IOException {
         if (trackStore == null) {
             loadTrackStore();
         }

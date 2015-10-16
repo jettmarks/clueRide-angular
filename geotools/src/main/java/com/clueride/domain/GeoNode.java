@@ -23,6 +23,7 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Node;
 import com.clueride.feature.Edge;
+import com.clueride.feature.TrackFeature;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -61,21 +62,34 @@ public interface GeoNode extends Node {
     abstract Double getElevation();
 
     /**
-     * @param nearestNodes
+     * @deprecated
      */
     void setNearByNodes(List<GeoNode> nearestNodes);
 
+    /**
+     * @deprecated
+     */
     List<GeoNode> getNearByNodes();
 
+    /**
+     * @deprecated
+     */
     int getNearByNodeCount();
 
+    /**
+     * @deprecated
+     */
     int getTrackCount();
 
     /**
-     * @param feature
+     * @param trackFeature
+     * @deprecated
      */
-    void addTrack(SimpleFeature feature);
+    void addTrack(TrackFeature trackFeature);
 
+    /**
+     * @deprecated
+     */
     List<SimpleFeature> getTracks();
 
     /**
@@ -92,31 +106,36 @@ public interface GeoNode extends Node {
 
     /**
      * 
+     * @deprecated
      */
     void setSelected(Boolean selected);
 
     /**
-     * @param lineStringToSegment
+     * @param trackFeature
+     * @deprecated
      */
-    void setProposedSegment(Edge lineStringToSegment);
+    void setProposedTrack(TrackFeature trackFeature);
 
     /**
-     * Holds the recommended segment from this point to the network using some
+     * Holds the recommended track from this point to the network using some
      * portion of a Track.
      * 
      * @return
+     * @deprecated
      */
-    Edge getProposedSegment();
+    Edge getProposedTrack();
 
     /**
-     * Evaluation of whether or not we have a proposed segment.
+     * Evaluation of whether or not we have a proposed track.
      * 
      * @return
+     * @deprecated
      */
-    boolean hasProposedSegment();
+    boolean hasProposedTrack();
 
     /**
      * @param proposedNode
+     * @deprecated
      */
     void addScoredNode(GeoNode proposedNode);
 }

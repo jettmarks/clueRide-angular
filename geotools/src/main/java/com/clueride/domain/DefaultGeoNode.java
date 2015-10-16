@@ -27,6 +27,7 @@ import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.UnratedSegment;
 import com.clueride.feature.Edge;
+import com.clueride.feature.TrackFeature;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -192,8 +193,8 @@ public class DefaultGeoNode implements GeoNode {
 
     /**
      * @see com.clueride.domain.GeoNode#addTrack(org.opengis.feature.simple.SimpleFeature)
+     * @deprecated - should be part of the NetworkProposal instead.
      */
-    @Override
     public void addTrack(SimpleFeature feature) {
         tracks.add(feature);
     }
@@ -258,7 +259,7 @@ public class DefaultGeoNode implements GeoNode {
                 + getState()
                 + " NbN: " + getNearByNodeCount()
                 + " Tk: " + getTrackCount()
-                + " Prop?: " + hasProposedSegment() + "]";
+                + " Prop?: " + hasProposedTrack() + "]";
     }
 
     /**
@@ -297,23 +298,23 @@ public class DefaultGeoNode implements GeoNode {
     /**
      * @return the proposedSegment
      */
-    public Edge getProposedSegment() {
+    public Edge getProposedTrack() {
         return proposedSegment;
     }
 
     /**
-     * @see com.clueride.domain.GeoNode#setProposedSegment(com.com.clueride.feature.Edge)
+     * @see com.clueride.domain.GeoNode#setProposedTrack(com.com.clueride.feature.Edge)
+     * @deprecated - should be part of the NetworkProposal instead.
      */
-    @Override
     public void setProposedSegment(Edge proposedSegment) {
         this.proposedSegment = proposedSegment;
     }
 
     /**
-     * @see com.clueride.domain.GeoNode#hasProposedSegment()
+     * @see com.clueride.domain.GeoNode#hasProposedTrack()
      */
     @Override
-    public boolean hasProposedSegment() {
+    public boolean hasProposedTrack() {
         return (this.proposedSegment != null);
     }
 
@@ -330,6 +331,24 @@ public class DefaultGeoNode implements GeoNode {
      */
     @Override
     public void addSegment(UnratedSegment segment) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * @see com.clueride.domain.GeoNode#addTrack(com.clueride.feature.TrackFeature)
+     */
+    @Override
+    public void addTrack(TrackFeature trackFeature) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * @see com.clueride.domain.GeoNode#setProposedTrack(com.clueride.feature.TrackFeature)
+     */
+    @Override
+    public void setProposedTrack(TrackFeature trackFeature) {
         // TODO Auto-generated method stub
 
     }
