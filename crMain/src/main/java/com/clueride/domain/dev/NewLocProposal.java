@@ -20,6 +20,8 @@ package com.clueride.domain.dev;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 /**
  * Implementation of NetworkProposal that involves adding a new Location to the
  * network.
@@ -28,6 +30,8 @@ import java.util.List;
  *
  */
 public class NewLocProposal implements NetworkProposal {
+
+    private static final Logger LOGGER = Logger.getLogger(NewLocProposal.class);
 
     private static Integer lastId = 1;
     private Integer id;
@@ -72,7 +76,6 @@ public class NewLocProposal implements NetworkProposal {
      */
     @Override
     public String toJson() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -96,6 +99,7 @@ public class NewLocProposal implements NetworkProposal {
      * @param networkRecommendation
      */
     public void add(NetworkRecommendation networkRecommendation) {
+        LOGGER.info(networkRecommendation);
         networkRecommendations.add(networkRecommendation);
     }
 

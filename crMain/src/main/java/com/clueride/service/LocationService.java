@@ -31,9 +31,13 @@ import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkProposal;
+import com.clueride.domain.dev.NewLocProposal;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
+import com.clueride.domain.dev.rec.NewLocRecBuilder;
+import com.clueride.domain.dev.rec.Rec;
 import com.clueride.domain.factory.PointFactory;
+import com.clueride.feature.TrackFeature;
 import com.clueride.geo.DefaultNetwork;
 import com.clueride.geo.Network;
 import com.clueride.geo.TranslateUtil;
@@ -48,11 +52,13 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class LocationService {
 
-    private static final Logger logger = Logger
+    private static final Logger LOGGER = Logger
             .getLogger(LocationService.class);
 
     // TODO: Add Dependency Injection for the NetworkService
     private Network network = DefaultNetwork.getInstance();
+
+    private int countBuildNewLocRequests;
     private static LocationStore locationStore = DefaultLocationStore
             .getInstance();
 
@@ -60,6 +66,10 @@ public class LocationService {
      * Currently creates a brand new GeoNode instance which is then evaluated by
      * the Network; the Network "decorates" the GeoNode with features that are
      * then returned to the Map.
+     * 
+     * Moving toward use of the NetworkProposal to collect that recommendation
+     * and the data required to present it to the user, then later persist the
+     * user's choices for blessing that recommendation.
      * 
      * @param lat
      * @param lon
@@ -76,8 +86,51 @@ public class LocationService {
         NetworkProposal networkProposal = network.evaluateNodeState(geoNode);
         NodeNetworkState nodeEvaluation = networkProposal.getNodeNetworkState();
         result = jsonUtil.toString(geoNode);
-        logger.debug("At the requested Location: " + geoNode);
+        // result = networkProposal.toJson();
+        LOGGER.debug("At the requested Location: " + geoNode);
         return result;
+    }
+
+    /**
+     * Given a proposed New Location, find out how it connects to the network
+     * and recommend a connection if one doesn't already exist.
+     * 
+     * Replacing the Network.evaluatNodeState() method.
+     * 
+     * @return
+     */
+    protected NetworkProposal buildProposalForNewLoc(GeoNode geoNode) {
+        LOGGER.debug("start - evaluateNodeState(): "
+                + countBuildNewLocRequests++);
+        GeoEval geoEval = GeoEval.getInstance();
+        NewLocProposal newLocProposal = new NewLocProposal();
+        NewLocRecBuilder recBuilder = new NewLocRecBuilder(geoNode);
+
+        // Check if our node happens to already be on the network list of nodes
+        Integer matchingNodeId = geoEval.matchesNetworkNode(geoNode);
+        if (matchingNodeId > 0) {
+            // Found matching node; add as a recommendation
+            newLocProposal.add(recBuilder.onNode(matchingNodeId));
+            return newLocProposal;
+        }
+
+        // Check if our node happens to be on the network list of node groups
+        Integer matchingSegmentId = geoEval.matchesSegmentId(geoNode);
+        if (matchingSegmentId > 0) {
+            newLocProposal.add(recBuilder.onSegment(matchingSegmentId));
+            return newLocProposal;
+        }
+
+        // Try a Track-based proposal
+        List<TrackFeature> coveringTracks = geoEval.listCoveringTracks(geoNode);
+        for (TrackFeature track : coveringTracks) {
+            Rec rec = recBuilder.getTrackRec(track, geoNode);
+            if (rec != null) {
+                newLocProposal.add(rec);
+            }
+        }
+
+        return newLocProposal;
     }
 
     /**

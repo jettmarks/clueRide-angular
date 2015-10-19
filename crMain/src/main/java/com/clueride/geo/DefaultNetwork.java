@@ -239,15 +239,14 @@ public class DefaultNetwork implements Network {
      * (non-Javadoc)
      * 
      * @see com.clueride.poc.Network#evaluateState(com.clueride.domain.Node)
+     * 
+     * @deprecated - using LocationService.buildProposalForNewLoc instead.
      */
     @Override
     public NetworkProposal evaluateNodeState(GeoNode geoNode) {
         LOGGER.debug("start - evaluateNodeState()" + count++);
         NewLocProposal newLocProposal = new NewLocProposal();
         NewLocRecBuilder recBuilder = new NewLocRecBuilder(geoNode);
-
-        // TODO: Consider collapsing down the NodeNetworkState and the {@link
-        // NetworkRecType}
 
         // Check if our node happens to already be on the network list of nodes
         Integer matchingNodeId = matchesNetworkNode(geoNode);
@@ -514,6 +513,7 @@ public class DefaultNetwork implements Network {
 
         // Out of the covering tracks, which pass through our nearest nodes?
         for (TrackFeature trackFeature : candidateTracks) {
+            // TODO: turn keepTrack into a method off the eval/builder.
             boolean keepTrack = false;
             LineString trackLineString = trackFeature.getLineString();
 
@@ -702,12 +702,9 @@ public class DefaultNetwork implements Network {
      * NOTE: THIS IS PROBABLY BETTER OFF BEING MOVED TO A DIFFERENT CLASS that
      * is responsible for building track-based recommendations.
      * 
-     * TODO: This will be more useful once we have it do a couple of things: -
-     * Produce the starting point for Track-based NetworkRecommendations - Go
-     * ahead with the {@link SplitLineString} so we have the full list.
-     * 
      * @param geoNode
      * @return
+     * @deprecated - Using {@link GeoEval.listCoveringTracks()} instead.
      */
     private List<TrackFeature> findTracksThroughNode(GeoNode geoNode) {
         List<TrackFeature> candidateTracks = new ArrayList<>();
@@ -822,10 +819,10 @@ public class DefaultNetwork implements Network {
      * 
      * @param geoNode
      * @return true if we were able to find suitable segments.
+     * @deprecated - Using {@link GeoEval.matchesSegmentId()} instead.
      */
     private boolean addCoveringSegments(GeoNode geoNode) {
         boolean result = false;
-        // TODO: Move from featureCollection to reliance on the Stores
         for (SimpleFeature feature : featureCollection) {
 
             LineString lineString = (LineString) feature.getDefaultGeometry();
@@ -843,7 +840,6 @@ public class DefaultNetwork implements Network {
      */
     @Override
     public String toString() {
-        // TODO: Move from featureCollection to reliance on the Stores
         return "DefaultNetwork [allSegmentsCount=" + featureCollection.size()
                 + ", allLineStringsCount=" + allLineStrings.size()
                 + ", nodeSetCount=" + nodeSet.size() + ", trackStoreCount="

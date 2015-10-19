@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.baselet.element.old.allinone.SequenceDiagram</type>
+    <coordinates>
+      <x>20</x>
+      <y>20</y>
+      <w>410</w>
+      <h>350</h>
+    </coordinates>
+    <panel_attributes>title: construction
+_alpha:A~id1_|_beta:B~id2_|_gamma:G~id3_
+id1-&gt;&gt;id2:id1,id2
+id2-/&gt;id1:async Msg.
+id3-&gt;&gt;&gt;id1:id1,id3
+id1.&gt;id3:id1,id3:async return Msg
+id1-&gt;id1:id1:self
+iframe{:interaction frame
+id2-&gt;id3:id1,id3:async Msg.
+iframe}</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

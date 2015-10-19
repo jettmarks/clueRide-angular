@@ -39,7 +39,8 @@ import com.vividsolutions.jts.geom.LineString;
  * TODO: Probably more efficient to hold them in a regular list.
  *
  * @author jett
- *
+ * @deprecated - Moving toward the DAO instances represented by LocationStore
+ *             and NetworkStore.
  */
 public class TrackStore {
     // TODO: Look at a proper extends to add here
