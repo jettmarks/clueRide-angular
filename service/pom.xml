@@ -58,6 +58,11 @@
         	<version>6.9.4</version>
         	<scope>test</scope>
         </dependency>
-  </dependencies>
+        <dependency>
+        	<groupId>com.clueride</groupId>
+        	<artifactId>geotools</artifactId>
+        	<version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
   
 </project>
