@@ -355,4 +355,16 @@ getEndNode : GeoNode</panel_attributes>
     <panel_attributes>lt=&lt;&lt;.</panel_attributes>
     <additional_attributes>10.0;10.0;210.0;10.0</additional_attributes>
   </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>120</x>
+      <y>70</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Enum&gt;&gt;
+NetworkRecType</panel_attributes>
+    <additional_attributes/>
+  </element>
 </diagram>
