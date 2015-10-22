@@ -15,7 +15,7 @@
  *
  * Created Oct 15, 2015
  */
-package com.clueride.domain.dev.rec;
+package com.clueride.service.builder;
 
 import com.clueride.dao.DefaultLocationStore;
 import com.clueride.dao.DefaultNetworkStore;
@@ -23,6 +23,16 @@ import com.clueride.dao.LocationStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkRecommendation;
+import com.clueride.domain.dev.rec.OnNode;
+import com.clueride.domain.dev.rec.OnNodeImpl;
+import com.clueride.domain.dev.rec.OnSegment;
+import com.clueride.domain.dev.rec.OnSegmentImpl;
+import com.clueride.domain.dev.rec.Rec;
+import com.clueride.domain.dev.rec.ToNodeImpl;
+import com.clueride.domain.dev.rec.ToSegmentAndNodeImpl;
+import com.clueride.domain.dev.rec.ToSegmentImpl;
+import com.clueride.domain.dev.rec.ToTwoNodesImpl;
+import com.clueride.domain.dev.rec.ToTwoSegmentsImpl;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.SplitLineString;
@@ -115,6 +125,7 @@ public class NewLocRecBuilder {
     }
 
     /**
+     * Replace much of the specific newing up with the RecommendationBuilder.
      * 
      * @param track
      * @param endConnection
@@ -123,7 +134,27 @@ public class NewLocRecBuilder {
      */
     private Rec getMultipleTrackRec(TrackFeature track,
             TrackConnection endConnection, TrackConnection startConnection) {
-        return null;
+        if (endConnection.hasEdge() && startConnection.hasEdge()) {
+            // Both have Edges
+            // TODO: This should be accepting the Nodes as well.
+            return new ToTwoSegmentsImpl(newLoc, track,
+                    endConnection.getEdge(), startConnection.getEdge());
+        } else if (!endConnection.hasEdge() && !startConnection.hasEdge()) {
+            // Both have Nodes
+            return new ToTwoNodesImpl(newLoc, track,
+                    endConnection.getGeoNode(), startConnection.getGeoNode());
+        } else if (!endConnection.hasEdge() && startConnection.hasEdge()) {
+            // End Node and Start Edge
+            return new ToSegmentAndNodeImpl(newLoc, track, startConnection
+                    .getEdge(), endConnection.getGeoNode());
+        } else if (endConnection.hasEdge() && !startConnection.hasEdge()) {
+            // End Edge and Start Node
+            return new ToSegmentAndNodeImpl(newLoc, track, endConnection
+                    .getEdge(), startConnection.getGeoNode());
+        } else {
+            // No other options
+            return null;
+        }
     }
 
     private Rec getSingleTrackRec(TrackFeature track, TrackConnection connection) {

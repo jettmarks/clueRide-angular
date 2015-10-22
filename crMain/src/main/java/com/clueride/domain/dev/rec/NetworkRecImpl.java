@@ -19,6 +19,10 @@ package com.clueride.domain.dev.rec;
 
 import static com.clueride.domain.dev.rec.NetworkRecType.UNDEFINED;
 
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
+
 import com.clueride.domain.dev.NetworkRecommendation;
 
 /**
@@ -27,10 +31,11 @@ import com.clueride.domain.dev.NetworkRecommendation;
  * @author jett
  *
  */
-public abstract class NetworkRecImpl implements NetworkRecommendation {
+public class NetworkRecImpl implements NetworkRecommendation {
 
     private Integer id;
     private String name;
+    protected DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
 
     /**
      * @see com.clueride.domain.dev.NetworkRecommendation#getId()
@@ -55,4 +60,30 @@ public abstract class NetworkRecImpl implements NetworkRecommendation {
     public NetworkRecType getRecType() {
         return UNDEFINED;
     }
+
+    /**
+     * @see com.clueride.domain.dev.NetworkRecommendation#getFeatureCollection()
+     */
+    @Override
+    public FeatureCollection<?, ?> getFeatureCollection() {
+        return featureCollection;
+    }
+
+    protected void addFeature(SimpleFeature feature) {
+        featureCollection.add(feature);
+    }
+
+    /**
+     * Although this is expected to generally be overridden, we can return a
+     * value of zero if nothing else can be used for the score.
+     * 
+     * TODO: There may be a better implementation of this later on.
+     * 
+     * @see com.clueride.domain.dev.NetworkRecommendation#getScore()
+     */
+    @Override
+    public Double getScore() {
+        return 0.0;
+    }
+
 }

@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Jul 28, 2015
+ * Created Oct 20, 2015
  */
-package com.clueride.domain;
+package com.clueride.domain.dev;
+
+import com.clueride.domain.Profile;
+import com.clueride.domain.Rating;
 
 /**
- * Ratings are based on a standard method of scoring various factors such as
- * hilliness, distance, facility type, and more subjective factors, but some
- * users may not care about hills and may avoid segregated trails; a Profile
- * allows adjusting the rating based on a User's preferences.
- *
- * This object should be DTO with some checks for consistency and validation;
- * computation of overall score would be outside of this class's responsibility.
+ * Generalization of a specific route / path / segment between two points.
  * 
+ * Most of the line-based geometries will have these properties.
+ *
  * @author jett
  */
-public interface Profile {
-    Double getHillFactor();
+public interface Arc {
+    Node getStart();
 
-    Double getDistanceFactor();
+    Node getEnd();
 
-    Double getFacilityFactor();
+    Rating getRating();
+
+    Rating getRating(Profile profile);
+
+    Double getDistanceMiles();
+
+    Double getDistanceMeters();
 }

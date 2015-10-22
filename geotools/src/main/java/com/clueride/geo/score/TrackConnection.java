@@ -27,8 +27,11 @@ import com.clueride.feature.Edge;
  * Testing is performed by business logic using GeoEval and results are recorded
  * in this instance for later interpretation by a NetworkRecommendation builder.
  *
- * The only helper method provided is whether or not the associated Track is
- * connected to something or nothing.
+ * The only helper methods provided are
+ * <UL>
+ * <LI>Whether the associated Track is connected to something or nothing.
+ * <LI>Whether that connection is an Edge or not.
+ * </UL>
  * 
  * @author jett
  */
@@ -83,5 +86,12 @@ public class TrackConnection {
 
     public boolean isConnected() {
         return (edge != null || geoNode != null);
+    }
+
+    /**
+     * @return
+     */
+    public boolean hasEdge() {
+        return edge != null;
     }
 }

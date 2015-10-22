@@ -103,4 +103,14 @@ public class NewLocProposal implements NetworkProposal {
         networkRecommendations.add(networkRecommendation);
     }
 
+    /**
+     * If we've got a list, we can add them all at once.
+     * 
+     * @param recList
+     *            - List of recommendations appropriate to the proposal.
+     */
+    public void addAll(List<NetworkRecommendation> recList) {
+        networkRecommendations.addAll(recList);
+    }
+
 }

@@ -9,6 +9,8 @@ import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.domain.dev.rec.NetworkRecImpl;
+
 public class NewLocProposalTest {
     private NewLocProposal toTest;
 
@@ -54,9 +56,9 @@ public class NewLocProposalTest {
     public void hasMultipleRecommendations() {
         toTest = new NewLocProposal();
         assertFalse(toTest.hasMultipleRecommendations());
-        toTest.add(new NetworkRecommendationImpl());
+        toTest.add(new NetworkRecImpl());
         assertFalse(toTest.hasMultipleRecommendations());
-        toTest.add(new NetworkRecommendationImpl());
+        toTest.add(new NetworkRecImpl());
         assertTrue(toTest.hasMultipleRecommendations());
     }
 

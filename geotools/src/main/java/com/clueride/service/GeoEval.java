@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.clueride.config.GeoProperties;
 import com.clueride.dao.DefaultLocationStore;
 import com.clueride.dao.DefaultNetworkStore;
@@ -49,12 +51,13 @@ import com.vividsolutions.jts.geom.Point;
  * @author jett
  */
 public class GeoEval {
+    private static final Logger LOGGER = Logger.getLogger(GeoEval.class);
 
     private static GeoEval instance;
-    private static final LocationStore LOCATION_STORE = DefaultLocationStore
-            .getInstance();
     private static final Double LOC_GROUP_RADIUS_DEG = (Double) GeoProperties
             .getInstance().get("group.radius.degrees");
+    private static final LocationStore LOCATION_STORE = DefaultLocationStore
+            .getInstance();
     private static final NetworkStore EDGE_STORE = DefaultNetworkStore
             .getInstance();
     private static final TrackStore TRACK_STORE = DefaultTrackStore
@@ -105,6 +108,8 @@ public class GeoEval {
      * 
      * This implementation could be made more efficient by checking the bounds
      * first.
+     * 
+     * TODO: Inconsistent Naming (Id versus no Id)
      * 
      * @param geoNode
      * @return
@@ -181,6 +186,12 @@ public class GeoEval {
 
         // Check segments for intersection/crossing with lineString
         // TODO: Add these
+        for (Edge edge : EDGE_STORE.getEdges()) {
+            if (edge.getLineString().intersects(lineString)) {
+                LOGGER.info("INTERSECTION with " + edge.toString());
+
+            }
+        }
 
         return closestConnection;
     }

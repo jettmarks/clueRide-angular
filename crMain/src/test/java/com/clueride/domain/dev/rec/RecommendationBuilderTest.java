@@ -24,6 +24,7 @@ import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
+import com.clueride.service.builder.RecommendationBuilder;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;

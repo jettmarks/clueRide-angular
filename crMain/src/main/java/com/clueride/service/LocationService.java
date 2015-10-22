@@ -34,7 +34,6 @@ import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NewLocProposal;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
-import com.clueride.domain.dev.rec.NewLocRecBuilder;
 import com.clueride.domain.dev.rec.Rec;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.TrackFeature;
@@ -43,6 +42,7 @@ import com.clueride.geo.Network;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
+import com.clueride.service.builder.NewLocRecBuilder;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -77,18 +77,35 @@ public class LocationService {
      */
     public String addNewLocation(Double lat, Double lon) {
         String result = "";
-        JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
-        Point point = PointFactory.getJtsInstance(lat, lon, 0.0);
-        GeoNode geoNode = new DefaultGeoNode();
-        geoNode.setPoint(point);
-        geoNode.setName("candidate");
-        // TODO: Move toward use of the nodeEvaluation instance
-        NetworkProposal networkProposal = network.evaluateNodeState(geoNode);
+
+        GeoNode newLocation;
+        newLocation = getCandidateLocation(lat, lon);
+
+        // NetworkProposal networkProposal = network
+        // .evaluateNodeState(newLocation);
+        NetworkProposal networkProposal = buildProposalForNewLoc(newLocation);
+
         NodeNetworkState nodeEvaluation = networkProposal.getNodeNetworkState();
-        result = jsonUtil.toString(geoNode);
-        // result = networkProposal.toJson();
-        LOGGER.debug("At the requested Location: " + geoNode);
+
+        JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
+        // result = jsonUtil.toString(newLocation);
+        result = networkProposal.toJson();
+        LOGGER.debug("At the requested Location: " + newLocation);
         return result;
+    }
+
+    /**
+     * @param lat
+     * @param lon
+     * @return
+     */
+    private GeoNode getCandidateLocation(Double lat, Double lon) {
+        GeoNode newLocation;
+        newLocation = new DefaultGeoNode();
+        Point point = PointFactory.getJtsInstance(lat, lon, 0.0);
+        newLocation.setPoint(point);
+        newLocation.setName("candidate");
+        return newLocation;
     }
 
     /**
@@ -114,9 +131,10 @@ public class LocationService {
             return newLocProposal;
         }
 
-        // Check if our node happens to be on the network list of node groups
+        // Check if our node happens to be on the network list of edges
         Integer matchingSegmentId = geoEval.matchesSegmentId(geoNode);
         if (matchingSegmentId > 0) {
+            // TODO: Missing from here: splitting the segment on the node
             newLocProposal.add(recBuilder.onSegment(matchingSegmentId));
             return newLocProposal;
         }
@@ -129,6 +147,12 @@ public class LocationService {
                 newLocProposal.add(rec);
             }
         }
+
+        // if (coveringTracks.size() > 0) {
+        // TrackRecBuilder trackRecBuilder = new TrackRecBuilder(geoNode,
+        // coveringTracks);
+        // newLocProposal.addAll(trackRecBuilder.build());
+        // }
 
         return newLocProposal;
     }

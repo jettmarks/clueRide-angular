@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Jul 28, 2015
+ * Created Oct 20, 2015
  */
-package com.clueride.domain;
+package com.clueride.domain.user;
+
+import java.util.SortedSet;
+
+import com.clueride.domain.dev.Arc;
+import com.clueride.domain.dev.Segment;
 
 /**
- * Ratings are based on a standard method of scoring various factors such as
- * hilliness, distance, facility type, and more subjective factors, but some
- * users may not care about hills and may avoid segregated trails; a Profile
- * allows adjusting the rating based on a User's preferences.
+ * Represents a particular choice of Segments to travel between two
+ * {@link Location}s.
  *
- * This object should be DTO with some checks for consistency and validation;
- * computation of overall score would be outside of this class's responsibility.
- * 
  * @author jett
+ *
  */
-public interface Profile {
-    Double getHillFactor();
+public interface Path extends Arc {
+    SortedSet<Segment> getSegments();
 
-    Double getDistanceFactor();
+    Location getDeparture();
 
-    Double getFacilityFactor();
+    Location getDestination();
 }

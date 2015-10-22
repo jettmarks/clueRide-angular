@@ -35,7 +35,7 @@ import com.clueride.domain.Rating;
  * @author jett
  *
  */
-public interface Segment extends UnratedSegment {
+public interface Segment extends UnratedSegment, Arc {
 
     /**
      * @return the oneWay
@@ -62,6 +62,6 @@ public interface Segment extends UnratedSegment {
     /**
      * @return the distanceMiles
      */
-    double getDistanceMiles();
+    Double getDistanceMiles();
 
 }

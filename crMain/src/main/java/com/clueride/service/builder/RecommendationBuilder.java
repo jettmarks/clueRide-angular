@@ -15,12 +15,21 @@
  *
  * Created Sep 28, 2015
  */
-package com.clueride.domain.dev.rec;
+package com.clueride.service.builder;
 
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkRecommendation;
+import com.clueride.domain.dev.rec.OffNetworkImpl;
+import com.clueride.domain.dev.rec.OnNodeImpl;
+import com.clueride.domain.dev.rec.OnSegmentImpl;
+import com.clueride.domain.dev.rec.ToNodeImpl;
+import com.clueride.domain.dev.rec.ToSegmentAndNodeImpl;
+import com.clueride.domain.dev.rec.ToSegmentImpl;
+import com.clueride.domain.dev.rec.ToTwoNodesImpl;
+import com.clueride.domain.dev.rec.ToTwoSegmentsImpl;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
+import com.vividsolutions.jts.geom.LineString;
 
 /**
  * Builder for a Recommendation that becomes part of a Proposal.
@@ -48,6 +57,8 @@ public class RecommendationBuilder {
     private GeoNode splittingNode;
     private GeoNode splittingNodeStart;
     private GeoNode splittingNodeEnd;
+    private LineString lineStringToStart;
+    private LineString lineStringToEnd;
 
     /** */
 
@@ -264,4 +275,20 @@ public class RecommendationBuilder {
         return this;
     }
 
+    /**
+     * @param lineStringToStart
+     * @return
+     */
+    public RecommendationBuilder addToStartTrack(LineString lineStringToStart) {
+        this.lineStringToStart = lineStringToStart;
+        return this;
+    }
+
+    /**
+     * @param lineStringToEnd
+     */
+    public RecommendationBuilder addToEndTrack(LineString lineStringToEnd) {
+        this.lineStringToEnd = lineStringToEnd;
+        return this;
+    }
 }
