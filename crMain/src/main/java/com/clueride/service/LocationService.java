@@ -39,10 +39,13 @@ import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.DefaultNetwork;
 import com.clueride.geo.Network;
+import com.clueride.geo.SplitLineString;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 import com.clueride.service.builder.NewLocRecBuilder;
+import com.clueride.service.builder.TrackRecBuilder;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -87,7 +90,7 @@ public class LocationService {
 
         NodeNetworkState nodeEvaluation = networkProposal.getNodeNetworkState();
 
-        JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
+        // JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
         // result = jsonUtil.toString(newLocation);
         result = networkProposal.toJson();
         LOGGER.debug("At the requested Location: " + newLocation);
@@ -116,15 +119,15 @@ public class LocationService {
      * 
      * @return
      */
-    protected NetworkProposal buildProposalForNewLoc(GeoNode geoNode) {
+    protected NetworkProposal buildProposalForNewLoc(GeoNode newLoc) {
         LOGGER.debug("start - evaluateNodeState(): "
                 + countBuildNewLocRequests++);
         GeoEval geoEval = GeoEval.getInstance();
-        NewLocProposal newLocProposal = new NewLocProposal();
-        NewLocRecBuilder recBuilder = new NewLocRecBuilder(geoNode);
+        NewLocProposal newLocProposal = new NewLocProposal(newLoc);
+        NewLocRecBuilder recBuilder = new NewLocRecBuilder(newLoc);
 
         // Check if our node happens to already be on the network list of nodes
-        Integer matchingNodeId = geoEval.matchesNetworkNode(geoNode);
+        Integer matchingNodeId = geoEval.matchesNetworkNode(newLoc);
         if (matchingNodeId > 0) {
             // Found matching node; add as a recommendation
             newLocProposal.add(recBuilder.onNode(matchingNodeId));
@@ -132,7 +135,7 @@ public class LocationService {
         }
 
         // Check if our node happens to be on the network list of edges
-        Integer matchingSegmentId = geoEval.matchesSegmentId(geoNode);
+        Integer matchingSegmentId = geoEval.matchesSegmentId(newLoc);
         if (matchingSegmentId > 0) {
             // TODO: Missing from here: splitting the segment on the node
             newLocProposal.add(recBuilder.onSegment(matchingSegmentId));
@@ -140,20 +143,33 @@ public class LocationService {
         }
 
         // Try a Track-based proposal
-        List<TrackFeature> coveringTracks = geoEval.listCoveringTracks(geoNode);
+        List<TrackFeature> coveringTracks = geoEval.listCoveringTracks(newLoc);
         for (TrackFeature track : coveringTracks) {
-            Rec rec = recBuilder.getTrackRec(track, geoNode);
+
+            // There are two directions we can go; calculate these first
+            SplitLineString startEndPair = new SplitLineString(track, newLoc);
+            TrackRecBuilder trackRecBuilder = new TrackRecBuilder(newLoc,
+                    startEndPair);
+            LineString lsStart = startEndPair.getLineStringToStart();
+            LineString lsEnd = startEndPair.getLineStringToEnd();
+
+            trackRecBuilder
+                    .addNetworkNodeStart(geoEval.getNearestNetworkNode(lsStart))
+                    .addEdgeAtStart(geoEval.getNearestNetworkEdge(lsStart))
+                    .addNetworkNodeEnd(geoEval.getNearestNetworkNode(lsEnd))
+                    .addEdgeAtEnd(geoEval.getNearestNetworkEdge(lsEnd));
+
+            Rec rec = trackRecBuilder.build();
             if (rec != null) {
                 newLocProposal.add(rec);
             }
         }
-
-        // if (coveringTracks.size() > 0) {
-        // TrackRecBuilder trackRecBuilder = new TrackRecBuilder(geoNode,
-        // coveringTracks);
-        // newLocProposal.addAll(trackRecBuilder.build());
-        // }
-
+        if (newLocProposal.hasMultipleRecommendations()) {
+            newLocProposal.setNodeNetworkState(NodeNetworkState.ON_MULTI_TRACK);
+        }
+        if (newLocProposal.getRecommendations().size() == 0) {
+            newLocProposal.setNodeNetworkState(NodeNetworkState.OFF_NETWORK);
+        }
         return newLocProposal;
     }
 

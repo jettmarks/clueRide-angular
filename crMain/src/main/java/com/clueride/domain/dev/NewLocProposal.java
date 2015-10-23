@@ -21,6 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.geotools.feature.DefaultFeatureCollection;
+
+import com.clueride.domain.GeoNode;
+import com.clueride.geo.TranslateUtil;
+import com.clueride.io.JsonStoreType;
+import com.clueride.io.JsonUtil;
 
 /**
  * Implementation of NetworkProposal that involves adding a new Location to the
@@ -38,9 +44,13 @@ public class NewLocProposal implements NetworkProposal {
     private List<NetworkRecommendation> networkRecommendations = new ArrayList<>();
     private NodeNetworkState nodeNetworkState;
 
+    private final GeoNode newLoc;
+
     /**
+     * @param newLoc
      */
-    public NewLocProposal() {
+    public NewLocProposal(GeoNode newLoc) {
+        this.newLoc = newLoc;
         setNodeNetworkState(NodeNetworkState.UNDEFINED);
         synchronized (lastId) {
             this.id = lastId++;
@@ -76,7 +86,10 @@ public class NewLocProposal implements NetworkProposal {
      */
     @Override
     public String toJson() {
-        return null;
+        JsonUtil jsonRespWriter = new JsonUtil(JsonStoreType.LOCATION);
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
+        featureCollection.add(TranslateUtil.geoNodeToFeature(newLoc));
+        return jsonRespWriter.toString(featureCollection);
     }
 
     /**
@@ -93,6 +106,7 @@ public class NewLocProposal implements NetworkProposal {
      */
     public void setNodeNetworkState(NodeNetworkState nodeNetworkState) {
         this.nodeNetworkState = nodeNetworkState;
+        this.newLoc.setState(nodeNetworkState);
     }
 
     /**

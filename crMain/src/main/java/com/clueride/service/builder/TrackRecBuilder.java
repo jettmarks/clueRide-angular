@@ -17,12 +17,9 @@
  */
 package com.clueride.service.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.NetworkRecommendation;
-import com.clueride.feature.TrackFeature;
+import com.clueride.domain.dev.rec.Rec;
+import com.clueride.feature.Edge;
 import com.clueride.geo.SplitLineString;
 import com.clueride.service.GeoEval;
 
@@ -36,36 +33,104 @@ import com.clueride.service.GeoEval;
 public class TrackRecBuilder {
 
     private final GeoNode newLoc;
-    private final List<TrackFeature> coveringTracks;
     private final GeoEval geoEval;
+    private final SplitLineString splitLineString;
+
+    private GeoNode networkNodeStart;
+    private GeoNode networkNodeEnd;
+    private Edge networkEdgeEnd;
+    private Edge networkEdgeStart;
 
     /**
      * @param geoNode
      * @param coveringTracks
      */
-    public TrackRecBuilder(GeoNode newLoc, List<TrackFeature> coveringTracks) {
+    public TrackRecBuilder(GeoNode newLoc, SplitLineString splitLineString) {
         this.newLoc = newLoc;
-        this.coveringTracks = coveringTracks;
+        this.splitLineString = splitLineString;
         this.geoEval = GeoEval.getInstance();
+    }
+
+    // /**
+    // * @return
+    // */
+    // public List<NetworkRecommendation> build() {
+    // List<NetworkRecommendation> recList = new ArrayList<>();
+    //
+    // for (TrackFeature track : coveringTracks) {
+    // SplitLineString lsPair = new SplitLineString(track, newLoc);
+    // RecommendationBuilder recBuilder = new RecommendationBuilder();
+    // recBuilder.addToStartTrack(lsPair.getLineStringToStart())
+    // .addToEndTrack(lsPair.getLineStringToEnd());
+    // NetworkRecommendation rec = recBuilder.build();
+    // // Rec rec = recBuilder.getTrackRec(track, geoNode);
+    // recList.add(rec);
+    // }
+    //
+    // return recList;
+    // }
+
+    /**
+     * Accepts a Node in the Network that we have verified is covered by the
+     * "To Start" portion of the Track we're building a recommendation for.
+     * 
+     * Based on this Node (if not null), we can calculate the Edge suggested by
+     * the Track that runs from the newLoc and this potential Network Node. If
+     * we get a closer Segment, we would recommend that instead.
+     * 
+     * @param networkNode
+     *            - represents shortest connection of the Track to the Network.
+     * @return this - to allow chaining of the builder.
+     */
+    public TrackRecBuilder addNetworkNodeStart(GeoNode networkNode) {
+        // Record this now, not yet prepared to calculate distances or Edges.
+        this.networkNodeStart = networkNode;
+        return this;
+    }
+
+    /**
+     * Accepts a Node in the Network that we have verified is covered by the
+     * "To End" portion of the Track we're building a recommendation for.
+     * 
+     * Based on this Node (if not null), we can calculate the Edge suggested by
+     * the Track that runs from the newLoc and this potential Network Node. If
+     * we get a closer Segment, we would recommend that instead.
+     * 
+     * @param networkNode
+     *            - represents shortest connection of the Track to the Network.
+     * @return this - to allow chaining of the builder.
+     */
+    public TrackRecBuilder addNetworkNodeEnd(GeoNode networkNode) {
+        // Record this now, not yet prepared to calculate distances or Edges.
+        this.networkNodeEnd = networkNode;
+        return this;
+    }
+
+    /**
+     * @param nearestNetworkEdge
+     * @return
+     */
+    public TrackRecBuilder addEdgeAtStart(Edge networkEdge) {
+        // Record this now, not yet prepared to calculate distances or Edges.
+        this.networkEdgeStart = networkEdge;
+        return this;
+    }
+
+    /**
+     * @param nearestNetworkEdge
+     */
+    public TrackRecBuilder addEdgeAtEnd(Edge networkEdge) {
+        // Record this now, not yet prepared to calculate distances or Edges.
+        this.networkEdgeEnd = networkEdge;
+        return this;
     }
 
     /**
      * @return
      */
-    public List<NetworkRecommendation> build() {
-        List<NetworkRecommendation> recList = new ArrayList<>();
-
-        for (TrackFeature track : coveringTracks) {
-            SplitLineString lsPair = new SplitLineString(track, newLoc);
-            RecommendationBuilder recBuilder = new RecommendationBuilder();
-            recBuilder.addToStartTrack(lsPair.getLineStringToStart())
-                    .addToEndTrack(lsPair.getLineStringToEnd());
-            NetworkRecommendation rec = recBuilder.build();
-            // Rec rec = recBuilder.getTrackRec(track, geoNode);
-            recList.add(rec);
-        }
-
-        return recList;
+    public Rec build() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

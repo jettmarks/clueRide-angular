@@ -81,4 +81,9 @@ public class IntersectionUtilTest {
         System.out.println("For index 0: "
                 + IntersectionUtil.retrieveCrossingPair(lineStringTrack, 0));
     }
+
+    @Test
+    public void findFirstIntersection() {
+
+    }
 }

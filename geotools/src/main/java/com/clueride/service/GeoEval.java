@@ -35,7 +35,7 @@ import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
-import com.clueride.geo.score.TrackConnection;
+import com.clueride.geo.IntersectionUtil;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
@@ -119,7 +119,7 @@ public class GeoEval {
         for (Edge edge : edgeSet) {
             LineString lineString = edge.getLineString();
             // Perform faster boundary test before checking buffered coverage
-            if (lineString.getBoundary().covers(geoNode.getPoint())) {
+            if (lineString.getEnvelope().covers(geoNode.getPoint())) {
                 if (lineString.buffer(GeoProperties.BUFFER_TOLERANCE).covers(
                         geoNode.getPoint())) {
                     return edge.getId();
@@ -150,6 +150,85 @@ public class GeoEval {
     }
 
     /**
+     * Checks the given LineString to see if it intersects the network at one of
+     * the nodes (or Location Groups).
+     * 
+     * Algorithm is to check boundary overlap and if passes that simple test, we
+     * see if the point sits within the buffer of the LineString.
+     * 
+     * Distances along the LineString are computed for any matches and if we've
+     * found the shortest distance, we record the Node to be returned.
+     * 
+     * @param lineString
+     *            - Potential Track into the Network.
+     * @return null if no network node is covered by this lineString, or the
+     *         closest one if there is a covered network node.
+     */
+    public GeoNode getNearestNetworkNode(LineString lineString) {
+        GeoNode nearestNode = null;
+        Double minDistance = Double.MAX_VALUE;
+
+        // Only need to get the boundary and buffer once
+        Geometry boundary = lineString.getBoundary();
+        Geometry buffer = lineString.buffer(GeoProperties.NODE_TOLERANCE);
+
+        // Run through all network nodes in the LOCATION_STORE
+        Set<GeoNode> nodeSet = LOCATION_STORE.getLocations();
+        for (GeoNode geoNode : nodeSet) {
+            Point point = geoNode.getPoint();
+            if (boundary.covers(point) && buffer.covers(point)) {
+                Double distance = lineString.distance(point);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestNode = geoNode;
+                }
+            }
+        }
+
+        // Location Groups
+        // TODO: Add these
+
+        return nearestNode;
+    }
+
+    /**
+     * @param lsEnd
+     * @return
+     */
+    public Edge getNearestNetworkEdge(LineString lineString) {
+        Edge networkEdge = null;
+        Double minDistance = Double.MAX_VALUE;
+
+        // Only need to get the boundary and buffer once
+        Geometry boundary = lineString.getBoundary();
+
+        for (Edge edge : EDGE_STORE.getEdges()) {
+            LineString lsNetwork = edge.getLineString();
+            // Check first if the boundaries overlap at all
+            if (!boundary.intersects(lsNetwork.getBoundary())) {
+                LOGGER.debug("No overlap with " + edge.toString());
+                continue;
+            }
+
+            // This is the part that could stand optimization
+            Double intersectDistance = null;
+            Double crossDistance = null;
+            if (lsNetwork.intersects(lineString)
+                    || lsNetwork.crosses(lineString)) {
+                LOGGER.debug("INTERSECTION with " + edge.toString());
+                Point intersection = IntersectionUtil
+                        .findFirstIntersection(lineString, lsNetwork);
+                intersectDistance = lineString.distance(intersection);
+                if (intersectDistance < minDistance) {
+                    minDistance = intersectDistance;
+                    networkEdge = edge;
+                }
+            }
+        }
+        return networkEdge;
+    }
+
+    /**
      * This determines the best connection for a lineString that extends from
      * its start to potential Edges and Nodes on the network.
      * 
@@ -160,39 +239,39 @@ public class GeoEval {
      * @param lineStringToEnd
      * @return
      */
-    public TrackConnection getTrackConnection(LineString lineString) {
-        Double minDistance = Double.MAX_VALUE;
-        TrackConnection closestConnection = new TrackConnection();
-
-        // Only need to get the boundary and buffer once
-        Geometry boundary = lineString.getBoundary();
-        Geometry buffer = lineString.buffer(GeoProperties.NODE_TOLERANCE);
-
-        // Check Network Nodes first
-        Set<GeoNode> nodeSet = LOCATION_STORE.getLocations();
-        for (GeoNode geoNode : nodeSet) {
-            Point point = geoNode.getPoint();
-            if (boundary.covers(point) && buffer.covers(point)) {
-                Double distance = lineString.distance(point);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestConnection = new TrackConnection(geoNode);
-                }
-            }
-        }
-
-        // Location Groups
-        // TODO: Add these
-
-        // Check segments for intersection/crossing with lineString
-        // TODO: Add these
-        for (Edge edge : EDGE_STORE.getEdges()) {
-            if (edge.getLineString().intersects(lineString)) {
-                LOGGER.info("INTERSECTION with " + edge.toString());
-
-            }
-        }
-
-        return closestConnection;
-    }
+    // public TrackConnection getTrackConnection(LineString lineString) {
+    // Double minDistance = Double.MAX_VALUE;
+    // TrackConnection closestConnection = new TrackConnection();
+    //
+    // // Only need to get the boundary and buffer once
+    // Geometry boundary = lineString.getBoundary();
+    // Geometry buffer = lineString.buffer(GeoProperties.NODE_TOLERANCE);
+    //
+    // // Check Network Nodes first
+    // Set<GeoNode> nodeSet = LOCATION_STORE.getLocations();
+    // for (GeoNode geoNode : nodeSet) {
+    // Point point = geoNode.getPoint();
+    // if (boundary.covers(point) && buffer.covers(point)) {
+    // Double distance = lineString.distance(point);
+    // if (distance < minDistance) {
+    // minDistance = distance;
+    // closestConnection = new TrackConnection(geoNode);
+    // }
+    // }
+    // }
+    //
+    // // Location Groups
+    // // TODO: Add these
+    //
+    // // Check segments for intersection/crossing with lineString
+    // // TODO: Add these
+    // for (Edge edge : EDGE_STORE.getEdges()) {
+    // if (edge.getLineString().intersects(lineString)) {
+    // LOGGER.debug("INTERSECTION with " + edge.toString());
+    //
+    // }
+    // }
+    //
+    // return closestConnection;
+    // }
 }

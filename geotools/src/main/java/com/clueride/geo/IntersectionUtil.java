@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * Common Methods for determining intersections of tracks and segments.
@@ -98,6 +99,47 @@ public class IntersectionUtil {
             throw new RuntimeException("Crossing Index not found");
         }
         return retrieveCrossingPair(lineStringA, indexOfCrossing);
+    }
+
+    /**
+     * Returns the Point at which the first LineString first meets (or crosses)
+     * the second LineString.
+     * 
+     * Algorithm is to use a binary search along the length of the LineString to
+     * locate the point at which the two first intersect.
+     * 
+     * @param walkingLineString
+     * @param fixedLineString
+     * @return Point where the two LineString first intersect.
+     */
+    public static Point findFirstIntersection(LineString walkingLineString,
+            LineString fixedLineString) {
+        int interval = walkingLineString.getNumPoints() / 2;
+        int currentIndex = interval;
+        interval /= 2;
+        LOGGER.info("Begin search with length: "
+                + walkingLineString.getNumPoints()
+                + " interval of " + interval + " and a starting index of "
+                + currentIndex);
+
+        GeometryFactory factory = walkingLineString.getFactory();
+
+        LineString lsTest = null;
+        while (interval > 0) {
+            Coordinate[] coordinates = Arrays.copyOfRange(
+                    walkingLineString.getCoordinates(), 0, currentIndex);
+            lsTest = factory.createLineString(coordinates);
+            if (lsTest.intersects(fixedLineString)
+                    || lsTest.crosses(fixedLineString)) {
+                currentIndex -= interval;
+            } else {
+                currentIndex += interval;
+            }
+            interval /= 2;
+            LOGGER.info("CurrentIndex: " + currentIndex + " Interval: "
+                    + interval);
+        }
+        return (Point) lsTest.intersection(fixedLineString);
     }
 
 }

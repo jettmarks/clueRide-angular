@@ -23,6 +23,7 @@ import com.clueride.dao.LocationStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkRecommendation;
+import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.rec.OnNode;
 import com.clueride.domain.dev.rec.OnNodeImpl;
 import com.clueride.domain.dev.rec.OnSegment;
@@ -91,6 +92,7 @@ public class NewLocRecBuilder {
      *         location.
      */
     public NetworkRecommendation onSegment(Integer matchingSegmentId) {
+        newLoc.setState(NodeNetworkState.ON_SEGMENT);
         return onSegment(EDGE_STORE.getEdgeById(matchingSegmentId));
     }
 
@@ -106,20 +108,20 @@ public class NewLocRecBuilder {
         GeoEval geoEval = GeoEval.getInstance();
         // There are two directions we can go; calculate these first
         SplitLineString lsPair = new SplitLineString(track, geoNode);
-        TrackConnection endConnection = geoEval.getTrackConnection(lsPair
-                .getLineStringToEnd());
-        TrackConnection startConnection = geoEval.getTrackConnection(lsPair
-                .getLineStringToEnd());
-        if (endConnection.isConnected() && startConnection.isConnected()) {
-            // Multiple Connection
-            return getMultipleTrackRec(track, endConnection, startConnection);
-        } else if (endConnection.isConnected()) {
-            // Just the end
-            return getSingleTrackRec(track, endConnection);
-        } else if (startConnection.isConnected()) {
-            // Just the start
-            return getSingleTrackRec(track, startConnection);
-        }
+        // TrackConnection endConnection = geoEval.getTrackConnection(lsPair
+        // .getLineStringToEnd());
+        // TrackConnection startConnection = geoEval.getTrackConnection(lsPair
+        // .getLineStringToEnd());
+        // if (endConnection.isConnected() && startConnection.isConnected()) {
+        // // Multiple Connection
+        // return getMultipleTrackRec(track, endConnection, startConnection);
+        // } else if (endConnection.isConnected()) {
+        // // Just the end
+        // return getSingleTrackRec(track, endConnection);
+        // } else if (startConnection.isConnected()) {
+        // // Just the start
+        // return getSingleTrackRec(track, startConnection);
+        // }
         // No connection
         return null;
     }
