@@ -68,6 +68,7 @@ public class NewLocRecBuilder {
     }
 
     public OnNode onNode(Integer nodeId) {
+        newLoc.setState(NodeNetworkState.ON_NETWORK);
         return onNode((GeoNode) LOCATION_STORE.getNodeById(nodeId));
     }
 

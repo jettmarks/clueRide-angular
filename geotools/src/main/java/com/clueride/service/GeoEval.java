@@ -82,10 +82,12 @@ public class GeoEval {
      * @return
      */
     public Integer matchesNetworkNode(GeoNode geoNode) {
+        Point point = geoNode.getPoint();
         // Check Network Nodes first
         Set<GeoNode> nodeSet = LOCATION_STORE.getLocations();
         for (GeoNode node : nodeSet) {
-            if (node.matchesLocation(geoNode)) {
+            if (node.getPoint().buffer(GeoProperties.NODE_TOLERANCE).covers(
+                    point)) {
                 return node.getId();
             }
         }
@@ -93,8 +95,8 @@ public class GeoEval {
         // Exhausted the Network Nodes, check the location groups
         Set<NodeGroup> locGroups = LOCATION_STORE.getLocationGroups();
         for (NodeGroup nodeGroup : locGroups) {
-            Point point = ((DefaultNodeGroup) nodeGroup).getPoint();
-            if (point.buffer(LOC_GROUP_RADIUS_DEG).covers(geoNode.getPoint())) {
+            Point checkPoint = ((DefaultNodeGroup) nodeGroup).getPoint();
+            if (checkPoint.buffer(LOC_GROUP_RADIUS_DEG).covers(point)) {
                 return nodeGroup.getId();
             }
         }
@@ -118,7 +120,7 @@ public class GeoEval {
         Set<Edge> edgeSet = EDGE_STORE.getEdges();
         for (Edge edge : edgeSet) {
             LineString lineString = edge.getLineString();
-            // Perform faster boundary test before checking buffered coverage
+            // Perform faster envelope test before checking buffered coverage
             if (lineString.getEnvelope().covers(geoNode.getPoint())) {
                 if (lineString.buffer(GeoProperties.BUFFER_TOLERANCE).covers(
                         geoNode.getPoint())) {
@@ -138,8 +140,8 @@ public class GeoEval {
         List<TrackFeature> coveringTracks = new ArrayList<>();
         for (TrackFeature track : TRACK_STORE.getTrackFeatures()) {
             LineString lineString = track.getLineString();
-            // Perform faster boundary test before checking buffered coverage
-            if (lineString.getBoundary().covers(geoNode.getPoint())) {
+            // Perform faster envelope test before checking buffered coverage
+            if (lineString.getEnvelope().covers(geoNode.getPoint())) {
                 if (lineString.buffer(GeoProperties.BUFFER_TOLERANCE).covers(
                         geoNode.getPoint())) {
                     coveringTracks.add(track);
@@ -153,7 +155,7 @@ public class GeoEval {
      * Checks the given LineString to see if it intersects the network at one of
      * the nodes (or Location Groups).
      * 
-     * Algorithm is to check boundary overlap and if passes that simple test, we
+     * Algorithm is to check envelope overlap and if passes that simple test, we
      * see if the point sits within the buffer of the LineString.
      * 
      * Distances along the LineString are computed for any matches and if we've
@@ -168,15 +170,15 @@ public class GeoEval {
         GeoNode nearestNode = null;
         Double minDistance = Double.MAX_VALUE;
 
-        // Only need to get the boundary and buffer once
-        Geometry boundary = lineString.getBoundary();
+        // Only need to get the envelope and buffer once
+        Geometry envelope = lineString.getEnvelope();
         Geometry buffer = lineString.buffer(GeoProperties.NODE_TOLERANCE);
 
         // Run through all network nodes in the LOCATION_STORE
         Set<GeoNode> nodeSet = LOCATION_STORE.getLocations();
         for (GeoNode geoNode : nodeSet) {
             Point point = geoNode.getPoint();
-            if (boundary.covers(point) && buffer.covers(point)) {
+            if (envelope.covers(point) && buffer.covers(point)) {
                 Double distance = lineString.distance(point);
                 if (distance < minDistance) {
                     minDistance = distance;
@@ -199,13 +201,13 @@ public class GeoEval {
         Edge networkEdge = null;
         Double minDistance = Double.MAX_VALUE;
 
-        // Only need to get the boundary and buffer once
-        Geometry boundary = lineString.getBoundary();
+        // Only need to get the envelope and buffer once
+        Geometry envelope = lineString.getEnvelope();
 
         for (Edge edge : EDGE_STORE.getEdges()) {
             LineString lsNetwork = edge.getLineString();
             // Check first if the boundaries overlap at all
-            if (!boundary.intersects(lsNetwork.getBoundary())) {
+            if (!envelope.intersects(lsNetwork.getEnvelope())) {
                 LOGGER.debug("No overlap with " + edge.toString());
                 continue;
             }
@@ -243,15 +245,15 @@ public class GeoEval {
     // Double minDistance = Double.MAX_VALUE;
     // TrackConnection closestConnection = new TrackConnection();
     //
-    // // Only need to get the boundary and buffer once
-    // Geometry boundary = lineString.getBoundary();
+    // // Only need to get the envelope and buffer once
+    // Geometry envelope = lineString.getEnvelope();
     // Geometry buffer = lineString.buffer(GeoProperties.NODE_TOLERANCE);
     //
     // // Check Network Nodes first
     // Set<GeoNode> nodeSet = LOCATION_STORE.getLocations();
     // for (GeoNode geoNode : nodeSet) {
     // Point point = geoNode.getPoint();
-    // if (boundary.covers(point) && buffer.covers(point)) {
+    // if (envelope.covers(point) && buffer.covers(point)) {
     // Double distance = lineString.distance(point);
     // if (distance < minDistance) {
     // minDistance = distance;
