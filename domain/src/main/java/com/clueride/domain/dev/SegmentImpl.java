@@ -20,6 +20,7 @@ package com.clueride.domain.dev;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.clueride.domain.Profile;
 import com.clueride.domain.Rating;
 
 /**
@@ -91,7 +92,7 @@ public class SegmentImpl extends UnratedSegmentImpl implements Segment {
      * 
      * @see com.clueride.domain.Segment#getDistanceMiles()
      */
-    public double getDistanceMiles() {
+    public Double getDistanceMiles() {
         return distanceMiles;
     }
 
@@ -119,6 +120,22 @@ public class SegmentImpl extends UnratedSegmentImpl implements Segment {
         return "SegmentImpl [url=" + url + ", displayName=" + displayName
                 + ", id=" + id
                 + "]";
+    }
+
+    /**
+     * @see com.clueride.domain.dev.Arc#getRating(com.clueride.domain.Profile)
+     */
+    public Rating getRating(Profile profile) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * @see com.clueride.domain.dev.Arc#getDistanceMeters()
+     */
+    public Double getDistanceMeters() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

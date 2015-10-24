@@ -245,7 +245,7 @@ public class DefaultNetwork implements Network {
     @Override
     public NetworkProposal evaluateNodeState(GeoNode geoNode) {
         LOGGER.debug("start - evaluateNodeState()" + count++);
-        NewLocProposal newLocProposal = new NewLocProposal();
+        NewLocProposal newLocProposal = new NewLocProposal(geoNode);
         NewLocRecBuilder recBuilder = new NewLocRecBuilder(geoNode);
 
         // Check if our node happens to already be on the network list of nodes

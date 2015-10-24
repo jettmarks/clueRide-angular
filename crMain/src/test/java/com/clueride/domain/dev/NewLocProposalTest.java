@@ -20,25 +20,25 @@ public class NewLocProposalTest {
 
     @Test
     public void NewLocProposal() {
-        toTest = new NewLocProposal();
+        toTest = new NewLocProposal(null);
         assertNotNull(toTest);
     }
 
     @Test
     public void getId() {
-        toTest = new NewLocProposal();
+        toTest = new NewLocProposal(null);
         assertNotNull(toTest);
         assertTrue(toTest.getId() > 0);
         Integer currentId = toTest.getId();
         Integer expectedId = currentId + 1;
-        toTest = new NewLocProposal();
+        toTest = new NewLocProposal(null);
         Integer anotherId = toTest.getId();
         assertEquals(anotherId, expectedId);
     }
 
     @Test
     public void getNodeNetworkState() {
-        toTest = new NewLocProposal();
+        toTest = new NewLocProposal(null);
         AssertJUnit.assertEquals(NodeNetworkState.UNDEFINED, toTest
                 .getNodeNetworkState());
         NodeNetworkState expected = NodeNetworkState.ON_SINGLE_TRACK;
@@ -54,7 +54,7 @@ public class NewLocProposalTest {
 
     @Test
     public void hasMultipleRecommendations() {
-        toTest = new NewLocProposal();
+        toTest = new NewLocProposal(null);
         assertFalse(toTest.hasMultipleRecommendations());
         toTest.add(new NetworkRecImpl());
         assertFalse(toTest.hasMultipleRecommendations());
@@ -64,7 +64,7 @@ public class NewLocProposalTest {
 
     @Test
     public void setNodeNetworkState() {
-        toTest = new NewLocProposal();
+        toTest = new NewLocProposal(null);
         AssertJUnit.assertEquals(NodeNetworkState.UNDEFINED, toTest
                 .getNodeNetworkState());
         NodeNetworkState expected = NodeNetworkState.ON_MULTI_TRACK;

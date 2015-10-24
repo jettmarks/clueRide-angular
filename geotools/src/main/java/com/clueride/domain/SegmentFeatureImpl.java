@@ -125,9 +125,27 @@ public class SegmentFeatureImpl extends EdgeImpl implements
      * @see com.com.clueride.feature.Edge#getDistanceMiles()
      */
     @Override
-    public double getDistanceMiles() {
+    public Double getDistanceMiles() {
         // TODO Auto-generated method stub
-        return 0;
+        return 0.0;
+    }
+
+    /**
+     * @see com.clueride.domain.dev.Arc#getRating(com.clueride.domain.Profile)
+     */
+    @Override
+    public Rating getRating(Profile profile) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * @see com.clueride.domain.dev.Arc#getDistanceMeters()
+     */
+    @Override
+    public Double getDistanceMeters() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
