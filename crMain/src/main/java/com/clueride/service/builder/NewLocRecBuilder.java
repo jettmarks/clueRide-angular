@@ -36,7 +36,6 @@ import com.clueride.domain.dev.rec.ToTwoNodesImpl;
 import com.clueride.domain.dev.rec.ToTwoSegmentsImpl;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
-import com.clueride.geo.SplitLineString;
 import com.clueride.geo.score.TrackConnection;
 import com.clueride.service.GeoEval;
 
@@ -108,7 +107,7 @@ public class NewLocRecBuilder {
     public Rec getTrackRec(TrackFeature track, GeoNode geoNode) {
         GeoEval geoEval = GeoEval.getInstance();
         // There are two directions we can go; calculate these first
-        SplitLineString lsPair = new SplitLineString(track, geoNode);
+        // SplitLineString lsPair = new SplitLineString(track, geoNode);
         // TrackConnection endConnection = geoEval.getTrackConnection(lsPair
         // .getLineStringToEnd());
         // TrackConnection startConnection = geoEval.getTrackConnection(lsPair

@@ -60,6 +60,11 @@ public class DefaultTrackStore implements TrackStore {
      * Use {@link:getInstance()}
      */
     private DefaultTrackStore() {
+        try {
+            this.loadAllFeatures();
+        } catch (IOException e) {
+            LOGGER.error("Unable to Load", e);
+        }
     }
 
     void loadAllFeatures() throws IOException {
@@ -67,11 +72,9 @@ public class DefaultTrackStore implements TrackStore {
                 .readFeatureCollection();
         for (SimpleFeature feature : features) {
             TrackFeature trackFeature = new TrackFeatureImpl(feature);
-            trackPerId.put(
-                    Integer.parseInt((String) feature.getAttribute("url")),
-                    trackFeature);
+            trackPerId.put(trackFeature.getId(), trackFeature);
         }
-
+        LOGGER.info("Loading complete: " + this.toString());
     }
 
     /**
@@ -105,8 +108,18 @@ public class DefaultTrackStore implements TrackStore {
      */
     @Override
     public TrackFeature getTrackById(Integer id) {
-        // TODO Auto-generated method stub
-        return null;
+        return trackPerId.get(id);
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DefaultTrackStore [getTrackFeatures()=").append(
+                getTrackFeatures()).append("]");
+        return builder.toString();
     }
 
 }

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import org.apache.log4j.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
@@ -114,9 +115,10 @@ public class IntersectionUtil {
      */
     public static Point findFirstIntersection(LineString walkingLineString,
             LineString fixedLineString) {
-        int interval = walkingLineString.getNumPoints() / 2;
+        int lastIndex = walkingLineString.getNumPoints();
+        int interval = lastIndex / 2 + lastIndex % 2;
         int currentIndex = interval;
-        interval /= 2;
+        interval = interval / 2 + currentIndex % 2;
         LOGGER.info("Begin search with length: "
                 + walkingLineString.getNumPoints()
                 + " interval of " + interval + " and a starting index of "
@@ -125,7 +127,8 @@ public class IntersectionUtil {
         GeometryFactory factory = walkingLineString.getFactory();
 
         LineString lsTest = null;
-        while (interval > 0) {
+        boolean intervalDownTo1 = false;
+        while (interval > 0 && currentIndex >= 2 && currentIndex <= lastIndex) {
             Coordinate[] coordinates = Arrays.copyOfRange(
                     walkingLineString.getCoordinates(), 0, currentIndex);
             lsTest = factory.createLineString(coordinates);
@@ -135,11 +138,36 @@ public class IntersectionUtil {
             } else {
                 currentIndex += interval;
             }
-            interval /= 2;
+            if (intervalDownTo1) {
+                interval = 0;
+            } else if (interval == 1) {
+                intervalDownTo1 = true;
+            } else {
+                interval = interval / 2 + interval % 2;
+            }
+            if (interval > currentIndex / 2) {
+                interval = currentIndex / 2;
+            }
+
             LOGGER.info("CurrentIndex: " + currentIndex + " Interval: "
                     + interval);
         }
-        return (Point) lsTest.intersection(fixedLineString);
+
+        LOGGER.debug("Candidate LineString: " + lsTest);
+        // Intersection will be inside of this Geometry
+        Geometry intersectionGeo = lsTest.intersection(fixedLineString);
+        if (intersectionGeo.isEmpty()) {
+            LOGGER.warn("Intersection Not found");
+            return null;
+        }
+        if (!intersectionGeo.getGeometryType().equals("Point")) {
+            LOGGER.warn("Unexpected Geometry: "
+                    + intersectionGeo.getGeometryType());
+            return null;
+        }
+        Point point = (Point) lsTest.intersection(fixedLineString);
+        LOGGER.debug("Intersection at " + point);
+        return point;
     }
 
 }

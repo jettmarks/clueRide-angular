@@ -147,9 +147,9 @@ public class LocationService {
         for (TrackFeature track : coveringTracks) {
 
             // There are two directions we can go; calculate these first
-            SplitLineString startEndPair = new SplitLineString(track, newLoc);
             TrackRecBuilder trackRecBuilder = new TrackRecBuilder(newLoc,
-                    startEndPair);
+                    track);
+            SplitLineString startEndPair = new SplitLineString(track, newLoc);
             LineString lsStart = startEndPair.getLineStringToStart();
             LineString lsEnd = startEndPair.getLineStringToEnd();
 
@@ -166,6 +166,10 @@ public class LocationService {
         }
         if (newLocProposal.hasMultipleRecommendations()) {
             newLocProposal.setNodeNetworkState(NodeNetworkState.ON_MULTI_TRACK);
+        }
+        if (newLocProposal.getRecommendations().size() == 1) {
+            newLocProposal
+                    .setNodeNetworkState(NodeNetworkState.ON_SINGLE_TRACK);
         }
         if (newLocProposal.getRecommendations().size() == 0) {
             newLocProposal.setNodeNetworkState(NodeNetworkState.OFF_NETWORK);

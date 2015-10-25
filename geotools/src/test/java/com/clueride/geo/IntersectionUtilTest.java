@@ -1,6 +1,7 @@
 package com.clueride.geo;
 
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
@@ -12,6 +13,7 @@ import com.clueride.io.JsonUtil;
 import com.jettmarks.gmaps.encoder.Track;
 import com.jettmarks.gmaps.encoder.Trackpoint;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 
 public class IntersectionUtilTest {
 
@@ -82,8 +84,31 @@ public class IntersectionUtilTest {
                 + IntersectionUtil.retrieveCrossingPair(lineStringTrack, 0));
     }
 
+    /**
+     * For the first Intersection, we have a few scenarios we want to check:
+     * <UL>
+     * <LI>Intersection between first two coordinates.
+     * <LI>Intersection between last two coordinates.
+     * <LI>Even number of points.
+     * <LI>Odd number of points.
+     * <LI>Two points.
+     * <LI>Three points.
+     * <LI>Three points where the middle point is the intersection.
+     * </UL>
+     * May come up with more as we run through real data.
+     */
     @Test
-    public void findFirstIntersection() {
-
+    public void findFirstIntersectionFirstTwoPoints() {
+        Point point = IntersectionUtil.findFirstIntersection(lineStringTrack,
+                lineStringWest);
+        assertNotNull(point);
     }
+
+    @Test
+    public void findFirstIntersectionLastTwoPoints() {
+        Point point = IntersectionUtil.findFirstIntersection(lineStringTrack,
+                lineStringEast);
+        assertNotNull(point);
+    }
+
 }

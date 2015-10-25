@@ -20,6 +20,7 @@ package com.clueride.domain.dev.rec;
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_NODE;
 
 import com.clueride.domain.GeoNode;
+import com.clueride.feature.LineFeature;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
 
@@ -32,9 +33,9 @@ import com.clueride.geo.TranslateUtil;
 public class ToNodeImpl extends TrackImpl implements ToNode {
     private GeoNode node;
 
-    public ToNodeImpl(GeoNode reqNode, TrackFeature onTrack,
+    public ToNodeImpl(GeoNode reqNode, LineFeature trackStart,
             GeoNode node) {
-        super(reqNode, onTrack);
+        super(reqNode, (TrackFeature) trackStart);
         this.node = node;
         addFeature(TranslateUtil.geoNodeToFeature(node));
     }

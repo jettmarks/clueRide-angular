@@ -18,7 +18,11 @@
 package com.clueride.geo;
 
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.TrackFeatureImpl;
+import com.clueride.domain.dev.Track;
+import com.clueride.domain.dev.TrackImpl;
 import com.clueride.feature.LineFeature;
+import com.clueride.feature.TrackFeature;
 import com.google.inject.Inject;
 import com.vividsolutions.jts.geom.LineString;
 
@@ -33,6 +37,7 @@ import com.vividsolutions.jts.geom.LineString;
 public final class SplitLineString {
 
     private final LineString toStart, toEnd;
+    private LineFeature lineFeature;
 
     @Inject
     public SplitLineString(LineString track, GeoNode geoNode) {
@@ -43,11 +48,19 @@ public final class SplitLineString {
     }
 
     /**
+     * Constructor accepting the LineFeature and the spot where we want to split
+     * the line.
+     * 
      * @param track
+     *            - Has not only the geometry, but able to carry the Feature
+     *            aspects of this geometry as well.
      * @param geoNode
+     *            - The point (already verified to be on the track) where we'd
+     *            like to split the track.
      */
     public SplitLineString(LineFeature track, GeoNode geoNode) {
         this(track.getLineString(), geoNode);
+        this.lineFeature = track;
     }
 
     public LineString getLineStringToStart() {
@@ -56,5 +69,48 @@ public final class SplitLineString {
 
     public LineString getLineStringToEnd() {
         return toEnd;
+    }
+
+    /**
+     * Given the "parent" feature, construct a "child" feature based on that
+     * parent.
+     * 
+     * The ID is tentative -- since we don't know here this child's future --
+     * but we can propose a name derived from the parent and keep the URL to
+     * serve as the source of data for this child.
+     * 
+     * @return - LineFeature representing the portion of the parent LineFeature
+     *         that runs toward the start of the parent from the split point.
+     */
+    public LineFeature getLineFeatureToStart() {
+        return getLineFeature("-toStart", getLineStringToStart());
+    }
+
+    /**
+     * Given the "parent" feature, construct a "child" feature based on that
+     * parent.
+     * 
+     * The ID is tentative -- since we don't know here this child's future --
+     * but we can propose a name derived from the parent and keep the URL to
+     * serve as the source of data for this child.
+     * 
+     * @return - LineFeature representing the portion of the parent LineFeature
+     *         that runs toward the start of the parent from the split point.
+     */
+    public LineFeature getLineFeatureToEnd() {
+        return getLineFeature("-toEnd", getLineStringToEnd());
+    }
+
+    /**
+     * @param appendName
+     * @param lineString
+     * @return
+     */
+    private LineFeature getLineFeature(String appendName, LineString lineString) {
+        TrackFeature trackFeature = (TrackFeature) lineFeature;
+        String displayName = trackFeature.getDisplayName() + appendName;
+        String url = trackFeature.getUrl();
+        Track childTrack = new TrackImpl(displayName, url);
+        return new TrackFeatureImpl(childTrack, lineString);
     }
 }

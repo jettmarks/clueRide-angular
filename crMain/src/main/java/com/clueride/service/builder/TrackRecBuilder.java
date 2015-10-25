@@ -17,11 +17,19 @@
  */
 package com.clueride.service.builder;
 
+import org.apache.log4j.Logger;
+
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.rec.Rec;
+import com.clueride.domain.dev.rec.ToNodeImpl;
+import com.clueride.domain.dev.rec.ToSegmentAndNodeImpl;
+import com.clueride.domain.dev.rec.ToSegmentImpl;
+import com.clueride.domain.dev.rec.ToTwoNodesImpl;
+import com.clueride.domain.dev.rec.ToTwoSegmentsImpl;
 import com.clueride.feature.Edge;
+import com.clueride.feature.LineFeature;
+import com.clueride.feature.TrackFeature;
 import com.clueride.geo.SplitLineString;
-import com.clueride.service.GeoEval;
 
 /**
  * Given a Node and the Tracks covering that node, prepare a set of track-based
@@ -31,9 +39,11 @@ import com.clueride.service.GeoEval;
  *
  */
 public class TrackRecBuilder {
+    private static final Logger LOGGER = Logger
+            .getLogger(TrackRecBuilder.class);
 
     private final GeoNode newLoc;
-    private final GeoEval geoEval;
+    private final TrackFeature track;
     private final SplitLineString splitLineString;
 
     private GeoNode networkNodeStart;
@@ -41,14 +51,17 @@ public class TrackRecBuilder {
     private Edge networkEdgeEnd;
     private Edge networkEdgeStart;
 
+    private LineFeature trackStart;
+    private LineFeature trackEnd;
+
     /**
      * @param geoNode
      * @param coveringTracks
      */
-    public TrackRecBuilder(GeoNode newLoc, SplitLineString splitLineString) {
+    public TrackRecBuilder(GeoNode newLoc, TrackFeature track) {
         this.newLoc = newLoc;
-        this.splitLineString = splitLineString;
-        this.geoEval = GeoEval.getInstance();
+        this.track = track;
+        this.splitLineString = new SplitLineString(track, newLoc);
     }
 
     // /**
@@ -130,7 +143,75 @@ public class TrackRecBuilder {
      */
     public Rec build() {
         // TODO Auto-generated method stub
+        switch (numberOfConnections()) {
+        case 2:
+            populateProposedTracks();
+            LOGGER.info("Track " + track.getId() + " connected both ends");
+            if (networkNodeStart != null) {
+                if (networkNodeEnd != null) {
+                    return new ToTwoNodesImpl(newLoc, track, networkNodeStart,
+                            networkNodeEnd);
+                } else {
+                    return new ToSegmentAndNodeImpl(newLoc, track,
+                            networkEdgeEnd, networkNodeStart);
+                }
+            } else {
+                // networkEdgeStart != null
+                if (networkNodeEnd != null) {
+                    return new ToSegmentAndNodeImpl(newLoc, track,
+                            networkEdgeStart, networkNodeEnd);
+                } else {
+                    return new ToTwoSegmentsImpl(newLoc, track,
+                            networkEdgeStart,
+                            networkEdgeEnd);
+                }
+            }
+            // no need to break
+        case 1:
+            populateProposedTracks();
+            LOGGER.info("Track " + track.getId() + " connected both ends");
+            LOGGER.info("Track " + track.getId() + " connected on single end");
+            if (networkNodeStart != null) {
+                return new ToNodeImpl(newLoc, trackStart, networkNodeStart);
+            }
+            if (networkNodeEnd != null) {
+                return new ToNodeImpl(newLoc, trackEnd, networkNodeEnd);
+            }
+            if (networkEdgeStart != null) {
+                // TODO: Get the real splitting node
+                return new ToSegmentImpl(newLoc, trackStart, networkEdgeStart,
+                        null);
+            }
+            if (networkEdgeEnd != null) {
+                // TODO: Get the real splitting node
+                return new ToSegmentImpl(newLoc, trackEnd, networkEdgeEnd, null);
+            }
+            break;
+        case 0:
+        default:
+            LOGGER.info("Track " + track.getId() + " unconnected");
+            break;
+        }
         return null;
     }
 
+    /**
+     * Only prepare these LineFeatures if we know we'll be using them.
+     */
+    private void populateProposedTracks() {
+        trackStart = splitLineString.getLineFeatureToStart();
+        trackEnd = splitLineString.getLineFeatureToEnd();
+    }
+
+    // TODO: Simplify this by recording when we set either the start or the end.
+    private int numberOfConnections() {
+        int connectionCount = 0;
+        if (networkNodeStart != null || networkEdgeStart != null) {
+            connectionCount++;
+        }
+        if (networkNodeEnd != null || networkEdgeEnd != null) {
+            connectionCount++;
+        }
+        return connectionCount;
+    }
 }

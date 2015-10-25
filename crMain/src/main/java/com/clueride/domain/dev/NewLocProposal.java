@@ -50,6 +50,11 @@ public class NewLocProposal implements NetworkProposal {
      * @param newLoc
      */
     public NewLocProposal(GeoNode newLoc) {
+        if (newLoc == null) {
+            throw new IllegalArgumentException(
+                    "Cannot provide null/empty Location");
+        }
+
         this.newLoc = newLoc;
         setNodeNetworkState(NodeNetworkState.UNDEFINED);
         synchronized (lastId) {

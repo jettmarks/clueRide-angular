@@ -22,7 +22,7 @@ import java.util.List;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Node;
-import com.clueride.domain.dev.TrackImpl;
+import com.clueride.domain.dev.Track;
 import com.clueride.domain.dev.UnratedSegment;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
@@ -44,10 +44,10 @@ public class TrackFeatureImpl implements TrackFeature {
     private LineString lineString;
 
     /** Canonical Constructor given domain-specific instance and the Geometry. */
-    public TrackFeatureImpl(TrackImpl track, LineString lineString) {
-        this.id = track.getId();
-        this.displayName = track.getDisplayName();
-        this.url = track.getUrl();
+    public TrackFeatureImpl(Track childTrack, LineString lineString) {
+        this.id = childTrack.getId();
+        this.displayName = childTrack.getDisplayName();
+        this.url = childTrack.getUrl();
         this.lineString = lineString;
     }
 
@@ -68,6 +68,8 @@ public class TrackFeatureImpl implements TrackFeature {
                     "Expecting geometry to be LineString instead of "
                             + obj.getClass());
         }
+
+        lineStringFeature.getProperty("trackId");
         this.lineString = (LineString) obj;
         Object idObj = lineStringFeature.getAttribute(0);
         Integer idInt = 0;
@@ -164,6 +166,18 @@ public class TrackFeatureImpl implements TrackFeature {
     @Override
     public SimpleFeature getFeature() {
         return feature;
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TrackFeatureImpl [id=").append(id).append(
+                ", displayName=").append(displayName).append(", url=").append(
+                url).append("]");
+        return builder.toString();
     }
 
 }

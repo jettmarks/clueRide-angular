@@ -36,6 +36,7 @@ import com.clueride.domain.dev.NodeGroup;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.IntersectionUtil;
+import com.clueride.geo.LengthToPoint;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
@@ -179,10 +180,14 @@ public class GeoEval {
         for (GeoNode geoNode : nodeSet) {
             Point point = geoNode.getPoint();
             if (envelope.covers(point) && buffer.covers(point)) {
-                Double distance = lineString.distance(point);
+                LengthToPoint lengthToPoint = new LengthToPoint(lineString,
+                        point.getCoordinate());
+                Double distance = lengthToPoint.getLength();
                 if (distance < minDistance) {
                     minDistance = distance;
                     nearestNode = geoNode;
+                    LOGGER.info("Picked up Node " + geoNode.getId()
+                            + " at distance " + minDistance);
                 }
             }
         }
@@ -201,7 +206,7 @@ public class GeoEval {
         Edge networkEdge = null;
         Double minDistance = Double.MAX_VALUE;
 
-        // Only need to get the envelope and buffer once
+        // Only need to get the envelope once
         Geometry envelope = lineString.getEnvelope();
 
         for (Edge edge : EDGE_STORE.getEdges()) {
@@ -220,10 +225,18 @@ public class GeoEval {
                 LOGGER.debug("INTERSECTION with " + edge.toString());
                 Point intersection = IntersectionUtil
                         .findFirstIntersection(lineString, lsNetwork);
-                intersectDistance = lineString.distance(intersection);
-                if (intersectDistance < minDistance) {
-                    minDistance = intersectDistance;
-                    networkEdge = edge;
+                if (intersection == null) {
+                    continue;
+                } else {
+                    LengthToPoint lengthToPoint = new LengthToPoint(lineString,
+                            intersection.getCoordinate());
+                    intersectDistance = lengthToPoint.getLength();
+                    if (intersectDistance < minDistance) {
+                        minDistance = intersectDistance;
+                        networkEdge = edge;
+                        LOGGER.info("Picked up Edge " + edge.getId()
+                                + " at distance " + minDistance);
+                    }
                 }
             }
         }
