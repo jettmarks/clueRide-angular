@@ -64,4 +64,17 @@ public class OnNodeImpl extends RecImpl implements OnNode {
         return null;
     }
 
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("OnNodeImpl [getId()=").append(getId()).append(
+                ", getName()=").append(getName()).append(", getRecType()=")
+                .append(getRecType()).append(", getScore()=")
+                .append(getScore()).append("]");
+        return builder.toString();
+    }
+
 }

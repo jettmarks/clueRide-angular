@@ -19,12 +19,14 @@ package com.clueride.domain;
 
 import java.util.List;
 
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.Track;
 import com.clueride.domain.dev.UnratedSegment;
 import com.clueride.feature.Edge;
+import com.clueride.feature.FeatureType;
 import com.clueride.feature.TrackFeature;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -43,12 +45,28 @@ public class TrackFeatureImpl implements TrackFeature {
     protected SimpleFeature feature;
     private LineString lineString;
 
+    private static final SimpleFeatureBuilder TRACK_FEATURE_BUILDER =
+            new SimpleFeatureBuilder(FeatureType.TRACK_FEATURE_TYPE);
+
     /** Canonical Constructor given domain-specific instance and the Geometry. */
     public TrackFeatureImpl(Track childTrack, LineString lineString) {
         this.id = childTrack.getId();
         this.displayName = childTrack.getDisplayName();
         this.url = childTrack.getUrl();
         this.lineString = lineString;
+        this.feature = buildFeature();
+    }
+
+    /**
+     * @return
+     */
+    private SimpleFeature buildFeature() {
+        TRACK_FEATURE_BUILDER.add(id);
+        TRACK_FEATURE_BUILDER.add(displayName);
+        TRACK_FEATURE_BUILDER.add(url);
+        TRACK_FEATURE_BUILDER.add(lineString);
+        // Passing null allows the builder to assign its own ID
+        return TRACK_FEATURE_BUILDER.buildFeature(null);
     }
 
     /**
@@ -176,7 +194,8 @@ public class TrackFeatureImpl implements TrackFeature {
         StringBuilder builder = new StringBuilder();
         builder.append("TrackFeatureImpl [id=").append(id).append(
                 ", displayName=").append(displayName).append(", url=").append(
-                url).append("]");
+                url).append(", size=").append(lineString.getNumPoints())
+                .append("]");
         return builder.toString();
     }
 

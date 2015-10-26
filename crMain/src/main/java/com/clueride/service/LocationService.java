@@ -83,17 +83,8 @@ public class LocationService {
 
         GeoNode newLocation;
         newLocation = getCandidateLocation(lat, lon);
-
-        // NetworkProposal networkProposal = network
-        // .evaluateNodeState(newLocation);
         NetworkProposal networkProposal = buildProposalForNewLoc(newLocation);
-
-        NodeNetworkState nodeEvaluation = networkProposal.getNodeNetworkState();
-
-        // JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
-        // result = jsonUtil.toString(newLocation);
         result = networkProposal.toJson();
-        LOGGER.debug("At the requested Location: " + newLocation);
         return result;
     }
 
@@ -151,19 +142,51 @@ public class LocationService {
                     track);
             SplitLineString startEndPair = new SplitLineString(track, newLoc);
             LineString lsStart = startEndPair.getLineStringToStart();
+            TrackEval startTrackEval = new TrackEval(lsStart);
             LineString lsEnd = startEndPair.getLineStringToEnd();
+            TrackEval endTrackEval = new TrackEval(lsEnd);
 
-            trackRecBuilder
-                    .addNetworkNodeStart(geoEval.getNearestNetworkNode(lsStart))
-                    .addEdgeAtStart(geoEval.getNearestNetworkEdge(lsStart))
-                    .addNetworkNodeEnd(geoEval.getNearestNetworkNode(lsEnd))
-                    .addEdgeAtEnd(geoEval.getNearestNetworkEdge(lsEnd));
+            switch (startTrackEval.getTrackEvalType()) {
+            case NODE:
+                trackRecBuilder
+                        .addNetworkNodeStart(startTrackEval.getNetworkNode())
+                        .addStartDistance(startTrackEval.getNodeDistance());
+                break;
+            case EDGE:
+                trackRecBuilder
+                        .addEdgeAtStart(startTrackEval.getNetworkEdge())
+                        .addSplittingNodeAtStart(
+                                startTrackEval.getSplittingNode())
+                        .addStartDistance(startTrackEval.getNodeDistance());
+                break;
+            }
+
+            switch (endTrackEval.getTrackEvalType()) {
+            case NODE:
+                trackRecBuilder
+                        .addNetworkNodeEnd(endTrackEval.getNetworkNode())
+                        .addEndDistance(endTrackEval.getNodeDistance());
+                break;
+            case EDGE:
+                trackRecBuilder
+                        .addEdgeAtEnd(endTrackEval.getNetworkEdge())
+                        .addSplittingNodeAtEnd(endTrackEval.getSplittingNode())
+                        .addEndDistance(endTrackEval.getNodeDistance());
+                break;
+            }
+
+            // trackRecBuilder
+            // .addNetworkNodeStart(geoEval.getNearestNetworkNode(lsStart))
+            // .addEdgeAtStart(geoEval.getNearestNetworkEdge(lsStart))
+            // .addNetworkNodeEnd(geoEval.getNearestNetworkNode(lsEnd))
+            // .addEdgeAtEnd(geoEval.getNearestNetworkEdge(lsEnd));
 
             Rec rec = trackRecBuilder.build();
             if (rec != null) {
                 newLocProposal.add(rec);
             }
         }
+        // TODO: push this logic into the Proposal Impl
         if (newLocProposal.hasMultipleRecommendations()) {
             newLocProposal.setNodeNetworkState(NodeNetworkState.ON_MULTI_TRACK);
         }

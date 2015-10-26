@@ -71,4 +71,17 @@ public class ToSegmentImpl extends TrackImpl implements ToSegment {
         return TRACK_TO_SEGMENT;
     }
 
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ToSegmentImpl [getScore()=").append(getScore()).append(
+                ", getId()=").append(getId()).append(", getName()=").append(
+                getName()).append(", getRecType()=").append(getRecType())
+                .append("]");
+        return builder.toString();
+    }
+
 }

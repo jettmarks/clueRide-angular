@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.rec.NetworkRecImpl;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
@@ -94,6 +95,10 @@ public class NewLocProposal implements NetworkProposal {
         JsonUtil jsonRespWriter = new JsonUtil(JsonStoreType.LOCATION);
         DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
         featureCollection.add(TranslateUtil.geoNodeToFeature(newLoc));
+        for (NetworkRecommendation rec : networkRecommendations) {
+            ((NetworkRecImpl) rec).dumpRecommendationSummary();
+            featureCollection.addAll(rec.getFeatureCollection());
+        }
         return jsonRespWriter.toString(featureCollection);
     }
 
@@ -121,15 +126,4 @@ public class NewLocProposal implements NetworkProposal {
         LOGGER.info(networkRecommendation);
         networkRecommendations.add(networkRecommendation);
     }
-
-    /**
-     * If we've got a list, we can add them all at once.
-     * 
-     * @param recList
-     *            - List of recommendations appropriate to the proposal.
-     */
-    public void addAll(List<NetworkRecommendation> recList) {
-        networkRecommendations.addAll(recList);
-    }
-
 }

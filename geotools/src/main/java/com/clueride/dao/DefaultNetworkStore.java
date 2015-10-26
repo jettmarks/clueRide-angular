@@ -94,6 +94,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * Use {@link:getInstance()}
      */
     private DefaultNetworkStore() {
+        loadAllFeatures();
     }
 
     /**

@@ -7,6 +7,13 @@ import static org.testng.AssertJUnit.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.dao.DefaultNetworkStore;
+import com.clueride.dao.DefaultTrackStore;
+import com.clueride.domain.DefaultGeoNode;
+import com.clueride.domain.GeoNode;
+import com.clueride.domain.factory.PointFactory;
+import com.clueride.feature.Edge;
+import com.clueride.feature.TrackFeature;
 import com.clueride.gpx.EasyTrack;
 import com.clueride.gpx.TrackUtil;
 import com.clueride.io.JsonUtil;
@@ -94,6 +101,7 @@ public class IntersectionUtilTest {
      * <LI>Two points.
      * <LI>Three points.
      * <LI>Three points where the middle point is the intersection.
+     * <LI>Trouble pairs of track and edge.
      * </UL>
      * May come up with more as we run through real data.
      */
@@ -111,4 +119,27 @@ public class IntersectionUtilTest {
         assertNotNull(point);
     }
 
+    @Test
+    public void findFirstIntersectionSpecificPair() {
+        TrackFeature track = DefaultTrackStore.getInstance().getTrackById(75);
+        assertNotNull(track);
+        GeoNode splitPointOK = new DefaultGeoNode();
+        Point pointOK = PointFactory.getJtsInstance(33.77481, -84.35870, 300.0);
+        splitPointOK.setPoint(pointOK);
+        SplitLineString pair = new SplitLineString(track, splitPointOK);
+        Edge edge = DefaultNetworkStore.getInstance().getEdgeById(4);
+        assertNotNull(edge);
+        Point point = IntersectionUtil.findFirstIntersection(
+                pair.getLineStringToEnd(), edge.getLineString());
+        assertNotNull(point);
+
+        GeoNode splitPointBad = new DefaultGeoNode();
+        Point pointBad = PointFactory
+                .getJtsInstance(33.77385, -84.35873, 300.0);
+        splitPointBad.setPoint(pointBad);
+        pair = new SplitLineString(track, splitPointBad);
+        point = IntersectionUtil.findFirstIntersection(
+                pair.getLineStringToEnd(), edge.getLineString());
+        assertNotNull(point);
+    }
 }

@@ -19,9 +19,11 @@ package com.clueride.domain.dev.rec;
 
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_SEGMENTS;
 
+import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
+import com.clueride.geo.TranslateUtil;
 
 /**
  * Description.
@@ -34,10 +36,15 @@ public class ToTwoSegmentsImpl extends TrackImpl implements ToTwoSegments {
     private Edge segment2;
 
     public ToTwoSegmentsImpl(GeoNode reqNode, TrackFeature onTrack,
-            Edge segment1, Edge segment2) {
+            Edge segment1, Edge segment2, DefaultGeoNode splittingNodeStart,
+            DefaultGeoNode splittingNodeEnd) {
         super(reqNode, onTrack);
         this.segment1 = segment1;
+        addFeature(TranslateUtil.segmentToFeature(segment1));
         this.segment2 = segment2;
+        addFeature(TranslateUtil.segmentToFeature(segment2));
+        addFeature(TranslateUtil.geoNodeToFeature(splittingNodeStart));
+        addFeature(TranslateUtil.geoNodeToFeature(splittingNodeEnd));
     }
 
     /**
@@ -60,6 +67,19 @@ public class ToTwoSegmentsImpl extends TrackImpl implements ToTwoSegments {
     @Override
     public NetworkRecType getRecType() {
         return TRACK_TO_2_SEGMENTS;
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ToTwoSegmentsImpl [getId()=").append(getId()).append(
+                ", getName()=").append(getName()).append(", getScore()=")
+                .append(getScore()).append(", getRecType()=").append(
+                        getRecType()).append("]");
+        return builder.toString();
     }
 
 }

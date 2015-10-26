@@ -85,4 +85,16 @@ public class EdgeImpl extends TrackFeatureImpl implements
         return ((LineString) feature.getDefaultGeometry()).getEndPoint();
     }
 
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("EdgeImpl [getId()=").append(getId()).append(
+                ", getDisplayName()=").append(getDisplayName()).append(
+                ", getUrl()=").append(getUrl()).append("]");
+        return builder.toString();
+    }
+
 }

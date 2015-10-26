@@ -127,33 +127,30 @@ public class IntersectionUtil {
         GeometryFactory factory = walkingLineString.getFactory();
 
         LineString lsTest = null;
-        boolean intervalDownTo1 = false;
-        while (interval > 0 && currentIndex >= 2 && currentIndex <= lastIndex) {
+        boolean done = false;
+        while (!done) {
+            LOGGER.info("CurrentIndex: " + currentIndex + " Interval: "
+                    + interval);
             Coordinate[] coordinates = Arrays.copyOfRange(
                     walkingLineString.getCoordinates(), 0, currentIndex);
             lsTest = factory.createLineString(coordinates);
             if (lsTest.intersects(fixedLineString)
                     || lsTest.crosses(fixedLineString)) {
-                currentIndex -= interval;
+
+                if (interval > 1) {
+                    currentIndex -= interval;
+                    currentIndex = (currentIndex < 2 ? 2 : currentIndex);
+                } else {
+                    done = true;
+                }
             } else {
                 currentIndex += interval;
             }
-            if (intervalDownTo1) {
-                interval = 0;
-            } else if (interval == 1) {
-                intervalDownTo1 = true;
-            } else {
-                interval = interval / 2 + interval % 2;
-            }
-            if (interval > currentIndex / 2) {
-                interval = currentIndex / 2;
-            }
-
-            LOGGER.info("CurrentIndex: " + currentIndex + " Interval: "
-                    + interval);
+            interval = interval / 2 + interval % 2;
         }
 
-        LOGGER.debug("Candidate LineString: " + lsTest);
+        LOGGER.debug("Candidate LineString (size " + lsTest.getNumPoints()
+                + "): " + lsTest);
         // Intersection will be inside of this Geometry
         Geometry intersectionGeo = lsTest.intersection(fixedLineString);
         if (intersectionGeo.isEmpty()) {

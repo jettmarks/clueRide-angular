@@ -219,7 +219,6 @@ public class GeoEval {
 
             // This is the part that could stand optimization
             Double intersectDistance = null;
-            Double crossDistance = null;
             if (lsNetwork.intersects(lineString)
                     || lsNetwork.crosses(lineString)) {
                 LOGGER.debug("INTERSECTION with " + edge.toString());
@@ -243,50 +242,4 @@ public class GeoEval {
         return networkEdge;
     }
 
-    /**
-     * This determines the best connection for a lineString that extends from
-     * its start to potential Edges and Nodes on the network.
-     * 
-     * Since multiple connections are possible, this retains the closest
-     * TrackConnection found so far and then returns that one, or an empty one
-     * if no connection is found.
-     * 
-     * @param lineStringToEnd
-     * @return
-     */
-    // public TrackConnection getTrackConnection(LineString lineString) {
-    // Double minDistance = Double.MAX_VALUE;
-    // TrackConnection closestConnection = new TrackConnection();
-    //
-    // // Only need to get the envelope and buffer once
-    // Geometry envelope = lineString.getEnvelope();
-    // Geometry buffer = lineString.buffer(GeoProperties.NODE_TOLERANCE);
-    //
-    // // Check Network Nodes first
-    // Set<GeoNode> nodeSet = LOCATION_STORE.getLocations();
-    // for (GeoNode geoNode : nodeSet) {
-    // Point point = geoNode.getPoint();
-    // if (envelope.covers(point) && buffer.covers(point)) {
-    // Double distance = lineString.distance(point);
-    // if (distance < minDistance) {
-    // minDistance = distance;
-    // closestConnection = new TrackConnection(geoNode);
-    // }
-    // }
-    // }
-    //
-    // // Location Groups
-    // // TODO: Add these
-    //
-    // // Check segments for intersection/crossing with lineString
-    // // TODO: Add these
-    // for (Edge edge : EDGE_STORE.getEdges()) {
-    // if (edge.getLineString().intersects(lineString)) {
-    // LOGGER.debug("INTERSECTION with " + edge.toString());
-    //
-    // }
-    // }
-    //
-    // return closestConnection;
-    // }
 }

@@ -53,4 +53,15 @@ public class OffNetworkImpl extends RecImpl implements OffNetwork {
         return null;
     }
 
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("OffNetworkImpl [getRecType()=").append(getRecType())
+                .append("]");
+        return builder.toString();
+    }
+
 }

@@ -54,4 +54,17 @@ public class ToNodeImpl extends TrackImpl implements ToNode {
     public NetworkRecType getRecType() {
         return TRACK_TO_NODE;
     }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ToNodeImpl [getId()=")
+                .append(getId()).append(", getName()=").append(getName())
+                .append(", getScore()=").append(getScore()).append(
+                        ", getRecType()=").append(getRecType()).append("]");
+        return builder.toString();
+    }
 }

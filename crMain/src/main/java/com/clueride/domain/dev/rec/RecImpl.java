@@ -37,6 +37,7 @@ public abstract class RecImpl extends NetworkRecImpl implements Rec {
      * @param requestedNode
      */
     protected RecImpl(GeoNode requestedNode) {
+        super();
         this.newLoc = requestedNode;
         super.addFeature(TranslateUtil.geoNodeToFeature(requestedNode));
     }

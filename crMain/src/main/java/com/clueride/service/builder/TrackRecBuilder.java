@@ -19,6 +19,7 @@ package com.clueride.service.builder;
 
 import org.apache.log4j.Logger;
 
+import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.rec.Rec;
 import com.clueride.domain.dev.rec.ToNodeImpl;
@@ -50,9 +51,26 @@ public class TrackRecBuilder {
     private GeoNode networkNodeEnd;
     private Edge networkEdgeEnd;
     private Edge networkEdgeStart;
+    private boolean preferEdgeStart;
+    private boolean preferEdgeEnd;
 
     private LineFeature trackStart;
     private LineFeature trackEnd;
+
+    private int nodeStartPointCount;
+
+    private int nodeEndPointCount;
+
+    private int edgeStartPointCount;
+
+    private int edgeEndPointCount;
+
+    private Double startDistance;
+    private Double endDistance;
+
+    private DefaultGeoNode splittingNodeStart;
+
+    private DefaultGeoNode splittingNodeEnd;
 
     /**
      * @param geoNode
@@ -62,26 +80,8 @@ public class TrackRecBuilder {
         this.newLoc = newLoc;
         this.track = track;
         this.splitLineString = new SplitLineString(track, newLoc);
+        LOGGER.debug("Preparing Track Rec for " + track);
     }
-
-    // /**
-    // * @return
-    // */
-    // public List<NetworkRecommendation> build() {
-    // List<NetworkRecommendation> recList = new ArrayList<>();
-    //
-    // for (TrackFeature track : coveringTracks) {
-    // SplitLineString lsPair = new SplitLineString(track, newLoc);
-    // RecommendationBuilder recBuilder = new RecommendationBuilder();
-    // recBuilder.addToStartTrack(lsPair.getLineStringToStart())
-    // .addToEndTrack(lsPair.getLineStringToEnd());
-    // NetworkRecommendation rec = recBuilder.build();
-    // // Rec rec = recBuilder.getTrackRec(track, geoNode);
-    // recList.add(rec);
-    // }
-    //
-    // return recList;
-    // }
 
     /**
      * Accepts a Node in the Network that we have verified is covered by the
@@ -96,7 +96,6 @@ public class TrackRecBuilder {
      * @return this - to allow chaining of the builder.
      */
     public TrackRecBuilder addNetworkNodeStart(GeoNode networkNode) {
-        // Record this now, not yet prepared to calculate distances or Edges.
         this.networkNodeStart = networkNode;
         return this;
     }
@@ -146,45 +145,78 @@ public class TrackRecBuilder {
         switch (numberOfConnections()) {
         case 2:
             populateProposedTracks();
-            LOGGER.info("Track " + track.getId() + " connected both ends");
+            prepareEnds();
+            LOGGER.info("Track " + track + " connected both ends");
             if (networkNodeStart != null) {
                 if (networkNodeEnd != null) {
                     return new ToTwoNodesImpl(newLoc, track, networkNodeStart,
                             networkNodeEnd);
                 } else {
                     return new ToSegmentAndNodeImpl(newLoc, track,
-                            networkEdgeEnd, networkNodeStart);
+                            networkEdgeEnd, splittingNodeEnd, networkNodeStart);
                 }
             } else {
                 // networkEdgeStart != null
                 if (networkNodeEnd != null) {
                     return new ToSegmentAndNodeImpl(newLoc, track,
-                            networkEdgeStart, networkNodeEnd);
+                            networkEdgeStart, splittingNodeStart,
+                            networkNodeEnd);
                 } else {
                     return new ToTwoSegmentsImpl(newLoc, track,
                             networkEdgeStart,
-                            networkEdgeEnd);
+                            networkEdgeEnd,
+                            splittingNodeStart,
+                            splittingNodeEnd);
                 }
             }
             // no need to break
         case 1:
+            LOGGER.info("Track " + track + " connected on single end");
             populateProposedTracks();
-            LOGGER.info("Track " + track.getId() + " connected both ends");
-            LOGGER.info("Track " + track.getId() + " connected on single end");
-            if (networkNodeStart != null) {
-                return new ToNodeImpl(newLoc, trackStart, networkNodeStart);
+            prepareEnds();
+
+            // Order based on which one is closer for this end
+            if (preferEdgeStart) {
+                if (networkEdgeStart != null) {
+                    // LineString lsStart = (LineString)
+                    // trackStart.getGeometry();
+                    // GeoNode splittingNode = new DefaultGeoNode();
+                    // splittingNode.setPoint(lsStart.getEndPoint());
+                    return new ToSegmentImpl(newLoc, trackStart,
+                            networkEdgeStart,
+                            splittingNodeStart);
+                }
+                if (networkNodeStart != null) {
+                    return new ToNodeImpl(newLoc, trackStart, networkNodeStart);
+                }
+            } else {
+                if (networkNodeStart != null) {
+                    return new ToNodeImpl(newLoc, trackStart, networkNodeStart);
+                }
+                if (networkEdgeStart != null) {
+                    return new ToSegmentImpl(newLoc, trackStart,
+                            networkEdgeStart,
+                            splittingNodeStart);
+                }
             }
-            if (networkNodeEnd != null) {
-                return new ToNodeImpl(newLoc, trackEnd, networkNodeEnd);
-            }
-            if (networkEdgeStart != null) {
-                // TODO: Get the real splitting node
-                return new ToSegmentImpl(newLoc, trackStart, networkEdgeStart,
-                        null);
-            }
-            if (networkEdgeEnd != null) {
-                // TODO: Get the real splitting node
-                return new ToSegmentImpl(newLoc, trackEnd, networkEdgeEnd, null);
+
+            // Order based on which one is closer for this end
+            if (preferEdgeEnd) {
+                if (networkEdgeEnd != null) {
+                    return new ToSegmentImpl(newLoc, trackEnd, networkEdgeEnd,
+                            splittingNodeEnd);
+                }
+                if (networkNodeEnd != null) {
+                    return new ToNodeImpl(newLoc, trackEnd, networkNodeEnd);
+                }
+            } else {
+                if (networkNodeEnd != null) {
+                    return new ToNodeImpl(newLoc, trackEnd, networkNodeEnd);
+                }
+                if (networkEdgeEnd != null) {
+                    return new ToSegmentImpl(newLoc, trackEnd, networkEdgeEnd,
+                            splittingNodeEnd);
+                }
             }
             break;
         case 0:
@@ -193,6 +225,27 @@ public class TrackRecBuilder {
             break;
         }
         return null;
+    }
+
+    /**
+     * 
+     */
+    private void prepareEnds() {
+        boolean startHasChoice = networkNodeStart != null
+                && networkEdgeStart != null;
+        boolean endHasChoice = networkNodeEnd != null && networkEdgeEnd != null;
+
+        if (startHasChoice) {
+            preferEdgeStart = edgeStartPointCount < nodeStartPointCount;
+        } else {
+            preferEdgeStart = networkEdgeStart != null;
+        }
+
+        if (endHasChoice) {
+            preferEdgeEnd = edgeEndPointCount < nodeEndPointCount;
+        } else {
+            preferEdgeEnd = networkEdgeEnd != null;
+        }
     }
 
     /**
@@ -206,12 +259,54 @@ public class TrackRecBuilder {
     // TODO: Simplify this by recording when we set either the start or the end.
     private int numberOfConnections() {
         int connectionCount = 0;
-        if (networkNodeStart != null || networkEdgeStart != null) {
+        if (hasStartConnection()) {
             connectionCount++;
         }
-        if (networkNodeEnd != null || networkEdgeEnd != null) {
+        if (hasEndConnection()) {
             connectionCount++;
         }
         return connectionCount;
+    }
+
+    public boolean hasStartConnection() {
+        return networkNodeStart != null || networkEdgeStart != null;
+    }
+
+    public boolean hasEndConnection() {
+        return networkNodeEnd != null || networkEdgeEnd != null;
+    }
+
+    /**
+     * @param nodeDistance
+     */
+    public TrackRecBuilder addStartDistance(Double distance) {
+        this.startDistance = distance;
+        return this;
+    }
+
+    /**
+     * @param splittingNode
+     * @return
+     */
+    public TrackRecBuilder addSplittingNodeAtStart(DefaultGeoNode splittingNode) {
+        this.splittingNodeStart = splittingNode;
+        return this;
+    }
+
+    /**
+     * @param splittingNode
+     * @return
+     */
+    public TrackRecBuilder addSplittingNodeAtEnd(DefaultGeoNode splittingNode) {
+        this.splittingNodeEnd = splittingNode;
+        return this;
+    }
+
+    /**
+     * @param nodeDistance
+     */
+    public TrackRecBuilder addEndDistance(Double distance) {
+        this.endDistance = distance;
+        return this;
     }
 }

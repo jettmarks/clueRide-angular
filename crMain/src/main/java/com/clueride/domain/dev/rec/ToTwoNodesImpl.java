@@ -21,6 +21,7 @@ import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_NODES;
 
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.TrackFeature;
+import com.clueride.geo.TranslateUtil;
 
 /**
  * Description.
@@ -36,7 +37,9 @@ public class ToTwoNodesImpl extends TrackImpl implements ToTwoNodes {
             GeoNode node1, GeoNode node2) {
         super(reqNode, track);
         this.node1 = node1;
+        addFeature(TranslateUtil.geoNodeToFeature(node1));
         this.node2 = node2;
+        addFeature(TranslateUtil.geoNodeToFeature(node2));
     }
 
     /**
@@ -59,6 +62,19 @@ public class ToTwoNodesImpl extends TrackImpl implements ToTwoNodes {
     @Override
     public NetworkRecType getRecType() {
         return TRACK_TO_2_NODES;
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ToTwoNodesImpl [getId()=").append(getId()).append(
+                ", getName()=").append(getName()).append(", getScore()=")
+                .append(getScore()).append(", getRecType()=").append(
+                        getRecType()).append("]");
+        return builder.toString();
     }
 
 }

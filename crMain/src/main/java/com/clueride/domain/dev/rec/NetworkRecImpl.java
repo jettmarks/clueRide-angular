@@ -19,11 +19,14 @@ package com.clueride.domain.dev.rec;
 
 import static com.clueride.domain.dev.rec.NetworkRecType.UNDEFINED;
 
+import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.NetworkRecommendation;
+import com.clueride.service.DefaultRecIdProvider;
+import com.clueride.service.RecIdProvider;
 
 /**
  * Base Class of much of the Recommendation class tree.
@@ -32,10 +35,16 @@ import com.clueride.domain.dev.NetworkRecommendation;
  *
  */
 public class NetworkRecImpl implements NetworkRecommendation {
+    private static final Logger LOGGER = Logger.getLogger(NetworkRecImpl.class);
 
+    private static final RecIdProvider ID_PROVIDER = new DefaultRecIdProvider();
     private Integer id;
     private String name;
     protected DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
+
+    public NetworkRecImpl() {
+        id = ID_PROVIDER.getId();
+    }
 
     /**
      * @see com.clueride.domain.dev.NetworkRecommendation#getId()
@@ -86,4 +95,24 @@ public class NetworkRecImpl implements NetworkRecommendation {
         return 0.0;
     }
 
+    public void dumpRecommendationSummary() {
+        int recNumber = featureCollection.toArray().length;
+        LOGGER.debug("Rec " + toString() + " has " + recNumber + " features:");
+        for (SimpleFeature feature : featureCollection) {
+            LOGGER.debug(feature.getAttribute(0) + ": "
+                    + feature.getFeatureType().getTypeName());
+        }
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("NetworkRecImpl [id=").append(id).append(", name=")
+                .append(name).append(", getRecType()=").append(getRecType())
+                .append(", getScore()=").append(getScore()).append("]");
+        return builder.toString();
+    }
 }

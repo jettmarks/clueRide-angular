@@ -69,4 +69,17 @@ public class OnSegmentImpl extends RecImpl implements OnSegment {
         return null;
     }
 
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("OnSegmentImpl [getId()=").append(getId()).append(
+                ", getName()=").append(getName()).append(", getRecType()=")
+                .append(getRecType()).append(", getScore()=")
+                .append(getScore()).append("]");
+        return builder.toString();
+    }
+
 }

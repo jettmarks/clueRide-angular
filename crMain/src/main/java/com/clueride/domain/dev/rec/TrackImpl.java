@@ -51,8 +51,7 @@ public class TrackImpl extends RecImpl implements OnTrack {
      */
     @Override
     public Integer getTrackId() {
-        // TODO: Ditto
-        return null;
+        return track.getId();
     }
 
     /**

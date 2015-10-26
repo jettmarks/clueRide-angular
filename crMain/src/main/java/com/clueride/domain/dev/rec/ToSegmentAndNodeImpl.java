@@ -22,6 +22,7 @@ import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_SEGMENT_AND_NO
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
+import com.clueride.geo.TranslateUtil;
 
 /**
  * Description.
@@ -35,10 +36,13 @@ public class ToSegmentAndNodeImpl extends TrackImpl implements
     private GeoNode node;
 
     public ToSegmentAndNodeImpl(GeoNode reqNode, TrackFeature track,
-            Edge segment, GeoNode node) {
+            Edge segment, GeoNode splittingNode, GeoNode networkNodeEnd) {
         super(reqNode, track);
         this.segment = segment;
-        this.node = node;
+        addFeature(TranslateUtil.segmentToFeature(segment));
+        addFeature(TranslateUtil.geoNodeToFeature(splittingNode));
+        this.node = networkNodeEnd;
+        addFeature(TranslateUtil.geoNodeToFeature(networkNodeEnd));
     }
 
     /**
