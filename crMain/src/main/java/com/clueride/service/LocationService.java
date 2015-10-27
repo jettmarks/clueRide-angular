@@ -34,6 +34,7 @@ import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NewLocProposal;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
+import com.clueride.domain.dev.rec.DiagnosticRec;
 import com.clueride.domain.dev.rec.Rec;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.TrackFeature;
@@ -89,17 +90,56 @@ public class LocationService {
     }
 
     /**
+     * Diagnostic request to show all the points on the track that covers the
+     * point at this lat/lon pair.
+     * 
+     * @param lat
+     * @param lon
+     * @return
+     */
+    public String showPointsOnTrack(Double lat, Double lon) {
+        String result = "";
+
+        GeoNode newLocation;
+        newLocation = getCandidateLocation(lat, lon);
+        NetworkProposal networkProposal = buildPointsOnTrackProposal(newLocation);
+        result = networkProposal.toJson();
+        return result;
+    }
+
+    /**
      * @param lat
      * @param lon
      * @return
      */
     private GeoNode getCandidateLocation(Double lat, Double lon) {
         GeoNode newLocation;
-        newLocation = new DefaultGeoNode();
         Point point = PointFactory.getJtsInstance(lat, lon, 0.0);
-        newLocation.setPoint(point);
+        newLocation = new DefaultGeoNode(point);
         newLocation.setName("candidate");
         return newLocation;
+    }
+
+    /**
+     * @param newLocation
+     * @return
+     */
+    private NetworkProposal buildPointsOnTrackProposal(GeoNode newLoc) {
+        GeoEval geoEval = GeoEval.getInstance();
+        NewLocProposal newLocProposal = new NewLocProposal(newLoc);
+        List<TrackFeature> coveringTracks = geoEval.listCoveringTracks(newLoc);
+        DiagnosticRec diagRec = new DiagnosticRec(newLoc);
+        if (coveringTracks.size() == 1) {
+            TrackFeature track = coveringTracks.get(0);
+            LineString lineString = track.getLineString();
+            for (int i = 0; i < lineString.getNumPoints(); i++) {
+                diagRec.addFeature(TranslateUtil
+                        .geoNodeToFeature(new DefaultGeoNode(lineString
+                                .getPointN(i))));
+            }
+        }
+        newLocProposal.add(diagRec);
+        return newLocProposal;
     }
 
     /**
@@ -138,13 +178,14 @@ public class LocationService {
         for (TrackFeature track : coveringTracks) {
 
             // There are two directions we can go; calculate these first
-            TrackRecBuilder trackRecBuilder = new TrackRecBuilder(newLoc,
-                    track);
             SplitLineString startEndPair = new SplitLineString(track, newLoc);
             LineString lsStart = startEndPair.getLineStringToStart();
             TrackEval startTrackEval = new TrackEval(lsStart);
             LineString lsEnd = startEndPair.getLineStringToEnd();
             TrackEval endTrackEval = new TrackEval(lsEnd);
+
+            TrackRecBuilder trackRecBuilder = new TrackRecBuilder(newLoc,
+                    track);
 
             switch (startTrackEval.getTrackEvalType()) {
             case NODE:
@@ -158,6 +199,9 @@ public class LocationService {
                         .addSplittingNodeAtStart(
                                 startTrackEval.getSplittingNode())
                         .addStartDistance(startTrackEval.getNodeDistance());
+                break;
+            case DIAGNOSTIC:
+                trackRecBuilder.addDiagnostic(startTrackEval);
                 break;
             }
 
@@ -173,13 +217,10 @@ public class LocationService {
                         .addSplittingNodeAtEnd(endTrackEval.getSplittingNode())
                         .addEndDistance(endTrackEval.getNodeDistance());
                 break;
+            case DIAGNOSTIC:
+                trackRecBuilder.addDiagnostic(endTrackEval);
+                break;
             }
-
-            // trackRecBuilder
-            // .addNetworkNodeStart(geoEval.getNearestNetworkNode(lsStart))
-            // .addEdgeAtStart(geoEval.getNearestNetworkEdge(lsStart))
-            // .addNetworkNodeEnd(geoEval.getNearestNetworkNode(lsEnd))
-            // .addEdgeAtEnd(geoEval.getNearestNetworkEdge(lsEnd));
 
             Rec rec = trackRecBuilder.build();
             if (rec != null) {

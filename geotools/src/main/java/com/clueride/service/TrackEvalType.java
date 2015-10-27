@@ -27,5 +27,6 @@ public enum TrackEvalType {
     UNDEFINED,
     NODE,
     EDGE,
-    NO_CONNECTION
+    NO_CONNECTION,
+    DIAGNOSTIC // Really just a notion at this time
 }

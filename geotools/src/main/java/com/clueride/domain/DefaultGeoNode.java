@@ -52,6 +52,20 @@ public class DefaultGeoNode implements GeoNode {
     private Edge proposedSegment;
 
     /**
+     * @param intersection
+     */
+    public DefaultGeoNode(Point point) {
+        this.setPoint(point);
+    }
+
+    /**
+     * 
+     */
+    public DefaultGeoNode() {
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
      * @return the point
      */
     public Point getPoint() {

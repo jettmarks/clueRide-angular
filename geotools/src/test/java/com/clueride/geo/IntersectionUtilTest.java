@@ -123,9 +123,8 @@ public class IntersectionUtilTest {
     public void findFirstIntersectionSpecificPair() {
         TrackFeature track = DefaultTrackStore.getInstance().getTrackById(75);
         assertNotNull(track);
-        GeoNode splitPointOK = new DefaultGeoNode();
         Point pointOK = PointFactory.getJtsInstance(33.77481, -84.35870, 300.0);
-        splitPointOK.setPoint(pointOK);
+        GeoNode splitPointOK = new DefaultGeoNode(pointOK);
         SplitLineString pair = new SplitLineString(track, splitPointOK);
         Edge edge = DefaultNetworkStore.getInstance().getEdgeById(4);
         assertNotNull(edge);
@@ -133,10 +132,9 @@ public class IntersectionUtilTest {
                 pair.getLineStringToEnd(), edge.getLineString());
         assertNotNull(point);
 
-        GeoNode splitPointBad = new DefaultGeoNode();
         Point pointBad = PointFactory
                 .getJtsInstance(33.77385, -84.35873, 300.0);
-        splitPointBad.setPoint(pointBad);
+        GeoNode splitPointBad = new DefaultGeoNode(pointBad);
         pair = new SplitLineString(track, splitPointBad);
         point = IntersectionUtil.findFirstIntersection(
                 pair.getLineStringToEnd(), edge.getLineString());

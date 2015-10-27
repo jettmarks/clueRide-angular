@@ -17,10 +17,16 @@
  */
 package com.clueride.service.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.DefaultGeoNode;
+import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.rec.DiagnosticRec;
 import com.clueride.domain.dev.rec.Rec;
 import com.clueride.domain.dev.rec.ToNodeImpl;
 import com.clueride.domain.dev.rec.ToSegmentAndNodeImpl;
@@ -31,6 +37,8 @@ import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.SplitLineString;
+import com.clueride.geo.TranslateUtil;
+import com.clueride.service.TrackEval;
 
 /**
  * Given a Node and the Tracks covering that node, prepare a set of track-based
@@ -71,6 +79,10 @@ public class TrackRecBuilder {
     private DefaultGeoNode splittingNodeStart;
 
     private DefaultGeoNode splittingNodeEnd;
+
+    private boolean diagnosticMode = false;
+
+    private List<TrackEval> trackEvals = new ArrayList<>();;
 
     /**
      * @param geoNode
@@ -141,7 +153,10 @@ public class TrackRecBuilder {
      * @return
      */
     public Rec build() {
-        // TODO Auto-generated method stub
+        if (diagnosticMode) {
+            return diagnosticBuild();
+        }
+
         switch (numberOfConnections()) {
         case 2:
             populateProposedTracks();
@@ -228,6 +243,26 @@ public class TrackRecBuilder {
     }
 
     /**
+     * @return
+     */
+    private Rec diagnosticBuild() {
+        DiagnosticRec diagRec = new DiagnosticRec(newLoc);
+        for (TrackEval trackEval : trackEvals) {
+            for (GeoNode geoNode : trackEval.getDistancePerNode().keySet()) {
+                SimpleFeature feature = TranslateUtil.geoNodeToFeature(geoNode);
+                diagRec.addFeature(feature);
+            }
+            for (Edge edge : trackEval.getDistancePerEdge().keySet()) {
+                diagRec.addFeature(((EdgeImpl) edge).getFeature());
+            }
+            for (GeoNode splitNode : trackEval.getSplitPerEdge().values()) {
+                diagRec.addFeature(TranslateUtil.geoNodeToFeature(splitNode));
+            }
+        }
+        return diagRec;
+    }
+
+    /**
      * 
      */
     private void prepareEnds() {
@@ -308,5 +343,13 @@ public class TrackRecBuilder {
     public TrackRecBuilder addEndDistance(Double distance) {
         this.endDistance = distance;
         return this;
+    }
+
+    /**
+     * @param endTrackEval
+     */
+    public void addDiagnostic(TrackEval trackEval) {
+        diagnosticMode = true;
+        trackEvals.add(trackEval);
     }
 }

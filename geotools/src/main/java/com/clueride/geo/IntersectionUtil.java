@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
+import com.clueride.config.GeoProperties;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -167,4 +168,25 @@ public class IntersectionUtil {
         return point;
     }
 
+    /**
+     * TODO: Description.
+     * 
+     * @param lsWalking
+     * @param lsFixed
+     * @return
+     */
+    public static Point walkToIntersectingNode(LineString lsWalking,
+            LineString lsFixed) {
+        Geometry lsBuffer = lsFixed.buffer(GeoProperties.BUFFER_TOLERANCE);
+        Point walkingPoint = null;
+        int numberPoints = lsWalking.getNumPoints();
+        for (int p = 0; p < numberPoints; p++) {
+            walkingPoint = lsWalking.getPointN(p);
+            if (lsBuffer.covers(walkingPoint)) {
+                LOGGER.info("We like point " + walkingPoint);
+                break;
+            }
+        }
+        return walkingPoint;
+    }
 }

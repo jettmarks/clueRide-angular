@@ -31,7 +31,7 @@ public class DefaultNodeGroup extends DefaultGeoNode implements NodeGroup {
     private double radius = 0.0002;
 
     public DefaultNodeGroup(Point point, Double radius) {
-        this.setPoint(point);
+        super(point);
         this.setName("Temp Group");
         this.radius = radius;
     }

@@ -38,15 +38,12 @@ public class NodeFactory {
      * @return
      */
     public static GeoNode getInstance(Point point) {
-        DefaultGeoNode node = new DefaultGeoNode();
-        node.setPoint(point);
-        return node;
+        return new DefaultGeoNode(point);
     }
 
     public static GeoNode getInstance(double lon, double lat, double elevation) {
-        DefaultGeoNode node = new DefaultGeoNode();
-        node.setPoint(PointFactory.getJtsInstance(lon, lat, elevation));
-        return node;
+        return new DefaultGeoNode(PointFactory.getJtsInstance(
+                lon, lat, elevation));
     }
 
     /**

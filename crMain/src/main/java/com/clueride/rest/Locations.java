@@ -68,6 +68,7 @@ public class Locations {
     @Path("new")
     public String getNewLocationPost(LatLonPair pair) {
         return new LocationService().addNewLocation(pair.lat, pair.lon);
+        // return new LocationService().showPointsOnTrack(pair.lat, pair.lon);
     }
 
     /**
