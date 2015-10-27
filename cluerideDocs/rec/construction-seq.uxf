@@ -6,19 +6,28 @@
     <coordinates>
       <x>20</x>
       <y>20</y>
-      <w>410</w>
-      <h>350</h>
+      <w>1150</w>
+      <h>560</h>
     </coordinates>
     <panel_attributes>title: construction
-_alpha:A~id1_|_beta:B~id2_|_gamma:G~id3_
-id1-&gt;&gt;id2:id1,id2
+_:LocationService~ls_|_:TrackRecBuilder~trb_|_:SplitLineString~sls_|_:GeoEval~gEv_|_:TrackEval~tEv_|_:NewLocProposal~pro_
+ls-&gt;&gt;gEv:ls,gEv:coveringTracks:=listCoveringTracks(newLoc)
+iframe{:per covering Track
+ls-&gt;sls:ls,sls:new(track.getLineString())
+ls-&gt;tEv:ls,sls,tEv:startEval := new(newLoc, sls.start)
+ls-&gt;tEv:ls,sls,tEv:endEval := new(newLoc, sls.end)
+ls-&gt;trb:ls,trb:new(newLoc, track)
+ls-&gt;tEv:ls,tEv:values := getValues()
+ls-&gt;trb:ls,trb:addValues(values)
+ls-&gt;trb:ls,trb:rec := build()
+ls-&gt;pro:ls,pro:[rec != null] add(rec)
+iframe}
+
 id2-/&gt;id1:async Msg.
 id3-&gt;&gt;&gt;id1:id1,id3
 id1.&gt;id3:id1,id3:async return Msg
 id1-&gt;id1:id1:self
-iframe{:interaction frame
-id2-&gt;id3:id1,id3:async Msg.
-iframe}</panel_attributes>
+</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>
