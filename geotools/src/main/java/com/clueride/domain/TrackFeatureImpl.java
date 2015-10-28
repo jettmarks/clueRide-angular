@@ -125,6 +125,7 @@ public class TrackFeatureImpl implements TrackFeature {
     @Override
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+        this.feature = buildFeature();
     }
 
     /**

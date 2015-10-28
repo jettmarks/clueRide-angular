@@ -31,7 +31,7 @@ import com.clueride.geo.TranslateUtil;
  * @author jett
  *
  */
-public class ToTwoSegmentsImpl extends TrackImpl implements ToTwoSegments {
+public class ToTwoSegmentsImpl extends OnTrackImpl implements ToTwoSegments {
     private Edge segment1;
     private Edge segment2;
 

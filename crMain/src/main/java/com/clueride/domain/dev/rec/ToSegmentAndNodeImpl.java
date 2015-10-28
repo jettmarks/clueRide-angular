@@ -29,7 +29,7 @@ import com.clueride.geo.TranslateUtil;
  *
  * @author jett
  */
-public class ToSegmentAndNodeImpl extends TrackImpl implements
+public class ToSegmentAndNodeImpl extends OnTrackImpl implements
         ToSegmentAndNode {
 
     private Edge segment;

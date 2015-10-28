@@ -30,7 +30,7 @@ import com.clueride.geo.TranslateUtil;
  * @author jett
  *
  */
-public class ToNodeImpl extends TrackImpl implements ToNode {
+public class ToNodeImpl extends OnTrackImpl implements ToNode {
     private GeoNode node;
 
     public ToNodeImpl(GeoNode reqNode, LineFeature trackStart,

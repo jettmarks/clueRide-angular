@@ -19,6 +19,7 @@ package com.clueride.domain.dev.rec;
 
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_SEGMENT;
 
+import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
@@ -31,7 +32,7 @@ import com.clueride.geo.TranslateUtil;
  * @author jett
  *
  */
-public class ToSegmentImpl extends TrackImpl implements ToSegment {
+public class ToSegmentImpl extends OnTrackImpl implements ToSegment {
     /** Existing portion of network where track intersects. */
     private Edge segment;
     /** Node on segment and track where the segment is proposed to be split. */
@@ -40,18 +41,19 @@ public class ToSegmentImpl extends TrackImpl implements ToSegment {
     /**
      * @param reqNode
      *            - Node for which we're preparing the Recommendation.
-     * @param trackStart
+     * @param track
      *            - TrackFeature which brings us to the network.
-     * @param segment
+     * @param edge
      *            - Network Edge where we'll be reaching the network.
      * @param splittingNode
      *            - Node at which the track connects to the Edge.
      */
-    public ToSegmentImpl(GeoNode reqNode, LineFeature trackStart,
-            Edge segment, GeoNode splittingNode) {
-        super(reqNode, (TrackFeature) trackStart);
-        this.segment = segment;
-        addFeature(TranslateUtil.segmentToFeature(segment));
+    public ToSegmentImpl(GeoNode reqNode, LineFeature track,
+            Edge edge, GeoNode splittingNode) {
+        super(reqNode, (TrackFeature) track);
+        this.segment = edge;
+        // addFeature(TranslateUtil.segmentToFeature(edge));
+        addFeature(((EdgeImpl) edge).getFeature());
         this.splittingNode = splittingNode;
         addFeature(TranslateUtil.geoNodeToFeature(splittingNode));
     }

@@ -29,7 +29,7 @@ import com.clueride.geo.TranslateUtil;
  * @author jett
  *
  */
-public class ToTwoNodesImpl extends TrackImpl implements ToTwoNodes {
+public class ToTwoNodesImpl extends OnTrackImpl implements ToTwoNodes {
     private GeoNode node1;
     private GeoNode node2;
 

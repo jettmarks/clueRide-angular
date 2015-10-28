@@ -26,13 +26,14 @@ import com.clueride.feature.TrackFeature;
  * @author jett
  *
  */
-public class TrackImpl extends RecImpl implements OnTrack {
+public class OnTrackImpl extends RecImpl implements OnTrack {
 
     private TrackFeature track;
 
-    public TrackImpl(GeoNode reqNode, TrackFeature track) {
+    public OnTrackImpl(GeoNode reqNode, TrackFeature track) {
         super(reqNode);
         this.track = track;
+        track.setDisplayName("Proposed");
         addFeature(track.getFeature());
     }
 
