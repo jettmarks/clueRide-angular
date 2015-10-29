@@ -126,4 +126,17 @@ public class NewLocProposal implements NetworkProposal {
         LOGGER.info(networkRecommendation);
         networkRecommendations.add(networkRecommendation);
     }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("NewLocProposal [id=").append(id).append(
+                ", numberNetworkRecs=").append(networkRecommendations.size())
+                .append(", nodeNetworkState=").append(nodeNetworkState).append(
+                        ", newLoc=").append(newLoc).append("]");
+        return builder.toString();
+    }
 }

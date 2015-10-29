@@ -27,10 +27,12 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.dao.DefaultLocationStore;
 import com.clueride.dao.LocationStore;
+import com.clueride.dao.NetworkProposalStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkProposal;
+import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.domain.dev.NewLocProposal;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
@@ -62,7 +64,7 @@ public class LocationService {
     // TODO: Add Dependency Injection for the NetworkService
     private Network network = DefaultNetwork.getInstance();
 
-    private int countBuildNewLocRequests;
+    private static int countBuildNewLocRequests;
     private static LocationStore locationStore = DefaultLocationStore
             .getInstance();
 
@@ -85,6 +87,7 @@ public class LocationService {
         GeoNode newLocation;
         newLocation = getCandidateLocation(lat, lon);
         NetworkProposal networkProposal = buildProposalForNewLoc(newLocation);
+        NetworkProposalStore.add(networkProposal);
         result = networkProposal.toJson();
         return result;
     }
@@ -151,7 +154,7 @@ public class LocationService {
      * @return
      */
     protected NetworkProposal buildProposalForNewLoc(GeoNode newLoc) {
-        LOGGER.debug("start - evaluateNodeState(): "
+        LOGGER.debug("start - buildProposalForNewLoc(): "
                 + countBuildNewLocRequests++);
         GeoEval geoEval = GeoEval.getInstance();
         NewLocProposal newLocProposal = new NewLocProposal(newLoc);
@@ -293,5 +296,51 @@ public class LocationService {
             return "{status: failed}";
         }
         return "{status: ok}";
+    }
+
+    /**
+     * Implementation of a request to confirm the latest proposal as the one we
+     * want to add to the network.
+     * 
+     * The NetworkProposal instance we stashed away will hold the details needed
+     * to create the objects we add to the persisted network.
+     * 
+     * @return
+     */
+    public static String confirmNewLocation() {
+        NetworkProposal networkProposal = NetworkProposalStore
+                .getLastProposal();
+        List<NetworkRecommendation> recs = networkProposal.getRecommendations();
+        if (networkProposal.hasMultipleRecommendations()) {
+            LOGGER.warn("Not handling Multiple Rec proposals yet.");
+        } else {
+            Rec rec = (Rec) recs.get(0);
+            switch (rec.getRecType()) {
+            case TRACK_TO_SEGMENT:
+                addTrackToSegment(rec);
+                break;
+            default:
+                LOGGER.warn("Rec Type: " + rec.getRecType());
+            }
+        }
+        return "{status: ok}";
+    }
+
+    /**
+     * Prepares these items for adding to the network:
+     * <UL>
+     * <LI>The Location Node itself
+     * <LI>The Edge connecting the Location to the Segment (from the Track)
+     * <LI>The Splitting Node (also the end of the previous Edge)
+     * <LI>Two new Edges that result from splitting the original Segment.
+     * <LI>Removal of the original Segment.
+     * </UL>
+     * 
+     * And then ask these be persisted.
+     * 
+     * @param rec
+     */
+    private static void addTrackToSegment(Rec rec) {
+
     }
 }

@@ -728,6 +728,7 @@ public class DefaultNetwork implements Network {
      * Invokes the Segment service as needed to add any new segments that are
      * involved, but we handle our Nodes here.
      * 
+     * @deprecated - in favor of LocationService.confirmNewLocation().
      * @return
      */
     public String confirmNewLocation() {
