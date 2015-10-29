@@ -35,7 +35,6 @@ import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.domain.dev.NewLocProposal;
 import com.clueride.domain.dev.NodeGroup;
-import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.rec.DiagnosticRec;
 import com.clueride.domain.dev.rec.Rec;
 import com.clueride.domain.factory.PointFactory;
@@ -190,6 +189,7 @@ public class LocationService {
             TrackRecBuilder trackRecBuilder = new TrackRecBuilder(newLoc,
                     track);
 
+            // TODO: recBuilder need to distinguish between the start and end?
             switch (startTrackEval.getTrackEvalType()) {
             case NODE:
                 trackRecBuilder
@@ -205,6 +205,12 @@ public class LocationService {
                 break;
             case DIAGNOSTIC:
                 trackRecBuilder.addDiagnostic(startTrackEval);
+                break;
+            case NO_CONNECTION:
+                break;
+            case UNDEFINED:
+                break;
+            default:
                 break;
             }
 
@@ -223,6 +229,12 @@ public class LocationService {
             case DIAGNOSTIC:
                 trackRecBuilder.addDiagnostic(endTrackEval);
                 break;
+            case NO_CONNECTION:
+                break;
+            case UNDEFINED:
+                break;
+            default:
+                break;
             }
 
             Rec rec = trackRecBuilder.build();
@@ -230,17 +242,7 @@ public class LocationService {
                 newLocProposal.add(rec);
             }
         }
-        // TODO: push this logic into the Proposal Impl
-        if (newLocProposal.hasMultipleRecommendations()) {
-            newLocProposal.setNodeNetworkState(NodeNetworkState.ON_MULTI_TRACK);
-        }
-        if (newLocProposal.getRecommendations().size() == 1) {
-            newLocProposal
-                    .setNodeNetworkState(NodeNetworkState.ON_SINGLE_TRACK);
-        }
-        if (newLocProposal.getRecommendations().size() == 0) {
-            newLocProposal.setNodeNetworkState(NodeNetworkState.OFF_NETWORK);
-        }
+
         return newLocProposal;
     }
 

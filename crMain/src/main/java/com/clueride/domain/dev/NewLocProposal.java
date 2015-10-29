@@ -107,14 +107,26 @@ public class NewLocProposal implements NetworkProposal {
      */
     @Override
     public NodeNetworkState getNodeNetworkState() {
+        if (hasMultipleRecommendations()) {
+            setNodeNetworkState(NodeNetworkState.ON_MULTI_TRACK);
+        }
+        // TODO: This doesn't consider ON_NODE or ON_SEGMENT
+        if (getRecommendations().size() == 1) {
+            setNodeNetworkState(NodeNetworkState.ON_SINGLE_TRACK);
+        }
+        if (getRecommendations().size() == 0) {
+            setNodeNetworkState(NodeNetworkState.OFF_NETWORK);
+        }
         return nodeNetworkState;
     }
 
     /**
+     * Clients "set" this by adding recommendations.
+     * 
      * @param nodeNetworkState
      *            the nodeNetworkState to set
      */
-    public void setNodeNetworkState(NodeNetworkState nodeNetworkState) {
+    private void setNodeNetworkState(NodeNetworkState nodeNetworkState) {
         this.nodeNetworkState = nodeNetworkState;
         this.newLoc.setState(nodeNetworkState);
     }

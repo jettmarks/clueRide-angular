@@ -302,10 +302,11 @@ public class DefaultNetwork implements Network {
      * @param newLocProposal
      * @param state
      * @return
+     * @deprecated - Because it is setting the nodeNetworkState
      */
     private NetworkProposal recordState(NewLocProposal newLocProposal,
             NodeNetworkState state) {
-        newLocProposal.setNodeNetworkState(state);
+        // newLocProposal.setNodeNetworkState(state);
         LOGGER.info(newLocProposal);
         return newLocProposal;
     }

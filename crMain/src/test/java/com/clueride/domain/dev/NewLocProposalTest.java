@@ -40,12 +40,13 @@ public class NewLocProposalTest {
     }
 
     @Test
+    // TODO: This should be setting Recs to exercise the logic
     public void getNodeNetworkState() {
         toTest = new NewLocProposal(newLoc);
         AssertJUnit.assertEquals(NodeNetworkState.UNDEFINED, toTest
                 .getNodeNetworkState());
         NodeNetworkState expected = NodeNetworkState.ON_SINGLE_TRACK;
-        toTest.setNodeNetworkState(expected);
+        // toTest.setNodeNetworkState(expected);
         NodeNetworkState actual = toTest.getNodeNetworkState();
         AssertJUnit.assertEquals(actual, expected);
     }
@@ -63,17 +64,6 @@ public class NewLocProposalTest {
         assertFalse(toTest.hasMultipleRecommendations());
         toTest.add(new NetworkRecImpl());
         assertTrue(toTest.hasMultipleRecommendations());
-    }
-
-    @Test
-    public void setNodeNetworkState() {
-        toTest = new NewLocProposal(newLoc);
-        AssertJUnit.assertEquals(NodeNetworkState.UNDEFINED, toTest
-                .getNodeNetworkState());
-        NodeNetworkState expected = NodeNetworkState.ON_MULTI_TRACK;
-        toTest.setNodeNetworkState(expected);
-        NodeNetworkState actual = toTest.getNodeNetworkState();
-        AssertJUnit.assertEquals(actual, expected);
     }
 
     @Test
