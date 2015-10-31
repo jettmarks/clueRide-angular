@@ -19,6 +19,7 @@ package com.clueride.service;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 
 import com.clueride.dao.DefaultNetworkStore;
@@ -35,16 +36,18 @@ import com.clueride.io.JsonUtil;
  *
  */
 public class SegmentService {
+    private static final Logger LOGGER = Logger.getLogger(SegmentService.class);
     private static NetworkStore networkStore = DefaultNetworkStore
             .getInstance();
 
     /**
      * @param type
-     *            represents both the type and by extension, the location of the
+     *            represents both the type and the location of the
      *            data to be retrieved.
      * @return
      */
     public static String getFeatureCollection(JsonStoreType type) {
+        LOGGER.debug("Requesting Feature Collection for " + type);
         String result = "";
         JsonUtil jsonUtil = new JsonUtil(type);
         try {
@@ -58,14 +61,14 @@ public class SegmentService {
     }
 
     /**
-     * @param brandNewSegment
+     * @param segment
      */
     public static void addSegment(Edge segment) {
         networkStore.addNew(segment);
     }
 
     /**
-     * @param existingSegmentToSplit
+     * @param segmentToSplit
      * @param endNode
      */
     public static void splitSegment(Edge segmentToSplit,
@@ -76,11 +79,12 @@ public class SegmentService {
     /**
      * 
      */
+    // TODO: Need to work this out soon
     public static void saveChanges() {
-        try {
-            networkStore.persistAndReload();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            networkStore.persistAndReload();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }

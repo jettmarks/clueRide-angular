@@ -17,17 +17,16 @@
  */
 package com.clueride.io;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.clueride.domain.EdgeImpl;
+import com.clueride.domain.GeoNode;
+import com.clueride.domain.SegmentFeatureImpl;
+import com.clueride.domain.TrackFeatureImpl;
+import com.clueride.feature.Edge;
+import com.clueride.feature.FeatureType;
+import com.clueride.feature.LineFeature;
+import com.clueride.feature.SegmentFeature;
+import com.clueride.geo.TranslateUtil;
+import com.vividsolutions.jts.geom.LineString;
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -36,14 +35,9 @@ import org.geotools.geojson.geom.GeometryJSON;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import com.clueride.domain.EdgeImpl;
-import com.clueride.domain.GeoNode;
-import com.clueride.domain.SegmentFeatureImpl;
-import com.clueride.domain.TrackFeatureImpl;
-import com.clueride.feature.FeatureType;
-import com.clueride.feature.LineFeature;
-import com.clueride.geo.TranslateUtil;
-import com.vividsolutions.jts.geom.LineString;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility for working with the file-based JSON datastore.
@@ -101,16 +95,43 @@ public class JsonUtil {
      * @return
      * @throws IOException
      */
-    public List<LineFeature> readLineFeatures()
+    public List<Edge> readLineFeatures()
             throws IOException {
-        List<LineFeature> resultSet = new ArrayList<>();
+        List<Edge> resultSet = new ArrayList<>();
         File directory = new File(JsonStoreLocation.toString(currentType));
         for (File child : directory.listFiles(new GeoJsonFileFilter())) {
             LOGGER.debug("Reading LineFeature from: "
                     + child.getCanonicalPath());
             SimpleFeature feature = readFeature(child);
             // TODO: Factory part here may come out
-            resultSet.add(getInstance(feature));
+            resultSet.add((Edge) getInstance(feature));
+        }
+        return resultSet;
+    }
+
+    // TODO: factor out the common parts into a separate method
+    public List<SegmentFeature> readSegments() throws IOException {
+        List<SegmentFeature> resultSet = new ArrayList<>();
+        File directory = new File(JsonStoreLocation.toString(currentType));
+        for (File child : directory.listFiles(new GeoJsonFileFilter())) {
+            LOGGER.debug("Reading LineFeature from: "
+                    + child.getCanonicalPath());
+            SimpleFeature feature = readFeature(child);
+            // TODO: Factory part here may come out
+            resultSet.add((SegmentFeature) getInstance(feature));
+        }
+        return resultSet;
+    }
+
+    public List<Edge> readEdges() throws IOException {
+        List<Edge> resultSet = new ArrayList<>();
+        File directory = new File(JsonStoreLocation.toString(currentType));
+        for (File child : directory.listFiles(new GeoJsonFileFilter())) {
+            LOGGER.debug("Reading LineFeature from: "
+                    + child.getCanonicalPath());
+            SimpleFeature feature = readFeature(child);
+            // TODO: Factory part here may come out
+            resultSet.add((Edge) getInstance(feature));
         }
         return resultSet;
     }
@@ -201,7 +222,7 @@ public class JsonUtil {
 
     /**
      * @param features
-     * @param string
+     * @param fileName
      */
     public void writeFeaturesToFile(DefaultFeatureCollection features,
             String fileName) {
@@ -235,10 +256,10 @@ public class JsonUtil {
      * Writes a feature out to the filename supplied using the Schema and
      * location mapped to the {@link currentType}.
      * 
-     * @param SimpleFeature
+     * @param feature - SimpleFeature
      *            representing a feature of the type that matches the
      *            {@link currentType}.
-     * @param String
+     * @param fileName - String
      *            representation of the simple file name with extension, but not
      *            the directory.
      */

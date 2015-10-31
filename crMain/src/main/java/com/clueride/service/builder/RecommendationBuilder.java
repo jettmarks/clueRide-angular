@@ -110,10 +110,10 @@ public class RecommendationBuilder {
         }
 
         // ToSegmentAndNodeImpl
-        if (singleNode != null && singleSegment != null) {
-            return new ToSegmentAndNodeImpl(requestedNode, onTrack,
-                    singleSegment, singleNode);
-        }
+//        if (singleNode != null && singleSegment != null) {
+//            return new ToSegmentAndNodeImpl(requestedNode, onTrack,
+//                    singleSegment, singleNode);
+//        }
 
         // ToTwoNodesImpl
         if (singleNode != null && secondNode != null) {
@@ -122,10 +122,10 @@ public class RecommendationBuilder {
         }
 
         // ToTwoSegmentsImpl
-        if (singleSegment != null && secondSegment != null) {
-            return new ToTwoSegmentsImpl(requestedNode, onTrack, singleSegment,
-                    secondSegment);
-        }
+//        if (singleSegment != null && secondSegment != null) {
+//            return new ToTwoSegmentsImpl(requestedNode, onTrack, singleSegment,
+//                    secondSegment);
+//        }
 
         // ToNodeImpl
         if (singleNode != null) {

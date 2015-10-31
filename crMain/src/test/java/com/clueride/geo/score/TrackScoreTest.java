@@ -1,21 +1,19 @@
 package com.clueride.geo.score;
 
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import org.mockito.Mock;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.feature.Edge;
 import com.clueride.feature.SegmentFeature;
 import com.clueride.feature.TrackFeature;
-import com.clueride.gpx.EasyTrack;
 import com.clueride.gpx.TrackUtil;
 import com.jettmarks.gmaps.encoder.Trackpoint;
 import com.vividsolutions.jts.geom.LineString;
+import org.mockito.Mock;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * TODO: Come back to this.

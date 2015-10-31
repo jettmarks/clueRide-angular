@@ -5,8 +5,10 @@
   <version>0.0.1-SNAPSHOT</version>
   
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <geotools.version>13.1</geotools.version>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <geotools.version>13.1</geotools.version>
+      <maven.compiler.source>1.7</maven.compiler.source>
+      <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
   
     <dependencies>

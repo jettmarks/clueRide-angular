@@ -56,15 +56,15 @@ public class TrackUtil {
                 .getInstance("Local Drive");
         String[] tagList = new String[1];
         tagList[0] = tag;
-        for (int routeId : LocalRoutes.getRouteIds(tag)) {
-            String routeName = routeId + ".gpx";
-            String sUrl = localRouteSource.getRouteURL(routeName, tagList);
-            String rawGPX = ResourceManager.getResource(sUrl);
-            ParseGPX parser = new ParseGPX();
-            Track track = parser.getTrackFromGPX(rawGPX);
-            track.setName("" + routeId);
-            tracks.add(track);
-        }
+//        for (int routeId : LocalRoutes.getRouteIds(tag)) {
+//            String routeName = routeId + ".gpx";
+//            String sUrl = localRouteSource.getRouteURL(routeName, tagList);
+//            String rawGPX = ResourceManager.getResource(sUrl);
+//            ParseGPX parser = new ParseGPX();
+//            Track track = parser.getTrackFromGPX(rawGPX);
+//            track.setName("" + routeId);
+//            tracks.add(track);
+//        }
         return tracks;
     }
 

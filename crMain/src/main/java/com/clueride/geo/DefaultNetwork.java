@@ -96,23 +96,8 @@ public class DefaultNetwork implements Network {
 
     private static final Logger LOGGER = Logger.getLogger(DefaultNetwork.class);
 
-    /**
-     * @param defaultFeatureCollection
-     */
-    @Inject
-    DefaultNetwork(DefaultFeatureCollection defaultFeatureCollection) {
-        // TODO: Move from featureCollection to reliance on the Stores
-        featureCollection = defaultFeatureCollection;
-        try {
-            trackStore = LoadService.getInstance().loadTrackStore();
-            locationStore = DefaultLocationStore.getInstance();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        init();
-    }
-
     public static DefaultNetwork getInstance() {
+        // TODO: This is a big chunk of work to bite off within a synchronized block
         synchronized (DefaultNetwork.class) {
             if (instance == null) {
                 instance = new DefaultNetwork();
@@ -144,12 +129,12 @@ public class DefaultNetwork implements Network {
      * Currently sets up - List of Nodes (but not those with IDs) - List of Line
      * Strings (but Segments would be better) - Dumps a string summarizing what
      * we've got.
-     * 
+     *
      * Moving toward nodes with IDs, it would be good to persist the segments
      * that way, but we're not quite there yet. Dropping in a verification
      * process that checks the endpoints against the LocationStore's idea of our
      * node set.
-     * 
+     *
      */
     private void init() {
         nodeSet = locationStore.getLocations();
@@ -171,10 +156,27 @@ public class DefaultNetwork implements Network {
     }
 
     /**
-     * TODO: Turn this into a method that accepts Edge. TODO: Factor this into a
-     * separate class.
+     * @param defaultFeatureCollection
+     * @deprecated Use the getInstance method instead.
+     */
+    @Inject
+    DefaultNetwork(DefaultFeatureCollection defaultFeatureCollection) {
+        // TODO: Move from featureCollection to reliance on the Stores
+        featureCollection = defaultFeatureCollection;
+        try {
+            trackStore = LoadService.getInstance().loadTrackStore();
+            locationStore = DefaultLocationStore.getInstance();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        init();
+    }
+
+    /**
+     * TODO: Turn this into a method that accepts Edge.
+     * TODO: Factor this into a separate class.
      * 
-     * @param segment
+     * @param endPointNode
      */
     public void verifyNodeIdAssignment(GeoNode endPointNode) {
         Integer nodeId = matchesNetworkNode(endPointNode);
@@ -852,6 +854,7 @@ public class DefaultNetwork implements Network {
      * @return
      */
     public String getNetworkForDisplay() {
+        LOGGER.debug("Requesting network for display");
         String result = "";
         JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
         // TODO: Move from featureCollection to reliance on the Stores

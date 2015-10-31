@@ -17,6 +17,8 @@
  */
 package com.clueride.domain;
 
+import com.clueride.feature.FeatureType;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Node;
@@ -26,17 +28,28 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
 /**
- * Description.
+ * Close to a TrackFeatureImpl, but this holds Network Segments before they are
+ * fully rated.
+ *
+ * The guts of this that come from the Track/Edge set of attributes
+ * is borrowed from the underlying implementation; this class takes
+ * advantage of those protected fields.
  *
  * @author jett
  *
  */
-public class EdgeImpl extends TrackFeatureImpl implements
-        Edge {
+public class EdgeImpl extends TrackFeatureImpl implements Edge {
+
+    /**
+     *
+     */
+    private static final SimpleFeatureBuilder EDGE_FEATURE_BUILDER =
+            new SimpleFeatureBuilder(FeatureType.EDGE_FEATURE_TYPE);
+    private boolean selected;
 
     /**
      * @param track
-     * @param lineStringFeature
+     * @param lineString
      */
     public EdgeImpl(TrackImpl track,
             LineString lineString) {
@@ -45,12 +58,32 @@ public class EdgeImpl extends TrackFeatureImpl implements
 
     /**
      * Constructor where the Feature already has the domain-specific attributes.
-     * 
-     * @param lineStringFeature
+     *
+     * This constructor mimics the one for TrackFeatureImpl except it uses the
+     * EDGE_FEATURE_BUILDER.
+     *
+     * @param lineStringFeature holding all information we need to instantiate.
      */
     public EdgeImpl(SimpleFeature lineStringFeature) {
-        super(lineStringFeature);
-        // TODO: At some point, we may want to record specific attributes
+        super((Integer) lineStringFeature.getAttribute("edgeId"));
+        this.displayName = (String) lineStringFeature.getAttribute("name");
+        this.url = (String) lineStringFeature.getAttribute("url");
+        this.lineString = (LineString) lineStringFeature.getDefaultGeometry();
+        this.selected = false;  // Default value
+        this.feature = buildFeature();
+    }
+
+    @Override
+    protected SimpleFeature buildFeature() {
+        // TODO: shared instance or separate instances?
+        synchronized(EDGE_FEATURE_BUILDER) {
+            EDGE_FEATURE_BUILDER.add(getId());
+            EDGE_FEATURE_BUILDER.add(displayName);
+            EDGE_FEATURE_BUILDER.add(url);
+            EDGE_FEATURE_BUILDER.add(selected);
+            EDGE_FEATURE_BUILDER.add(lineString);
+            return EDGE_FEATURE_BUILDER.buildFeature(null);
+        }
     }
 
     /**
@@ -72,14 +105,14 @@ public class EdgeImpl extends TrackFeatureImpl implements
     }
 
     /**
-     * @see com.clueride.feature.LineFeature#getGeoStart()
+     * Not clear we'll keep this.
      */
     public Point getGeoStart() {
         return ((LineString) feature.getDefaultGeometry()).getStartPoint();
     }
 
     /**
-     * @see com.clueride.feature.LineFeature#getGeoEnd()
+     * Not clear we'll keep this.
      */
     public Point getGeoEnd() {
         return ((LineString) feature.getDefaultGeometry()).getEndPoint();
