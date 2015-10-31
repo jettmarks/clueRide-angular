@@ -17,11 +17,6 @@
  */
 package com.clueride.domain;
 
-import java.util.List;
-
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.Track;
 import com.clueride.domain.dev.UnratedSegment;
@@ -30,9 +25,13 @@ import com.clueride.feature.FeatureType;
 import com.clueride.feature.TrackFeature;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.opengis.feature.simple.SimpleFeature;
+
+import java.util.List;
 
 /**
- * Represents a Raw Track (often from RideWithGPS at the {@link getUrl()}) which
+ * Represents a Raw Track (often from RideWithGPS at the {@link Track.getUrl()}) which
  * may source a set of points (represented by {@link UnratedSegment}) that get
  * turned into a {@link Edge}.
  *
@@ -40,10 +39,10 @@ import com.vividsolutions.jts.geom.LineString;
  */
 public class TrackFeatureImpl implements TrackFeature {
     private final Integer id;
-    private String displayName;
-    private String url;
+    protected String displayName;
+    protected String url;
     protected SimpleFeature feature;
-    private LineString lineString;
+    protected LineString lineString;
 
     private static final SimpleFeatureBuilder TRACK_FEATURE_BUILDER =
             new SimpleFeatureBuilder(FeatureType.TRACK_FEATURE_TYPE);
@@ -58,15 +57,30 @@ public class TrackFeatureImpl implements TrackFeature {
     }
 
     /**
+     * Classes extending this implementation will use this constructor to pass along
+     * the unique ID.
+     *
+     * Remaining attributes are up to the extending class.
+     *
+     * @param id as understood by the extending class.
+     */
+    protected TrackFeatureImpl(Integer id) {
+        this.id = id;
+    }
+
+    /**
      * @return
      */
-    private SimpleFeature buildFeature() {
-        TRACK_FEATURE_BUILDER.add(id);
-        TRACK_FEATURE_BUILDER.add(displayName);
-        TRACK_FEATURE_BUILDER.add(url);
-        TRACK_FEATURE_BUILDER.add(lineString);
-        // Passing null allows the builder to assign its own ID
-        return TRACK_FEATURE_BUILDER.buildFeature(null);
+    protected SimpleFeature buildFeature() {
+        // TODO: shared instance or separate instances?
+        synchronized (TRACK_FEATURE_BUILDER) {
+            TRACK_FEATURE_BUILDER.add(id);
+            TRACK_FEATURE_BUILDER.add(displayName);
+            TRACK_FEATURE_BUILDER.add(url);
+            TRACK_FEATURE_BUILDER.add(lineString);
+            // Passing null allows the builder to assign its own ID
+            return TRACK_FEATURE_BUILDER.buildFeature(null);
+        }
     }
 
     /**
@@ -98,9 +112,9 @@ public class TrackFeatureImpl implements TrackFeature {
             idInt = ((Long) idObj).intValue();
         }
         this.id = idInt;
-        setDisplayName((String) lineStringFeature.getAttribute(1));
         this.url = (String) lineStringFeature.getAttribute(2);
         this.feature = lineStringFeature;
+        setDisplayName((String) lineStringFeature.getAttribute(1));
     }
 
     /**

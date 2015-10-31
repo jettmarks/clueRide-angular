@@ -17,19 +17,6 @@
  */
 package com.clueride.dao;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-import org.geotools.feature.DefaultFeatureCollection;
-
 import com.clueride.config.TestModeAware;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
@@ -43,7 +30,13 @@ import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 import com.clueride.service.EdgeIDProvider;
 import com.clueride.service.MemoryBasedEdgeIDProvider;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+import org.geotools.feature.DefaultFeatureCollection;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * TODO: Description.
@@ -84,8 +77,10 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * @return
      */
     public static DefaultNetworkStore getInstance() {
-        if (instance == null) {
-            instance = new DefaultNetworkStore();
+        synchronized (DefaultNetworkStore.class) {
+            if (instance == null) {
+                instance = new DefaultNetworkStore();
+            }
         }
         return instance;
     }
@@ -166,7 +161,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
         dumpList("In Memory IDs", inMemoryIDs);
 
         JsonUtil jsonUtilEdges = new JsonUtil(JsonStoreType.EDGE);
-        List<LineFeature> edges = jsonUtilEdges.readLineFeatures();
+        List<Edge> edges = jsonUtilEdges.readLineFeatures();
         for (LineFeature feature : edges) {
             onDiskIDs.add(feature.getId());
         }
@@ -207,8 +202,8 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * 
      * Package visibility for diagnostics and testing.
      * 
-     * @param string
-     * @param toBeRemoved
+     * @param message to be displayed as a "header"
+     * @param listToDump what we want to see listed out.
      */
     void dumpList(String message, List<Integer> listToDump) {
         System.out.println(message);
@@ -275,12 +270,9 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
     @SuppressWarnings("unchecked")
     void loadAllFeatures() {
         try {
-            allSegments
-                    .addAll((Collection<? extends SegmentFeature>) jsonUtilNetwork
-                            .readLineFeatures());
+            allSegments.addAll(jsonUtilNetwork.readSegments());
             allLineFeatures.addAll(allSegments);
-            allEdges.addAll((Collection<? extends Edge>) jsonUtilEdge
-                    .readLineFeatures());
+            allEdges.addAll(jsonUtilEdge.readEdges());
             allLineFeatures.addAll(allEdges);
         } catch (IOException e) {
             e.printStackTrace();
@@ -290,7 +282,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
 
     /**
      * @throws IOException
-     * @deprecated - use {@link loadAllFeatures()} instead.
+     * @deprecated - use {@link this.loadAllFeatures()} instead.
      */
     private void loadFromDefault() {
         JsonUtil networkStorageUtil = new JsonUtil(JsonStoreType.NETWORK);
@@ -330,7 +322,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * assigning PKs.
      * 
      * @return
-     * @see com.clueride.dao.NetworkStore#addNew(com.com.clueride.feature.Edge)
+     * @see com.clueride.dao.NetworkStore#addNew(com.clueride.feature.Edge)
      */
     @Override
     public Integer addNew(Edge edge) {
@@ -409,8 +401,6 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
 
     /**
      * Allows checking the current directory where network info is pulled from.
-     * 
-     * @see com.clueride.dao.NetworkStore#getStoreLocation()
      */
     @Override
     public String[] getStoreLocations() {
