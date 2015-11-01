@@ -17,12 +17,6 @@
  */
 package com.clueride.service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-
 import com.clueride.config.GeoProperties;
 import com.clueride.dao.DefaultLocationStore;
 import com.clueride.dao.DefaultNetworkStore;
@@ -31,11 +25,20 @@ import com.clueride.dao.NetworkStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
+import com.clueride.feature.TrackFeature;
 import com.clueride.geo.IntersectionUtil;
 import com.clueride.geo.LengthToPoint;
+import com.clueride.geo.SplitLineString;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static com.clueride.geo.SplitLineString.START;
 
 /**
  * Class which can tell us for a given track, what is the best way to connect
@@ -58,7 +61,7 @@ public class TrackEval {
     private static final Logger LOGGER = Logger.getLogger(TrackEval.class);
 
     /** What we're evaluating. */
-    private final LineString lsTrack;
+    private final TrackFeature sourceTrack;
 
     /** Selected Node. */
     private GeoNode networkNode;
@@ -70,6 +73,9 @@ public class TrackEval {
     /** Details on that Edge's splitting point. */
     private Point splittingPoint;
     private DefaultGeoNode splittingNode;
+
+    /** Portion of Track required to reach the network. */
+    private TrackFeature proposedTrack;
 
     /** Overall evaluation of what is closest. */
     private TrackEvalType trackEvalType = TrackEvalType.UNDEFINED;
@@ -85,8 +91,8 @@ public class TrackEval {
     private static final NetworkStore EDGE_STORE = DefaultNetworkStore
             .getInstance();
 
-    public TrackEval(LineString lsTrack) {
-        this.lsTrack = lsTrack;
+    public TrackEval(TrackFeature sourceTrack) {
+        this.sourceTrack = sourceTrack;
         prepareEvaluation();
     }
 
@@ -122,15 +128,44 @@ public class TrackEval {
 
         if (networkNode == null && networkEdge == null) {
             trackEvalType = TrackEvalType.NO_CONNECTION;
+            proposedTrack = null;
         } else {
             if (nodeDistance < edgeDistance) {
                 trackEvalType = TrackEvalType.NODE;
+                proposedTrack = getProposedTrackToNode();
             } else {
                 trackEvalType = TrackEvalType.EDGE;
+                proposedTrack = getProposedTrackToEdge();
             }
         }
         // Diagnostic Mode
         // trackEvalType = TrackEvalType.DIAGNOSTIC;
+    }
+
+    /**
+     * Trims down the evaluated Track to the portion required to reach the network Node.
+     * @return LineString representing the portion of the Track which reached the network.
+     */
+    private TrackFeature getProposedTrackToNode() {
+        return getTrackToNode(networkNode);
+    }
+
+    /**
+     * Trims down the evaluated Track to the portion required to reach the network Edge
+     * as it intersects at the Splitting Node.
+     * @return LineString representing the portion of the Track which reached the network.
+     */
+    private TrackFeature getProposedTrackToEdge() {
+        return getTrackToNode(splittingNode);
+    }
+
+    private TrackFeature getTrackToNode(GeoNode endingNode) {
+        if (endingNode == null) {
+            return null;
+        } else {
+            SplitLineString trackPairRequired = new SplitLineString(sourceTrack, endingNode);
+            return trackPairRequired.getSubLineFeature(START);
+        }
     }
 
     /**
@@ -143,24 +178,23 @@ public class TrackEval {
      * Distances along the LineString are computed for any matches and if we've
      * found the shortest distance, we record the Node to be returned.
      * 
-     * @param lineString
-     *            - Potential Track into the Network.
      * @return null if no network node is covered by this lineString, or the
      *         closest one if there is a covered network node.
      */
     public GeoNode getNearestNetworkNode() {
         GeoNode nearestNode = null;
+        LineString lsSource = sourceTrack.getLineString();
 
         // Only need to get the envelope and buffer once
-        Geometry envelope = lsTrack.getEnvelope();
-        Geometry buffer = lsTrack.buffer(GeoProperties.NODE_TOLERANCE);
+        Geometry envelope = lsSource.getEnvelope();
+        Geometry buffer = lsSource.buffer(GeoProperties.NODE_TOLERANCE);
 
         // Run through all network nodes in the LOCATION_STORE
         Set<GeoNode> nodeSet = LOCATION_STORE.getLocations();
         for (GeoNode geoNode : nodeSet) {
             Point point = geoNode.getPoint();
             if (envelope.covers(point) && buffer.covers(point)) {
-                LengthToPoint lengthToPoint = new LengthToPoint(lsTrack,
+                LengthToPoint lengthToPoint = new LengthToPoint(lsSource,
                         point.getCoordinate());
                 Double distance = lengthToPoint.getLength();
                 distancePerNode.put(geoNode, distance);
@@ -180,14 +214,14 @@ public class TrackEval {
     }
 
     /**
-     * @param lsEnd
      * @return
      */
     public Edge getNearestNetworkEdge() {
         Edge networkEdge = null;
+        LineString lsSource = sourceTrack.getLineString();
 
         // Only need to get the envelope once
-        Geometry envelope = lsTrack.getEnvelope();
+        Geometry envelope = lsSource.getEnvelope();
 
         for (Edge edge : EDGE_STORE.getEdges()) {
             LineString lsNetwork = edge.getLineString();
@@ -199,17 +233,17 @@ public class TrackEval {
 
             // This is the part that could stand optimization
             Double intersectDistance = null;
-            if (lsNetwork.intersects(lsTrack)
-                    || lsNetwork.crosses(lsTrack)) {
+            if (lsNetwork.intersects(lsSource)
+                    || lsNetwork.crosses(lsSource)) {
                 LOGGER.debug("INTERSECTION with " + edge.toString());
                 Point intersection = IntersectionUtil
-                        .walkToIntersectingNode(lsTrack, lsNetwork);
+                        .walkToIntersectingNode(lsSource, lsNetwork);
                 // Point intersection = IntersectionUtil
-                // .findFirstIntersection(lsTrack, lsNetwork);
+                // .findFirstIntersection(lsSource, lsNetwork);
                 if (intersection == null) {
                     continue;
                 } else {
-                    LengthToPoint lengthToPoint = new LengthToPoint(lsTrack,
+                    LengthToPoint lengthToPoint = new LengthToPoint(lsSource,
                             intersection.getCoordinate());
                     intersectDistance = lengthToPoint.getLength();
                     distancePerEdge.put(edge, intersectDistance);
@@ -224,6 +258,7 @@ public class TrackEval {
                 }
             }
         }
+        splittingNode = new DefaultGeoNode(splittingPoint);
         return networkEdge;
     }
 
@@ -290,4 +325,10 @@ public class TrackEval {
         return splitPerEdge;
     }
 
+    /**
+     * @return the portion of the evaluated Track which reaches the network, either Node or Edge.
+     */
+    public TrackFeature getProposedTrack() {
+        return proposedTrack;
+    }
 }

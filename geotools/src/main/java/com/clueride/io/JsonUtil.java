@@ -301,6 +301,7 @@ public class JsonUtil {
         GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
         FeatureJSON featureJson = new FeatureJSON(geometryJson);
         try {
+            // TODO: Need to set the schema on the featureJson
             result = featureJson.toString(features);
         } catch (IOException e) {
             e.printStackTrace();

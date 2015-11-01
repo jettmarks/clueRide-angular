@@ -17,14 +17,6 @@
  */
 package com.clueride.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.dao.DefaultLocationStore;
 import com.clueride.dao.LocationStore;
 import com.clueride.dao.NetworkProposalStore;
@@ -41,7 +33,6 @@ import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.DefaultNetwork;
 import com.clueride.geo.Network;
-import com.clueride.geo.SplitLineString;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
@@ -49,6 +40,13 @@ import com.clueride.service.builder.NewLocRecBuilder;
 import com.clueride.service.builder.TrackRecBuilder;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+import org.opengis.feature.simple.SimpleFeature;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Handles requests for Locations.
@@ -178,71 +176,13 @@ public class LocationService {
         // Try a Track-based proposal
         List<TrackFeature> coveringTracks = geoEval.listCoveringTracks(newLoc);
         for (TrackFeature track : coveringTracks) {
-
-            // There are two directions we can go; calculate these first
-            SplitLineString startEndPair = new SplitLineString(track, newLoc);
-            LineString lsStart = startEndPair.getLineStringToStart();
-            TrackEval startTrackEval = new TrackEval(lsStart);
-            LineString lsEnd = startEndPair.getLineStringToEnd();
-            TrackEval endTrackEval = new TrackEval(lsEnd);
-
             TrackRecBuilder trackRecBuilder = new TrackRecBuilder(newLoc,
                     track);
-
-            // TODO: recBuilder need to distinguish between the start and end?
-            switch (startTrackEval.getTrackEvalType()) {
-            case NODE:
-                trackRecBuilder
-                        .addNetworkNodeStart(startTrackEval.getNetworkNode())
-                        .addStartDistance(startTrackEval.getNodeDistance());
-                break;
-            case EDGE:
-                trackRecBuilder
-                        .addEdgeAtStart(startTrackEval.getNetworkEdge())
-                        .addSplittingNodeAtStart(
-                                startTrackEval.getSplittingNode())
-                        .addStartDistance(startTrackEval.getNodeDistance());
-                break;
-            case DIAGNOSTIC:
-                trackRecBuilder.addDiagnostic(startTrackEval);
-                break;
-            case NO_CONNECTION:
-                break;
-            case UNDEFINED:
-                break;
-            default:
-                break;
-            }
-
-            switch (endTrackEval.getTrackEvalType()) {
-            case NODE:
-                trackRecBuilder
-                        .addNetworkNodeEnd(endTrackEval.getNetworkNode())
-                        .addEndDistance(endTrackEval.getNodeDistance());
-                break;
-            case EDGE:
-                trackRecBuilder
-                        .addEdgeAtEnd(endTrackEval.getNetworkEdge())
-                        .addSplittingNodeAtEnd(endTrackEval.getSplittingNode())
-                        .addEndDistance(endTrackEval.getNodeDistance());
-                break;
-            case DIAGNOSTIC:
-                trackRecBuilder.addDiagnostic(endTrackEval);
-                break;
-            case NO_CONNECTION:
-                break;
-            case UNDEFINED:
-                break;
-            default:
-                break;
-            }
-
             Rec rec = trackRecBuilder.build();
             if (rec != null) {
                 newLocProposal.add(rec);
             }
         }
-
         return newLocProposal;
     }
 

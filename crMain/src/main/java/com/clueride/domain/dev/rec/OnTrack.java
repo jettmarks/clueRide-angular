@@ -27,7 +27,7 @@ import com.clueride.feature.TrackFeature;
  *
  */
 public interface OnTrack extends Rec {
-    Integer getTrackId();
+    Integer getSourceTrackId();
 
-    TrackFeature getTrack();
+    TrackFeature getSourceTrack();
 }

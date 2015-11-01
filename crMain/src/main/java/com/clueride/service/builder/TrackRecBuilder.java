@@ -17,28 +17,24 @@
  */
 package com.clueride.service.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.rec.DiagnosticRec;
-import com.clueride.domain.dev.rec.Rec;
-import com.clueride.domain.dev.rec.ToNodeImpl;
-import com.clueride.domain.dev.rec.ToSegmentAndNodeImpl;
-import com.clueride.domain.dev.rec.ToSegmentImpl;
-import com.clueride.domain.dev.rec.ToTwoNodesImpl;
-import com.clueride.domain.dev.rec.ToTwoSegmentsImpl;
+import com.clueride.domain.dev.rec.*;
 import com.clueride.feature.Edge;
-import com.clueride.feature.LineFeature;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.SplitLineString;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.service.TrackEval;
+import com.vividsolutions.jts.geom.LineString;
+import org.apache.log4j.Logger;
+import org.opengis.feature.simple.SimpleFeature;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.clueride.geo.SplitLineString.END;
+import static com.clueride.geo.SplitLineString.START;
 
 /**
  * Given a Node and the Tracks covering that node, prepare a set of track-based
@@ -62,8 +58,8 @@ public class TrackRecBuilder {
     private boolean preferEdgeStart;
     private boolean preferEdgeEnd;
 
-    private LineFeature trackStart;
-    private LineFeature trackEnd;
+    private TrackFeature trackStart;
+    private TrackFeature trackEnd;
 
     private int nodeStartPointCount;
 
@@ -82,17 +78,75 @@ public class TrackRecBuilder {
 
     private boolean diagnosticMode = false;
 
-    private List<TrackEval> trackEvals = new ArrayList<>();;
+    private TrackEval[] trackEvalArray = new TrackEval[2];
+    private List<TrackEval> trackEvals = new ArrayList<>();
+
+    /** Portion of Track that reaches network from new location. */
+    private LineString requiredTrackAtEnd;
+
+    /** Portion of Track that reaches network from new location. */
+    private LineString requiredTrackAtStart;
 
     /**
-     * @param geoNode
-     * @param coveringTracks
+     * @param newLoc is the GeoNode we're adding to the network.
+     * @param track is the Track that could get us onto the network.
      */
     public TrackRecBuilder(GeoNode newLoc, TrackFeature track) {
+        LOGGER.debug("Preparing Track Rec for " + track);
         this.newLoc = newLoc;
         this.track = track;
+
+        // Two ends to be evaluated for this single Track
         this.splitLineString = new SplitLineString(track, newLoc);
-        LOGGER.debug("Preparing Track Rec for " + track);
+        for (int i = START; i<=END; i++) {
+            trackEvalArray[i] = new TrackEval(splitLineString.getSubLineFeature(i));
+        }
+
+        switch (trackEvalArray[START].getTrackEvalType()) {
+            case NODE:
+                this.addNetworkNodeStart(trackEvalArray[START].getNetworkNode())
+//                        .addRequiredTrackAtStart(trackEvalArray[START].getProposedTrack())
+                        .addStartDistance(trackEvalArray[START].getNodeDistance());
+                break;
+            case EDGE:
+                this.addEdgeAtStart(trackEvalArray[START].getNetworkEdge())
+                        .addSplittingNodeAtStart(
+                                trackEvalArray[START].getSplittingNode())
+//                        .addRequiredTrackAtStart(trackEvalArray[START].getProposedTrack())
+                        .addStartDistance(trackEvalArray[START].getNodeDistance());
+                break;
+            case DIAGNOSTIC:
+                this.addDiagnostic(trackEvalArray[START]);
+                break;
+            case NO_CONNECTION:
+                break;
+            case UNDEFINED:
+                break;
+            default:
+                break;
+        }
+        switch (trackEvalArray[END].getTrackEvalType()) {
+            case NODE:
+                this.addNetworkNodeEnd(trackEvalArray[END].getNetworkNode())
+//                        .addRequiredTrackAtEnd(trackEvalArray[END].getProposedTrack())
+                        .addEndDistance(trackEvalArray[END].getNodeDistance());
+                break;
+            case EDGE:
+                this.addEdgeAtEnd(trackEvalArray[END].getNetworkEdge())
+                        .addSplittingNodeAtEnd(trackEvalArray[END].getSplittingNode())
+//                        .addRequiredTrackAtEnd(trackEvalArray[END].getProposedTrack())
+                        .addEndDistance(trackEvalArray[END].getNodeDistance());
+                break;
+            case DIAGNOSTIC:
+                this.addDiagnostic(trackEvalArray[END]);
+                break;
+            case NO_CONNECTION:
+                break;
+            case UNDEFINED:
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -131,7 +185,7 @@ public class TrackRecBuilder {
     }
 
     /**
-     * @param nearestNetworkEdge
+     * @param networkEdge
      * @return
      */
     public TrackRecBuilder addEdgeAtStart(Edge networkEdge) {
@@ -141,7 +195,7 @@ public class TrackRecBuilder {
     }
 
     /**
-     * @param nearestNetworkEdge
+     * @param networkEdge
      */
     public TrackRecBuilder addEdgeAtEnd(Edge networkEdge) {
         // Record this now, not yet prepared to calculate distances or Edges.
@@ -150,6 +204,13 @@ public class TrackRecBuilder {
     }
 
     /**
+     * Once the details of the proposal have been added, prepare the recommendation record.
+     *
+     * The details are brought together across both ends of the starting Track and are
+     * trimmed to bring the new location onto the network.  This provides the user
+     * with a better feel for what would be added to the network.  Assumption however
+     * is that the adding of the detail is the time to perform this trimming.
+     *
      * @return
      */
     public Rec build() {
@@ -193,10 +254,6 @@ public class TrackRecBuilder {
             // Order based on which one is closer for this end
             if (preferEdgeStart) {
                 if (networkEdgeStart != null) {
-                    // LineString lsStart = (LineString)
-                    // trackStart.getGeometry();
-                    // GeoNode splittingNode = new DefaultGeoNode();
-                    // splittingNode.setPoint(lsStart.getEndPoint());
                     return new ToSegmentImpl(newLoc, trackStart,
                             networkEdgeStart,
                             splittingNodeStart);
@@ -285,10 +342,18 @@ public class TrackRecBuilder {
 
     /**
      * Only prepare these LineFeatures if we know we'll be using them.
+     * TODO: Consider using different field to convey this is a proposed Feature.
      */
     private void populateProposedTracks() {
-        trackStart = splitLineString.getLineFeatureToStart();
-        trackEnd = splitLineString.getLineFeatureToEnd();
+        trackStart = trackEvalArray[START].getProposedTrack();
+        if (trackStart != null) {
+            trackStart.setDisplayName("Proposed");
+        }
+
+        trackEnd = trackEvalArray[END].getProposedTrack();
+        if (trackEnd != null) {
+            trackEnd.setDisplayName("Proposed");
+        }
     }
 
     // TODO: Simplify this by recording when we set either the start or the end.
@@ -312,7 +377,7 @@ public class TrackRecBuilder {
     }
 
     /**
-     * @param nodeDistance
+     * @param distance
      */
     public TrackRecBuilder addStartDistance(Double distance) {
         this.startDistance = distance;
@@ -338,15 +403,25 @@ public class TrackRecBuilder {
     }
 
     /**
-     * @param nodeDistance
+     * @param distance
      */
     public TrackRecBuilder addEndDistance(Double distance) {
         this.endDistance = distance;
         return this;
     }
 
+    public TrackRecBuilder addRequiredTrackAtEnd(LineString requiredTrack) {
+        this.requiredTrackAtEnd = requiredTrack;
+        return this;
+    }
+
+    public TrackRecBuilder addRequiredTrackAtStart(LineString requiredTrack) {
+        this.requiredTrackAtStart = requiredTrack;
+        return this;
+    }
+
     /**
-     * @param endTrackEval
+     * @param trackEval
      */
     public void addDiagnostic(TrackEval trackEval) {
         diagnosticMode = true;
