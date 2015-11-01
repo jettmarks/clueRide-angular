@@ -112,6 +112,7 @@ public class TrackEval {
             break;
         case EDGE:
             splittingNode = new DefaultGeoNode(splittingPoint);
+            splittingNode.setName("split");
             break;
         case NO_CONNECTION:
         default:
@@ -210,6 +211,9 @@ public class TrackEval {
         // Location Groups
         // TODO: Add these
 
+        if (nearestNode != null) {
+            nearestNode.setName("nearest");
+        }
         return nearestNode;
     }
 

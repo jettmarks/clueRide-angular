@@ -17,11 +17,9 @@
  */
 package com.clueride.domain.dev.rec;
 
-import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.domain.GeoNode;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Class for passing back a whole mess of Features I want to present on the map.
@@ -45,7 +43,7 @@ public class DiagnosticRec extends RecImpl {
      * @see com.clueride.domain.dev.rec.NetworkRecImpl#getFeatureCollection()
      */
     @Override
-    public FeatureCollection<?, ?> getFeatureCollection() {
+    public DefaultFeatureCollection getFeatureCollection() {
         return super.getFeatureCollection();
     }
 

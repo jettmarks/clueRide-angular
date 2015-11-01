@@ -24,6 +24,7 @@ import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,14 +92,30 @@ public class NewLocProposal implements NetworkProposal {
      */
     @Override
     public String toJson() {
+        getNodeNetworkState();  // Triggers evaluation of the state
         JsonUtil jsonRespWriter = new JsonUtil(JsonStoreType.OTHER);
-        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
-        featureCollection.add(TranslateUtil.geoNodeToFeature(newLoc));
+        DefaultFeatureCollection fcPoints = new DefaultFeatureCollection();
+        DefaultFeatureCollection fcNonPoints = new DefaultFeatureCollection();
+        // Feature for the New Location we're adding; Rec should not provide this
+        fcPoints.add(TranslateUtil.geoNodeToFeature(newLoc));
         for (NetworkRecommendation rec : networkRecommendations) {
             ((NetworkRecImpl) rec).dumpRecommendationSummary();
-            featureCollection.addAll(rec.getFeatureCollection());
+            for (SimpleFeature feature : rec.getFeatureCollection()) {
+                if (feature.getFeatureType().getTypeName().contains("PointType")) {
+                    fcPoints.add(feature);
+                } else {
+                    fcNonPoints.add(feature);
+                }
+            }
         }
-        return jsonRespWriter.toString(featureCollection);
+        String pointResult = jsonRespWriter.toString(fcPoints);
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(pointResult.substring(0, pointResult.length()-2));
+        for (SimpleFeature feature : fcNonPoints) {
+            stringBuffer.append(",").append(jsonRespWriter.toString(feature));
+        }
+        stringBuffer.append("]}");
+        return stringBuffer.toString();
     }
 
     /**

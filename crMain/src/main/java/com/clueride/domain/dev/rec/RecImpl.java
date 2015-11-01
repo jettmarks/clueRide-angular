@@ -18,7 +18,6 @@
 package com.clueride.domain.dev.rec;
 
 import com.clueride.domain.GeoNode;
-import com.clueride.geo.TranslateUtil;
 
 /**
  * Implementation of a NetworkRecommendation based on a new Location, but since
@@ -39,7 +38,6 @@ public abstract class RecImpl extends NetworkRecImpl implements Rec {
     protected RecImpl(GeoNode requestedNode) {
         super();
         this.newLoc = requestedNode;
-        super.addFeature(TranslateUtil.geoNodeToFeature(requestedNode));
     }
 
     /**

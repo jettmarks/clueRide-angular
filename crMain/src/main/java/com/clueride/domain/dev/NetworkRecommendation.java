@@ -17,9 +17,8 @@
  */
 package com.clueride.domain.dev;
 
-import org.geotools.feature.FeatureCollection;
-
 import com.clueride.domain.dev.rec.NetworkRecType;
+import org.geotools.feature.DefaultFeatureCollection;
 
 /**
  * Holds information regarding one particular Recommendation within a Proposal.
@@ -42,5 +41,5 @@ public interface NetworkRecommendation {
      */
     Double getScore();
 
-    FeatureCollection<?, ?> getFeatureCollection();
+    DefaultFeatureCollection getFeatureCollection();
 }
