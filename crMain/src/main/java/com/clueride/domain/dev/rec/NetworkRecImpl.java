@@ -22,7 +22,6 @@ import com.clueride.service.DefaultRecIdProvider;
 import com.clueride.service.RecIdProvider;
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 
 import static com.clueride.domain.dev.rec.NetworkRecType.UNDEFINED;
@@ -73,7 +72,7 @@ public class NetworkRecImpl implements NetworkRecommendation {
      * @see com.clueride.domain.dev.NetworkRecommendation#getFeatureCollection()
      */
     @Override
-    public FeatureCollection<?, ?> getFeatureCollection() {
+    public DefaultFeatureCollection getFeatureCollection() {
         return featureCollection;
     }
 
@@ -97,9 +96,9 @@ public class NetworkRecImpl implements NetworkRecommendation {
     public void dumpRecommendationSummary() {
         int recNumber = featureCollection.toArray().length;
         LOGGER.debug("Rec " + toString() + " has " + recNumber + " features:");
-        // TODO: Add name to what we dump; ID isn't defined at this point
         for (SimpleFeature feature : featureCollection) {
-            LOGGER.debug(feature.getAttribute(0) + ": "
+            LOGGER.debug(feature.getAttribute("name")+" ("
+                    + feature.getAttribute(0) + "): "
                     + feature.getFeatureType().getTypeName());
         }
     }
