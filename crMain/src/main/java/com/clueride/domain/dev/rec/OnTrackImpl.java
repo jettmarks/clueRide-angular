@@ -20,6 +20,9 @@ package com.clueride.domain.dev.rec;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.TrackFeature;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Description.
  *
@@ -28,13 +31,18 @@ import com.clueride.feature.TrackFeature;
  */
 public class OnTrackImpl extends RecImpl implements OnTrack {
 
-    private TrackFeature track;
+    private TrackFeature sourceTrack;
+    private List<TrackFeature> proposedTracks = new ArrayList<>();
 
-    public OnTrackImpl(GeoNode reqNode, TrackFeature track) {
+    public OnTrackImpl(GeoNode reqNode, TrackFeature sourceTrack) {
         super(reqNode);
-        this.track = track;
-        track.setDisplayName("Proposed");
-        addFeature(track.getFeature());
+        this.sourceTrack = sourceTrack;
+        addFeature(sourceTrack.getFeature());
+
+        for (TrackFeature proposedTrackFeature : proposedTracks) {
+            proposedTrackFeature.setDisplayName("Proposed");
+            addFeature(proposedTrackFeature.getFeature());
+        }
     }
 
     /**
@@ -42,25 +50,25 @@ public class OnTrackImpl extends RecImpl implements OnTrack {
      */
     @Override
     public Double getScore() {
-        // TODO: Figure out what goes here; should come from the track, but
+        // TODO: Figure out what goes here; should come from the sourceTrack, but
         // needs to be one of the features we're running around with.
         return null;
     }
 
     /**
-     * @see com.clueride.domain.dev.rec.OnTrack#getTrackId()
+     * @see com.clueride.domain.dev.rec.OnTrack#getSourceTrackId()
      */
     @Override
-    public Integer getTrackId() {
-        return track.getId();
+    public Integer getSourceTrackId() {
+        return sourceTrack.getId();
     }
 
     /**
-     * @see com.clueride.domain.dev.rec.OnTrack#getTrack()
+     * @see com.clueride.domain.dev.rec.OnTrack#getSourceTrack()
      */
     @Override
-    public TrackFeature getTrack() {
-        return track;
+    public TrackFeature getSourceTrack() {
+        return sourceTrack;
     }
 
 }

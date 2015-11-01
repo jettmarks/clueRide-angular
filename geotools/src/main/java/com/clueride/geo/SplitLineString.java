@@ -23,7 +23,6 @@ import com.clueride.domain.dev.Track;
 import com.clueride.domain.dev.TrackImpl;
 import com.clueride.feature.LineFeature;
 import com.clueride.feature.TrackFeature;
-import com.google.inject.Inject;
 import com.vividsolutions.jts.geom.LineString;
 
 /**
@@ -38,13 +37,17 @@ public final class SplitLineString {
 
     private final LineString toStart, toEnd;
     private LineFeature lineFeature;
+    LineString[] lineStringPair;
+    public static final int START = 0;
+    public static final int END = 1;
+    private static final String[] FEATURE_NAMES = {"-toStart", "-toEnd"};
 
-    @Inject
     public SplitLineString(LineString track, GeoNode geoNode) {
-        LineString[] lineStringPair = TranslateUtil.split(track, geoNode
+        lineStringPair = TranslateUtil.split(track, geoNode
                 .getPoint().getCoordinate(), true);
-        toStart = (LineString) lineStringPair[0].reverse();
-        toEnd = lineStringPair[1];
+        toStart = (LineString) lineStringPair[START].reverse();
+        toEnd = lineStringPair[END];
+        lineStringPair[START] = toStart;
     }
 
     /**
@@ -63,13 +66,26 @@ public final class SplitLineString {
         this.lineFeature = track;
     }
 
+    public LineString getSubLineString(int startOrEnd) {
+        return lineStringPair[startOrEnd];
+    }
+
+    /**
+     * @deprecated
+     * @return
+     */
     public LineString getLineStringToStart() {
         return toStart;
     }
 
+    /**
+     * @deprecated
+     * @return
+     */
     public LineString getLineStringToEnd() {
         return toEnd;
     }
+
 
     /**
      * Given the "parent" feature, construct a "child" feature based on that
@@ -106,11 +122,19 @@ public final class SplitLineString {
      * @param lineString
      * @return
      */
-    private LineFeature getLineFeature(String appendName, LineString lineString) {
+    private TrackFeature getLineFeature(String appendName, LineString lineString) {
         TrackFeature trackFeature = (TrackFeature) lineFeature;
         String displayName = trackFeature.getDisplayName() + appendName;
         String url = trackFeature.getUrl();
         Track childTrack = new TrackImpl(displayName, url);
         return new TrackFeatureImpl(childTrack, lineString);
+    }
+
+    public TrackFeature getSubLineFeature(int startOrEnd) {
+        if (startOrEnd == START) {
+            return getLineFeature(FEATURE_NAMES[startOrEnd], (LineString) getSubLineString(startOrEnd).reverse());
+        } else {
+            return getLineFeature(FEATURE_NAMES[startOrEnd], getSubLineString(startOrEnd));
+        }
     }
 }

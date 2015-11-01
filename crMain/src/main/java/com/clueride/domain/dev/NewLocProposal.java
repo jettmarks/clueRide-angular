@@ -17,17 +17,16 @@
  */
 package com.clueride.domain.dev;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.geotools.feature.DefaultFeatureCollection;
-
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.rec.NetworkRecImpl;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
+import org.apache.log4j.Logger;
+import org.geotools.feature.DefaultFeatureCollection;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of NetworkProposal that involves adding a new Location to the
@@ -92,7 +91,7 @@ public class NewLocProposal implements NetworkProposal {
      */
     @Override
     public String toJson() {
-        JsonUtil jsonRespWriter = new JsonUtil(JsonStoreType.LOCATION);
+        JsonUtil jsonRespWriter = new JsonUtil(JsonStoreType.OTHER);
         DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
         featureCollection.add(TranslateUtil.geoNodeToFeature(newLoc));
         for (NetworkRecommendation rec : networkRecommendations) {
