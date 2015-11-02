@@ -118,7 +118,6 @@ public class TrackEval {
         default:
             break;
         }
-        return;
     }
 
     /**
@@ -165,7 +164,8 @@ public class TrackEval {
             return null;
         } else {
             SplitLineString trackPairRequired = new SplitLineString(sourceTrack, endingNode);
-            return trackPairRequired.getSubLineFeature(START);
+            trackPairRequired.setMaintainStartOrder(true);
+            return trackPairRequired.getSubTrackFeature(START);
         }
     }
 
@@ -218,7 +218,10 @@ public class TrackEval {
     }
 
     /**
-     * @return
+     * Find where this Track hits the network while looking for Edges already on
+     * the network.
+     * @return Edge representing the closest point at which this Track crosses
+     * a Network Edge.
      */
     public Edge getNearestNetworkEdge() {
         Edge networkEdge = null;
@@ -236,17 +239,13 @@ public class TrackEval {
             }
 
             // This is the part that could stand optimization
-            Double intersectDistance = null;
+            Double intersectDistance;
             if (lsNetwork.intersects(lsSource)
                     || lsNetwork.crosses(lsSource)) {
                 LOGGER.debug("INTERSECTION with " + edge.toString());
                 Point intersection = IntersectionUtil
                         .walkToIntersectingNode(lsSource, lsNetwork);
-                // Point intersection = IntersectionUtil
-                // .findFirstIntersection(lsSource, lsNetwork);
-                if (intersection == null) {
-                    continue;
-                } else {
+                if (intersection != null) {
                     LengthToPoint lengthToPoint = new LengthToPoint(lsSource,
                             intersection.getCoordinate());
                     intersectDistance = lengthToPoint.getLength();

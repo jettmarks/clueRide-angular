@@ -1,12 +1,5 @@
 package com.clueride.geo;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertTrue;
-
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import com.clueride.dao.DefaultNetworkStore;
 import com.clueride.dao.DefaultTrackStore;
 import com.clueride.domain.DefaultGeoNode;
@@ -21,6 +14,11 @@ import com.jettmarks.gmaps.encoder.Track;
 import com.jettmarks.gmaps.encoder.Trackpoint;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static com.clueride.geo.SplitLineString.END;
+import static org.testng.AssertJUnit.*;
 
 public class IntersectionUtilTest {
 
@@ -129,7 +127,7 @@ public class IntersectionUtilTest {
         Edge edge = DefaultNetworkStore.getInstance().getEdgeById(4);
         assertNotNull(edge);
         Point point = IntersectionUtil.findFirstIntersection(
-                pair.getLineStringToEnd(), edge.getLineString());
+                pair.getSubLineString(END), edge.getLineString());
         assertNotNull(point);
 
         Point pointBad = PointFactory
@@ -137,7 +135,7 @@ public class IntersectionUtilTest {
         GeoNode splitPointBad = new DefaultGeoNode(pointBad);
         pair = new SplitLineString(track, splitPointBad);
         point = IntersectionUtil.findFirstIntersection(
-                pair.getLineStringToEnd(), edge.getLineString());
+                pair.getSubLineString(END), edge.getLineString());
         assertNotNull(point);
     }
 }

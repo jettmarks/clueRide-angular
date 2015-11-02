@@ -17,16 +17,6 @@
  */
 package com.clueride.geo.score;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
-
 import com.clueride.config.GeoProperties;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkRecommendation;
@@ -42,6 +32,17 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.apache.log4j.Logger;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import static com.clueride.geo.SplitLineString.END;
+import static com.clueride.geo.SplitLineString.START;
 
 /**
  * For a given Track, score how well it provides a connection between a proposed
@@ -180,9 +181,9 @@ public class TrackScoreImpl implements TrackScore {
         // scorePerSegment.put(segment.getSegId(), calculatedScore);
 
         SubTrackScore lowScoreTowardStart = proposeBestScore(
-                splitLineString.getLineStringToStart(), allSegments);
+                splitLineString.getSubLineString(START), allSegments);
         SubTrackScore lowScoreTowardEnd = proposeBestScore(
-                splitLineString.getLineStringToEnd(), allSegments);
+                splitLineString.getSubLineString(END), allSegments);
 
         // Have one score if we found something on one end, but two if there
         // were segments on both ends. We choose the closer one to recommend

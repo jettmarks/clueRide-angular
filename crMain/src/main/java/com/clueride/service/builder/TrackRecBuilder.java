@@ -18,7 +18,6 @@
 package com.clueride.service.builder;
 
 import com.clueride.domain.DefaultGeoNode;
-import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.rec.*;
 import com.clueride.feature.Edge;
@@ -26,7 +25,6 @@ import com.clueride.feature.TrackFeature;
 import com.clueride.geo.SplitLineString;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.service.TrackEval;
-import com.vividsolutions.jts.geom.LineString;
 import org.apache.log4j.Logger;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -49,7 +47,7 @@ public class TrackRecBuilder {
 
     private final GeoNode newLoc;
     private final TrackFeature track;
-    private final SplitLineString splitLineString;
+//    private final SplitLineString splitLineString;
 
     private GeoNode networkNodeStart;
     private GeoNode networkNodeEnd;
@@ -81,12 +79,6 @@ public class TrackRecBuilder {
     private TrackEval[] trackEvalArray = new TrackEval[2];
     private List<TrackEval> trackEvals = new ArrayList<>();
 
-    /** Portion of Track that reaches network from new location. */
-    private LineString requiredTrackAtEnd;
-
-    /** Portion of Track that reaches network from new location. */
-    private LineString requiredTrackAtStart;
-
     /**
      * @param newLoc is the GeoNode we're adding to the network.
      * @param track is the Track that could get us onto the network.
@@ -97,23 +89,21 @@ public class TrackRecBuilder {
         this.track = track;
 
         // Two ends to be evaluated for this single Track
-        this.splitLineString = new SplitLineString(track, newLoc);
+        SplitLineString splitLineString = new SplitLineString(track, newLoc);
         for (int i = START; i<=END; i++) {
-            trackEvalArray[i] = new TrackEval(splitLineString.getSubLineFeature(i));
+            trackEvalArray[i] = new TrackEval(splitLineString.getSubTrackFeature(i));
         }
 
         switch (trackEvalArray[START].getTrackEvalType()) {
             case NODE:
                 this.addNetworkNodeStart(trackEvalArray[START].getNetworkNode())
-//                        .addRequiredTrackAtStart(trackEvalArray[START].getProposedTrack())
                         .addStartDistance(trackEvalArray[START].getNodeDistance());
                 break;
             case EDGE:
                 this.addEdgeAtStart(trackEvalArray[START].getNetworkEdge())
                         .addSplittingNodeAtStart(
                                 trackEvalArray[START].getSplittingNode())
-//                        .addRequiredTrackAtStart(trackEvalArray[START].getProposedTrack())
-                        .addStartDistance(trackEvalArray[START].getNodeDistance());
+                        .addStartDistance(trackEvalArray[START].getEdgeDistance());
                 break;
             case DIAGNOSTIC:
                 this.addDiagnostic(trackEvalArray[START]);
@@ -128,14 +118,12 @@ public class TrackRecBuilder {
         switch (trackEvalArray[END].getTrackEvalType()) {
             case NODE:
                 this.addNetworkNodeEnd(trackEvalArray[END].getNetworkNode())
-//                        .addRequiredTrackAtEnd(trackEvalArray[END].getProposedTrack())
                         .addEndDistance(trackEvalArray[END].getNodeDistance());
                 break;
             case EDGE:
                 this.addEdgeAtEnd(trackEvalArray[END].getNetworkEdge())
                         .addSplittingNodeAtEnd(trackEvalArray[END].getSplittingNode())
-//                        .addRequiredTrackAtEnd(trackEvalArray[END].getProposedTrack())
-                        .addEndDistance(trackEvalArray[END].getNodeDistance());
+                        .addEndDistance(trackEvalArray[END].getEdgeDistance());
                 break;
             case DIAGNOSTIC:
                 this.addDiagnostic(trackEvalArray[END]);
@@ -223,29 +211,33 @@ public class TrackRecBuilder {
             populateProposedTracks();
             prepareEnds();
             LOGGER.info("Track " + track + " connected both ends");
+            Rec rec;
             if (networkNodeStart != null) {
                 if (networkNodeEnd != null) {
-                    return new ToTwoNodesImpl(newLoc, track, networkNodeStart,
+                    rec = new ToTwoNodesImpl(newLoc, track, networkNodeStart,
                             networkNodeEnd);
                 } else {
-                    return new ToSegmentAndNodeImpl(newLoc, track,
+                    rec = new ToSegmentAndNodeImpl(newLoc, track,
                             networkEdgeEnd, splittingNodeEnd, networkNodeStart);
                 }
             } else {
                 // networkEdgeStart != null
                 if (networkNodeEnd != null) {
-                    return new ToSegmentAndNodeImpl(newLoc, track,
+                    rec = new ToSegmentAndNodeImpl(newLoc, track,
                             networkEdgeStart, splittingNodeStart,
                             networkNodeEnd);
                 } else {
-                    return new ToTwoSegmentsImpl(newLoc, track,
+                    rec = new ToTwoSegmentsImpl(newLoc, track,
                             networkEdgeStart,
                             networkEdgeEnd,
                             splittingNodeStart,
                             splittingNodeEnd);
                 }
             }
-            // no need to break
+            rec.getFeatureCollection().add(trackStart.getFeature());
+            rec.getFeatureCollection().add(trackEnd.getFeature());
+            return rec;
+            // no break needed
         case 1:
             LOGGER.info("Track " + track + " connected on single end");
             populateProposedTracks();
@@ -310,7 +302,7 @@ public class TrackRecBuilder {
                 diagRec.addFeature(feature);
             }
             for (Edge edge : trackEval.getDistancePerEdge().keySet()) {
-                diagRec.addFeature(((EdgeImpl) edge).getFeature());
+                diagRec.addFeature(edge.getFeature());
             }
             for (GeoNode splitNode : trackEval.getSplitPerEdge().values()) {
                 diagRec.addFeature(TranslateUtil.geoNodeToFeature(splitNode));
@@ -407,16 +399,6 @@ public class TrackRecBuilder {
      */
     public TrackRecBuilder addEndDistance(Double distance) {
         this.endDistance = distance;
-        return this;
-    }
-
-    public TrackRecBuilder addRequiredTrackAtEnd(LineString requiredTrack) {
-        this.requiredTrackAtEnd = requiredTrack;
-        return this;
-    }
-
-    public TrackRecBuilder addRequiredTrackAtStart(LineString requiredTrack) {
-        this.requiredTrackAtStart = requiredTrack;
         return this;
     }
 

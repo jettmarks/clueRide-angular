@@ -17,40 +17,13 @@
  */
 package com.clueride.geo;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
-import org.geotools.feature.DefaultFeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
-
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.DefaultLocationStore;
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.LoadService;
-import com.clueride.dao.LocationStore;
-import com.clueride.dao.NetworkStore;
+import com.clueride.dao.*;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.NetworkProposal;
-import com.clueride.domain.dev.NetworkState;
-import com.clueride.domain.dev.NewLocProposal;
-import com.clueride.domain.dev.NodeEvaluationStatus;
-import com.clueride.domain.dev.NodeGroup;
-import com.clueride.domain.dev.NodeNetworkState;
+import com.clueride.domain.dev.*;
 import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.domain.factory.NodeFactory;
 import com.clueride.feature.Edge;
@@ -69,6 +42,17 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static com.clueride.geo.SplitLineString.END;
+import static com.clueride.geo.SplitLineString.START;
 
 /**
  * Holds collection of segments that make up the full set of connected Features
@@ -628,10 +612,10 @@ public class DefaultNetwork implements Network {
         // LineString segmentCrossingSubLineString;
 
         LineString workingLineString;
-        if (splitPair.getLineStringToStart().crosses(segmentLineString)) {
-            workingLineString = splitPair.getLineStringToStart();
-        } else if (splitPair.getLineStringToEnd().crosses(segmentLineString)) {
-            workingLineString = splitPair.getLineStringToEnd();
+        if (splitPair.getSubLineString(START).crosses(segmentLineString)) {
+            workingLineString = splitPair.getSubLineString(START);
+        } else if (splitPair.getSubLineString(END).crosses(segmentLineString)) {
+            workingLineString = splitPair.getSubLineString(END);
         } else {
             throw new RuntimeException("Unexpected that track doesn't cross");
         }
