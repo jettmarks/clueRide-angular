@@ -121,7 +121,7 @@ public class LocationService {
     }
 
     /**
-     * @param newLocation
+     * @param newLoc
      * @return
      */
     private NetworkProposal buildPointsOnTrackProposal(GeoNode newLoc) {
@@ -265,7 +265,7 @@ public class LocationService {
                 LOGGER.warn("Rec Type: " + rec.getRecType());
             }
         }
-        return "{status: ok}";
+        return "{\"status\": \"OK\"}";
     }
 
     /**
@@ -283,6 +283,30 @@ public class LocationService {
      * @param rec
      */
     private static void addTrackToSegment(Rec rec) {
+        LOGGER.info("Preparing the following pieces to Network:");
+        LOGGER.info("New Loc: " + rec.getNewLoc().getName());
+        rec.logRecommendationSummary();
 
+//        for (SimpleFeature feature : rec.getFeatureCollection()) {
+//            feature.getFeatureType().getTypeName();
+//        }
+
+    }
+
+    public static String showAllNodes() {
+        NetworkProposal networkProposal = buildAllNodesProposal();
+        String result = networkProposal.toJson();
+        return result;
+    }
+
+    /** Builds a proposal that contains all the points on our Network. */
+    private static NetworkProposal buildAllNodesProposal() {
+        NewLocProposal newLocProposal = new NewLocProposal(new DefaultGeoNode());
+        DiagnosticRec diagRec = new DiagnosticRec(null);
+        for (GeoNode geoNode : locationStore.getLocations()) {
+            diagRec.addFeature(TranslateUtil.geoNodeToFeature(geoNode));
+        }
+        newLocProposal.add(diagRec);
+        return newLocProposal;
     }
 }

@@ -48,12 +48,12 @@ public class DiagnosticRec extends RecImpl {
     }
 
     /**
-     * @see com.clueride.domain.dev.rec.NetworkRecImpl#dumpRecommendationSummary()
+     * @see com.clueride.domain.dev.rec.NetworkRecImpl#logRecommendationSummary()
      */
     @Override
-    public void dumpRecommendationSummary() {
+    public void logRecommendationSummary() {
         // TODO Auto-generated method stub
-        super.dumpRecommendationSummary();
+        super.logRecommendationSummary();
     }
 
     public void addFeature(SimpleFeature feature) {
