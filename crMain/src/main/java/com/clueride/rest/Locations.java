@@ -17,17 +17,11 @@
  */
 package com.clueride.rest;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
 import com.clueride.rest.dto.LatLonPair;
 import com.clueride.service.LocationService;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Maps between the locations end point and the LocationService which knows how
@@ -101,6 +95,13 @@ public class Locations {
     public String setLocationGroup(@QueryParam("id") Integer id,
             @QueryParam("lat") Double lat, @QueryParam("lon") Double lon) {
         return new LocationService().setLocationGroup(id, lat, lon);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("allNodes")
+    public String showAllNodes() {
+        return LocationService.showAllNodes();
     }
 
 }
