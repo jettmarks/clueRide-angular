@@ -19,6 +19,7 @@ package com.clueride.domain.dev.rec;
 
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.TrackFeature;
+import com.google.common.base.Objects;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,4 +72,30 @@ public class OnTrackImpl extends RecImpl implements OnTrack {
         return sourceTrack;
     }
 
+    @Override
+    public TrackFeature getProposedTrack() {
+        return proposedTracks.get(0);
+    }
+
+    @Override
+    public TrackFeature[] getProposedTracks() {
+        return (TrackFeature[]) proposedTracks.toArray();
+    }
+
+    @Override
+    public void addProposedTrack(TrackFeature proposedTrack) {
+        proposedTracks.add(proposedTrack);
+        featureCollection.add(proposedTrack.getFeature());
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("sourceTrack", sourceTrack)
+                .add("proposedTracks", proposedTracks)
+                .add("score", getScore())
+                .add("sourceTrackId", getSourceTrackId())
+                .add("proposedTrack", getProposedTrack())
+                .toString();
+    }
 }

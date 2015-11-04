@@ -17,11 +17,12 @@
  */
 package com.clueride.domain.dev.rec;
 
-import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_NODES;
-
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
+import com.google.common.base.Objects;
+
+import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_NODES;
 
 /**
  * Description.
@@ -65,16 +66,13 @@ public class ToTwoNodesImpl extends OnTrackImpl implements ToTwoNodes {
     }
 
     /**
-     * @see java.lang.Object#toString()
+     * @see Object#toString()
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("ToTwoNodesImpl [getId()=").append(getId()).append(
-                ", getName()=").append(getName()).append(", getScore()=")
-                .append(getScore()).append(", getRecType()=").append(
-                        getRecType()).append("]");
-        return builder.toString();
+        return Objects.toStringHelper(this)
+                .add("node1", node1)
+                .add("node2", node2)
+                .toString();
     }
-
 }

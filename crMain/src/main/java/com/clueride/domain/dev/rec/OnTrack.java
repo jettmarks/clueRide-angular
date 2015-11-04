@@ -30,4 +30,9 @@ public interface OnTrack extends Rec {
     Integer getSourceTrackId();
 
     TrackFeature getSourceTrack();
+
+    TrackFeature getProposedTrack();
+    TrackFeature[] getProposedTracks();
+
+    void addProposedTrack(TrackFeature trackStart);
 }

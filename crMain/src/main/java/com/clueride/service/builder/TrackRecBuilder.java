@@ -206,12 +206,12 @@ public class TrackRecBuilder {
             return diagnosticBuild();
         }
 
+        OnTrack rec = null;
         switch (numberOfConnections()) {
         case 2:
             populateProposedTracks();
             prepareEnds();
             LOGGER.info("Track " + track + " connected both ends");
-            Rec rec;
             if (networkNodeStart != null) {
                 if (networkNodeEnd != null) {
                     rec = new ToTwoNodesImpl(newLoc, track, networkNodeStart,
@@ -234,10 +234,10 @@ public class TrackRecBuilder {
                             splittingNodeEnd);
                 }
             }
-            rec.getFeatureCollection().add(trackStart.getFeature());
-            rec.getFeatureCollection().add(trackEnd.getFeature());
-            return rec;
-            // no break needed
+            rec.addProposedTrack(trackStart);
+            rec.addProposedTrack(trackEnd);
+            break;
+
         case 1:
             LOGGER.info("Track " + track + " connected on single end");
             populateProposedTracks();
@@ -246,40 +246,44 @@ public class TrackRecBuilder {
             // Order based on which one is closer for this end
             if (preferEdgeStart) {
                 if (networkEdgeStart != null) {
-                    return new ToSegmentImpl(newLoc, trackStart,
+                    rec = new ToSegmentImpl(newLoc, track,
                             networkEdgeStart,
                             splittingNodeStart);
-                }
-                if (networkNodeStart != null) {
-                    return new ToNodeImpl(newLoc, trackStart, networkNodeStart);
+                    rec.addProposedTrack(trackStart);
+                } else if (networkNodeStart != null) {
+                    rec = new ToNodeImpl(newLoc, track, networkNodeStart);
+                    rec.addProposedTrack(trackStart);
                 }
             } else {
                 if (networkNodeStart != null) {
-                    return new ToNodeImpl(newLoc, trackStart, networkNodeStart);
-                }
-                if (networkEdgeStart != null) {
-                    return new ToSegmentImpl(newLoc, trackStart,
+                    rec = new ToNodeImpl(newLoc, track, networkNodeStart);
+                    rec.addProposedTrack(trackStart);
+                } else if (networkEdgeStart != null) {
+                    rec = new ToSegmentImpl(newLoc, track,
                             networkEdgeStart,
                             splittingNodeStart);
+                    rec.addProposedTrack(trackStart);
                 }
             }
 
             // Order based on which one is closer for this end
             if (preferEdgeEnd) {
                 if (networkEdgeEnd != null) {
-                    return new ToSegmentImpl(newLoc, trackEnd, networkEdgeEnd,
+                    rec = new ToSegmentImpl(newLoc, track, networkEdgeEnd,
                             splittingNodeEnd);
-                }
-                if (networkNodeEnd != null) {
-                    return new ToNodeImpl(newLoc, trackEnd, networkNodeEnd);
+                    rec.addProposedTrack(trackEnd);
+                } else if (networkNodeEnd != null) {
+                    rec = new ToNodeImpl(newLoc, track, networkNodeEnd);
+                    rec.addProposedTrack(trackEnd);
                 }
             } else {
                 if (networkNodeEnd != null) {
-                    return new ToNodeImpl(newLoc, trackEnd, networkNodeEnd);
-                }
-                if (networkEdgeEnd != null) {
-                    return new ToSegmentImpl(newLoc, trackEnd, networkEdgeEnd,
+                    rec = new ToNodeImpl(newLoc, track, networkNodeEnd);
+                    rec.addProposedTrack(trackEnd);
+                } else if (networkEdgeEnd != null) {
+                    rec = new ToSegmentImpl(newLoc, track, networkEdgeEnd,
                             splittingNodeEnd);
+                    rec.addProposedTrack(trackEnd);
                 }
             }
             break;
@@ -288,7 +292,7 @@ public class TrackRecBuilder {
             LOGGER.info("Track " + track.getId() + " unconnected");
             break;
         }
-        return null;
+        return rec;
     }
 
     /**
