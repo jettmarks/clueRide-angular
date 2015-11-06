@@ -1,0 +1,59 @@
+<html ng-app="crNetEdit">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="./css/app.css">
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-resource.min.js"></script>
+<script src="./lib/js/angular-leaflet-directive.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<script src="./lib/js/leaflet.awesome-markers.min.js"></script>
+<link rel="stylesheet" href="./lib/css/leaflet.awesome-markers.css">
+<script src="./js/editNodesApp.js"></script>
+<script src="./js/services.js"></script>
+<script src="./js/loc/LocModule.js"></script>
+<script src="./js/loc/LocService.js"></script>
+<script src="./js/network/NetworkModule.js"></script>
+<script src="./js/network/NetworkService.js"></script>
+<script src="./js/lg/LocGroupModule.js"></script>
+<script src="./js/lg/LocGroupService.js"></script>
+<script src="./js/where/where.js"></script>
+<link rel="stylesheet" href="./lib/css/ionicons.min.css">
+<script src="./js/markers.js"></script>
+<link rel="stylesheet"
+	href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css">
+
+</head>
+
+<body ng-controller="AppController">
+  <div class="mapFrame" id="network">
+	<leaflet id="networkMap" layers="layers" center="center" markers="markers"
+	         geojson="gjNetwork" geojson-nested="true"
+	         width="100%" height="100%"></leaflet>
+  </div>
+  <div class="mapFrame" id="tracks">
+	<leaflet id="tracksMap" layers="layers" center="center" markers="markers"
+	         geojson="gjTracks" geojson-nested="true"
+	         width="100%" height="100%"></leaflet>
+  </div>
+	<h1>Network Editing</h1>
+	<!--   <span ng-bind="selectedFeature.properties.id"></span> -->
+	ID: <span ng-bind="selectedFeature.properties.url"></span><p>
+	Name: <span ng-bind="selectedFeature.properties.name"></span><p>
+	Length: <span ng-bind="selectedFeature.geometry.coordinates.length"></span>
+	Type: <span ng-bind="selectedFeature.geometry.type"></span><p>
+	Starting Point: <span ng-bind="selectedFeature.geometry.coordinates[0]"></span>
+	Ending Point: <span ng-bind="selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length-1]"></span>
+	<where-am-i></where-am-i>
+	<p> Segment/Edge ID:
+	  <span ng-bind="selectedSegment.properties.edgeId
+	              || selectedSegment.properties.segId" >
+	  </span>
+	<p> <span><button ng-click="NetworkRefresh.refresh()">Refresh</button></span>
+	<p> Network Segments: <span ng-bind="NetworkRefresh.segments()"></span><p>
+    <p> Center: {{center.lat | number:5}}, {{center.lng | number:5}}
+</span></p>
+</body>
+</html>

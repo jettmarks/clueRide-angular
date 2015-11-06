@@ -30,7 +30,7 @@ module
 				                weight: 4
 				            },
 				            onEachFeature: function (feature, layer) {
-				                layer.on('click', function (e){
+				                layer.on('click', function (e) {
 				                    angular.extend(selectedSegment, this.feature);
 				                });
 				            }
