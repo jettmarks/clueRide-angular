@@ -23,7 +23,25 @@
     module.directive('crBalloon', function() {
         return {
             scope: {
-                balloon: '='
+                bid: '@'
+            },
+            require: ['$scope','gameStateService'],
+            controller: function ($scope, gameStateService) {
+                var gs = gameStateService.currentGameState(),
+                    blid = {
+                        b1: 'balloon1',
+                        b2: 'balloon2',
+                        b3: 'balloon3'
+                    }[$scope.bid];
+
+                // If we want to see this in scope
+//                $scope.gs = gs;
+
+                $scope.balloon = gs[blid];
+                $scope.showDialog = {};
+                $scope.showPage = {};
+                $scope.changeState = {};
+                window.console.log("scope("+$scope.$id+")  bid: "+$scope.bid);
             },
             templateUrl: 'js/balloon/balloon.html'
         };
