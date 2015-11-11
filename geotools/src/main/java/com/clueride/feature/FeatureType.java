@@ -35,7 +35,6 @@ import com.vividsolutions.jts.geom.Point;
  *
  */
 public class FeatureType {
-    // TODO: Split this out to accommodate the Segment attributes
     public static final SimpleFeatureType EDGE_FEATURE_TYPE = buildEdgeInstance();
     public static final SimpleFeatureType SEGMENT_FEATURE_TYPE = buildSegmentInstance();
     public static final SimpleFeatureType POINT_FEATURE_TYPE = buildPointInstance();
