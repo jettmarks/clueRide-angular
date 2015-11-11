@@ -1,0 +1,15 @@
+<div class="home">
+    <div class="balloonContainer">
+        <div class="balloons">
+            <cr-balloon balloon=currentGameState.balloon1></cr-balloon>
+            <cr-balloon balloon=currentGameState.balloon2></cr-balloon>
+            <cr-balloon balloon=currentGameState.balloon3></cr-balloon>
+        </div>
+    </div>
+</div>
+
+<div ui-content-for="modals">
+    <div ng-include="'joinTeam.html'"></div>
+    <div ng-include="'setGpsMode.html'"></div>
+    <div ng-include="'solveClue.html'"></div>
+</div>

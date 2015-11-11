@@ -1,0 +1,21 @@
+.home {
+	text-align: center;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+
+	background-image: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0, #7FFFFF),
+        color-stop(0.51, #BFFFFF)
+    );
+    background-image: -o-linear-gradient(bottom, #7FFFFF 0%, #BFFFFF 51%);
+    background-image: -moz-linear-gradient(bottom, #7FFFFF 0%, #BFFFFF 51%);
+    background-image: -webkit-linear-gradient(bottom, #7FFFFF 0%, #BFFFFF 51%);
+    background-image: -ms-linear-gradient(bottom, #7FFFFF 0%, #BFFFFF 51%);
+    background-image: linear-gradient(to bottom, #7FFFFF 0%, #BFFFFF 51%);
+}
+
+
