@@ -1,0 +1,12 @@
+<div ng-class='{ {{balloon.bid}}: true}' ng-controller="BalloonController">
+    <div ng-if="!!balloon.dialog">
+        <div ui-turn-on="{{balloon.dialog}}">
+            {{balloon.title}}
+        </div>
+    </div>
+    <div ng-if="!balloon.dialog">
+        <div ng-click="setGameState(balloon.nextState);">
+            {{balloon.title}}
+        </div>
+    </div>
+</div>

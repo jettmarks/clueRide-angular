@@ -1,0 +1,19 @@
+<div class="modal" ui-if='setGpsMode' ui-state='setGpsMode'>
+  <div class="modal-backdrop in"></div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" 
+                ui-turn-off="setGpsMode">&times;</button>
+        <h4 class="modal-title">Setup GPS</h4>
+      </div>
+      <div class="modal-body">
+        <p>Dialog for Setting up GPS Mode</p>
+      </div>
+      <div class="modal-footer">
+        <button ui-turn-off="setGpsMode" class="btn btn-default">Close</button>
+        <button ui-turn-off="setGpsMode" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
