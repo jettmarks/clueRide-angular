@@ -274,6 +274,8 @@ function($rootScope, $scope, gameStateService ) {
 
   $rootScope.$on('gameStateChanged', function (event, args) {
     $scope.currentGameState = gameStateService.currentGameState();
+    // Echo this back down to listeners
+    $scope.$broadcast('updateGameState');
   });
 
   // Fake text i used here and there.
@@ -352,19 +354,7 @@ function($rootScope, $scope, gameStateService ) {
     }
   };
 
-//  function changeGameStateFn (stateName) {
-//    $scope.currentGameState = gameState.gameStatePerKey[stateName];
-//  };
-//
 
   $scope.currentGameState = gameStateService.currentGameState();
-
-//  angular.extend($scope, {
-//    changeGameState: {}
-//  });
-//
-//  $scope.changeGameState = function (stateName) {
-//    return changeGameStateFn(stateName);
-//  };
 
 }]);

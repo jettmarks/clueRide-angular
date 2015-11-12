@@ -25,23 +25,51 @@
             scope: {
                 bid: '@'
             },
-            require: ['$scope','gameStateService'],
-            controller: function ($scope, gameStateService) {
+            require: [
+                '$scope',
+                '$rootScope',
+                '$location',
+                'gameStateService'
+            ],
+            controller: function (
+                $scope,
+                $rootScope,
+                $location,
+                gameStateService
+            ) {
                 var gs = gameStateService.currentGameState(),
-                    blid = {
-                        b1: 'balloon1',
-                        b2: 'balloon2',
-                        b3: 'balloon3'
-                    }[$scope.bid];
+                    bid = $scope.bid,
+                    balloon = {},
+                    dialogFlag = false,
+                    pageFlag = false,
+                    nextState = 'beginPlay';
 
-                // If we want to see this in scope
-//                $scope.gs = gs;
-
-                $scope.balloon = gs[blid];
-                $scope.showDialog = {};
-                $scope.showPage = {};
-                $scope.changeState = {};
+                $scope.balloon = gs[$scope.bid];
                 window.console.log("scope("+$scope.$id+")  bid: "+$scope.bid);
+                evalFlags();
+
+                $scope.balloonClicked = function () {
+                    if (dialogFlag) {
+                        $rootScope.Ui.turnOn($scope.balloon.dialog);
+                    } else if (pageFlag) {
+                        $location.path($scope.balloon.nextView);
+                    } else {
+                        gameStateService.updateGameState($scope.balloon.nextState);
+                        $scope.$emit('gameStateChanged');
+                    }
+                };
+
+                function evalFlags() {
+                    balloon = $scope.balloon;
+                    dialogFlag = !!balloon.dialog;
+                    pageFlag = !!balloon.nextView;
+                    nextState = balloon.nextState;
+                };
+
+                $scope.$on('updateGameState', function () {
+                    $scope.balloon = gameStateService.currentGameState()[$scope.bid];
+                    evalFlags();
+                });
             },
             templateUrl: 'js/balloon/balloon.html'
         };
