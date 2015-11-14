@@ -5,7 +5,7 @@
     align-content: center;
 }
 
-@media screen and (max-width: 320px) {
+@media screen and (max-width: 340px) {
     .balloons {
         background-image: url("../image/logo_blank.png");
         background-position: center;
@@ -51,7 +51,7 @@
 }
 
 
-@media screen and (min-width: 360px) {
+@media screen and (min-width: 340px) {
     .balloons {
         background-image: url("../image/logo_blank.png");
         background-position: center;
