@@ -5,7 +5,7 @@
     align-content: center;
 }
 
-@media screen and (max-width: 340px) {
+@media screen and (max-width: 360px) {
     .balloons {
         background-image: url("../image/logo_blank.png");
         background-position: center;
@@ -16,42 +16,33 @@
         position: relative;
     }
 
-    .balloon1 {
+    .balloon {
         position: absolute;
         width: 100px;
         height: 75px;
-        top: 42px;
-        left: -4px;
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .balloon1 {
+        top: 42px;
+        left: -4px;
     }
 
     .balloon2 {
-        position: absolute;
-        width: 100px;
-        height: 75px;
         top: 101px;
         left: 230px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 
     .balloon3 {
-        position: absolute;
-        width: 100px;
-        height: 75px;
         top: 296px;
         left: 102px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 }
 
 
-@media screen and (min-width: 340px) {
+@media screen and (min-width: 360px) {
     .balloons {
         background-image: url("../image/logo_blank.png");
         background-position: center;
@@ -62,36 +53,27 @@
         position: relative;
     }
 
-    .balloon1 {
+    .balloon {
         position: absolute;
         width: 100px;
         height: 75px;
-        top: 42px;
-        left: 16px;
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .balloon1 {
+        top: 42px;
+        left: 16px;
     }
 
     .balloon2 {
-        position: absolute;
-        width: 100px;
-        height: 75px;
         top: 101px;
         left: 250px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 
     .balloon3 {
-        position: absolute;
-        width: 100px;
-        height: 75px;
         top: 296px;
         left: 122px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 }
