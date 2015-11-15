@@ -31,6 +31,8 @@ app.config(function($routeProvider) {
   $routeProvider.when('/',              {templateUrl: 'home.html', reloadOnSearch: false});
   $routeProvider.when('/map',           {templateUrl: 'js/map/map.html', reloadOnSearch: false});
   $routeProvider.when('/location',      {templateUrl: 'js/map/map.html', reloadOnSearch: false});
+  $routeProvider.when('/ice',           {templateUrl: 'ice.html', reloadOnSearch: false});
+
   $routeProvider.when('/scroll',        {templateUrl: 'scroll.html', reloadOnSearch: false});
   $routeProvider.when('/toggle',        {templateUrl: 'toggle.html', reloadOnSearch: false}); 
   $routeProvider.when('/tabs',          {templateUrl: 'tabs.html', reloadOnSearch: false}); 

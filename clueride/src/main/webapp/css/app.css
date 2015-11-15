@@ -1,4 +1,4 @@
-.home {
+.home, .cr-common {
 	text-align: center;
 	overflow: hidden;
 	width: 100%;
@@ -16,6 +16,12 @@
     background-image: -webkit-linear-gradient(bottom, #7FFFFF 0%, #BFFFFF 51%);
     background-image: -ms-linear-gradient(bottom, #7FFFFF 0%, #BFFFFF 51%);
     background-image: linear-gradient(to bottom, #7FFFFF 0%, #BFFFFF 51%);
+}
+
+.cr-textFrame {
+    text-align: justify;
+    padding: 15px;
+    overflow: scroll;
 }
 
 
