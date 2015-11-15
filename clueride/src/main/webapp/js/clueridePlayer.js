@@ -6,6 +6,7 @@ var app = angular.module('clueridePlayer', [
   'ngRoute',
   'balloon',
   'gameState',
+  'crMap',
   'mobile-angular-ui',
   
   // touch/drag feature: this is from 'mobile-angular-ui.gestures.js'
@@ -28,7 +29,11 @@ app.run(function($transform) {
 // 
 app.config(function($routeProvider) {
   $routeProvider.when('/',              {templateUrl: 'home.html', reloadOnSearch: false});
-  $routeProvider.when('/scroll',        {templateUrl: 'scroll.html', reloadOnSearch: false}); 
+  $routeProvider.when('/map',           {templateUrl: 'js/map/map.html', reloadOnSearch: false});
+  $routeProvider.when('/location',      {templateUrl: 'js/map/map.html', reloadOnSearch: false});
+  $routeProvider.when('/ice',           {templateUrl: 'ice.html', reloadOnSearch: false});
+
+  $routeProvider.when('/scroll',        {templateUrl: 'scroll.html', reloadOnSearch: false});
   $routeProvider.when('/toggle',        {templateUrl: 'toggle.html', reloadOnSearch: false}); 
   $routeProvider.when('/tabs',          {templateUrl: 'tabs.html', reloadOnSearch: false}); 
   $routeProvider.when('/accordion',     {templateUrl: 'accordion.html', reloadOnSearch: false}); 
@@ -274,6 +279,8 @@ function($rootScope, $scope, gameStateService ) {
 
   $rootScope.$on('gameStateChanged', function (event, args) {
     $scope.currentGameState = gameStateService.currentGameState();
+    // Echo this back down to listeners
+    $scope.$broadcast('updateGameState');
   });
 
   // Fake text i used here and there.
@@ -352,19 +359,7 @@ function($rootScope, $scope, gameStateService ) {
     }
   };
 
-//  function changeGameStateFn (stateName) {
-//    $scope.currentGameState = gameState.gameStatePerKey[stateName];
-//  };
-//
 
   $scope.currentGameState = gameStateService.currentGameState();
-
-//  angular.extend($scope, {
-//    changeGameState: {}
-//  });
-//
-//  $scope.changeGameState = function (stateName) {
-//    return changeGameStateFn(stateName);
-//  };
 
 }]);

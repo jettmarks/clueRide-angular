@@ -72,7 +72,7 @@
               balloon3: {
                 bid: 'balloon3',
                 title: 'Where are we going?',
-                nextView: 'chooseLocation',
+//                nextView: 'chooseLocation',
                 nextState: 'riding'
               },
             }
