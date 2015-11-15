@@ -51,5 +51,7 @@
 	<p> Segment ID: <span ng-bind="selectedSegment.properties.segId"></span>
 	<p> <span><button ng-click="NetworkRefresh.refresh()">Refresh</button></span>
 	<p> Network Segments: <span ng-bind="NetworkRefresh.segments()"></span><p>
+    <p> Center: {{center.lat | number:5}}, {{center.lng | number:5}}
+</span></p>
 </body>
 </html>

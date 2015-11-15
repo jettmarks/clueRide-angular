@@ -17,17 +17,18 @@
  */
 package com.clueride.service;
 
-import java.io.IOException;
-
+import com.clueride.dao.DefaultNetworkStore;
+import com.clueride.dao.NetworkStore;
+import com.clueride.domain.EdgeImpl;
+import com.clueride.domain.GeoNode;
+import com.clueride.feature.Edge;
+import com.clueride.feature.TrackFeature;
+import com.clueride.io.JsonStoreType;
+import com.clueride.io.JsonUtil;
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.NetworkStore;
-import com.clueride.domain.GeoNode;
-import com.clueride.feature.Edge;
-import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
+import java.io.IOException;
 
 /**
  * Handles requests for Segments of all types.
@@ -86,5 +87,13 @@ public class SegmentService {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+    }
+
+    public static void addSegment(TrackFeature proposedTrack) {
+        if (proposedTrack instanceof Edge) {
+            networkStore.addNew((Edge) proposedTrack);
+        } else {
+            networkStore.addNew(new EdgeImpl(proposedTrack.getFeature()));
+        }
     }
 }

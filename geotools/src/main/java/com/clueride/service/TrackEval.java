@@ -59,37 +59,30 @@ import static com.clueride.geo.SplitLineString.START;
  */
 public class TrackEval {
     private static final Logger LOGGER = Logger.getLogger(TrackEval.class);
-
+    /** Our picture of the current network. */
+    private static final LocationStore LOCATION_STORE = DefaultLocationStore
+            .getInstance();
+    private static final NetworkStore EDGE_STORE = DefaultNetworkStore
+            .getInstance();
     /** What we're evaluating. */
     private final TrackFeature sourceTrack;
-
     /** Selected Node. */
     private GeoNode networkNode;
     private Double nodeDistance = Double.MAX_VALUE;
-
     /** Selected Edge. */
     private Edge networkEdge;
     private Double edgeDistance = Double.MAX_VALUE;
     /** Details on that Edge's splitting point. */
     private Point splittingPoint;
     private DefaultGeoNode splittingNode;
-
     /** Portion of Track required to reach the network. */
     private TrackFeature proposedTrack;
-
     /** Overall evaluation of what is closest. */
     private TrackEvalType trackEvalType = TrackEvalType.UNDEFINED;
-
     /** Diagnostic data on the evaluation. */
     private Map<GeoNode, Double> distancePerNode = new HashMap<>();
     private Map<Edge, Double> distancePerEdge = new HashMap<>();
     private Map<Edge, GeoNode> splitPerEdge = new HashMap<>();
-
-    /** Our picture of the current network. */
-    private static final LocationStore LOCATION_STORE = DefaultLocationStore
-            .getInstance();
-    private static final NetworkStore EDGE_STORE = DefaultNetworkStore
-            .getInstance();
 
     public TrackEval(TrackFeature sourceTrack) {
         this.sourceTrack = sourceTrack;
@@ -101,8 +94,8 @@ public class TrackEval {
      */
     private void prepareEvaluation() {
         // First, check network connections
-        networkNode = getNearestNetworkNode();
-        networkEdge = getNearestNetworkEdge();
+        networkNode = findNearestNetworkNode();
+        networkEdge = findNearestNetworkEdge();
         // Evaluate those connections (if any)
         setEvalType();
 
@@ -130,7 +123,7 @@ public class TrackEval {
             trackEvalType = TrackEvalType.NO_CONNECTION;
             proposedTrack = null;
         } else {
-            if (nodeDistance < edgeDistance) {
+            if (nodeDistance < (edgeDistance+GeoProperties.BUFFER_TOLERANCE)) {
                 trackEvalType = TrackEvalType.NODE;
                 proposedTrack = getProposedTrackToNode();
             } else {
@@ -169,6 +162,13 @@ public class TrackEval {
         }
     }
 
+    public GeoNode getNearestNetworkNode() {
+        return networkNode;
+    }
+
+    public Edge getNearestNetworkEdge() {
+        return networkEdge;
+    }
     /**
      * Checks the given LineString to see if it intersects the network at one of
      * the nodes (or Location Groups).
@@ -182,7 +182,7 @@ public class TrackEval {
      * @return null if no network node is covered by this lineString, or the
      *         closest one if there is a covered network node.
      */
-    public GeoNode getNearestNetworkNode() {
+     private GeoNode findNearestNetworkNode() {
         GeoNode nearestNode = null;
         LineString lsSource = sourceTrack.getLineString();
 
@@ -223,7 +223,7 @@ public class TrackEval {
      * @return Edge representing the closest point at which this Track crosses
      * a Network Edge.
      */
-    public Edge getNearestNetworkEdge() {
+    public Edge findNearestNetworkEdge() {
         Edge networkEdge = null;
         LineString lsSource = sourceTrack.getLineString();
 

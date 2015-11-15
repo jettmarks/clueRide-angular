@@ -17,13 +17,14 @@
  */
 package com.clueride.domain.dev.rec;
 
-import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_SEGMENTS;
-
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
+import com.google.common.base.Objects;
+
+import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_SEGMENTS;
 
 /**
  * Description.
@@ -70,16 +71,13 @@ public class ToTwoSegmentsImpl extends OnTrackImpl implements ToTwoSegments {
     }
 
     /**
-     * @see java.lang.Object#toString()
+     * @see Object#toString()
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("ToTwoSegmentsImpl [getId()=").append(getId()).append(
-                ", getName()=").append(getName()).append(", getScore()=")
-                .append(getScore()).append(", getRecType()=").append(
-                        getRecType()).append("]");
-        return builder.toString();
+        return Objects.toStringHelper(this)
+                .add("segment1", segment1)
+                .add("segment2", segment2)
+                .toString();
     }
-
 }

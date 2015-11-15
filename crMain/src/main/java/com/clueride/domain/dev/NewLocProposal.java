@@ -99,7 +99,7 @@ public class NewLocProposal implements NetworkProposal {
         // Feature for the New Location we're adding; Rec should not provide this
         fcPoints.add(TranslateUtil.geoNodeToFeature(newLoc));
         for (NetworkRecommendation rec : networkRecommendations) {
-            ((NetworkRecImpl) rec).dumpRecommendationSummary();
+            ((NetworkRecImpl) rec).logRecommendationSummary();
             for (SimpleFeature feature : rec.getFeatureCollection()) {
                 if (feature.getFeatureType().getTypeName().contains("PointType")) {
                     fcPoints.add(feature);

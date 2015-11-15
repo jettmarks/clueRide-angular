@@ -42,4 +42,7 @@ public interface NetworkRecommendation {
     Double getScore();
 
     DefaultFeatureCollection getFeatureCollection();
+
+    /** Provide a list of the Recommendations on the current LOGGER. */
+    void logRecommendationSummary();
 }

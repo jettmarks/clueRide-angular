@@ -23,6 +23,6 @@ package com.clueride.domain.dev.rec;
  * @author jett
  *
  */
-public interface ToSegment {
+public interface ToSegment extends OnTrack {
 
 }
