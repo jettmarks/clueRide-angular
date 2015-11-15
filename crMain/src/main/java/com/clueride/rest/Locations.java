@@ -101,7 +101,8 @@ public class Locations {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("allNodes")
     public String showAllNodes() {
-        return LocationService.showAllNodes();
+//        return LocationService.showAllNodes();
+        return "OK";
     }
 
 }

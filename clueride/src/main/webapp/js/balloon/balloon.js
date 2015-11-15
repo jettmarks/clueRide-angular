@@ -38,6 +38,7 @@
                 gameStateService
             ) {
                 var gs = gameStateService.currentGameState(),
+                    unbind = {},
                     bid = $scope.bid,
                     balloon = {},
                     dialogFlag = false,
@@ -66,10 +67,13 @@
                     nextState = balloon.nextState;
                 };
 
-                $scope.$on('updateGameState', function () {
+                unbind = $scope.$on('updateGameState', function () {
                     $scope.balloon = gameStateService.currentGameState()[$scope.bid];
                     evalFlags();
                 });
+
+                // Clean up resources
+                $scope.$on('$destroy', unbind);
             },
             templateUrl: 'js/balloon/balloon.html'
         };
