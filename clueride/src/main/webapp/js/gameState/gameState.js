@@ -91,6 +91,11 @@
             currentGameState: function () {return currentGameState},
             updateGameState: function (stateName) {
                 currentGameState = gameStatePerKey[stateName];
+            },
+            currentLocation: function () {
+                return {location: {
+                    name: 'BeltLine'
+                }};
             }
         };
     });
