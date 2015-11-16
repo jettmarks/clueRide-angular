@@ -35,6 +35,14 @@
       ];
 
       $scope.location = locations[locIndex];
+      // Zero-based index vs. one-based page number
+      $scope.currentPage = locIndex+1;
+      $scope.pageChanged = function () {
+        var locIndex = $scope.currentPage-1;
+        $scope.location = locations[locIndex];
+        gameStateService.setCurrentLocation(locIndex);
+      }
+
     }]);
 
     module.directive('backImg', function() {
