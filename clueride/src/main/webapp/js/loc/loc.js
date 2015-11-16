@@ -1,21 +1,50 @@
-angular.module('crLocation',[]).controller('LocationController', function ($scope) {
-  $scope.myInterval = 5000;
-  $scope.noWrapSlides = false;
-  $scope.location = {location:
-      {
-        title: "BeltLine"
-      }
-  };
-  var slides = $scope.slides = [];
-  $scope.addSlide = function() {
-    var newWidth = 600 + slides.length + 1;
-    slides.push({
-      image: '//placekitten.com/' + newWidth + '/300',
-      text: ['More','Extra','Lots of','Surplus'][slides.length % 4] + ' ' +
-        ['Cats', 'Kittys', 'Felines', 'Cutes'][slides.length % 4]
+(function (angular) {
+    'use strict';
+
+    var module = angular.module('crLocation',['gameState'])
+      .controller('LocationController', [
+        '$scope', 'gameStateService',
+        function ($scope, gameStateService) {
+      var locIndex = gameStateService.currentIndex(),
+          locations = [
+        {
+            name: "Peace Monument, Piedmont Park",
+            description: "Long bit of text we'll pull together.",
+            imgUrl: ['./image/loc/10/1.jpg']
+        },
+        {
+            name: "BeltLine - White Rhino",
+            description: "We love the BeltLine",
+            imgUrl: ['./image/loc/10/2.jpg']
+        },
+        {
+            name: "Gandhi",
+            description: "Inspired MLK",
+            imgUrl: ['./image/loc/10/3.jpg']
+        },
+        {
+            name: "Sweet Auburn Curb Market",
+            description: "Lots under one roof",
+            imgUrl: ['./image/loc/10/4.jpg']
+        },
+        {
+            name: "Oakland Cemetery",
+            description: "Visit with the residents",
+            imgUrl: ['./image/loc/10/5.jpg']
+        }
+      ];
+
+      $scope.location = locations[locIndex];
+    }]);
+
+    module.directive('backImg', function() {
+        return function(scope, element, attrs) {
+            var url = attrs.backImg;
+            element.css({
+                'background-image': 'url(' + url +')',
+                'background-size' : 'cover'
+            });
+        };
     });
-  };
-  for (var i=0; i<4; i++) {
-    $scope.addSlide();
-  }
-});
+
+}(window.angular));

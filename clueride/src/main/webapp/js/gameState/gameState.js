@@ -96,6 +96,9 @@
                 return {location: {
                     name: 'BeltLine'
                 }};
+            },
+            currentIndex: function () {
+                return currentLocationIndex;
             }
         };
     });

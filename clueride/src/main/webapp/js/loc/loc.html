@@ -2,14 +2,9 @@
 <div class="location" ng-controller="LocationController">
     <div class="carousel">
         <div class="carousel-inner">
-            <div class="carousel-item"
-                 style='background-image: url(./image/loc/10/1.jpg);'>
-            </div>
-            <div class="carousel-item"
-                 style='background-image: url(./image/loc/10/2.jpg);'>
-            </div>
-            <div class="carousel-item"
-                 style='background-image: url(./image/loc/10/3.jpg);'>
+            <div ng-repeat="imgUrl in location.imgUrl">
+                <div class="carousel-item" back-img="{{imgUrl}}">
+                </div>
             </div>
         </div>
     </div>
