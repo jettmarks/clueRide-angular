@@ -8,6 +8,8 @@ var app = angular.module('clueridePlayer', [
   'gameState',
   'crMap',
   'crLocation',
+  'status',
+  'ui.bootstrap',
   'mobile-angular-ui',
   
   // touch/drag feature: this is from 'mobile-angular-ui.gestures.js'
@@ -32,6 +34,7 @@ app.config(function($routeProvider) {
   $routeProvider.when('/',              {templateUrl: 'home.html', reloadOnSearch: false});
   $routeProvider.when('/map',           {templateUrl: 'js/map/map.html', reloadOnSearch: false});
   $routeProvider.when('/location',      {templateUrl: 'js/loc/loc.html', reloadOnSearch: false});
+  $routeProvider.when('/status',        {templateUrl: 'js/status/status.html', reloadOnSearch: false});
   $routeProvider.when('/ice',           {templateUrl: 'ice.html', reloadOnSearch: false});
 
   $routeProvider.when('/scroll',        {templateUrl: 'scroll.html', reloadOnSearch: false});

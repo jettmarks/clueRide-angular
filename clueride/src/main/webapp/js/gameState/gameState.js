@@ -97,6 +97,9 @@
                     name: 'BeltLine'
                 }};
             },
+            setCurrentLocation: function (newIndex) {
+                currentLocationIndex = newIndex;
+            },
             currentIndex: function () {
                 return currentLocationIndex;
             }
