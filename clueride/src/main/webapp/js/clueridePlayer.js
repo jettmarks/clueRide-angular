@@ -4,10 +4,12 @@
 // 
 var app = angular.module('clueridePlayer', [
   'ngRoute',
+  'team',
   'balloon',
   'gameState',
   'crMap',
   'crLocation',
+  'ngResource',
   'mobile-angular-ui',
   
   // touch/drag feature: this is from 'mobile-angular-ui.gestures.js'

@@ -20,6 +20,7 @@
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.3/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.3/angular-route.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.3/angular-resource.min.js"></script>
     <script src="/player/lib/js/mobile-angular-ui.min.js"></script>
     <!-- Required to use $touch, $swipe, $drag and $translate services -->
     <script src="/player/lib/js/mobile-angular-ui.gestures.min.js"></script>
@@ -27,6 +28,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <!-- Our modules -->
     <script src="/player/js/clueridePlayer.js"></script>
+    <script src="/player/js/team/team.js"></script>
     <script src="/player/js/gameState/gameState.js"></script>
     <script src="/player/js/balloon/balloon.js"></script>
     <script src="/player/js/map/map.js"></script>
@@ -44,8 +46,8 @@
             ui-track-as-search-param='true'
             class="sidebar sidebar-left"></div>
 
-    <!--<div ng-include="'sidebarRight.html'" -->
-            <!--class="sidebar sidebar-right"></div>-->
+    <div ng-include="'sidebarRight.html'"
+            class="sidebar sidebar-right"></div>
 
     <div class="app" 
          ui-swipe-right='Ui.turnOn("uiSidebarLeft")'
