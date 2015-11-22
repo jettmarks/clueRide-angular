@@ -9,6 +9,7 @@ var app = angular.module('clueridePlayer', [
   'crMap',
   'crLocation',
   'status',
+  'clue',
   'ui.bootstrap',
   'mobile-angular-ui',
   
