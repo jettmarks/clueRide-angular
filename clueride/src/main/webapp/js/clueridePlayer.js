@@ -4,10 +4,12 @@
 // 
 var app = angular.module('clueridePlayer', [
   'ngRoute',
+  'team',
   'balloon',
   'gameState',
   'crMap',
   'crLocation',
+  'ngResource',
   'status',
   'clue',
   'ui.bootstrap',
