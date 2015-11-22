@@ -13,9 +13,10 @@ crNetEdit.controller("AppController", [
         '$http', 
         'RawSegments', 
         'LocResource', 
+        'LocDiagResource',
         'NetworkResource',
         'NetworkRefresh',
-        function($scope, leafletData, $http, RawSegments, LocResource, 
+        function($scope, leafletData, $http, RawSegments, LocResource, LocDiagResource,
                 NetworkResource, NetworkRefresh
                 ) {
 
@@ -52,13 +53,15 @@ crNetEdit.controller("AppController", [
 		        lat: 33.0,
 		        lng: -84.0
 		    }
-		}
+		},
+		showNodes: {}
     });
     
     // Bind the scope's segments with the service's segments
     NetworkRefresh.refresh();
     $scope.gjNetwork.segments = NetworkRefresh.segments();
     $scope.selectedSegment = NetworkRefresh.selectedSegment();
+    $scope.showNodes = LocModule.showNodes($scope,LocDiagResource);
     
     RawSegments.get({}, function(featureCollection) {
 		angular.extend($scope.gjTracks, {

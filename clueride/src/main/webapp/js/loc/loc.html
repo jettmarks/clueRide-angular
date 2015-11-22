@@ -1,0 +1,18 @@
+<link rel="stylesheet" href="./js/loc/loc.css">
+<div class="location" ng-controller="LocationController">
+    <div class="carousel">
+        <div class="carousel-inner">
+            <div ng-repeat="imgUrl in location.imgUrl">
+                <div class="carousel-item" back-img="{{imgUrl}}">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="loc-description">
+        {{location.name}}
+        <div>
+            <uib-pagination direction-links="false" total-items="5" items-per-page="1"
+                            ng-model="currentPage" ng-change="pageChanged()"></uib-pagination>
+        </div>
+    </div>
+</div>

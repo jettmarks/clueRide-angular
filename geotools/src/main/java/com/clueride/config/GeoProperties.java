@@ -33,7 +33,7 @@ public class GeoProperties extends Properties {
 
     static GeoProperties instance = new GeoProperties();
 
-    public static final double BUFFER_TOLERANCE = 0.00007;
+    public static final double BUFFER_TOLERANCE = 0.00014;
 
     static {
         instance.put("group.radius", 50.0);
@@ -50,5 +50,5 @@ public class GeoProperties extends Properties {
     /**
      * 
      */
-    public static final double NODE_TOLERANCE = 0.00001;
+    public static final double NODE_TOLERANCE = 0.00007;
 }

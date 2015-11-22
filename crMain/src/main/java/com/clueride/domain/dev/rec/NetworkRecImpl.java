@@ -93,7 +93,7 @@ public class NetworkRecImpl implements NetworkRecommendation {
         return 0.0;
     }
 
-    public void dumpRecommendationSummary() {
+    public void logRecommendationSummary() {
         int recNumber = featureCollection.toArray().length;
         LOGGER.debug("Rec " + toString() + " has " + recNumber + " features:");
         for (SimpleFeature feature : featureCollection) {

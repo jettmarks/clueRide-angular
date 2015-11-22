@@ -27,8 +27,7 @@ import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.domain.dev.NewLocProposal;
 import com.clueride.domain.dev.NodeGroup;
-import com.clueride.domain.dev.rec.DiagnosticRec;
-import com.clueride.domain.dev.rec.Rec;
+import com.clueride.domain.dev.rec.*;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.DefaultNetwork;
@@ -121,7 +120,7 @@ public class LocationService {
     }
 
     /**
-     * @param newLocation
+     * @param newLoc
      * @return
      */
     private NetworkProposal buildPointsOnTrackProposal(GeoNode newLoc) {
@@ -258,14 +257,58 @@ public class LocationService {
         } else {
             Rec rec = (Rec) recs.get(0);
             switch (rec.getRecType()) {
-            case TRACK_TO_SEGMENT:
-                addTrackToSegment(rec);
-                break;
-            default:
-                LOGGER.warn("Rec Type: " + rec.getRecType());
+                case ON_SEGMENT:
+                case ON_NODE:
+                    LOGGER.warn("We don't have a way to select "+rec.getRecType());
+                    break;
+
+                case TRACK_TO_NODE:
+                    addTrackToNodeRec((ToNode) rec);
+                    break;
+                case TRACK_TO_SEGMENT:
+                    addTrackToSegmentRec((ToSegment) rec);
+                    break;
+                case TRACK_TO_SEGMENT_AND_NODE:
+                    addTrackToSegmentAndNodeRec((ToSegmentAndNode) rec);
+                    break;
+                case TRACK_TO_2_NODES:
+                    addTrackToTwoNodesRec((ToTwoNodes) rec);
+                    break;
+                case TRACK_TO_2_SEGMENTS:
+                    addTrackToTwoSegmentsRec((ToTwoSegments) rec);
+                    break;
+
+                case UNDEFINED:
+                case OFF_NETWORK:
+                default:
+                    LOGGER.warn("Rec Type: " + rec.getRecType());
             }
         }
-        return "{status: ok}";
+        return "{\"status\": \"OK\"}";
+    }
+
+    private static void addTrackToTwoSegmentsRec(ToTwoSegments rec) {
+        LOGGER.info("From this Rec: "+rec);
+
+    }
+
+    private static void addTrackToTwoNodesRec(ToTwoNodes rec) {
+        LOGGER.info("From this Rec: "+rec);
+
+    }
+
+    private static void addTrackToSegmentAndNodeRec(ToSegmentAndNode rec) {
+        LOGGER.info("From this Rec: "+rec);
+
+    }
+
+    private static void addTrackToNodeRec(ToNode rec) {
+        LOGGER.info("From this Rec: "+rec);
+        LOGGER.info("Preparing the following pieces to add to the Network:");
+        LOGGER.info("New Loc: " + rec.getNewLoc().getName());
+        rec.logRecommendationSummary();
+
+        SegmentService.addSegment(rec.getProposedTrack());
     }
 
     /**
@@ -282,7 +325,34 @@ public class LocationService {
      * 
      * @param rec
      */
-    private static void addTrackToSegment(Rec rec) {
+    private static void addTrackToSegmentRec(ToSegment rec) {
+        LOGGER.info("From this Rec: "+rec);
+        LOGGER.info("Preparing the following pieces to add to the Network:");
+        LOGGER.info("New Loc: " + rec.getNewLoc().getName());
+        rec.logRecommendationSummary();
 
+        SegmentService.addSegment(rec.getProposedTrack());
+
+//        for (SimpleFeature feature : rec.getFeatureCollection()) {
+//            feature.getFeatureType().getTypeName();
+//        }
+
+    }
+
+    public static String showAllNodes() {
+        NetworkProposal networkProposal = buildAllNodesProposal();
+        String result = networkProposal.toJson();
+        return result;
+    }
+
+    /** Builds a proposal that contains all the points on our Network. */
+    private static NetworkProposal buildAllNodesProposal() {
+        NewLocProposal newLocProposal = new NewLocProposal(new DefaultGeoNode());
+        DiagnosticRec diagRec = new DiagnosticRec(null);
+        for (GeoNode geoNode : locationStore.getLocations()) {
+            diagRec.addFeature(TranslateUtil.geoNodeToFeature(geoNode));
+        }
+        newLocProposal.add(diagRec);
+        return newLocProposal;
     }
 }

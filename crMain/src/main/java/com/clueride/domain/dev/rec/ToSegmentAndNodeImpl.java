@@ -17,12 +17,13 @@
  */
 package com.clueride.domain.dev.rec;
 
-import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_SEGMENT_AND_NODE;
-
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
+import com.google.common.base.Objects;
+
+import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_SEGMENT_AND_NODE;
 
 /**
  * Description.
@@ -67,4 +68,11 @@ public class ToSegmentAndNodeImpl extends OnTrackImpl implements
         return node;
     }
 
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("segment", segment)
+                .add("node", node)
+                .toString();
+    }
 }

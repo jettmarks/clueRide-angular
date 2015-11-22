@@ -1,0 +1,22 @@
+
+@media screen and (orientation:portrait) {
+    .location {
+        height: 80%;
+    }
+
+    .loc-description {
+        height: 20%;
+    }
+}
+
+@media screen and (orientation:landscape) {
+    .location {
+        height: 100%;
+        width: 60%
+    }
+
+    .loc-description {
+        height: 100%;
+        width: 40%
+    }
+}

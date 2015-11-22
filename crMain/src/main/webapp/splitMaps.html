@@ -47,8 +47,11 @@
 	Starting Point: <span ng-bind="selectedFeature.geometry.coordinates[0]"></span>
 	Ending Point: <span ng-bind="selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length-1]"></span>
 	<where-am-i></where-am-i>
+    <show-nodes></show-nodes>
 	<p> Segment ID: <span ng-bind="selectedSegment.properties.segId"></span>
 	<p> <span><button ng-click="NetworkRefresh.refresh()">Refresh</button></span>
 	<p> Network Segments: <span ng-bind="NetworkRefresh.segments()"></span><p>
+    <p> Center: {{center.lat | number:5}}, {{center.lng | number:5}}
+</span></p>
 </body>
 </html>
