@@ -6,7 +6,7 @@
     module = angular.module('team', ['ngResource']);
 
     module.factory('TeamResource', function ($resource) {
-        return $resource('/player/rest/team', {}, {
+        return $resource('/rest/team', {}, {
             get: {
                 method: 'GET',
                 params: {},
