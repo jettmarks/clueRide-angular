@@ -10,5 +10,9 @@
     </div>
     <div class="loc-description">
         {{location.name}}
+        <div>
+            <uib-pagination direction-links="false" total-items="5" items-per-page="1"
+                            ng-model="currentPage" ng-change="pageChanged()"></uib-pagination>
+        </div>
     </div>
 </div>

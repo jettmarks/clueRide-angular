@@ -1,19 +1,28 @@
+<link href="js/clue/clue.css" rel="stylesheet">
 <div class="modal" ui-if='solveClue' ui-state='solveClue'>
   <div class="modal-backdrop in"></div>
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content" ng-controller="ClueController">
+      <form>
       <div class="modal-header">
         <button class="close" 
                 ui-turn-off="solveClue">&times;</button>
-        <h4 class="modal-title">Solve Clue</h4>
+        <h4 class="modal-title" ng-bind="clue.question"></h4>
       </div>
       <div class="modal-body">
-        <p>Dialog for Solving a Clue</p>
+        <uib-tabset vertical="true" type="pills">
+          <div ng-repeat="answer in clue.answers">
+            <div ng-repeat="(key,value) in answer">
+              <uib-tab heading="{{key}}: {{value}}">Selected: {{key}}</uib-tab>
+            </div>
+          </div>
+        </uib-tabset>
       </div>
       <div class="modal-footer">
-        <button ui-turn-off="solveClue" class="btn btn-default">Close</button>
-        <button ui-turn-off="solveClue" class="btn btn-primary">Save changes</button>
+        <button ui-turn-off="solveClue" class="btn btn-default">Not sure just yet</button>
+        <button ui-turn-off="solveClue" class="btn btn-primary">Check my Answer</button>
       </div>
+      </form>
     </div>
   </div>
 </div>
