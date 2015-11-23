@@ -2,17 +2,21 @@
     'use strict';
 
     var module = angular.module('gps', []),
-        gpsMode;
+        gpsMode = {
+            hasGps: false,
+            agreeToTether: false,
+            previousAgreeToTether: false
+        };
 
     module.controller('GpsController', ['$scope',
         function ($scope) {
-            gpsMode = {
-                hasGps: false,
-                agreeToTether: false
-            }
-
             $scope.gpsMode = gpsMode;
+            gpsMode.previousAgreeToTether = gpsMode.agreeToTether;
             gpsMode.hasGps = navigator.geolocation;
+
+            $scope.tetherCancel = function () {
+                gpsMode.agreeToTether = gpsMode.previousAgreeToTether;
+            }
         }
     ]);
 

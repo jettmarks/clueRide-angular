@@ -1,22 +1,36 @@
-<div class="modal" ui-if='setGpsMode' ui-state='setGpsMode'>
-  <div class="modal-backdrop in"></div>
+<link href="js/gps/gps.css" rel="stylesheet">
+
+<div class="modal modal-overlay" ui-if='setGpsMode' ui-state='setGpsMode'>
   <div class="modal-dialog">
     <div class="modal-content" ng-controller="GpsController">
       <div class="modal-header">
-        <button class="close" 
+        <button class="close"
                 ui-turn-off="setGpsMode">&times;</button>
         <div ng-if="gpsMode.hasGps">
-          <h4 class="modal-title">Your device is capable of tracking location</h4>
+          <h4 class="modal-title">Location Reporting: YES</h4>
         </div>
         <div ng-if="!gpsMode.hasGps">
-          <h4 class="modal-title">Your device is unable to provide your location</h4>
+          <h4 class="modal-title">Location Reporting: Must Tether</h4>
         </div>
       </div>
       <div class="modal-body">
-        <p>Dialog for Setting up GPS Mode</p>
+        <p>This device can report your position, but you can save battery,
+          and still play, if you "tether" to the Team Leader's position.
+        </p>
+        <div id="tetherToggleContainer">
+          <div id="tetherToggleSwitch" ui-switch ng-model="gpsMode.agreeToTether"></div>
+          <div id="tetherToggleTitle">Tether this Device</div>
+        </div>
+        <div ng-if="!gpsMode.agreeToTether">
+          Your position on the maps is shown by your device.  Upon first visiting the map,
+          you'll be asked to confirm allowing your device to provide current position data.
+        </div>
+        <div ng-if="gpsMode.agreeToTether">
+          Your position on the maps is tethered to the Team Leader's position.
+        </div>
       </div>
       <div class="modal-footer">
-        <button ui-turn-off="setGpsMode" class="btn btn-default">Close</button>
+        <button ui-turn-off="setGpsMode" ng-click="tetherCancel()" class="btn btn-default">Cancel</button>
         <button ui-turn-off="setGpsMode" class="btn btn-primary">Save changes</button>
       </div>
     </div>
