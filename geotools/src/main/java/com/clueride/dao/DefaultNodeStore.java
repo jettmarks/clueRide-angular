@@ -35,12 +35,12 @@ import com.clueride.io.JsonStoreType;
 import com.clueride.io.JsonUtil;
 
 /**
- * Implementation of LocationStore using file system.
+ * Implementation of NodeStore using file system.
  *
  * @author jett
  *
  */
-public class DefaultLocationStore implements LocationStore {
+public class DefaultNodeStore implements NodeStore {
 
     /** Storage for Locations; typically the endpoints of Segments. */
     private static final String LOCATIONS_FILE_NAME = "locations.geojson";
@@ -53,16 +53,16 @@ public class DefaultLocationStore implements LocationStore {
     private Set<NodeGroup> nodeGroups = new HashSet<>();
     private Map<Integer, Node> nodeMap = new HashMap<>();
 
-    private static DefaultLocationStore instance;
+    private static DefaultNodeStore instance;
 
     /**
      * Singleton used for supplying Locations from our Store.
      * 
-     * @return LocationStore instance for accessing Locations.
+     * @return NodeStore instance for accessing Locations.
      */
-    public static LocationStore getInstance() {
+    public static NodeStore getInstance() {
         if (instance == null) {
-            instance = new DefaultLocationStore();
+            instance = new DefaultNodeStore();
         }
         return instance;
     }
@@ -70,11 +70,11 @@ public class DefaultLocationStore implements LocationStore {
     /**
      * Use {@link:getInstance()}
      */
-    private DefaultLocationStore() {
+    private DefaultNodeStore() {
     }
 
     /**
-     * @see com.clueride.dao.LocationStore#getStoreLocation()
+     * @see NodeStore#getStoreLocation()
      */
     @Override
     public String getStoreLocation() {
@@ -82,7 +82,7 @@ public class DefaultLocationStore implements LocationStore {
     }
 
     /**
-     * @see com.clueride.dao.LocationStore#persistAndReload()
+     * @see NodeStore#persistAndReload()
      */
     @Override
     public void persistAndReload() throws IOException {
@@ -111,7 +111,7 @@ public class DefaultLocationStore implements LocationStore {
     }
 
     /**
-     * @see com.clueride.dao.LocationStore#persistAndReload()
+     * @see NodeStore#persistAndReload()
      */
     public void persistAndReloadGroups() throws IOException {
         JsonUtil storageUtil = new JsonUtil(ourStoreType);
@@ -129,7 +129,7 @@ public class DefaultLocationStore implements LocationStore {
     }
 
     /**
-     * @see com.clueride.dao.LocationStore#getLocations()
+     * @see NodeStore#getLocations()
      */
     @Override
     public Set<GeoNode> getLocations() {
@@ -162,7 +162,7 @@ public class DefaultLocationStore implements LocationStore {
     }
 
     /**
-     * @see com.clueride.dao.LocationStore#getLocationGroups()
+     * @see NodeStore#getLocationGroups()
      */
     @Override
     public Set<NodeGroup> getLocationGroups() {
@@ -195,7 +195,7 @@ public class DefaultLocationStore implements LocationStore {
     }
 
     /**
-     * @see com.clueride.dao.LocationStore#getNodeById(java.lang.Integer)
+     * @see NodeStore#getNodeById(java.lang.Integer)
      */
     @Override
     public Node getNodeById(Integer id) {
@@ -206,7 +206,7 @@ public class DefaultLocationStore implements LocationStore {
      * Assumption is that this is a newly created node which has not yet
      * received an ID or has been placed in our datastore.
      * 
-     * @see com.clueride.dao.LocationStore#addNew(com.clueride.domain.dev.Node)
+     * @see NodeStore#addNew(com.clueride.domain.dev.Node)
      */
     @Override
     public Integer addNew(Node node) {
@@ -218,7 +218,7 @@ public class DefaultLocationStore implements LocationStore {
     }
 
     /**
-     * @see com.clueride.dao.LocationStore#addNew(com.clueride.domain.dev.NodeGroup)
+     * @see NodeStore#addNew(com.clueride.domain.dev.NodeGroup)
      */
     @Override
     public Integer addNew(NodeGroup nodeGroup) {

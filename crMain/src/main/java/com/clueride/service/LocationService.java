@@ -17,8 +17,8 @@
  */
 package com.clueride.service;
 
-import com.clueride.dao.DefaultLocationStore;
-import com.clueride.dao.LocationStore;
+import com.clueride.dao.DefaultNodeStore;
+import com.clueride.dao.NodeStore;
 import com.clueride.dao.NetworkProposalStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
@@ -61,7 +61,7 @@ public class LocationService {
     private Network network = DefaultNetwork.getInstance();
 
     private static int countBuildNewLocRequests;
-    private static LocationStore locationStore = DefaultLocationStore
+    private static NodeStore nodeStore = DefaultNodeStore
             .getInstance();
 
     /**
@@ -209,7 +209,7 @@ public class LocationService {
         // feature = TranslateUtil.groupNodeToFeature(nodeGroup);
         // featureList.add(feature);
 
-        Set<NodeGroup> nodeGroups = locationStore.getLocationGroups();
+        Set<NodeGroup> nodeGroups = nodeStore.getLocationGroups();
         for (NodeGroup nodeGroup : nodeGroups) {
             featureList.add(TranslateUtil
                     .groupNodeToFeature((DefaultNodeGroup) nodeGroup));
@@ -227,11 +227,11 @@ public class LocationService {
      * @return
      */
     public String setLocationGroup(Integer id, Double lat, Double lon) {
-        NodeGroup nodeGroup = (NodeGroup) locationStore.getNodeById(id);
+        NodeGroup nodeGroup = (NodeGroup) nodeStore.getNodeById(id);
         nodeGroup.setLat(lat);
         nodeGroup.setLon(lon);
         try {
-            locationStore.persistAndReload();
+            nodeStore.persistAndReload();
         } catch (IOException e) {
             e.printStackTrace();
             return "{status: failed}";
@@ -349,7 +349,7 @@ public class LocationService {
     private static NetworkProposal buildAllNodesProposal() {
         NewLocProposal newLocProposal = new NewLocProposal(new DefaultGeoNode());
         DiagnosticRec diagRec = new DiagnosticRec(null);
-        for (GeoNode geoNode : locationStore.getLocations()) {
+        for (GeoNode geoNode : nodeStore.getLocations()) {
             diagRec.addFeature(TranslateUtil.geoNodeToFeature(geoNode));
         }
         newLocProposal.add(diagRec);

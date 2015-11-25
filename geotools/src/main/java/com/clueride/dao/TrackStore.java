@@ -24,7 +24,7 @@ import com.clueride.feature.LineFeature;
 import com.clueride.feature.TrackFeature;
 
 /**
- * Similar to LocationStore except the Track Store is read-only from the
+ * Similar to NodeStore except the Track Store is read-only from the
  * Clue-Ride perspective; we're using other tools to create GPX files and
  * persist the JSON stores that this store brings into memory.
  *

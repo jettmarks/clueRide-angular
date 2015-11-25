@@ -74,7 +74,7 @@ public class DefaultNetwork implements Network {
     private List<LineString> allLineStrings = new ArrayList<>();
     private Set<GeoNode> nodeSet;
     private NetworkStore networkStore;
-    private LocationStore locationStore;
+    private NodeStore nodeStore;
     private TrackStore trackStore;
     private int count;
 
@@ -102,7 +102,7 @@ public class DefaultNetwork implements Network {
                     .lineFeatureSetToFeatureCollection(allLineFeatures);
 
             trackStore = LoadService.getInstance().loadTrackStore();
-            locationStore = DefaultLocationStore.getInstance();
+            nodeStore = DefaultNodeStore.getInstance();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,12 +116,12 @@ public class DefaultNetwork implements Network {
      *
      * Moving toward nodes with IDs, it would be good to persist the segments
      * that way, but we're not quite there yet. Dropping in a verification
-     * process that checks the endpoints against the LocationStore's idea of our
+     * process that checks the endpoints against the NodeStore's idea of our
      * node set.
      *
      */
     private void init() {
-        nodeSet = locationStore.getLocations();
+        nodeSet = nodeStore.getLocations();
         allLineStrings = new ArrayList<>();
 
         // TODO: Move from featureCollection to reliance on the Stores
@@ -149,7 +149,7 @@ public class DefaultNetwork implements Network {
         featureCollection = defaultFeatureCollection;
         try {
             trackStore = LoadService.getInstance().loadTrackStore();
-            locationStore = DefaultLocationStore.getInstance();
+            nodeStore = DefaultNodeStore.getInstance();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -303,7 +303,7 @@ public class DefaultNetwork implements Network {
      */
     private Integer withinLocationGroup(GeoNode geoNode) {
         Integer matchingId = -1;
-        Set<NodeGroup> locGroups = DefaultLocationStore.getInstance()
+        Set<NodeGroup> locGroups = DefaultNodeStore.getInstance()
                 .getLocationGroups();
         for (NodeGroup nodeGroup : locGroups) {
             Point point = ((DefaultNodeGroup) nodeGroup).getPoint();
@@ -515,7 +515,7 @@ public class DefaultNetwork implements Network {
             }
 
             // Check our list of Location Groups
-            for (NodeGroup nodeGroup : DefaultLocationStore.getInstance()
+            for (NodeGroup nodeGroup : DefaultNodeStore.getInstance()
                     .getLocationGroups()) {
                 Point point = ((DefaultGeoNode) nodeGroup).getPoint();
                 if (point.buffer(LOC_GROUP_RADIUS_DEG).intersects(
@@ -732,10 +732,10 @@ public class DefaultNetwork implements Network {
         GeoNode endNode = (GeoNode) brandNewSegment.getEnd();
 
         // Save our new nodes
-        locationStore.addNew(startNode);
-        locationStore.addNew(endNode);
+        nodeStore.addNew(startNode);
+        nodeStore.addNew(endNode);
         try {
-            locationStore.persistAndReload();
+            nodeStore.persistAndReload();
         } catch (IOException e) {
             e.printStackTrace();
         }

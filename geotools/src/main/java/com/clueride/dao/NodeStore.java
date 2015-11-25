@@ -30,7 +30,7 @@ import com.clueride.domain.dev.NodeGroup;
  * @author jett
  *
  */
-public interface LocationStore {
+public interface NodeStore {
 
     /**
      * Tells us where the location data can be found.

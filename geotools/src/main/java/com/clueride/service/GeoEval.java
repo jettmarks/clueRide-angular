@@ -21,15 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.clueride.dao.*;
 import org.apache.log4j.Logger;
 
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.DefaultLocationStore;
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.DefaultTrackStore;
-import com.clueride.dao.LocationStore;
-import com.clueride.dao.NetworkStore;
-import com.clueride.dao.TrackStore;
+import com.clueride.dao.NodeStore;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeGroup;
@@ -57,7 +53,7 @@ public class GeoEval {
     private static GeoEval instance;
     private static final Double LOC_GROUP_RADIUS_DEG = (Double) GeoProperties
             .getInstance().get("group.radius.degrees");
-    private static final LocationStore LOCATION_STORE = DefaultLocationStore
+    private static final NodeStore LOCATION_STORE = DefaultNodeStore
             .getInstance();
     private static final NetworkStore EDGE_STORE = DefaultNetworkStore
             .getInstance();

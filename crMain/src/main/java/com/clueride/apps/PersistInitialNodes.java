@@ -20,9 +20,9 @@ package com.clueride.apps;
 import java.io.IOException;
 import java.util.Set;
 
-import com.clueride.dao.DefaultLocationStore;
+import com.clueride.dao.DefaultNodeStore;
 import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.LocationStore;
+import com.clueride.dao.NodeStore;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 
@@ -40,13 +40,13 @@ public class PersistInitialNodes {
      */
     public static void main(String[] args) {
         Set<Edge> segments = DefaultNetworkStore.getInstance().getEdges();
-        LocationStore locationStore = DefaultLocationStore.getInstance();
+        NodeStore nodeStore = DefaultNodeStore.getInstance();
         for (Edge segment : segments) {
-            locationStore.addNew((GeoNode) segment.getStart());
-            locationStore.addNew((GeoNode) segment.getEnd());
+            nodeStore.addNew((GeoNode) segment.getStart());
+            nodeStore.addNew((GeoNode) segment.getEnd());
         }
         try {
-            locationStore.persistAndReload();
+            nodeStore.persistAndReload();
         } catch (IOException e) {
             e.printStackTrace();
         }

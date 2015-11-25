@@ -18,9 +18,9 @@
 package com.clueride.service;
 
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.DefaultLocationStore;
+import com.clueride.dao.DefaultNodeStore;
 import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.LocationStore;
+import com.clueride.dao.NodeStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
@@ -60,7 +60,7 @@ import static com.clueride.geo.SplitLineString.START;
 public class TrackEval {
     private static final Logger LOGGER = Logger.getLogger(TrackEval.class);
     /** Our picture of the current network. */
-    private static final LocationStore LOCATION_STORE = DefaultLocationStore
+    private static final NodeStore LOCATION_STORE = DefaultNodeStore
             .getInstance();
     private static final NetworkStore EDGE_STORE = DefaultNetworkStore
             .getInstance();
