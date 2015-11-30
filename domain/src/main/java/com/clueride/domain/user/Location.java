@@ -17,12 +17,237 @@
  */
 package com.clueride.domain.user;
 
+import com.clueride.service.IdProvider;
+import com.clueride.service.MemoryBasedLocationIdProvider;
+import com.google.common.base.Optional;
+
+import javax.annotation.concurrent.Immutable;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.Objects.requireNonNull;
+
 /**
- * Description.
+ * Holds the data for a Point of Interest, or easier to say, a Location.
  *
  * @author jett
- *
  */
-public interface Location {
+@Immutable
+public class Location {
+    private final Integer id;
+    private final String name;
+    private final String description;
+    private final LocationType locationType;
+    private final Integer nodeId;
+    private final List<Clue> clues;
+    private final List<URL> imageUrls;
+    private final Optional<Integer> locationGroupId;
+    private final Optional<Establishment> establishment;
+    private final Map<String,Double> tagScores;
 
+    public Location(Builder builder) {
+        // Required values
+        id = requireNonNull(builder.getId(), "Location ID missing");
+        name = requireNonNull(builder.getName(), "Location name missing");
+        description = requireNonNull(builder.getDescription(), "Location description missing");
+        locationType = requireNonNull(builder.getLocationType(), "Location Type missing");
+        nodeId = requireNonNull(builder.getNodeId(), "Location Node (point) missing");
+        // Lists that cannot be empty
+        imageUrls = requireNonNull(builder.getImageUrls(), "Location images missing");
+        if (imageUrls.isEmpty()) {
+            throw new IllegalArgumentException("Location must have at least one image");
+        }
+        clues = requireNonNull(builder.getClues(), "Location clues missing");
+        if (clues.isEmpty()) {
+            throw new IllegalArgumentException("Location must have at least one clue");
+        }
+
+        // Possibly empty list
+        tagScores = requireNonNull(builder.getTagScores());
+
+        // Optional values
+        locationGroupId = builder.getLocationGroupId();
+        establishment = builder.getEstablishment();
+    }
+
+    /**
+
+     * Human readable name for this location.
+     * Shows up in headings for the Location, Lists of Locations, and as pop-ups on the map.
+     * @return String representing human-readable name of Location.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Textual description of this Location.
+     * Describes why this location is interesting.
+     * @return String representing a description of this Location.
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Enumeration of the type of Location.
+     * Plays a role in helping select locations and categorizes them.
+     * @return
+     */
+    public LocationType getLocationType() {
+        return locationType;
+    };
+
+    /**
+     * Link over to the geographical representation of this Location.
+     * @return ID of the Node associated with this location for placement on a map.
+     */
+    public Integer getNodeId() {
+        return nodeId;
+    }
+
+    /**
+     * List of Strings that in addition to LocationType, each categorize the location.
+     * Perhaps a placeholder at this time until I think through further what sorts of tags might be applied.
+     * @return Set of Strings, one for each tag added to this location.
+     */
+    public Set<String> getTags() {
+        return tagScores.keySet();
+    }
+
+    // TODO: not settled on this API
+    public Optional<Double> getScorePerTag(String tag) {
+        return Optional.of(tagScores.get(tag));
+    }
+
+    public Optional<Integer> getLocationGroupId() {
+        return locationGroupId;
+    }
+
+    public List<Clue> getClues() {
+        return clues;
+    }
+
+    public Optional<Establishment> getEstablishment() {
+        return establishment;
+    }
+
+    public List<URL> getImageUrls() {
+        return imageUrls;
+    }
+
+    public static final class Builder {
+        private String name;
+        private String description;
+        private LocationType locationType;
+        private Integer nodeId;
+        private List<Clue> clues;
+        private List<URL> imageUrls;
+
+        private Establishment establishment;
+        private Integer locationGroupId;
+        private Map<String,Double> tagScores = new HashMap<>();
+
+        private IdProvider idProvider;
+
+        private Builder() {
+            idProvider = new MemoryBasedLocationIdProvider();
+        }
+
+        public Integer getId() {
+            return idProvider.getId();
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public Builder setDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public LocationType getLocationType() {
+            return locationType;
+        }
+
+        public Builder setLocationType(LocationType locationType) {
+            this.locationType = locationType;
+            return this;
+        }
+
+        public Integer getNodeId() {
+            return nodeId;
+        }
+
+        public Builder setNodeId(Integer nodeId) {
+            this.nodeId = nodeId;
+            return this;
+        }
+
+        public Map<String, Double> getTagScores() {
+            return tagScores;
+        }
+
+        public Builder setTagScores(Map<String, Double> tagScores) {
+            this.tagScores = tagScores;
+            return this;
+        }
+
+        public Optional<Integer> getLocationGroupId() {
+            return Optional.fromNullable(locationGroupId);
+        }
+
+        public Builder setLocationGroupId(Integer locationGroupId) {
+            this.locationGroupId = locationGroupId;
+            return this;
+        }
+
+        public List<Clue> getClues() {
+            return clues;
+        }
+
+        public Builder setClues(List<Clue> clues) {
+            this.clues = clues;
+            return this;
+        }
+
+        public Optional<Establishment> getEstablishment() {
+            return Optional.fromNullable(establishment);
+        }
+
+        public Builder setEstablishment(Establishment establishment) {
+            this.establishment = establishment;
+            return this;
+        }
+
+        public List<URL> getImageUrls() {
+            return imageUrls;
+        }
+
+        public Builder setImageUrls(List<URL> imageUrls) {
+            this.imageUrls = imageUrls;
+            return this;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public Location build() {
+            return new Location(this);
+        }
+    }
 }
