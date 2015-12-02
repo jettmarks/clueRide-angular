@@ -17,16 +17,16 @@
  */
 package com.clueride.apps;
 
-import java.util.Set;
-
 import com.clueride.dao.DefaultNetworkStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.feature.Edge;
 import com.clueride.feature.FeatureType;
 import com.clueride.feature.LineFeature;
+import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
+
+import java.util.Set;
 
 /**
  * Name of this class explains pretty well that we're taking a Feature
@@ -64,7 +64,7 @@ public class NetworkFeatureCollectionToIndividualFiles {
         }
 
         // Instance for writing Edges out to disk (test directories for now)
-        JsonUtil jsonUtilEdgeOut = new JsonUtil(JsonStoreType.EDGE);
+        GeoJsonUtil jsonUtilEdgeOut = new GeoJsonUtil(JsonStoreType.EDGE);
 
         for (LineFeature lineFeature : lineFeatures) {
             Edge edge = new EdgeImpl(lineFeature.getFeature());

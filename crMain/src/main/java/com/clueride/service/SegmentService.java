@@ -23,8 +23,8 @@ import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
+import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 
@@ -50,11 +50,11 @@ public class SegmentService {
     public static String getFeatureCollection(JsonStoreType type) {
         LOGGER.debug("Requesting Feature Collection for " + type);
         String result = "";
-        JsonUtil jsonUtil = new JsonUtil(type);
+        GeoJsonUtil geoJsonUtil = new GeoJsonUtil(type);
         try {
-            DefaultFeatureCollection features = jsonUtil
+            DefaultFeatureCollection features = geoJsonUtil
                     .readFeatureCollection();
-            result = jsonUtil.toString(features);
+            result = geoJsonUtil.toString(features);
         } catch (IOException e) {
             e.printStackTrace();
         }

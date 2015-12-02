@@ -45,8 +45,8 @@ import java.util.List;
  * @author jett
  *
  */
-public class JsonUtil {
-    private static final Logger LOGGER = Logger.getLogger(JsonUtil.class);
+public class GeoJsonUtil {
+    private static final Logger LOGGER = Logger.getLogger(GeoJsonUtil.class);
 
     private static int DIGITS_OF_PRECISION = 5;
 
@@ -55,12 +55,12 @@ public class JsonUtil {
 
     private boolean haveSchema = false;
 
-    public JsonUtil(JsonStoreType storeType) {
+    public GeoJsonUtil(JsonStoreType storeType) {
         currentType = storeType;
         currentPath = JsonStoreLocation.toString(currentType);
     }
 
-    public JsonUtil(String path) {
+    public GeoJsonUtil(String path) {
         currentType = JsonStoreType.OTHER;
         currentPath = path;
     }

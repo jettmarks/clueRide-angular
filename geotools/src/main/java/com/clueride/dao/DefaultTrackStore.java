@@ -17,21 +17,20 @@
  */
 package com.clueride.dao;
 
+import com.clueride.domain.TrackFeatureImpl;
+import com.clueride.feature.LineFeature;
+import com.clueride.feature.TrackFeature;
+import com.clueride.io.GeoJsonUtil;
+import com.clueride.io.JsonStoreType;
+import org.apache.log4j.Logger;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
-import org.geotools.feature.DefaultFeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
-
-import com.clueride.domain.TrackFeatureImpl;
-import com.clueride.feature.LineFeature;
-import com.clueride.feature.TrackFeature;
-import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
 
 /**
  * TODO: Description.
@@ -47,7 +46,7 @@ public class DefaultTrackStore implements TrackStore {
 
     private static DefaultTrackStore instance = null;
     private static Map<Integer, TrackFeature> trackPerId = new HashMap<>();
-    private static JsonUtil jsonUtilTracks = new JsonUtil(JsonStoreType.RAW);
+    private static GeoJsonUtil jsonUtilTracks = new GeoJsonUtil(JsonStoreType.RAW);
 
     public static DefaultTrackStore getInstance() {
         if (instance == null) {

@@ -20,8 +20,8 @@ package com.clueride.domain.dev;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.rec.NetworkRecImpl;
 import com.clueride.geo.TranslateUtil;
+import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
@@ -93,7 +93,7 @@ public class NewLocProposal implements NetworkProposal {
     @Override
     public String toJson() {
         getNodeNetworkState();  // Triggers evaluation of the state
-        JsonUtil jsonRespWriter = new JsonUtil(JsonStoreType.OTHER);
+        GeoJsonUtil jsonRespWriter = new GeoJsonUtil(JsonStoreType.OTHER);
         DefaultFeatureCollection fcPoints = new DefaultFeatureCollection();
         DefaultFeatureCollection fcNonPoints = new DefaultFeatureCollection();
         // Feature for the New Location we're adding; Rec should not provide this

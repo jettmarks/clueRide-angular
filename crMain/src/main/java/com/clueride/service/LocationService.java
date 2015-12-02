@@ -18,8 +18,8 @@
 package com.clueride.service;
 
 import com.clueride.dao.DefaultNodeStore;
-import com.clueride.dao.NodeStore;
 import com.clueride.dao.NetworkProposalStore;
+import com.clueride.dao.NodeStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
@@ -33,8 +33,8 @@ import com.clueride.feature.TrackFeature;
 import com.clueride.geo.DefaultNetwork;
 import com.clueride.geo.Network;
 import com.clueride.geo.TranslateUtil;
+import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
 import com.clueride.service.builder.NewLocRecBuilder;
 import com.clueride.service.builder.TrackRecBuilder;
 import com.vividsolutions.jts.geom.LineString;
@@ -215,9 +215,9 @@ public class LocationService {
                     .groupNodeToFeature((DefaultNodeGroup) nodeGroup));
         }
 
-        JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
-        // return (jsonUtil.toString(featureList));
-        return (jsonUtil.toString(featureList));
+        GeoJsonUtil geoJsonUtil = new GeoJsonUtil(JsonStoreType.LOCATION);
+        // return (geoJsonUtil.toString(featureList));
+        return (geoJsonUtil.toString(featureList));
     }
 
     /**

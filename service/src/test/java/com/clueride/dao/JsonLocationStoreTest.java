@@ -17,8 +17,17 @@
  */
 package com.clueride.dao;
 
+import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.Location;
+import com.clueride.domain.user.LocationType;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.testng.Assert.assertNotNull;
 
@@ -26,15 +35,48 @@ import static org.testng.Assert.assertNotNull;
  * TODO: Description.
  */
 public class JsonLocationStoreTest {
+    private Location.Builder builder;
+
+    @BeforeMethod
+    public void setUp() throws MalformedURLException {
+        builder = getLocationBuilder();
+    }
+
+    private Location.Builder getLocationBuilder() throws MalformedURLException {
+        // Test values
+        String expectedName = "Test Location";
+        String expectedDescription = "Here's a nice spot to spread out the blanket or toss the frisbee.";
+        LocationType expectedLocationType = LocationType.PICNIC;
+        Integer expectedNodeId = 123;
+        List<Clue> expectedClues = new ArrayList<>();
+        List<URL> expectedImageUrls = new ArrayList<>();
+        expectedImageUrls.add(new URL("https://clueride.com/"));
+        expectedClues.add(new Clue());
+
+        builder = Location.Builder.builder()
+                .setName(expectedName)
+                .setDescription(expectedDescription)
+                .setLocationType(expectedLocationType)
+                .setNodeId(expectedNodeId)
+                .setClues(expectedClues)
+                .setImageUrls(expectedImageUrls);
+        return builder;
+    }
 
     @Test
     public void testAddNew() throws Exception {
-        Location location = new Location();
+        Location location = builder.build();
         LocationStore locationStore = JsonLocationStore.getInstance();
         assertNotNull(locationStore);
 
         Integer id = locationStore.addNew(location);
         assertNotNull(id);
+
+        System.out.println("Location ID: " + id);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String locationAsJson = objectMapper.writeValueAsString(location);
+        System.out.println("As JSON: ");
+        System.out.println(locationAsJson);
     }
 
     @Test

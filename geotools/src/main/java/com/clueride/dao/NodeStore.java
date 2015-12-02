@@ -75,7 +75,7 @@ public interface NodeStore {
      * Brings the geometry and other details for creation of a new Node along
      * with the assignment of an ID.
      * 
-     * @param newly created Node, ready to persist.
+     * @param node which is newly created, ready to persist.
      * @return id of the newly created Node.
      */
     Integer addNew(Node node);
