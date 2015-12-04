@@ -19,6 +19,7 @@ package com.clueride.io;
 
 import com.clueride.domain.user.Location;
 import com.clueride.service.MemoryBasedLocationIdProvider;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
@@ -104,5 +105,9 @@ public class PojoJsonUtil {
             throw new FileNotFoundException(locationFile.getName());
         }
         return loadLocation(locationFile);
+    }
+
+    public static String generateLocation(Location location) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(location);
     }
 }

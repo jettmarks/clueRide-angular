@@ -26,7 +26,7 @@ import java.util.List;
 import static org.testng.Assert.*;
 
 /**
- * TODO: Exercises the PojoJsonUtilTest class.
+ * Exercises the PojoJsonUtilTest class.
  */
 public class PojoJsonUtilTest {
 
@@ -51,6 +51,6 @@ public class PojoJsonUtilTest {
     public void testLoadLocationId() throws Exception {
         Location location = PojoJsonUtil.loadLocationId(1);
         assertNotNull(location);
-        assertEquals(location.getId(), new Integer(1));
+        assertEquals(location.getId(), new Integer(2));
     }
 }

@@ -33,6 +33,15 @@ public class JsonLocationStore implements LocationStore {
 
     private List<Location> locations = new ArrayList<>();
 
+    /**
+     * Returns an instance of JsonLocationStore appropriate for reading/writing
+     * locations to a JSON-based set of files.
+     * @return
+     */
+    public static LocationStore getInstance() {
+        return instance;
+    }
+
     // TODO: will eventually read from disk
     private JsonLocationStore() {
         loadAll();
@@ -41,6 +50,7 @@ public class JsonLocationStore implements LocationStore {
     private void loadAll() {
 
     }
+
 
     @Override
     public Integer addNew(Location location) {
@@ -57,7 +67,6 @@ public class JsonLocationStore implements LocationStore {
         return location.getId();
     }
 
-
     @Override
     public Location getLocationById(Integer id) {
         return null;
@@ -66,14 +75,5 @@ public class JsonLocationStore implements LocationStore {
     @Override
     public List<Location> getLocations() {
         return null;
-    }
-
-    /**
-     * Returns an instance of JsonLocationStore appropriate for reading/writing
-     * locations to a JSON-based set of files.
-     * @return
-     */
-    public static LocationStore getInstance() {
-        return instance;
     }
 }
