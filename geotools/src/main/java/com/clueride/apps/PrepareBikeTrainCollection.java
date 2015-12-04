@@ -17,12 +17,11 @@
  */
 package com.clueride.apps;
 
-import java.io.IOException;
-
+import com.clueride.io.GeoJsonUtil;
+import com.clueride.io.JsonStoreType;
 import org.geotools.feature.DefaultFeatureCollection;
 
-import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
+import java.io.IOException;
 
 /**
  * Description.
@@ -36,8 +35,8 @@ public class PrepareBikeTrainCollection {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		JsonUtil jsonUtilBikeTrain = new JsonUtil(JsonStoreType.RAW);
-		JsonUtil jsonUtilLocal = new JsonUtil(".");
+		GeoJsonUtil jsonUtilBikeTrain = new GeoJsonUtil(JsonStoreType.RAW);
+		GeoJsonUtil jsonUtilLocal = new GeoJsonUtil(".");
 
 		try {
 			DefaultFeatureCollection features = jsonUtilBikeTrain

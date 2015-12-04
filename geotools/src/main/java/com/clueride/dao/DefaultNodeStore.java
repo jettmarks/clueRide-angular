@@ -17,22 +17,21 @@
  */
 package com.clueride.dao;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.geotools.feature.DefaultFeatureCollection;
-
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.factory.NodeFactory;
 import com.clueride.geo.TranslateUtil;
+import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
+import org.geotools.feature.DefaultFeatureCollection;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of NodeStore using file system.
@@ -42,7 +41,7 @@ import com.clueride.io.JsonUtil;
  */
 public class DefaultNodeStore implements NodeStore {
 
-    /** Storage for Locations; typically the endpoints of Segments. */
+    /** Storage for Nodes; typically the endpoints of Segments. */
     private static final String LOCATIONS_FILE_NAME = "locations.geojson";
     /** Storage for LocGroup objects. */
     private static final String LOCATION_GROUPS_FILE_NAME = "locationGroups.geojson";
@@ -95,7 +94,7 @@ public class DefaultNodeStore implements NodeStore {
      * 
      */
     public void persistAndReloadLocations() throws IOException {
-        JsonUtil storageUtil = new JsonUtil(ourStoreType);
+        GeoJsonUtil storageUtil = new GeoJsonUtil(ourStoreType);
         DefaultFeatureCollection featureCollection = TranslateUtil
                 .nodesToFeatureCollection(nodes);
         storageUtil.writeFeaturesToFile(featureCollection,
@@ -114,7 +113,7 @@ public class DefaultNodeStore implements NodeStore {
      * @see NodeStore#persistAndReload()
      */
     public void persistAndReloadGroups() throws IOException {
-        JsonUtil storageUtil = new JsonUtil(ourStoreType);
+        GeoJsonUtil storageUtil = new GeoJsonUtil(ourStoreType);
         DefaultFeatureCollection featureCollection = TranslateUtil
                 .groupNodesToFeatureCollection(nodeGroups);
         storageUtil.writeFeaturesToFile(featureCollection,
@@ -143,7 +142,7 @@ public class DefaultNodeStore implements NodeStore {
      * 
      */
     private void loadLocationsFromDefault() {
-        JsonUtil storageUtil = new JsonUtil(ourStoreType);
+        GeoJsonUtil storageUtil = new GeoJsonUtil(ourStoreType);
         DefaultFeatureCollection featureCollection = null;
         try {
             featureCollection = storageUtil
@@ -176,7 +175,7 @@ public class DefaultNodeStore implements NodeStore {
      * 
      */
     private void loadGroupsFromDefault() {
-        JsonUtil storageUtil = new JsonUtil(ourStoreType);
+        GeoJsonUtil storageUtil = new GeoJsonUtil(ourStoreType);
         DefaultFeatureCollection featureCollection = null;
         try {
             featureCollection = storageUtil

@@ -17,15 +17,15 @@
  */
 package com.clueride.dao;
 
-import java.io.IOException;
-import java.util.Set;
-
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.NodeGroup;
 
+import java.io.IOException;
+import java.util.Set;
+
 /**
- * Manages the set of Locations.
+ * Manages the set of Nodes.
  *
  * @author jett
  *
@@ -33,14 +33,14 @@ import com.clueride.domain.dev.NodeGroup;
 public interface NodeStore {
 
     /**
-     * Tells us where the location data can be found.
+     * Tells us where the node data can be found.
      * 
      * @return
      */
     String getStoreLocation();
 
     /**
-     * Takes the current state of the locations, saves it to the store's
+     * Takes the current state of the nodes, saves it to the store's
      * location (with backup preferably), and then reloads from that store.
      * 
      * Can be used to initially load as well if the memory copy is empty.
@@ -75,17 +75,15 @@ public interface NodeStore {
      * Brings the geometry and other details for creation of a new Node along
      * with the assignment of an ID.
      * 
-     * @param segment
-     * @return
+     * @param node which is newly created, ready to persist.
+     * @return id of the newly created Node.
      */
     Integer addNew(Node node);
 
     /**
-     * Brings the geometry and other details for creation of a new Node along
-     * with the assignment of an ID.
-     * 
-     * @param segment
-     * @return
+     * Adds a newly created NodeGroup to the store and returns the ID that is assigned here.
+     * @param nodeGroup newly created and ready to persist
+     * @return id of the newly added NodeGroup.
      */
     Integer addNew(NodeGroup nodeGroup);
 

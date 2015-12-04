@@ -16,9 +16,9 @@ import java.util.List;
 
 import static org.testng.AssertJUnit.*;
 
-public class JsonUtilTest {
+public class GeoJsonUtilTest {
 
-    private JsonUtil toTest;
+    private GeoJsonUtil toTest;
 
     @BeforeMethod
     public void setup() {
@@ -30,7 +30,7 @@ public class JsonUtilTest {
      */
     @Test
     public void readEdges() {
-        toTest = new JsonUtil(JsonStoreType.EDGE);
+        toTest = new GeoJsonUtil(JsonStoreType.EDGE);
         try {
             List<Edge> edges = toTest.readEdges();
             assertNotNull(edges);
@@ -61,7 +61,7 @@ public class JsonUtilTest {
      */
     @Test
     public void readSegments() {
-        toTest = new JsonUtil(JsonStoreType.NETWORK);
+        toTest = new GeoJsonUtil(JsonStoreType.NETWORK);
         try {
             List<SegmentFeature> segments = toTest.readSegments();
             assertNotNull(segments);
@@ -73,7 +73,7 @@ public class JsonUtilTest {
 
 //    @Test
     public void readSegmentSchema() {
-        toTest = new JsonUtil(JsonStoreType.NETWORK);
+        toTest = new GeoJsonUtil(JsonStoreType.NETWORK);
         File file = new File("mainNetwork.geojson");
         SimpleFeatureType featureType = toTest.readSchema(file);
         assertNotNull(featureType);
@@ -82,7 +82,7 @@ public class JsonUtilTest {
 
 //    @Test
     public void setSegmentSchema() {
-        toTest = new JsonUtil(JsonStoreType.NETWORK);
+        toTest = new GeoJsonUtil(JsonStoreType.NETWORK);
         toTest.setSchemaType();
         DefaultFeatureCollection features = null;
         try {
@@ -98,7 +98,7 @@ public class JsonUtilTest {
 
 //     @Test
     public void readTrackSchema() {
-        toTest = new JsonUtil(JsonStoreType.RAW);
+        toTest = new GeoJsonUtil(JsonStoreType.RAW);
         File file = new File("514656.geojson");
         SimpleFeatureType featureType = toTest.readSchema(file);
         System.out.println(featureType);

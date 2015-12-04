@@ -25,9 +25,9 @@ import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
 import com.clueride.feature.SegmentFeature;
 import com.clueride.geo.TranslateUtil;
+import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
 import com.clueride.service.EdgeIDProvider;
 import com.clueride.service.MemoryBasedEdgeIDProvider;
 import com.vividsolutions.jts.geom.LineString;
@@ -62,8 +62,8 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
             JsonStoreLocation.toString(JsonStoreType.SEGMENTS)
     };
 
-    private static JsonUtil jsonUtilEdge = new JsonUtil(JsonStoreType.EDGE);
-    private static JsonUtil jsonUtilNetwork = new JsonUtil(
+    private static GeoJsonUtil jsonUtilEdge = new GeoJsonUtil(JsonStoreType.EDGE);
+    private static GeoJsonUtil jsonUtilNetwork = new GeoJsonUtil(
             JsonStoreType.NETWORK);
 
     private Map<Integer, LineFeature> allFeatureMap = new HashMap<>();
@@ -124,7 +124,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      */
     @Override
     public void persistAndReload() throws IOException {
-        JsonUtil jsonUtilOther = new JsonUtil(JsonStoreType.OTHER);
+        GeoJsonUtil jsonUtilOther = new GeoJsonUtil(JsonStoreType.OTHER);
         DefaultFeatureCollection features = TranslateUtil
                 .lineFeatureSetToFeatureCollection(allLineFeatures);
         jsonUtilOther.writeFeaturesToFile(features, "mainNetwork.geojson");
@@ -160,7 +160,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
         }
         dumpList("In Memory IDs", inMemoryIDs);
 
-        JsonUtil jsonUtilEdges = new JsonUtil(JsonStoreType.EDGE);
+        GeoJsonUtil jsonUtilEdges = new GeoJsonUtil(JsonStoreType.EDGE);
         List<Edge> edges = jsonUtilEdges.readLineFeatures();
         for (LineFeature feature : edges) {
             onDiskIDs.add(feature.getId());
@@ -285,7 +285,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * @deprecated - use {@link this.loadAllFeatures()} instead.
      */
     private void loadFromDefault() {
-        JsonUtil networkStorageUtil = new JsonUtil(JsonStoreType.NETWORK);
+        GeoJsonUtil networkStorageUtil = new GeoJsonUtil(JsonStoreType.NETWORK);
         DefaultFeatureCollection features = null;
         try {
             features = networkStorageUtil

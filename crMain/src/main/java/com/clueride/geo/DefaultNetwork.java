@@ -31,8 +31,8 @@ import com.clueride.feature.LineFeature;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.score.IntersectionScore;
 import com.clueride.geo.score.TrackScore;
+import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
-import com.clueride.io.JsonUtil;
 import com.clueride.poc.geotools.TrackStore;
 import com.clueride.service.SegmentService;
 import com.clueride.service.builder.NewLocRecBuilder;
@@ -840,9 +840,9 @@ public class DefaultNetwork implements Network {
     public String getNetworkForDisplay() {
         LOGGER.debug("Requesting network for display");
         String result = "";
-        JsonUtil jsonUtil = new JsonUtil(JsonStoreType.LOCATION);
+        GeoJsonUtil geoJsonUtil = new GeoJsonUtil(JsonStoreType.LOCATION);
         // TODO: Move from featureCollection to reliance on the Stores
-        result = jsonUtil.toString(featureCollection);
+        result = geoJsonUtil.toString(featureCollection);
         return result;
     }
 }

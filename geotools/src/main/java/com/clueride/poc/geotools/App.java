@@ -1,32 +1,19 @@
 package com.clueride.poc.geotools;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.geojson.geom.GeometryJSON;
-import org.geotools.geometry.jts.FactoryFinder;
-
 import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.gpx.TrackUtil;
 import com.jettmarks.gmaps.encoder.Track;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.*;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.geojson.geom.GeometryJSON;
+import org.geotools.geometry.jts.FactoryFinder;
+
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Proof of Concept for converting GPX(tag) -> Track -> LineString -> GeoJSON.
@@ -81,10 +68,10 @@ public class App {
 
         DefaultFeatureCollection features = TranslateUtil
                 .segmentsToFeatureCollection(singlePointSegments);
-        // JsonUtil.writeFeaturesToFile(features, "singleLineSegments.geojson");
+        // GeoJsonUtil.writeFeaturesToFile(features, "singleLineSegments.geojson");
         features = TranslateUtil
                 .segmentsToFeatureCollection(multiPointSegments);
-        // JsonUtil.writeFeaturesToFile(features, "multiLineSegments.geojson");
+        // GeoJsonUtil.writeFeaturesToFile(features, "multiLineSegments.geojson");
 
         // findIntersection(linesByName);
         // lineStringToJSON(lineString);

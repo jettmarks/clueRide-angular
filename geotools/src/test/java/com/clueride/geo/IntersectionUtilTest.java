@@ -9,7 +9,7 @@ import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.clueride.gpx.EasyTrack;
 import com.clueride.gpx.TrackUtil;
-import com.clueride.io.JsonUtil;
+import com.clueride.io.GeoJsonUtil;
 import com.jettmarks.gmaps.encoder.Track;
 import com.jettmarks.gmaps.encoder.Trackpoint;
 import com.vividsolutions.jts.geom.LineString;
@@ -78,11 +78,11 @@ public class IntersectionUtilTest {
                 new Trackpoint(-82.95, 33.7)
                 );
         LineString expectedLineString = TrackUtil.getLineString(expectedTrack);
-        String expectedJson = JsonUtil.toString(expectedLineString);
+        String expectedJson = GeoJsonUtil.toString(expectedLineString);
 
         LineString crossingPiece = IntersectionUtil.retrieveCrossingPair(
                 lineStringTrack, 10);
-        String actualJson = JsonUtil.toString(crossingPiece);
+        String actualJson = GeoJsonUtil.toString(crossingPiece);
         assertEquals("Crossing Check", expectedJson, actualJson);
 
         System.out.println("For index 0: "

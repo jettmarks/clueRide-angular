@@ -26,7 +26,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
@@ -46,7 +45,7 @@ public class Location {
     private final List<URL> imageUrls;
     private final Optional<Integer> locationGroupId;
     private final Optional<Establishment> establishment;
-    private final Map<String,Double> tagScores;
+    private final Map<String,Optional<Double>> tagScores;
 
     public Location(Builder builder) {
         // Required values
@@ -73,8 +72,11 @@ public class Location {
         establishment = builder.getEstablishment();
     }
 
-    /**
+    public Integer getId() {
+        return id;
+    }
 
+    /**
      * Human readable name for this location.
      * Shows up in headings for the Location, Lists of Locations, and as pop-ups on the map.
      * @return String representing human-readable name of Location.
@@ -113,14 +115,18 @@ public class Location {
      * List of Strings that in addition to LocationType, each categorize the location.
      * Perhaps a placeholder at this time until I think through further what sorts of tags might be applied.
      * @return Set of Strings, one for each tag added to this location.
-     */
     public Set<String> getTags() {
         return tagScores.keySet();
     }
+     */
 
     // TODO: not settled on this API
     public Optional<Double> getScorePerTag(String tag) {
-        return Optional.of(tagScores.get(tag));
+        return tagScores.get(tag);
+    }
+
+    public Map<String, Optional<Double>> getTagScores() {
+        return tagScores;
     }
 
     public Optional<Integer> getLocationGroupId() {
@@ -140,6 +146,7 @@ public class Location {
     }
 
     public static final class Builder {
+        private Integer id;
         private String name;
         private String description;
         private LocationType locationType;
@@ -147,18 +154,28 @@ public class Location {
         private List<Clue> clues;
         private List<URL> imageUrls;
 
-        private Establishment establishment;
-        private Integer locationGroupId;
-        private Map<String,Double> tagScores = new HashMap<>();
+        private Optional<Establishment> establishment;
+        private Optional<Integer> locationGroupId;
+        private Map<String,Optional<Double>> tagScores = new HashMap<>();
 
         private IdProvider idProvider;
 
-        private Builder() {
+        public Builder() {
             idProvider = new MemoryBasedLocationIdProvider();
         }
 
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        /**
+         * If the value has been set (by reading from the LocationStore), use that
+         * value, otherwise, we're creating a new instance the and idProvider should
+         * give us the next available value.
+         * @return Unique ID for this instance of Location.
+         */
         public Integer getId() {
-            return idProvider.getId();
+            return (id == null ? idProvider.getId() : id);
         }
 
         public String getName() {
@@ -197,20 +214,20 @@ public class Location {
             return this;
         }
 
-        public Map<String, Double> getTagScores() {
+        public Map<String, Optional<Double>> getTagScores() {
             return tagScores;
         }
 
-        public Builder setTagScores(Map<String, Double> tagScores) {
+        public Builder setTagScores(Map<String, Optional<Double>> tagScores) {
             this.tagScores = tagScores;
             return this;
         }
 
         public Optional<Integer> getLocationGroupId() {
-            return Optional.fromNullable(locationGroupId);
+            return locationGroupId;
         }
 
-        public Builder setLocationGroupId(Integer locationGroupId) {
+        public Builder setLocationGroupId(Optional<Integer> locationGroupId) {
             this.locationGroupId = locationGroupId;
             return this;
         }
@@ -225,10 +242,10 @@ public class Location {
         }
 
         public Optional<Establishment> getEstablishment() {
-            return Optional.fromNullable(establishment);
+            return establishment;
         }
 
-        public Builder setEstablishment(Establishment establishment) {
+        public Builder setEstablishment(Optional<Establishment> establishment) {
             this.establishment = establishment;
             return this;
         }

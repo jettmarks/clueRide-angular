@@ -1,16 +1,14 @@
 package com.clueride.io;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-
 import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.testng.Assert.*;
 
 public class JsonSchemaTypeMapTest {
 
@@ -47,13 +45,13 @@ public class JsonSchemaTypeMapTest {
     @Test
     public void getRawRecord() {
         JsonStoreType storeType = JsonStoreType.RAW;
-        JsonUtil jsonUtil = new JsonUtil(storeType);
+        GeoJsonUtil geoJsonUtil = new GeoJsonUtil(storeType);
         JsonStoreLocation.setTestMode();
         String fullPath = JsonStoreLocation.toString(storeType)
                 + File.separator + "514656.geojson";
         File file = new File(fullPath);
         assertTrue(file.canRead());
-        SimpleFeature feature = jsonUtil.readFeature(file);
+        SimpleFeature feature = geoJsonUtil.readFeature(file);
         assertNotNull(feature);
         assertEquals(feature.getFeatureType().getTypeName(), "TrackFeatureType");
         assertNotNull(feature.getAttribute("trackId"));
@@ -65,10 +63,10 @@ public class JsonSchemaTypeMapTest {
     @Test
     public void getNetworkRecord() throws IOException {
         JsonStoreType storeType = JsonStoreType.NETWORK;
-        JsonUtil jsonUtil = new JsonUtil(storeType);
+        GeoJsonUtil geoJsonUtil = new GeoJsonUtil(storeType);
         JsonStoreLocation.setTestMode();
 
-        DefaultFeatureCollection featureCollection = jsonUtil
+        DefaultFeatureCollection featureCollection = geoJsonUtil
                 .readFeatureCollection();
         assertNotNull(featureCollection);
 
