@@ -23,15 +23,14 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class JsonLocationStore implements LocationStore {
 
     /** Storage for Locations; the data Users care to see. */
     private static LocationStore instance = new JsonLocationStore();
 
-    private List<Location> locations = new ArrayList<>();
+    private Map<Integer,Location> locationMap = new HashMap<>();
 
     /**
      * Returns an instance of JsonLocationStore appropriate for reading/writing
@@ -48,7 +47,10 @@ public class JsonLocationStore implements LocationStore {
     }
 
     private void loadAll() {
-
+        List<Location> locations = PojoJsonUtil.loadLocations();
+        for (Location location : locations)  {
+            locationMap.put(location.getId(), location);
+        }
     }
 
 
@@ -69,11 +71,11 @@ public class JsonLocationStore implements LocationStore {
 
     @Override
     public Location getLocationById(Integer id) {
-        return null;
+        return locationMap.get(id);
     }
 
     @Override
-    public List<Location> getLocations() {
-        return null;
+    public Collection<Location> getLocations() {
+        return locationMap.values();
     }
 }

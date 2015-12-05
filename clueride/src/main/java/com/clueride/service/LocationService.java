@@ -44,13 +44,13 @@ public class LocationService {
     }
     public String getLocation(Integer locationId) {
         String result = null;
-//        Location location = locationStore.getLocationById(locationId);
-        Location location = null;
-        try {
-            location = PojoJsonUtil.loadLocationId(locationId);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        Location location = locationStore.getLocationById(locationId);
+//        Location location = null;
+//        try {
+//            location = PojoJsonUtil.loadLocationId(locationId);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
         try {
             result = PojoJsonUtil.generateLocation(location);
         } catch (JsonProcessingException e) {

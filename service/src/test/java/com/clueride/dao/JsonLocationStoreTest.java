@@ -27,8 +27,10 @@ import org.testng.annotations.Test;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 /**
@@ -81,11 +83,18 @@ public class JsonLocationStoreTest {
 
     @Test
     public void testGetLocationById() throws Exception {
+        LocationStore locationStore = JsonLocationStore.getInstance();
+        assertNotNull(locationStore);
 
+        Integer id = 1;
+        Location location = locationStore.getLocationById(id);
+        assertNotNull(location);
+        assertEquals(location.getId(), id);
     }
 
     @Test
     public void testGetLocations() throws Exception {
-
+        Collection<Location> locations = JsonLocationStore.getInstance().getLocations();
+        assertNotNull(locations);
     }
 }

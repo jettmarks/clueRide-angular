@@ -2,6 +2,7 @@ package com.clueride.dao;
 
 import com.clueride.domain.user.Location;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ public interface LocationStore {
      *
      * The Store is populated from persisted store upon instantiation, so
      * the initial contents will come from some permanent storage.
-     * @return List of all Locations in the store.
+     * @return Collection of all Locations in the store.
      */
-    List<Location> getLocations();
+    Collection<Location> getLocations();
 }
