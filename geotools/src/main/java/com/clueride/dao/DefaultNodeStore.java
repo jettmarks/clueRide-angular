@@ -27,6 +27,8 @@ import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
 import org.geotools.feature.DefaultFeatureCollection;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,8 +39,8 @@ import java.util.Set;
  * Implementation of NodeStore using file system.
  *
  * @author jett
- *
  */
+@Singleton
 public class DefaultNodeStore implements NodeStore {
 
     /** Storage for Nodes; typically the endpoints of Segments. */
@@ -69,7 +71,9 @@ public class DefaultNodeStore implements NodeStore {
     /**
      * Use {@link:getInstance()}
      */
-    private DefaultNodeStore() {
+    @Inject
+    public DefaultNodeStore() {
+        loadLocationsFromDefault();
     }
 
     /**
@@ -128,10 +132,10 @@ public class DefaultNodeStore implements NodeStore {
     }
 
     /**
-     * @see NodeStore#getLocations()
+     * @see NodeStore#getNodes()
      */
     @Override
-    public Set<GeoNode> getLocations() {
+    public Set<GeoNode> getNodes() {
         if (nodes.isEmpty()) {
             loadLocationsFromDefault();
         }

@@ -82,6 +82,7 @@ public class DefaultNetwork implements Network {
 
     public static DefaultNetwork getInstance() {
         // TODO: This is a big chunk of work to bite off within a synchronized block
+        // TODO: Move to Guice Dependency injection
         synchronized (DefaultNetwork.class) {
             if (instance == null) {
                 instance = new DefaultNetwork();
@@ -121,7 +122,7 @@ public class DefaultNetwork implements Network {
      *
      */
     private void init() {
-        nodeSet = nodeStore.getLocations();
+        nodeSet = nodeStore.getNodes();
         allLineStrings = new ArrayList<>();
 
         // TODO: Move from featureCollection to reliance on the Stores

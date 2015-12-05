@@ -349,7 +349,7 @@ public class LocationService {
     private static NetworkProposal buildAllNodesProposal() {
         NewLocProposal newLocProposal = new NewLocProposal(new DefaultGeoNode());
         DiagnosticRec diagRec = new DiagnosticRec(null);
-        for (GeoNode geoNode : nodeStore.getLocations()) {
+        for (GeoNode geoNode : nodeStore.getNodes()) {
             diagRec.addFeature(TranslateUtil.geoNodeToFeature(geoNode));
         }
         newLocProposal.add(diagRec);

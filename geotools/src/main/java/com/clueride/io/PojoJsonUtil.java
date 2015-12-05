@@ -42,12 +42,21 @@ public class PojoJsonUtil {
     /**
      * From the values in the location instance, create a File appropriate for storing
      * the location.
+     * The file is created if it doesn't exist.
      * @param location to be persisted.
-     * @return File (unchecked) which can be used to store the location.
+     * @return File which can be used to store the location.
      */
-    public static File getFileForLocation(Location location) {
+    public static File getFileForLocation(Location location) throws IOException {
         Integer locationId = location.getId();
-        return getFileForLocationId(locationId);
+        File candidateFile = getFileForLocationId(locationId);
+        if (!candidateFile.canWrite()) {
+            // Possible that the directory doesn't exist either
+            if (!candidateFile.getParentFile().canWrite()) {
+                candidateFile.getParentFile().mkdir();
+            }
+            candidateFile.createNewFile();
+        }
+        return candidateFile;
     }
 
     private static File getFileForLocationId(Integer locationId) {

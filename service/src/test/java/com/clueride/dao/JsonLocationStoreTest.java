@@ -20,6 +20,10 @@ package com.clueride.dao;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.LocationType;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -34,14 +38,69 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 /**
- * TODO: Description.
+ * Exercises an injected instance of JsonLocationStore.
  */
 public class JsonLocationStoreTest {
     private Location.Builder builder;
+    private Injector injector;
+
+    @Inject
+    private LocationStore locationStore;
 
     @BeforeMethod
     public void setUp() throws MalformedURLException {
+        injector = Guice.createInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(NodeStore.class).to(DefaultNodeStore.class);
+                bind(LocationStore.class).to(JsonLocationStore.class);
+            }
+        });
         builder = getLocationBuilder();
+    }
+
+    @Test
+    public void testAddNew() throws Exception {
+        Location location = builder.build();
+        LocationStore locationStore = injector.getInstance(LocationStore.class);
+        assertNotNull(locationStore);
+
+        Integer id = locationStore.addNew(location);
+        assertNotNull(id);
+
+        System.out.println("Location ID: " + id);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String locationAsJson = objectMapper.writeValueAsString(location);
+        System.out.println("As JSON: ");
+        System.out.println(locationAsJson);
+    }
+
+    @Test(expectedExceptions = IllegalStateException.class)
+    public void testAddNewBadNodeId() throws Exception {
+        // Negative is allowed, but won't be found
+        builder.setNodeId(-1);
+        Location location = builder.build();
+        LocationStore locationStore = injector.getInstance(LocationStore.class);
+
+        Integer id = locationStore.addNew(location);
+        assertNotNull(id);
+    }
+
+    @Test
+    public void testGetLocationById() throws Exception {
+        LocationStore locationStore = injector.getInstance(LocationStore.class);
+        assertNotNull(locationStore);
+
+        Integer id = 1;
+        Location location = locationStore.getLocationById(id);
+        assertNotNull(location);
+        assertEquals(location.getId(), id);
+    }
+
+    @Test
+    public void testGetLocations() throws Exception {
+        Collection<Location> locations = injector.getInstance(LocationStore.class).getLocations();
+        assertNotNull(locations);
     }
 
     private Location.Builder getLocationBuilder() throws MalformedURLException {
@@ -49,7 +108,7 @@ public class JsonLocationStoreTest {
         String expectedName = "Test Location";
         String expectedDescription = "Here's a nice spot to spread out the blanket or toss the frisbee.";
         LocationType expectedLocationType = LocationType.PICNIC;
-        Integer expectedNodeId = 123;
+        Integer expectedNodeId = 5;
         List<Clue> expectedClues = new ArrayList<>();
         List<URL> expectedImageUrls = new ArrayList<>();
         expectedImageUrls.add(new URL("https://clueride.com/"));
@@ -63,38 +122,5 @@ public class JsonLocationStoreTest {
                 .setClues(expectedClues)
                 .setImageUrls(expectedImageUrls);
         return builder;
-    }
-
-    @Test
-    public void testAddNew() throws Exception {
-        Location location = builder.build();
-        LocationStore locationStore = JsonLocationStore.getInstance();
-        assertNotNull(locationStore);
-
-        Integer id = locationStore.addNew(location);
-        assertNotNull(id);
-
-        System.out.println("Location ID: " + id);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String locationAsJson = objectMapper.writeValueAsString(location);
-        System.out.println("As JSON: ");
-        System.out.println(locationAsJson);
-    }
-
-    @Test
-    public void testGetLocationById() throws Exception {
-        LocationStore locationStore = JsonLocationStore.getInstance();
-        assertNotNull(locationStore);
-
-        Integer id = 1;
-        Location location = locationStore.getLocationById(id);
-        assertNotNull(location);
-        assertEquals(location.getId(), id);
-    }
-
-    @Test
-    public void testGetLocations() throws Exception {
-        Collection<Location> locations = JsonLocationStore.getInstance().getLocations();
-        assertNotNull(locations);
     }
 }

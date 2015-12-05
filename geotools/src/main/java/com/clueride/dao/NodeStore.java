@@ -54,7 +54,7 @@ public interface NodeStore {
      * 
      * @return
      */
-    Set<GeoNode> getLocations();
+    Set<GeoNode> getNodes();
 
     /**
      * This holds the Location Groups.

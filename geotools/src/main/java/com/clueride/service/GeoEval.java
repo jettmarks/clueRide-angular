@@ -81,7 +81,7 @@ public class GeoEval {
     public Integer matchesNetworkNode(GeoNode geoNode) {
         Point point = geoNode.getPoint();
         // Check Network Nodes first
-        Set<GeoNode> nodeSet = LOCATION_STORE.getLocations();
+        Set<GeoNode> nodeSet = LOCATION_STORE.getNodes();
         for (GeoNode node : nodeSet) {
             if (node.getPoint().buffer(GeoProperties.NODE_TOLERANCE).covers(
                     point)) {
@@ -172,7 +172,7 @@ public class GeoEval {
         Geometry buffer = lineString.buffer(GeoProperties.NODE_TOLERANCE);
 
         // Run through all network nodes in the LOCATION_STORE
-        Set<GeoNode> nodeSet = LOCATION_STORE.getLocations();
+        Set<GeoNode> nodeSet = LOCATION_STORE.getNodes();
         for (GeoNode geoNode : nodeSet) {
             Point point = geoNode.getPoint();
             if (envelope.covers(point) && buffer.covers(point)) {

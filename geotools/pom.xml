@@ -29,7 +29,12 @@
             <artifactId>gt-shapefile</artifactId>
             <version>${geotools.version}</version>
         </dependency>
-        <dependency>
+      <dependency>
+          <groupId>com.google.inject</groupId>
+          <artifactId>guice</artifactId>
+          <version>3.0</version>
+      </dependency>
+      <dependency>
 		    <groupId>org.geotools</groupId>
 		    <artifactId>gt-geojson</artifactId>
 		    <version>${geotools.version}</version>

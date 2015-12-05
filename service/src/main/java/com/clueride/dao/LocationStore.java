@@ -2,6 +2,7 @@ package com.clueride.dao;
 
 import com.clueride.domain.user.Location;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface LocationStore {
      * @param location newly and fully constructed Location, ready to persist.
      * @return ID of the new Location.
      */
-    Integer addNew(Location location);
+    Integer addNew(Location location) throws IOException;
 
     /**
      * Returns the Location matching the ID from the store.
