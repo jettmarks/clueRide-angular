@@ -18,12 +18,12 @@
 package com.clueride.rest;
 
 import com.clueride.service.LocationService;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.inject.Inject;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.io.InputStream;
 
 /**
  * Rest API for the Locations.
@@ -35,12 +35,28 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("location")
 public class Location {
+    private LocationService locationService;
+
+    @Inject
+    public Location(LocationService locationService) {
+        this.locationService = locationService;
+    }
+
     /**
      * Handles GET requests for specific Locations.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getLocation(@QueryParam("id") Integer locationId) {
-        return LocationService.getInstance().getLocation(locationId);
+        return locationService.getLocation(locationId);
+    }
+
+    @POST
+    @Path("uploadImage")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public String uploadImage(@FormDataParam("file") InputStream fileData ) {
+        locationService.saveLocationImage(fileData);
+        return "OK";
     }
 }
