@@ -13,49 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 12/3/15.
+ * Created by jett on 12/12/15.
  */
 package com.clueride.service;
 
-import com.clueride.dao.JsonLocationStore;
-import com.clueride.dao.LocationStore;
-import com.clueride.domain.user.Location;
-import com.clueride.io.PojoJsonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
- * Services requests for Locations.
+ * Provides business-layer services for User's Location instances.
  *
- *
+ * This is also used by Location Editor when constructing Location records in the field.
  */
-public class LocationService {
+public interface LocationService {
+    /**
+     * Given an ID, return the JSON string representing the Location.
+     * @param locationId - Unique Integer ID for the Location.
+     * @return String JSON representing User's Loccation domain object.
+     */
+    String getLocation(Integer locationId);
 
-    private static final LocationService INSTANCE = new LocationService();
-    private static LocationStore locationStore;
-
-    public static LocationService getInstance() {
-        return INSTANCE;
-    }
-
-    private LocationService() {
-        locationStore = JsonLocationStore.getInstance();
-    }
-    public String getLocation(Integer locationId) {
-        String result = null;
-        Location location = locationStore.getLocationById(locationId);
-//        Location location = null;
-//        try {
-//            location = PojoJsonUtil.loadLocationId(locationId);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-        try {
-            result = PojoJsonUtil.generateLocation(location);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
+    /**
+     * Accept an InputStream and persist this against the Location ID provided.
+     * @param fileData - InputStream with the JPEG image data to be saved to a file.
+     */
+    void saveLocationImage(InputStream fileData);
 }

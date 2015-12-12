@@ -10,11 +10,14 @@ var app = angular.module('clueridePlayer', [
   'gameState',
   'crMap',
   'crLocation',
+  'crLocEdit',
+  'camera',
   'ngResource',
   'status',
   'clue',
   'ui.bootstrap',
   'mobile-angular-ui',
+  'angularFileUpload',
   
   // touch/drag feature: this is from 'mobile-angular-ui.gestures.js'
   // it is at a very beginning stage, so please be careful if you like to use
@@ -38,6 +41,7 @@ app.config(function($routeProvider) {
   $routeProvider.when('/',              {templateUrl: 'home.html', reloadOnSearch: false});
   $routeProvider.when('/map',           {templateUrl: 'js/map/map.html', reloadOnSearch: false});
   $routeProvider.when('/location',      {templateUrl: 'js/loc/loc.html', reloadOnSearch: false});
+  $routeProvider.when('/locEdit',       {templateUrl: 'js/locEdit/locEdit.html', reloadOnSearch: false});
   $routeProvider.when('/status',        {templateUrl: 'js/status/status.html', reloadOnSearch: false});
   $routeProvider.when('/ice',           {templateUrl: 'ice.html', reloadOnSearch: false});
 

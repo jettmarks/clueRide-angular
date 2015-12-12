@@ -1,0 +1,26 @@
+<link rel="stylesheet" href="./js/locEdit/locEdit.css">
+<div class="locEdit" ng-controller="LocEditController">
+  <div ng-show="!imageState.cameraImage">
+    <ng-camera
+            output-height="400"
+            output-width="400"
+            viewer-height="400"
+            viewer-width="400"
+            image-format="jpeg"
+            action-message="Take Picture"
+            snapshot="imageState.cameraImage">
+    </ng-camera>
+  </div>
+  <div ng-show="!!imageState.cameraImage">
+    <img ng-src="{{imageState.cameraImage}}">
+    <button type="button" class="btn btn-primary" ng-click="locEdit.save()">
+      Save this Image
+    </button>
+    <button class="btn btn-primary" ng-click="imageState.cameraImage = false;">
+      Discard and Try Another
+    </button>
+    <button type="button" class="btn btn-primary" ng-click="locEdit.cancel()">
+      Cancel
+    </button>
+  </div>
+</div>
