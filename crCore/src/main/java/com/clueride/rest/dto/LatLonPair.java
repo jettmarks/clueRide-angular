@@ -21,10 +21,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Description.
+ * Represents Lat/Lon pair via XML; provided for Jersey parsing.
  *
  * @author jett
- *
  */
 
 @XmlRootElement
@@ -36,9 +35,5 @@ public class LatLonPair {
 
     public LatLonPair() {
     }
-    //
-    // public LatLonPair(Double lat, Double lon) {
-    // this.lat = lat;
-    // this.lon = lon;
-    // }
+
 }

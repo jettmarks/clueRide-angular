@@ -33,8 +33,12 @@ public interface LocationService {
     String getLocation(Integer locationId);
 
     /**
-     * Accept an InputStream and persist this against the Location ID provided.
-     * @param fileData - InputStream with the JPEG image data to be saved to a file.
+     * Handles upload request for a new image at the given location.
+     * @param lat - Double latitude of device location.
+     * @param lon - Double longitude of device location.
+     * @param locationId - Optional Integer representing an existing location (which may not have been created yet).
+     * @param fileData - InputStream from which we read the image data to put into a file.
+     * @return "OK" confirming success.
      */
-    void saveLocationImage(InputStream fileData);
+    void saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData);
 }

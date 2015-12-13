@@ -86,8 +86,13 @@
         	<version>3.0</version>
         </dependency>
         <dependency>
+            <groupId>com.clueride</groupId>
+            <artifactId>domain</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
         	<groupId>com.clueride</groupId>
-        	<artifactId>domain</artifactId>
+        	<artifactId>crCore</artifactId>
         	<version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>

@@ -20,6 +20,7 @@ package com.clueride.service;
 import com.clueride.dao.LocationStore;
 import com.clueride.domain.user.Location;
 import com.clueride.io.PojoJsonUtil;
+import com.clueride.rest.dto.LatLonPair;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.io.IOUtils;
 
@@ -51,7 +52,7 @@ public class DefaultLocationService implements LocationService {
     }
 
     @Override
-    public void saveLocationImage(InputStream fileData) {
+    public void saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData) {
         File file = new File("capture.jpg");
         if (!file.exists() || !file.canWrite()) {
             try {

@@ -51,12 +51,28 @@ public class Location {
         return locationService.getLocation(locationId);
     }
 
+    /**
+     * Handles upload request for a new image at the given location.
+     * @param lat - Double latitude of device location.
+     * @param lon - Double longitude of device location.
+     * @param locationId - Optional Integer representing an existing location (which may not have been created yet).
+     * @param fileData - InputStream from which we read the image data to put into a file.
+     * @return "OK" confirming success.
+     */
     @POST
     @Path("uploadImage")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public String uploadImage(@FormDataParam("file") InputStream fileData ) {
-        locationService.saveLocationImage(fileData);
+    public String uploadImage(
+            @QueryParam("lat") Double lat,
+            @QueryParam("lon") Double lon,
+            @QueryParam("locId") Integer locationId,
+            @FormDataParam("file") InputStream fileData
+    ) {
+        locationService.saveLocationImage(
+                lat, lon,
+                locationId,
+                fileData);
         return "OK";
     }
 }
