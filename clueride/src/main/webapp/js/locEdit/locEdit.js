@@ -3,18 +3,30 @@
 
     var deviceCoords = {lat: 0.0, lon: 0.0},
         saveImageUrl = "",
+        locationToEdit = {},
         module = angular.module('crLocEdit',['camera'])
 
         .controller('LocEditController', [
-            '$scope', '$location', '$window', 'FileUploader',
-            function ($scope, $location, $window, FileUploader) {
+            '$scope', '$location', '$window', 'FileUploader', 'LocationEditor',
+            function ($scope, $location, $window, FileUploader, LocationEditor) {
                 $scope.imageState = {
                     cameraOpen: true,
                     cameraImage: false
                 };
 
                 // Position is returned asynchronously, and requires some delay; kick it off now.
-                requestLocation();
+                requestGpsLocation();
+
+                // List of Nearby Locations also requires some delay; kick it off too
+                LocationEditor.getNearestLocations().$promise.then(function (locations) {
+                    $scope.locationSelected = locations[0];
+                    locationToEdit = locations[0];
+                    updateSaveUrl();
+                });
+
+                $scope.locationSelected = "Loading Locations ...";
+
+                $scope.locationMap = LocationEditor.locationMap();
 
                 $scope.locEdit = {};
 
@@ -26,7 +38,6 @@
                 $scope.locEdit.save = function () {
                     var file = dataURItoBlob($scope.imageState.cameraImage),
                         uploader = new FileUploader({
-                            //url: "/rest/location/uploadImage?locId=6&lat="+coords.lat+"&lon="+coords.lon,
                             url: saveImageUrl,
                             method: 'POST',
                             autoUpload: true
@@ -39,11 +50,52 @@
 
                 $scope.locEdit.cancel = function () {
                     $window.history.back();
+                };
+
+                $scope.recordSelection = function (selectedItem) {
+                    $scope.locationSelected = $scope.locationMap[selectedItem];
+                    locationToEdit = $scope.locationSelected;
+                    updateSaveUrl();
                 }
             }
         ]);
 
-    function requestLocation () {
+    module.factory('LocationEditResource', function ($resource) {
+        return $resource('/rest/location/nearest',
+            {lat: 34.0, lon: -81.0},
+            {
+            get: {
+                method: 'GET',
+                isArray: true
+            }
+        });
+    });
+
+    module.factory('LocationEditor', function (LocationEditResource) {
+        var locationMap = {};
+
+        return {
+            getNearestLocations: function () {
+                // Clear out previous values
+                locationMap = {};
+
+                // Returns the result so the promise is available to the caller
+                return LocationEditResource.get( {}, function (locations) {
+                    var loc;
+                    for (var i= 0, len = locations.length; i<len; i++) {
+                        loc = {
+                            name: locations[i].name,
+                            id: locations[i].id
+                        };
+                        locationMap[loc.id] = loc;
+                    }
+                })
+            },
+            locationMap: function () {return locationMap}
+        }
+    });
+
+    function requestGpsLocation () {
         // Capture the current lat/lon
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -56,22 +108,27 @@
     function recordPosition (position) {
         deviceCoords.lat = position.coords.latitude;
         deviceCoords.lon = position.coords.longitude;
-        saveImageUrl = "/rest/location/uploadImage?locId=6&lat="+deviceCoords.lat+"&lon="+deviceCoords.lon
+        updateSaveUrl();
+    }
+
+    function updateSaveUrl () {
+        saveImageUrl = "/rest/location/uploadImage?locId=" + locationToEdit.id +
+            "&lat=" + deviceCoords.lat + "&lon=" + deviceCoords.lon;
     }
 
     function showError(error) {
         switch(error.code) {
             case error.PERMISSION_DENIED:
-                x.innerHTML = "User denied the request for Geolocation."
+                x.innerHTML = "User denied the request for Geolocation.";
                 break;
             case error.POSITION_UNAVAILABLE:
-                x.innerHTML = "Location information is unavailable."
+                x.innerHTML = "Location information is unavailable.";
                 break;
             case error.TIMEOUT:
-                x.innerHTML = "The request to get user location timed out."
+                x.innerHTML = "The request to get user location timed out.";
                 break;
             case error.UNKNOWN_ERROR:
-                x.innerHTML = "An unknown error occurred."
+                x.innerHTML = "An unknown error occurred.";
                 break;
         }
     }

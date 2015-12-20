@@ -13,23 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 12/10/15.
+ * Created by jett on 12/13/15.
  */
-package com.clueride;
+package com.clueride.service;
 
-import com.clueride.service.DefaultLocationService;
-import com.clueride.service.DefaultNodeService;
-import com.clueride.service.LocationService;
-import com.clueride.service.NodeService;
-import com.google.inject.AbstractModule;
+import com.clueride.dao.NodeStore;
+import com.clueride.domain.GeoNode;
+import com.google.inject.Inject;
+import com.vividsolutions.jts.geom.Point;
 
 /**
- * Bindings for Guice in the Clueride Module.
+ * Default Implementation of NodeService.
  */
-public class CluerideGuiceModule extends AbstractModule {
+public class DefaultNodeService implements NodeService {
+
+    private final NodeStore nodeStore;
+
+    @Inject
+    public DefaultNodeService(NodeStore nodeStore) {
+        this.nodeStore = nodeStore;
+    }
     @Override
-    protected void configure() {
-        bind(LocationService.class).to(DefaultLocationService.class);
-        bind(NodeService.class).to(DefaultNodeService.class);
+    public Point getPointByNodeId(Integer nodeId) {
+        GeoNode node = (GeoNode) nodeStore.getNodeById(nodeId);
+        return node.getPoint();
     }
 }

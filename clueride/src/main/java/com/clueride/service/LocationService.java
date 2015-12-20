@@ -38,7 +38,15 @@ public interface LocationService {
      * @param lon - Double longitude of device location.
      * @param locationId - Optional Integer representing an existing location (which may not have been created yet).
      * @param fileData - InputStream from which we read the image data to put into a file.
-     * @return "OK" confirming success.
      */
     void saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData);
+
+    /**
+     * Given the device's location -- or any relevant lat/lon pair -- return a list
+     * of the top five locations in order of closeness.
+     * @param lat of current location.
+     * @param lon of current location.
+     * @return JSON String representing the nearest five locations to select from.
+     */
+    String getNearestLocations(Double lat, Double lon);
 }

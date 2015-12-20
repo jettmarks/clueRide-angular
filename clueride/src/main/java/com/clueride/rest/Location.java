@@ -32,6 +32,9 @@ import java.io.InputStream;
  * PUT - Creates a new Location from the submitted JSON string, ID is assigned.
  * POST - Changes to a Location given by the ID.
  * DELETE - Not supported by this API - must be removed from the persistence layer using other means.
+ *
+ * There is a separate GET (path location/nearest) for the nearest locations, an array of the five
+ * nearest locations for selection.
  */
 @Path("location")
 public class Location {
@@ -74,5 +77,21 @@ public class Location {
                 locationId,
                 fileData);
         return "OK";
+    }
+
+    /**
+     * Endpoint for requesting the nearest 5 locations to offer the user for selection.
+     * @param lat
+     * @param lon
+     * @return JSON array containing Location objects for the five nearest locations.
+     */
+    @GET
+    @Path("nearest")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getNearestLocations(
+            @QueryParam("lat") Double lat,
+            @QueryParam("lon") Double lon
+    ) {
+        return locationService.getNearestLocations(lat, lon);
     }
 }
