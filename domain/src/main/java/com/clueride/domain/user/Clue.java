@@ -29,43 +29,112 @@ public class Clue {
     private List<URL> hintUrls = new ArrayList<>();
     private Integer points;
 
+    private Clue(Builder builder) {
+        this.id = builder.getId();
+        this.question = builder.getQuestion();
+        this.answers = builder.getAnswers();
+        this.correctAnswer = builder.getCorrectAnswer();
+        this.hintUrls = builder.getHintUrls();
+        this.points = builder.getPoints();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
     public String getQuestion() {
         return question;
-    }
-    public void setQuestion(String question) {
-        this.question = question;
     }
 
     public AnswerKey getCorrectAnswer() {
         return correctAnswer;
     }
 
-    public void setCorrectAnswer(AnswerKey correctAnswer) {
-        this.correctAnswer = correctAnswer;
-    }
-
     public Integer getPoints() {
         return points;
-    }
-
-    public void setPoints(Integer points) {
-        this.points = points;
-    }
-
-    public void addAnswer(Answer answer) {
-        answers.add(answer);
     }
 
     public List<Answer> getAnswers() {
         return answers;
     }
 
-    public Clue setHintUrls(List<URL> hintUrls) {
-        this.hintUrls = hintUrls;
-        return this;
-    }
 
     public List<URL> getHintUrls() {
         return hintUrls;
+    }
+
+    public static final class Builder {
+        private Integer id;
+        private String question;
+        private List<Answer> answers = new ArrayList<>();
+        private AnswerKey correctAnswer;
+        private List<URL> hintUrls = new ArrayList<>();
+        private Integer points;
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public String getQuestion() {
+            return question;
+        }
+
+        public Builder withQuestion(String question) {
+            this.question = question;
+            return this;
+        }
+
+        public List<Answer> getAnswers() {
+            return answers;
+        }
+
+        public Builder withAnswers(List<Answer> answers) {
+            this.answers = answers;
+            return this;
+        }
+
+        public AnswerKey getCorrectAnswer() {
+            return correctAnswer;
+        }
+
+        public Builder withCorrectAnswer(AnswerKey correctAnswer) {
+            this.correctAnswer = correctAnswer;
+            return this;
+        }
+
+        public List<URL> getHintUrls() {
+            return hintUrls;
+        }
+
+        public Builder withHintUrls(List<URL> hintUrls) {
+            this.hintUrls = hintUrls;
+            return this;
+        }
+
+        public Integer getPoints() {
+            return points;
+        }
+
+        public Builder withPoints(Integer points) {
+            this.points = points;
+            return this;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public Builder withId(Integer id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder() {
+
+        }
+
+        public Clue build() {
+            return new Clue(this);
+        }
     }
 }

@@ -41,7 +41,7 @@ public class LocationTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
-        expectedClues.add(new Clue());
+        expectedClues.add(Clue.Builder.builder().build());
         expectedImageUrls.add(new URL("https://clueride.com/"));
         builder = Location.Builder.builder()
                 .setName(expectedName)
