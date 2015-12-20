@@ -164,8 +164,9 @@ public class Location {
             idProvider = new MemoryBasedLocationIdProvider();
         }
 
-        public void setId(Integer id) {
+        public Builder setId(Integer id) {
             this.id = id;
+            return this;
         }
 
         /**

@@ -1,26 +1,49 @@
 <link rel="stylesheet" href="./js/locEdit/locEdit.css">
 <div class="locEdit" ng-controller="LocEditController">
+  <div id="locationSelection" class="btn-group">
+    <a ui-turn-on='myDropdown' class='btn btn-primary'>
+      Location to Edit: {{locationSelected.name}}
+    </a>
+    <ul class="dropdown-menu"
+        role="menu"
+        ui-state="myDropdown"
+        ui-show="myDropdown"
+        ui-turn-off="myDropdown"
+        ui-outer-click="Ui.turnOff('myDropdown')"
+        ui-outer-click-if="Ui.active('myDropdown')"
+            >
+      <li ng-repeat="choice in locationMap" role="menuitem">
+        <a href ng-click="recordSelection(choice.id)">{{choice.name}}</a>
+      </li>
+    </ul>
+  </div>
   <div ng-show="!imageState.cameraImage">
+    <!-- https://github.com/bcabanes/ng-camera -->
     <ng-camera
-            output-height="400"
-            output-width="400"
-            viewer-height="400"
-            viewer-width="400"
+            output-height="360"
+            output-width="480"
+            crop-height="360"
+            crop-width="360"
+            viewer-height="360"
+            viewer-width="480"
             image-format="jpeg"
+            jpeg-quality="100"
             action-message="Take Picture"
             snapshot="imageState.cameraImage">
     </ng-camera>
   </div>
   <div ng-show="!!imageState.cameraImage">
-    <img ng-src="{{imageState.cameraImage}}">
-    <button type="button" class="btn btn-primary" ng-click="locEdit.save()">
-      Save this Image
-    </button>
-    <button class="btn btn-primary" ng-click="imageState.cameraImage = false;">
-      Discard and Try Another
-    </button>
-    <button type="button" class="btn btn-primary" ng-click="locEdit.cancel()">
-      Cancel
-    </button>
+    <img ng-if="!!imageState.cameraImage" ng-src="{{imageState.cameraImage}}">
+    <div id="locEditActions">
+      <button type="button" class="btn btn-primary" ng-click="locEdit.save()">
+        Save this Image
+      </button>
+      <button class="btn btn-primary" ng-click="imageState.cameraImage = false;">
+        Discard and Try Another
+      </button>
+      <button type="button" class="btn btn-primary" ng-click="locEdit.cancel()">
+        Cancel
+      </button>
+    </div>
   </div>
 </div>

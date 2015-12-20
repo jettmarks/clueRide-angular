@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 12/10/15.
+ * Created by jett on 12/13/15.
  */
-package com.clueride;
+package com.clueride.service;
 
-import com.clueride.service.DefaultLocationService;
-import com.clueride.service.DefaultNodeService;
-import com.clueride.service.LocationService;
-import com.clueride.service.NodeService;
-import com.google.inject.AbstractModule;
+import com.vividsolutions.jts.geom.Point;
 
 /**
- * Bindings for Guice in the Clueride Module.
+ * Handles business logic around Nodes.
  */
-public class CluerideGuiceModule extends AbstractModule {
-    @Override
-    protected void configure() {
-        bind(LocationService.class).to(DefaultLocationService.class);
-        bind(NodeService.class).to(DefaultNodeService.class);
-    }
+public interface NodeService {
+
+    /**
+     * Given a Node's ID, return the point associated with that Node.
+     * @param nodeId - Integer unique ID for the Node.
+     * @return Point with the coordinates of the Node's coordinates.
+     */
+    Point getPointByNodeId(Integer nodeId);
 }
