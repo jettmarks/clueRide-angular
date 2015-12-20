@@ -17,6 +17,8 @@
  */
 package com.clueride;
 
+import com.clueride.dao.FileImageStore;
+import com.clueride.dao.ImageStore;
 import com.clueride.service.DefaultLocationService;
 import com.clueride.service.DefaultNodeService;
 import com.clueride.service.LocationService;
@@ -31,5 +33,6 @@ public class CluerideGuiceModule extends AbstractModule {
     protected void configure() {
         bind(LocationService.class).to(DefaultLocationService.class);
         bind(NodeService.class).to(DefaultNodeService.class);
+        bind(ImageStore.class).to(FileImageStore.class);
     }
 }

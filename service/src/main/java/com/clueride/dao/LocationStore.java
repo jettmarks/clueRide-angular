@@ -48,4 +48,10 @@ public interface LocationStore {
      * @return Collection of all Locations in the store.
      */
     Collection<Location> getLocations();
+
+    /**
+     * Accepts an existing Location and updates the persistent record with new information.
+     * @param location to be updated.
+     */
+    void update(Location location);
 }

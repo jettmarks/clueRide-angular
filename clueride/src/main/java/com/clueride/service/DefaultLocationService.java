@@ -17,15 +17,18 @@
  */
 package com.clueride.service;
 
+import com.clueride.dao.ImageStore;
 import com.clueride.dao.LocationStore;
 import com.clueride.domain.user.Location;
 import com.clueride.io.PojoJsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vividsolutions.jts.geom.Point;
-import org.apache.commons.io.IOUtils;
 
 import javax.inject.Inject;
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,13 +41,16 @@ public class DefaultLocationService implements LocationService {
 
     private final LocationStore locationStore;
     private final NodeService nodeService;
+    private final ImageStore imageStore;
 
     @Inject
     public DefaultLocationService(
             LocationStore locationStore,
+            ImageStore imageStore,
             NodeService nodeService
     ) {
         this.locationStore = locationStore;
+        this.imageStore = imageStore;
         this.nodeService = nodeService;
     }
 
@@ -114,25 +120,33 @@ public class DefaultLocationService implements LocationService {
         }
     }
 
+    /**
+     * Generate the name and pass along to the ImageStore.
+     * If the locationId isn't present, we are likely attempting to create a new Location
+     * at the coordinates provided.  If we do have a locationId, then this location is used
+     * and would "adjust" the lat/lon provided.
+     * (Option considered: have the lat/lon stored with the image.)
+     * @param lat - Double latitude of device location.
+     * @param lon - Double longitude of device location.
+     * @param locationId - Optional Integer representing an existing location (which may not have been created yet).
+     * @param fileData - InputStream from which we read the image data to put into a file.
+     */
     @Override
     public void saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData) {
-        File file = new File("capture.jpg");
-        if (!file.exists() || !file.canWrite()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        Integer newSeqId = null;
         try {
-            FileOutputStream out = new FileOutputStream(file);
-            IOUtils.copy(fileData, out);
-            out.flush();
-            out.close();
+            newSeqId = imageStore.addNew(locationId, fileData);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (IOException e) {
+        }
+        URL imageUrl = null;
+        try {
+            imageUrl = new URL("http://img.clueride.com/img/" + locationId + "/" + newSeqId + ".jpg");
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+        Location location = locationStore.getLocationById(locationId);
+        location.getImageUrls().add(imageUrl);
+        locationStore.update(location);
     }
 }

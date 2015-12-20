@@ -17,14 +17,12 @@
  */
 package com.clueride.service;
 
-import com.clueride.dao.DefaultNodeStore;
-import com.clueride.dao.JsonLocationStore;
-import com.clueride.dao.LocationStore;
-import com.clueride.dao.NodeStore;
+import com.clueride.dao.*;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.LocationType;
+import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
@@ -54,6 +52,9 @@ public class DefaultLocationServiceTest {
     @Mock
     private LocationStore locationStore;
 
+    @Inject
+    private ImageStore imageStore;
+
     private LocationService toTest;
 
     @BeforeMethod
@@ -66,7 +67,7 @@ public class DefaultLocationServiceTest {
         // Actual instances for this test
         nodeStore = new DefaultNodeStore();
         locationStore = new JsonLocationStore(nodeStore);
-        toTest = new DefaultLocationService(locationStore, nodeService);
+        toTest = new DefaultLocationService(locationStore, imageStore, nodeService);
         assertNotNull(toTest);
 
         Integer locationId = 1;
@@ -111,7 +112,7 @@ public class DefaultLocationServiceTest {
         }
         when(locationStore.getLocations()).thenReturn(locationList);
 
-        toTest = new DefaultLocationService(locationStore, nodeService);
+        toTest = new DefaultLocationService(locationStore, imageStore, nodeService);
         assertNotNull(toTest);
 
         String actual = toTest.getNearestLocations(-10.0, 12.7);

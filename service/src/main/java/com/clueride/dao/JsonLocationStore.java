@@ -105,4 +105,17 @@ public class JsonLocationStore implements LocationStore {
     public Collection<Location> getLocations() {
         return locationMap.values();
     }
+
+    /**
+     * At this time, the implementation is no different from adding a new location.
+     * @param location to be updated.
+     */
+    @Override
+    public void update(Location location) {
+        try {
+            addNew(location);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

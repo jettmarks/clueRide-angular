@@ -10,27 +10,31 @@
         {
             name: "Peace Monument, Piedmont Park",
             description: "Long bit of text we'll pull together.",
-            imgUrl: ['./image/loc/10/1.jpg']
+            imgUrl: [
+                'http://img.clueride.com/img/1/1.jpg',
+                'http://img.clueride.com/img/1/2.jpg',
+                'http://img.clueride.com/img/1/3.jpg'
+            ]
         },
         {
             name: "BeltLine - White Rhino",
             description: "We love the BeltLine",
-            imgUrl: ['./image/loc/10/2.jpg']
+            imgUrl: ['http://img.clueride.com/img/2/1.jpg']
         },
         {
             name: "Gandhi",
             description: "Inspired MLK",
-            imgUrl: ['./image/loc/10/3.jpg']
+            imgUrl: ['http://img.clueride.com/img/3/1.jpg']
         },
         {
             name: "Sweet Auburn Curb Market",
             description: "Lots under one roof",
-            imgUrl: ['./image/loc/10/4.jpg']
+            imgUrl: ['http://img.clueride.com/img/4/1.jpg']
         },
         {
             name: "Oakland Cemetery",
             description: "Visit with the residents",
-            imgUrl: ['./image/loc/10/5.jpg']
+            imgUrl: ['http://img.clueride.com/img/5/1.jpg']
         }
       ];
 
