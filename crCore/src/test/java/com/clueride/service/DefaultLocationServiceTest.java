@@ -94,7 +94,7 @@ public class DefaultLocationServiceTest {
         List<URL> imageList = new ArrayList<>();
         imageList.add(new URL("http://localhost:8080/"));
         List<Clue> clueList = new ArrayList<>();
-        clueList.add(new Clue());
+        clueList.add(Clue.Builder.builder().build());
 
         // Prepare fake locations
         List<Location> locationList = new ArrayList<>();
