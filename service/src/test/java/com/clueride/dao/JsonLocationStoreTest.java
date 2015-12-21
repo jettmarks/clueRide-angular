@@ -112,7 +112,7 @@ public class JsonLocationStoreTest {
         List<Clue> expectedClues = new ArrayList<>();
         List<URL> expectedImageUrls = new ArrayList<>();
         expectedImageUrls.add(new URL("https://clueride.com/"));
-        expectedClues.add(new Clue());
+        expectedClues.add(Clue.Builder.builder().build());
 
         builder = Location.Builder.builder()
                 .setName(expectedName)
