@@ -17,11 +17,11 @@
  */
 package com.clueride.domain.dev;
 
+import org.apache.log4j.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.log4j.Logger;
 
 /**
  * Global spot for the NodeEvaluationStatus.

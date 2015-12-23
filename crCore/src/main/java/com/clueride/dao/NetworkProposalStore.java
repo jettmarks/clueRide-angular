@@ -17,12 +17,11 @@
  */
 package com.clueride.dao;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.clueride.domain.dev.NetworkProposal;
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.dev.NetworkProposal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Maintains the NetworkProposals across a session.

@@ -17,40 +17,24 @@
  */
 package com.clueride.domain.dev.rec;
 
-import static com.clueride.domain.dev.rec.NetworkRecType.ON_SEGMENT;
-
 import com.clueride.domain.GeoNode;
-import com.clueride.feature.Edge;
+
+import static com.clueride.domain.dev.rec.NetworkRecType.OFF_NETWORK;
 
 /**
- * Implementation supporting the case where we have a Node that lands in the
- * middle of an existing network segment.
+ * Implementation which records that the requested node is not on the network
+ * and furthermore, we don't have a suitable Track in our catalog that is able
+ * to connect the node to the network.
  * 
- * The segment is intended to be split into two segments and the node inserted
- * should the user choose this recommendation.
- *
  * @author jett
- *
  */
-public class OnSegmentImpl extends RecImpl implements OnSegment {
-
-    private final Edge onNetworkSegment;
+public class OffNetworkImpl extends RecImpl implements OffNetwork {
 
     /**
      * @param requestedNode
-     * @param onNetworkSegment
      */
-    public OnSegmentImpl(GeoNode requestedNode, Edge onNetworkSegment) {
+    public OffNetworkImpl(GeoNode requestedNode) {
         super(requestedNode);
-        this.onNetworkSegment = onNetworkSegment;
-    }
-
-    /**
-     * @see com.clueride.domain.dev.rec.OnSegment#getSegment()
-     */
-    @Override
-    public Edge getSegment() {
-        return onNetworkSegment;
     }
 
     /**
@@ -58,7 +42,7 @@ public class OnSegmentImpl extends RecImpl implements OnSegment {
      */
     @Override
     public NetworkRecType getRecType() {
-        return ON_SEGMENT;
+        return OFF_NETWORK;
     }
 
     /**
@@ -75,10 +59,8 @@ public class OnSegmentImpl extends RecImpl implements OnSegment {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("OnSegmentImpl [getId()=").append(getId()).append(
-                ", getName()=").append(getName()).append(", getRecType()=")
-                .append(getRecType()).append(", getScore()=")
-                .append(getScore()).append("]");
+        builder.append("OffNetworkImpl [getRecType()=").append(getRecType())
+                .append("]");
         return builder.toString();
     }
 

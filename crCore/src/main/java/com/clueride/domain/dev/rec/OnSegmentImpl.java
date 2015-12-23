@@ -17,24 +17,40 @@
  */
 package com.clueride.domain.dev.rec;
 
-import static com.clueride.domain.dev.rec.NetworkRecType.OFF_NETWORK;
-
 import com.clueride.domain.GeoNode;
+import com.clueride.feature.Edge;
+
+import static com.clueride.domain.dev.rec.NetworkRecType.ON_SEGMENT;
 
 /**
- * Implementation which records that the requested node is not on the network
- * and furthermore, we don't have a suitable Track in our catalog that is able
- * to connect the node to the network.
+ * Implementation supporting the case where we have a Node that lands in the
+ * middle of an existing network segment.
  * 
+ * The segment is intended to be split into two segments and the node inserted
+ * should the user choose this recommendation.
+ *
  * @author jett
+ *
  */
-public class OffNetworkImpl extends RecImpl implements OffNetwork {
+public class OnSegmentImpl extends RecImpl implements OnSegment {
+
+    private final Edge onNetworkSegment;
 
     /**
      * @param requestedNode
+     * @param onNetworkSegment
      */
-    public OffNetworkImpl(GeoNode requestedNode) {
+    public OnSegmentImpl(GeoNode requestedNode, Edge onNetworkSegment) {
         super(requestedNode);
+        this.onNetworkSegment = onNetworkSegment;
+    }
+
+    /**
+     * @see com.clueride.domain.dev.rec.OnSegment#getSegment()
+     */
+    @Override
+    public Edge getSegment() {
+        return onNetworkSegment;
     }
 
     /**
@@ -42,7 +58,7 @@ public class OffNetworkImpl extends RecImpl implements OffNetwork {
      */
     @Override
     public NetworkRecType getRecType() {
-        return OFF_NETWORK;
+        return ON_SEGMENT;
     }
 
     /**
@@ -59,8 +75,10 @@ public class OffNetworkImpl extends RecImpl implements OffNetwork {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("OffNetworkImpl [getRecType()=").append(getRecType())
-                .append("]");
+        builder.append("OnSegmentImpl [getId()=").append(getId()).append(
+                ", getName()=").append(getName()).append(", getRecType()=")
+                .append(getRecType()).append(", getScore()=")
+                .append(getScore()).append("]");
         return builder.toString();
     }
 

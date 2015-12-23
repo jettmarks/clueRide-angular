@@ -1,23 +1,5 @@
 package com.clueride.domain.dev.rec;
 
-import static com.clueride.domain.dev.rec.NetworkRecType.OFF_NETWORK;
-import static com.clueride.domain.dev.rec.NetworkRecType.ON_NODE;
-import static com.clueride.domain.dev.rec.NetworkRecType.ON_SEGMENT;
-import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_NODES;
-import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_SEGMENTS;
-import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_NODE;
-import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_SEGMENT;
-import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_SEGMENT_AND_NODE;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.AssertJUnit.assertTrue;
-
-import org.mockito.Mockito;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.domain.factory.LineFeatureFactory;
@@ -29,6 +11,16 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import org.mockito.Mockito;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static com.clueride.domain.dev.rec.NetworkRecType.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class RecommendationBuilderTest {
 

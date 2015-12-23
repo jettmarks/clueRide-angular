@@ -30,4 +30,18 @@ public interface NodeService {
      * @return Point with the coordinates of the Node's coordinates.
      */
     Point getPointByNodeId(Integer nodeId);
+
+    String addNewNode(Double lat, Double lon);
+
+    /**
+     * Accept the current Proposal.
+     * @return
+     */
+    String confirmNewNode();
+
+    String getNodeGroups();
+
+    String setNodeGroup(Integer id, Double lat, Double lon);
+
+    String showAllNodes();
 }

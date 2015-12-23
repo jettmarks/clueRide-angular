@@ -18,7 +18,8 @@
 package com.clueride.rest;
 
 import com.clueride.rest.dto.LatLonPair;
-import com.clueride.service.LocationService;
+import com.clueride.service.NodeService;
+import com.google.inject.Inject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -30,11 +31,16 @@ import javax.ws.rs.core.MediaType;
  * @author jett
  *
  */
+// TODO: Turn this into a 'nodes' path to match the endpoint and service
+// TODO: Survey the endpoints to learn which ones are still in use -- or plan to be used.
 @Path("locations")
-public class Locations {
+public class Nodes {
+    @Inject
+    private NodeService nodeService;
+
     /**
      * This version is used for diagnostics from the browser address, but
-     * performs the same functions as {@link getNewLocationPost}.
+     * performs the same functions as {@link this.getNewLocationPost}.
      * 
      * @param lat
      * @param lon
@@ -45,7 +51,7 @@ public class Locations {
     @Path("new")
     public String getNewLocation(@QueryParam("lat") Double lat,
             @QueryParam("lon") Double lon) {
-        return new LocationService().addNewLocation(lat, lon);
+        return nodeService.addNewNode(lat, lon);
     }
 
     /**
@@ -60,7 +66,7 @@ public class Locations {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
     public String getNewLocationPost(LatLonPair pair) {
-        return new LocationService().addNewLocation(pair.lat, pair.lon);
+        return nodeService.addNewNode(pair.lat, pair.lon);
         // return new LocationService().showPointsOnTrack(pair.lat, pair.lon);
     }
 
@@ -78,15 +84,14 @@ public class Locations {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
     public String confirmProposedSegment() {
-        // return DefaultNetwork.getInstance().confirmNewLocation();
-        return LocationService.confirmNewLocation();
+        return nodeService.confirmNewNode();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("groups")
     public String getLocationGroups() {
-        return new LocationService().getLocationGroups();
+        return nodeService.getNodeGroups();
     }
 
     @GET
@@ -94,15 +99,15 @@ public class Locations {
     @Path("group/set")
     public String setLocationGroup(@QueryParam("id") Integer id,
             @QueryParam("lat") Double lat, @QueryParam("lon") Double lon) {
-        return new LocationService().setLocationGroup(id, lat, lon);
+        return nodeService.setNodeGroup(id, lat, lon);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("allNodes")
     public String showAllNodes() {
-//        return LocationService.showAllNodes();
-        return "OK";
+        return nodeService.showAllNodes();
+//        return "OK";
     }
 
 }

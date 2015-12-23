@@ -17,10 +17,10 @@
  */
 package com.clueride.service.builder;
 
-import com.clueride.dao.DefaultNodeStore;
 import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.NodeStore;
+import com.clueride.dao.DefaultNodeStore;
 import com.clueride.dao.NetworkStore;
+import com.clueride.dao.NodeStore;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.domain.dev.NodeNetworkState;

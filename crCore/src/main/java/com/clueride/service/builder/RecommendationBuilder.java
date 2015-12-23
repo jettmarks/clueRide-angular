@@ -19,14 +19,7 @@ package com.clueride.service.builder;
 
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkRecommendation;
-import com.clueride.domain.dev.rec.OffNetworkImpl;
-import com.clueride.domain.dev.rec.OnNodeImpl;
-import com.clueride.domain.dev.rec.OnSegmentImpl;
-import com.clueride.domain.dev.rec.ToNodeImpl;
-import com.clueride.domain.dev.rec.ToSegmentAndNodeImpl;
-import com.clueride.domain.dev.rec.ToSegmentImpl;
-import com.clueride.domain.dev.rec.ToTwoNodesImpl;
-import com.clueride.domain.dev.rec.ToTwoSegmentsImpl;
+import com.clueride.domain.dev.rec.*;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.vividsolutions.jts.geom.LineString;

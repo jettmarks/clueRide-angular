@@ -17,9 +17,9 @@
  */
 package com.clueride.domain.dev.rec;
 
-import static com.clueride.domain.dev.rec.NetworkRecType.ON_NODE;
-
 import com.clueride.domain.GeoNode;
+
+import static com.clueride.domain.dev.rec.NetworkRecType.ON_NODE;
 
 /**
  * Description.

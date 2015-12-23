@@ -150,7 +150,7 @@ public class LocationService {
      * @return
      */
     protected NetworkProposal buildProposalForNewLoc(GeoNode newLoc) {
-        LOGGER.debug("start - buildProposalForNewLoc(): "
+        LOGGER.debug("start - buildProposalForNewNode(): "
                 + countBuildNewLocRequests++);
         GeoEval geoEval = GeoEval.getInstance();
         NewLocProposal newLocProposal = new NewLocProposal(newLoc);
