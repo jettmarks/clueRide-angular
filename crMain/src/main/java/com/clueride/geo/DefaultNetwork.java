@@ -34,6 +34,7 @@ import com.clueride.geo.score.TrackScore;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
 import com.clueride.poc.geotools.TrackStore;
+import com.clueride.service.GeoEval;
 import com.clueride.service.SegmentService;
 import com.clueride.service.builder.NewLocRecBuilder;
 import com.vividsolutions.jts.algorithm.LineIntersector;
@@ -411,15 +412,17 @@ public class DefaultNetwork implements Network {
     }
 
     /**
-     * @param splitPair
+     * @param subLineString
      * @param nodesToMeasure
-     * @param networkSegment
+     * @param bestSegment
      * @param lineString
-     * @param i
      */
-    public void findIntersectingNode(LineString subLineString,
-            List<GeoNode> nodesToMeasure, Edge bestSegment,
-            LineString lineString) {
+    public void findIntersectingNode(
+            LineString subLineString,
+            List<GeoNode> nodesToMeasure,
+            Edge bestSegment,
+            LineString lineString
+    ) {
         if (subLineString.buffer(GeoProperties.BUFFER_TOLERANCE).intersects(
                 lineString)) {
             LOGGER.info("This side of the track intersects with segment "
@@ -443,13 +446,16 @@ public class DefaultNetwork implements Network {
     }
 
     /**
-     * @param lineStringToStartsplitPair
+     * @param lineStringToStart
+     * @param lineStringToEnd
      * @param nodesToMeasure
      * @return
      */
     public Map<GeoNode, Double> evaluateDistanceMapPerNode(
-            LineString lineStringToStart, LineString lineStringToEnd,
-            List<GeoNode> nodesToMeasure) {
+            LineString lineStringToStart,
+            LineString lineStringToEnd,
+            List<GeoNode> nodesToMeasure
+    ) {
         Map<GeoNode, Double> distanceToNode = new HashMap<>();
         for (GeoNode node : nodesToMeasure) {
             determineDistance(lineStringToStart, distanceToNode, node);
@@ -594,23 +600,21 @@ public class DefaultNetwork implements Network {
      * 
      * @param geoNode
      *            - Location which we're attempting to connect to the network
-     * @param track
+     * @param trackLineString
      *            - SimpleFeature representing the track we've already
      *            determined crosses the network segment.
-     * @param segment
+     * @param segmentLineString
      *            - Segment which is already part of the network.
      * @return SimpleFeature - wrapping a LineString that holds the original
      *         track with the intersecting point inserted.
      */
     private LineString crossingTrackToIntersectingTrack(GeoNode geoNode,
             LineString trackLineString,
-            LineString segmentLineString) {
-
+            LineString segmentLineString
+    ) {
         // Obtain the underlying LineStrings
         SplitLineString splitPair = new SplitLineString(trackLineString,
                 geoNode);
-
-        // LineString segmentCrossingSubLineString;
 
         LineString workingLineString;
         if (splitPair.getSubLineString(START).crosses(segmentLineString)) {
@@ -629,8 +633,7 @@ public class DefaultNetwork implements Network {
                 segmentLineString,
                 trackPiece);
 
-        // Now we have two 2-point LineStrings which we can pass to the
-        // LineIntersector
+        // Now we have two 2-point LineStrings which we can pass to the LineIntersector
 
         LineIntersector lineIntersector = new RobustLineIntersector();
         lineIntersector.computeIntersection(
@@ -672,7 +675,7 @@ public class DefaultNetwork implements Network {
     /**
      * TODO: Move to separate class.
      * 
-     * @param reconstructionCoordinates
+     * @param coordinates
      */
     @SuppressWarnings("unused")
     private void dumpCoordinates(List<Coordinate> coordinates) {
@@ -692,7 +695,7 @@ public class DefaultNetwork implements Network {
      * 
      * @param geoNode
      * @return
-     * @deprecated - Using {@link GeoEval.listCoveringTracks()} instead.
+     * @deprecated - Using {@link GeoEval.listCoveringTracks} instead.
      */
     private List<TrackFeature> findTracksThroughNode(GeoNode geoNode) {
         List<TrackFeature> candidateTracks = new ArrayList<>();
