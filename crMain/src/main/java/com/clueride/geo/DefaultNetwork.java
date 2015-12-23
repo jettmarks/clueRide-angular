@@ -227,7 +227,7 @@ public class DefaultNetwork implements Network {
      * 
      * @see com.clueride.poc.Network#evaluateState(com.clueride.domain.Node)
      * 
-     * @deprecated - using LocationService.buildProposalForNewLoc instead.
+     * @deprecated - using LocationService.buildProposalForNewNode instead.
      */
     @Override
     public NetworkProposal evaluateNodeState(GeoNode geoNode) {
