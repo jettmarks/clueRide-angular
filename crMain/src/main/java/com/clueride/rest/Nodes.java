@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright 2015 Jett Marks
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ package com.clueride.rest;
 
 import com.clueride.rest.dto.LatLonPair;
 import com.clueride.service.NodeService;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -31,12 +31,15 @@ import javax.ws.rs.core.MediaType;
  * @author jett
  *
  */
-// TODO: Turn this into a 'nodes' path to match the endpoint and service
 // TODO: Survey the endpoints to learn which ones are still in use -- or plan to be used.
-@Path("locations")
+@Path("nodes")
 public class Nodes {
-    @Inject
     private NodeService nodeService;
+
+    @Inject
+    public Nodes(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
     /**
      * This version is used for diagnostics from the browser address, but
