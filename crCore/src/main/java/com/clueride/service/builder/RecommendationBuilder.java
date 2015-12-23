@@ -193,7 +193,7 @@ public class RecommendationBuilder {
      */
     public RecommendationBuilder addOnNetworkNode(GeoNode networkNode) {
         this.onNetworkNode = networkNode;
-        return (this);
+        return this;
     }
 
     /**
@@ -206,7 +206,7 @@ public class RecommendationBuilder {
     }
 
     /**
-     * @param requestedNode2
+     * @param requestedNode
      * @return
      */
     public RecommendationBuilder requestNetworkNode(GeoNode requestedNode) {
@@ -260,7 +260,7 @@ public class RecommendationBuilder {
     }
 
     /**
-     * @param singleNode2
+     * @param splittingNode
      * @return
      */
     public RecommendationBuilder addSplittingNode(GeoNode splittingNode) {
