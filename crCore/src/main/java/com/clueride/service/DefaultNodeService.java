@@ -17,16 +17,25 @@
  */
 package com.clueride.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import com.google.inject.Inject;
+import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+import org.opengis.feature.simple.SimpleFeature;
+
 import com.clueride.dao.NetworkProposalStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkProposal;
+import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.domain.dev.NewLocProposal;
 import com.clueride.domain.dev.NodeGroup;
-import com.clueride.domain.dev.rec.DiagnosticRec;
-import com.clueride.domain.dev.rec.Rec;
+import com.clueride.domain.dev.rec.*;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
@@ -34,14 +43,6 @@ import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
 import com.clueride.service.builder.NewLocRecBuilder;
 import com.clueride.service.builder.TrackRecBuilder;
-import com.google.inject.Inject;
-import com.vividsolutions.jts.geom.Point;
-import org.apache.log4j.Logger;
-import org.opengis.feature.simple.SimpleFeature;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Default Implementation of NodeService.
@@ -75,9 +76,105 @@ public class DefaultNodeService implements NodeService {
         return result;
     }
 
+    /**
+     * Implementation of a request to confirm the latest proposal as the one we
+     * want to add to the network.
+     *
+     * The NetworkProposal instance we stashed away will hold the details needed
+     * to create the objects we add to the persisted network.
+     *
+     * @return upon success, returns JSON status:OK.
+     */
     @Override
     public String confirmNewNode() {
-        return null;
+        NetworkProposal networkProposal = NetworkProposalStore
+                .getLastProposal();
+        List<NetworkRecommendation> recs = networkProposal.getRecommendations();
+        if (networkProposal.hasMultipleRecommendations()) {
+            LOGGER.warn("Not handling Multiple Rec proposals yet.");
+        } else {
+            Rec rec = (Rec) recs.get(0);
+            switch (rec.getRecType()) {
+                case ON_SEGMENT:
+                case ON_NODE:
+                    LOGGER.warn("We don't have a way to select "+rec.getRecType());
+                    break;
+
+                case TRACK_TO_NODE:
+                    addTrackToNodeRec((ToNode) rec);
+                    break;
+                case TRACK_TO_SEGMENT:
+                    addTrackToSegmentRec((ToSegment) rec);
+                    break;
+                case TRACK_TO_SEGMENT_AND_NODE:
+                    addTrackToSegmentAndNodeRec((ToSegmentAndNode) rec);
+                    break;
+                case TRACK_TO_2_NODES:
+                    addTrackToTwoNodesRec((ToTwoNodes) rec);
+                    break;
+                case TRACK_TO_2_SEGMENTS:
+                    addTrackToTwoSegmentsRec((ToTwoSegments) rec);
+                    break;
+
+                case UNDEFINED:
+                case OFF_NETWORK:
+                default:
+                    LOGGER.warn("Rec Type: " + rec.getRecType());
+            }
+        }
+        return "{\"status\": \"OK\"}";
+    }
+
+    private static void addTrackToNodeRec(ToNode rec) {
+        LOGGER.info("From this Rec: "+rec);
+        LOGGER.info("Preparing the following pieces to add to the Network:");
+        LOGGER.info("New Loc: " + rec.getNewLoc().getName());
+        rec.logRecommendationSummary();
+
+        SegmentService.addSegment(rec.getProposedTrack());
+    }
+
+    /**
+     * Prepares these items for adding to the network:
+     * <UL>
+     * <LI>The Location Node itself
+     * <LI>The Edge connecting the Location to the Segment (from the Track)
+     * <LI>The Splitting Node (also the end of the previous Edge)
+     * <LI>Two new Edges that result from splitting the original Segment.
+     * <LI>Removal of the original Segment.
+     * </UL>
+     *
+     * And then ask these be persisted.
+     *
+     * @param rec - to be added to the Network.
+     */
+    private static void addTrackToSegmentRec(ToSegment rec) {
+        LOGGER.info("From this Rec: "+rec);
+        LOGGER.info("Preparing the following pieces to add to the Network:");
+        LOGGER.info("New Loc: " + rec.getNewLoc().getName());
+        rec.logRecommendationSummary();
+
+        SegmentService.addSegment(rec.getProposedTrack());
+
+//        for (SimpleFeature feature : rec.getFeatureCollection()) {
+//            feature.getFeatureType().getTypeName();
+//        }
+
+    }
+
+    private static void addTrackToTwoSegmentsRec(ToTwoSegments rec) {
+        LOGGER.info("From this Rec: "+rec);
+
+    }
+
+    private static void addTrackToTwoNodesRec(ToTwoNodes rec) {
+        LOGGER.info("From this Rec: " + rec);
+
+    }
+
+    private static void addTrackToSegmentAndNodeRec(ToSegmentAndNode rec) {
+        LOGGER.info("From this Rec: "+rec);
+
     }
 
     @Override
