@@ -17,6 +17,11 @@
  */
 package com.clueride.service;
 
+import java.io.IOException;
+
+import org.apache.log4j.Logger;
+import org.geotools.feature.DefaultFeatureCollection;
+
 import com.clueride.dao.DefaultNetworkStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.EdgeImpl;
@@ -25,10 +30,6 @@ import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
-import org.apache.log4j.Logger;
-import org.geotools.feature.DefaultFeatureCollection;
-
-import java.io.IOException;
 
 /**
  * Handles requests for Segments of all types.
