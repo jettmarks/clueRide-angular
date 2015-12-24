@@ -1,5 +1,6 @@
 'use strict';
 
+// TODO: Switch over to using 'Node' instead of 'Location'
 var LocModule = angular
     .module('crNetEdit.LocModule', [
         'leaflet-directive',

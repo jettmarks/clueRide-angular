@@ -165,10 +165,10 @@ public class DefaultNodeStore implements NodeStore {
     }
 
     /**
-     * @see NodeStore#getLocationGroups()
+     * @see NodeStore#getNodeGroups()
      */
     @Override
-    public Set<NodeGroup> getLocationGroups() {
+    public Set<NodeGroup> getNodeGroups() {
         if (nodeGroups.isEmpty()) {
             loadGroupsFromDefault();
         }

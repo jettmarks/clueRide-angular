@@ -61,7 +61,7 @@ public interface NodeStore {
      * 
      * @return
      */
-    Set<NodeGroup> getLocationGroups();
+    Set<NodeGroup> getNodeGroups();
 
     /**
      * Choose a particular Node by its ID.
