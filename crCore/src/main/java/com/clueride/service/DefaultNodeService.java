@@ -130,6 +130,7 @@ public class DefaultNodeService implements NodeService {
         LOGGER.debug("start - buildProposalForNewNode(): "
                 + countBuildNewLocRequests++);
         GeoEval geoEval = GeoEval.getInstance();
+        // TODO: CA-23 - renaming Loc to Node
         NewLocProposal newLocProposal = new NewLocProposal(newLoc);
         NewLocRecBuilder recBuilder = new NewLocRecBuilder(newLoc);
 

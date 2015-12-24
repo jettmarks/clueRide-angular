@@ -20,18 +20,22 @@ package com.clueride.domain;
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.Track;
 import com.clueride.domain.dev.UnratedSegment;
+import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.Edge;
 import com.clueride.feature.FeatureType;
 import com.clueride.feature.TrackFeature;
+
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a Raw Track (often from RideWithGPS at the {@link Track.getUrl()}) which
+ * Represents a Raw Track (often from RideWithGPS at the {@link Track} getUrl() method) which
  * may source a set of points (represented by {@link UnratedSegment}) that get
  * turned into a {@link Edge}.
  *
@@ -155,8 +159,11 @@ public class TrackFeatureImpl implements TrackFeature {
      */
     @Override
     public List<Node> getNodeList() {
-        // TODO Auto-generated method stub
-        return null;
+        List<Node> nodeList = new ArrayList<>();
+        for (Coordinate coordinate : lineString.getCoordinates()) {
+            nodeList.add(new DefaultGeoNode(PointFactory.getJtsInstance(coordinate.y, coordinate.x, coordinate.z)));
+        }
+        return nodeList;
     }
 
     /**

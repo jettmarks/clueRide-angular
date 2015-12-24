@@ -182,7 +182,8 @@ public class TrackEval {
      * @return null if no network node is covered by this lineString, or the
      *         closest one if there is a covered network node.
      */
-     private GeoNode findNearestNetworkNode() {
+    private GeoNode findNearestNetworkNode() {
+        LOGGER.debug("Finding Node nearest to start of track: " + sourceTrack.getNodeList().get(0));
         GeoNode nearestNode = null;
         LineString lsSource = sourceTrack.getLineString();
 
@@ -224,6 +225,7 @@ public class TrackEval {
      * a Network Edge.
      */
     public Edge findNearestNetworkEdge() {
+        LOGGER.debug("Finding Edge nearest to start of track: " + sourceTrack.getNodeList().get(0));
         Edge networkEdge = null;
         LineString lsSource = sourceTrack.getLineString();
 
@@ -257,6 +259,8 @@ public class TrackEval {
                         splittingPoint = intersection;
                         LOGGER.info("Picked up Edge " + edge.getId()
                                 + " at distance " + edgeDistance);
+                    } else {
+                        LOGGER.info("Edge " + networkEdge.getId() + " remains closer than " + edge.getId());
                     }
                 }
             }

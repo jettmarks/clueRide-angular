@@ -37,8 +37,7 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class IntersectionUtil {
 
-    private static final Logger LOGGER = Logger
-            .getLogger(IntersectionUtil.class);
+    private static final Logger LOGGER = Logger.getLogger(IntersectionUtil.class);
 
     public static int findCrossingIndex(LineString inputLineString,
             LineString fixedLineString) {
@@ -69,9 +68,9 @@ public class IntersectionUtil {
      * @param walkableLineString
      *            - source of the coordinates and the factory for creating a new
      *            LineString.
-     * @param index
-     *            offset where the pair of interesting points resides.
-     * @return
+     * @param indexOfCrossing
+     *            - offset where the pair of interesting points resides.
+     * @return 2-point LineString representing the crossing segment.
      */
     public static LineString retrieveCrossingPair(
             LineString walkableLineString,
@@ -87,8 +86,8 @@ public class IntersectionUtil {
      * cross the second LineString and returns a 2-point LineString containing
      * that pair of points.
      * 
-     * @param segmentLineString
-     * @param trackPiece
+     * @param lineStringA - First LineString to check.
+     * @param lineStringB - Second LineString to check.
      * @return 2-point LineString from first LineString representing pair of
      *         points which straddle second LineString.
      */
@@ -110,8 +109,8 @@ public class IntersectionUtil {
      * Algorithm is to use a binary search along the length of the LineString to
      * locate the point at which the two first intersect.
      * 
-     * @param walkingLineString
-     * @param fixedLineString
+     * @param walkingLineString - Candidate Track.
+     * @param fixedLineString - Existing Network Edge.
      * @return Point where the two LineString first intersect.
      */
     public static Point findFirstIntersection(LineString walkingLineString,
@@ -169,24 +168,37 @@ public class IntersectionUtil {
     }
 
     /**
-     * TODO: Description.
+     * Brute force determination of the best point to represent the intersection of two
+     * LineString instances.
+     *
+     * First attempt is to walk the candidate string (walking) toward a network string (fixed)
+     * and stop when the point is within the boundary of the network string.  However, there
+     * may be better points if we walk just a bit further.  The revised algorithm involves
+     * compiling a list of those within the boundary and then selecting which of those is the
+     * best fit.
      * 
-     * @param lsWalking
-     * @param lsFixed
-     * @return
+     * @param lsWalking - represents the candidate track.
+     * @param lsFixed - represents a network edge.
+     * @return Point where the two meet and would serve as a good candidate for a Splitting Node.
      */
     public static Point walkToIntersectingNode(LineString lsWalking,
             LineString lsFixed) {
+        Point selectedPoint = null;
         Geometry lsBuffer = lsFixed.buffer(GeoProperties.BUFFER_TOLERANCE);
-        Point walkingPoint = null;
+        Double minDistance = Double.MAX_VALUE;
+        Point walkingPoint;
         int numberPoints = lsWalking.getNumPoints();
         for (int p = 0; p < numberPoints; p++) {
             walkingPoint = lsWalking.getPointN(p);
             if (lsBuffer.covers(walkingPoint)) {
-                LOGGER.info("We like point " + walkingPoint);
-                break;
+                Double distance = walkingPoint.distance(lsFixed);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    selectedPoint = walkingPoint;
+                    LOGGER.info("We like point " + selectedPoint + " at a distance of " + distance);
+                }
             }
         }
-        return walkingPoint;
+        return selectedPoint;
     }
 }
