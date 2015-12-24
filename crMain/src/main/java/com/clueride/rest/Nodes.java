@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright 2015 Jett Marks
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,8 @@ package com.clueride.rest;
 
 import com.clueride.rest.dto.LatLonPair;
 import com.clueride.service.NodeService;
-import com.google.inject.Inject;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
@@ -31,12 +31,15 @@ import javax.ws.rs.core.MediaType;
  * @author jett
  *
  */
-// TODO: Turn this into a 'nodes' path to match the endpoint and service
 // TODO: Survey the endpoints to learn which ones are still in use -- or plan to be used.
-@Path("locations")
+@Path("nodes")
 public class Nodes {
-    @Inject
     private NodeService nodeService;
+
+    @Inject
+    public Nodes(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
     /**
      * This version is used for diagnostics from the browser address, but
@@ -67,6 +70,7 @@ public class Nodes {
     @Path("new")
     public String getNewLocationPost(LatLonPair pair) {
         return nodeService.addNewNode(pair.lat, pair.lon);
+        // TODO: Put in the Diagnostics package/bag
         // return new LocationService().showPointsOnTrack(pair.lat, pair.lon);
     }
 
@@ -78,7 +82,7 @@ public class Nodes {
      * Data regarding the segment is held server-side for performing the actions
      * required to add the segment to the network.
      * 
-     * Considering using an ID to select the particular data instance involved.
+     * TODO: Considering using an ID to select the particular data instance involved.
      */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
@@ -90,14 +94,14 @@ public class Nodes {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("groups")
-    public String getLocationGroups() {
+    public String getNodeGroups() {
         return nodeService.getNodeGroups();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("group/set")
-    public String setLocationGroup(@QueryParam("id") Integer id,
+    public String setNodeGroup(@QueryParam("id") Integer id,
             @QueryParam("lat") Double lat, @QueryParam("lon") Double lon) {
         return nodeService.setNodeGroup(id, lat, lon);
     }
@@ -107,7 +111,6 @@ public class Nodes {
     @Path("allNodes")
     public String showAllNodes() {
         return nodeService.showAllNodes();
-//        return "OK";
     }
 
 }

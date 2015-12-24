@@ -4,7 +4,7 @@ var LocModule = angular.module('crNetEdit.LocModule');
 
 LocModule
     .factory('LocResource', function ($resource) {
-        return $resource('/crMain/rest/locations/new', {}, {
+        return $resource('/crMain/rest/nodes/new', {}, {
             request: {
                 method: 'POST',
                 params: {},
@@ -18,7 +18,7 @@ LocModule
         });
     })
     .factory('LocDiagResource', function ($resource) {
-        return $resource('/crMain/rest/locations/allNodes', {}, {
+        return $resource('/crMain/rest/nodes/allNodes', {}, {
             showAllNodes: {
                 method: 'GET',
                 params: {},

@@ -2,7 +2,7 @@
 
 angular.module('crNetEdit.LocGroupModule')
 	.factory('LocGroupResource', function ($resource) {
-	    return $resource('/crMain/rest/locations/groups', {}, {
+	    return $resource('/crMain/rest/nodes/groups', {}, {
 	        get: {
 	            method: 'GET',
 	            params: {},
@@ -13,7 +13,7 @@ angular.module('crNetEdit.LocGroupModule')
 
 angular.module('crNetEdit.LocGroupModule')
 .factory('LocGroupUpdater', function ($resource) {
-    return $resource('/crMain/rest/locations/group/set?id=:id&lat=:lat&lon=:lon', {}, {
+    return $resource('/crMain/rest/nodes/group/set?id=:id&lat=:lat&lon=:lon', {}, {
         set: {
             method: 'GET',
             params: {},

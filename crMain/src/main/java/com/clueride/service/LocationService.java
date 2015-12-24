@@ -51,6 +51,7 @@ import java.util.Set;
  * Handles requests for Locations.
  *
  * @author jett
+ * @deprecated - Use NodeService instead.
  */
 public class LocationService {
 
@@ -187,6 +188,7 @@ public class LocationService {
 
     /**
      * @return
+     * @deprecated - Now using NodeService.getNodeGroups().
      */
     public String getLocationGroups() {
         List<SimpleFeature> featureList = new ArrayList<>();
@@ -209,7 +211,7 @@ public class LocationService {
         // feature = TranslateUtil.groupNodeToFeature(nodeGroup);
         // featureList.add(feature);
 
-        Set<NodeGroup> nodeGroups = nodeStore.getLocationGroups();
+        Set<NodeGroup> nodeGroups = nodeStore.getNodeGroups();
         for (NodeGroup nodeGroup : nodeGroups) {
             featureList.add(TranslateUtil
                     .groupNodeToFeature((DefaultNodeGroup) nodeGroup));

@@ -306,7 +306,7 @@ public class DefaultNetwork implements Network {
     private Integer withinLocationGroup(GeoNode geoNode) {
         Integer matchingId = -1;
         Set<NodeGroup> locGroups = DefaultNodeStore.getInstance()
-                .getLocationGroups();
+                .getNodeGroups();
         for (NodeGroup nodeGroup : locGroups) {
             Point point = ((DefaultNodeGroup) nodeGroup).getPoint();
             if (point.buffer(LOC_GROUP_RADIUS_DEG).covers(geoNode.getPoint())) {
@@ -523,7 +523,7 @@ public class DefaultNetwork implements Network {
 
             // Check our list of Location Groups
             for (NodeGroup nodeGroup : DefaultNodeStore.getInstance()
-                    .getLocationGroups()) {
+                    .getNodeGroups()) {
                 Point point = ((DefaultGeoNode) nodeGroup).getPoint();
                 if (point.buffer(LOC_GROUP_RADIUS_DEG).intersects(
                         trackLineString)) {

@@ -17,15 +17,8 @@
  */
 package com.clueride.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import com.clueride.dao.*;
-import org.apache.log4j.Logger;
-
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.NodeStore;
+import com.clueride.dao.*;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeGroup;
@@ -36,6 +29,11 @@ import com.clueride.geo.LengthToPoint;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Given a set of Geo Elements provide a set of evaluations against the
@@ -90,7 +88,7 @@ public class GeoEval {
         }
 
         // Exhausted the Network Nodes, check the location groups
-        Set<NodeGroup> locGroups = LOCATION_STORE.getLocationGroups();
+        Set<NodeGroup> locGroups = LOCATION_STORE.getNodeGroups();
         for (NodeGroup nodeGroup : locGroups) {
             Point checkPoint = ((DefaultNodeGroup) nodeGroup).getPoint();
             if (checkPoint.buffer(LOC_GROUP_RADIUS_DEG).covers(point)) {

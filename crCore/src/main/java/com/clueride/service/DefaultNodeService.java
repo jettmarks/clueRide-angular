@@ -20,19 +20,28 @@ package com.clueride.service;
 import com.clueride.dao.NetworkProposalStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.domain.DefaultGeoNode;
+import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NewLocProposal;
+import com.clueride.domain.dev.NodeGroup;
+import com.clueride.domain.dev.rec.DiagnosticRec;
 import com.clueride.domain.dev.rec.Rec;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.TrackFeature;
+import com.clueride.geo.TranslateUtil;
+import com.clueride.io.GeoJsonUtil;
+import com.clueride.io.JsonStoreType;
 import com.clueride.service.builder.NewLocRecBuilder;
 import com.clueride.service.builder.TrackRecBuilder;
 import com.google.inject.Inject;
 import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
+import org.opengis.feature.simple.SimpleFeature;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Default Implementation of NodeService.
@@ -73,7 +82,16 @@ public class DefaultNodeService implements NodeService {
 
     @Override
     public String getNodeGroups() {
-        return null;
+        List<SimpleFeature> featureList = new ArrayList<>();
+
+        Set<NodeGroup> nodeGroups = nodeStore.getNodeGroups();
+        for (NodeGroup nodeGroup : nodeGroups) {
+            featureList.add(TranslateUtil
+                    .groupNodeToFeature((DefaultNodeGroup) nodeGroup));
+        }
+
+        GeoJsonUtil geoJsonUtil = new GeoJsonUtil(JsonStoreType.LOCATION);
+        return (geoJsonUtil.toString(featureList));
     }
 
     @Override
@@ -83,7 +101,9 @@ public class DefaultNodeService implements NodeService {
 
     @Override
     public String showAllNodes() {
-        return null;
+        NetworkProposal networkProposal = buildAllNodesProposal();
+        String result = networkProposal.toJson();
+        return result;
     }
     /**
      * @param lat
@@ -139,6 +159,18 @@ public class DefaultNodeService implements NodeService {
                 newLocProposal.add(rec);
             }
         }
+        return newLocProposal;
+    }
+
+
+    /** Builds a proposal that contains all the points on our Network. */
+    private NetworkProposal buildAllNodesProposal() {
+        NewLocProposal newLocProposal = new NewLocProposal(new DefaultGeoNode());
+        DiagnosticRec diagRec = new DiagnosticRec(null);
+        for (GeoNode geoNode : nodeStore.getNodes()) {
+            diagRec.addFeature(TranslateUtil.geoNodeToFeature(geoNode));
+        }
+        newLocProposal.add(diagRec);
         return newLocProposal;
     }
 }
