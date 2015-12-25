@@ -31,6 +31,14 @@ public interface NodeService {
      */
     Point getPointByNodeId(Integer nodeId);
 
+    /**
+     * Adding a candidate Node to the network which has yet been evaluated
+     * against the network.
+     *
+     * @param lat
+     * @param lon
+     * @return
+     */
     String addNewNode(Double lat, Double lon);
 
     /**

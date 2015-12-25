@@ -20,11 +20,12 @@ package com.clueride.dao;
 import java.io.IOException;
 import java.util.Set;
 
+import com.vividsolutions.jts.geom.Point;
+
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
 import com.clueride.feature.SegmentFeature;
-import com.vividsolutions.jts.geom.Point;
 
 /**
  * Definition of how to pull -- and add -- records for the NetworkStore.
@@ -56,7 +57,7 @@ public interface NetworkStore {
      * Can be used to initially load as well if the memory copy is empty.
      * 
      * @throws IOException
-     * @deprecated - Use {@link persist()} instead.
+     * @deprecated - Use {@link this.persist} instead.
      */
     void persistAndReload() throws IOException;
 

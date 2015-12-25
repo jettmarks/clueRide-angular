@@ -41,10 +41,10 @@ public abstract class RecImpl extends NetworkRecImpl implements Rec {
     }
 
     /**
-     * @see com.clueride.domain.dev.rec.Rec#getNewLoc()
+     * @see com.clueride.domain.dev.rec.Rec#getNewNode()
      */
     @Override
-    public GeoNode getNewLoc() {
+    public GeoNode getNewNode() {
         return newLoc;
     };
 }

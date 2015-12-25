@@ -17,6 +17,16 @@
  */
 package com.clueride.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+import org.opengis.feature.simple.SimpleFeature;
+
 import com.clueride.dao.DefaultNodeStore;
 import com.clueride.dao.NetworkProposalStore;
 import com.clueride.dao.NodeStore;
@@ -37,15 +47,6 @@ import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
 import com.clueride.service.builder.NewLocRecBuilder;
 import com.clueride.service.builder.TrackRecBuilder;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import org.apache.log4j.Logger;
-import org.opengis.feature.simple.SimpleFeature;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Handles requests for Locations.
@@ -304,10 +305,13 @@ public class LocationService {
 
     }
 
+    /**
+     * @deprecated  in favor of NodeService().
+     */
     private static void addTrackToNodeRec(ToNode rec) {
         LOGGER.info("From this Rec: "+rec);
         LOGGER.info("Preparing the following pieces to add to the Network:");
-        LOGGER.info("New Loc: " + rec.getNewLoc().getName());
+        LOGGER.info("New Loc: " + rec.getNewNode().getName());
         rec.logRecommendationSummary();
 
         SegmentService.addSegment(rec.getProposedTrack());
@@ -324,13 +328,14 @@ public class LocationService {
      * </UL>
      * 
      * And then ask these be persisted.
-     * 
+     *
+     * @deprecated in favor of NodeService.
      * @param rec
      */
     private static void addTrackToSegmentRec(ToSegment rec) {
         LOGGER.info("From this Rec: "+rec);
         LOGGER.info("Preparing the following pieces to add to the Network:");
-        LOGGER.info("New Loc: " + rec.getNewLoc().getName());
+        LOGGER.info("New Loc: " + rec.getNewNode().getName());
         rec.logRecommendationSummary();
 
         SegmentService.addSegment(rec.getProposedTrack());

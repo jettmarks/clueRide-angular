@@ -28,5 +28,5 @@ import com.clueride.domain.dev.NetworkRecommendation;
  *
  */
 public interface Rec extends NetworkRecommendation {
-    GeoNode getNewLoc();
+    GeoNode getNewNode();
 }

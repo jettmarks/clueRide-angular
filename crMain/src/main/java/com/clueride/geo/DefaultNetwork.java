@@ -17,6 +17,22 @@
  */
 package com.clueride.geo;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
+
+import javax.inject.Inject;
+
+import com.vividsolutions.jts.algorithm.LineIntersector;
+import com.vividsolutions.jts.algorithm.RobustLineIntersector;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
+
 import com.clueride.config.GeoProperties;
 import com.clueride.dao.*;
 import com.clueride.domain.DefaultGeoNode;
@@ -37,21 +53,6 @@ import com.clueride.poc.geotools.TrackStore;
 import com.clueride.service.GeoEval;
 import com.clueride.service.SegmentService;
 import com.clueride.service.builder.NewLocRecBuilder;
-import com.vividsolutions.jts.algorithm.LineIntersector;
-import com.vividsolutions.jts.algorithm.RobustLineIntersector;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import org.apache.log4j.Logger;
-import org.geotools.feature.DefaultFeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
-
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
-
 import static com.clueride.geo.SplitLineString.END;
 import static com.clueride.geo.SplitLineString.START;
 
@@ -206,7 +207,7 @@ public class DefaultNetwork implements Network {
         return -1;
     }
 
-    /*
+    /**
      * (non-Javadoc)
      * 
      * @see
@@ -223,7 +224,7 @@ public class DefaultNetwork implements Network {
         refresh();
     }
 
-    /*
+    /**
      * (non-Javadoc)
      * 
      * @see com.clueride.poc.Network#evaluateState(com.clueride.domain.Node)
@@ -719,7 +720,7 @@ public class DefaultNetwork implements Network {
      * Invokes the Segment service as needed to add any new segments that are
      * involved, but we handle our Nodes here.
      * 
-     * @deprecated - in favor of LocationService.confirmNewLocation().
+     * @deprecated - in favor of LocationService.confirmNewLocation() (and now NodeService.confirmNewNode()).
      * @return
      */
     public String confirmNewLocation() {

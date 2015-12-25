@@ -128,7 +128,7 @@ public class DefaultNodeService implements NodeService {
     private static void addTrackToNodeRec(ToNode rec) {
         LOGGER.info("From this Rec: "+rec);
         LOGGER.info("Preparing the following pieces to add to the Network:");
-        LOGGER.info("New Loc: " + rec.getNewLoc().getName());
+        LOGGER.info("New Loc: " + rec.getNewNode().getName());
         rec.logRecommendationSummary();
 
         SegmentService.addSegment(rec.getProposedTrack());
@@ -148,12 +148,14 @@ public class DefaultNodeService implements NodeService {
      *
      * @param rec - to be added to the Network.
      */
-    private static void addTrackToSegmentRec(ToSegment rec) {
-        LOGGER.info("From this Rec: "+rec);
+    private void addTrackToSegmentRec(ToSegment rec) {
+        LOGGER.info("From this Rec: " + rec);
         LOGGER.info("Preparing the following pieces to add to the Network:");
-        LOGGER.info("New Loc: " + rec.getNewLoc().getName());
-        rec.logRecommendationSummary();
 
+        Integer nodeId = nodeStore.addNew(rec.getNewNode());
+        LOGGER.info("New Node with ID: " + nodeId);
+
+        rec.logRecommendationSummary();
         SegmentService.addSegment(rec.getProposedTrack());
 
 //        for (SimpleFeature feature : rec.getFeatureCollection()) {
