@@ -1,9 +1,5 @@
 package com.clueride.dao;
 
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.testng.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,8 +10,10 @@ import org.testng.annotations.Test;
 
 import com.clueride.feature.Edge;
 import com.clueride.io.JsonStoreLocation;
-import com.clueride.poc.geotools.TrackStore;
 import com.clueride.service.EdgeIDProvider;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.testng.Assert.assertEquals;
 
 public class DefaultNetworkStoreTest {
     private NetworkStore toTest;
@@ -33,6 +31,8 @@ public class DefaultNetworkStoreTest {
      * on the Test instance (a Singleton) while making it more clear which
      * methods are under test versus part of the setup: those on toTest are part
      * of the test and those on toTestImpl are part of the setup.
+     *
+     * TODO: Come up with better names for these two instances.
      * 
      * @throws IOException
      */
@@ -48,7 +48,7 @@ public class DefaultNetworkStoreTest {
         // trackStore = LoadService.getInstance().loadTrackStore();
     }
 
-    // @Test
+     @Test
     public void addNewNoDataSource() {
         toTestImpl.setTestMode(true);
         Integer expected = 1;
@@ -57,7 +57,7 @@ public class DefaultNetworkStoreTest {
         // verify(edge).setId(Matchers.eq(1));
     }
 
-    // @Test
+     @Test
     public void addNewWithDataSource() {
         Integer expectedId = 42;
         EdgeIDProvider idProvider = new DataBasedEdgeIDProvider();
@@ -69,6 +69,13 @@ public class DefaultNetworkStoreTest {
         Integer expected = toTestImpl.getLastEdgeId() + 1;
         actual = toTestImpl.addNew(edge);
         assertEquals(actual, expected);
+    }
+
+    @Test
+    public void addNewAfterLoadingNetwork() {
+        toTestImpl.setTestMode(false);
+        Integer lastId = toTestImpl.getLastEdgeId();
+//        TrackFeature proposedTrack =
     }
 
     // @Test
@@ -101,9 +108,10 @@ public class DefaultNetworkStoreTest {
         Set<Edge> actual = toTest.getEdges();
     }
 
-    @Test
+//    @Test
     public void persist() throws Exception {
         JsonStoreLocation.clearTestMode();
+        // TODO: Commented out until I can sort out what happens to the data stores in each case.
         toTestImpl.setTestMode(false);
         toTestImpl.loadAllFeatures();
         toTest.persist();

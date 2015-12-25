@@ -17,6 +17,14 @@
  */
 package com.clueride.dao;
 
+import java.io.IOException;
+import java.util.*;
+
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+import org.geotools.feature.DefaultFeatureCollection;
+
 import com.clueride.config.TestModeAware;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
@@ -30,13 +38,6 @@ import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
 import com.clueride.service.EdgeIDProvider;
 import com.clueride.service.MemoryBasedEdgeIDProvider;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import org.apache.log4j.Logger;
-import org.geotools.feature.DefaultFeatureCollection;
-
-import java.io.IOException;
-import java.util.*;
 
 /**
  * TODO: Description.
@@ -74,7 +75,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * Preferred method of obtaining an instance which allows lazy
      * initialization of the network.
      * 
-     * @return
+     * @return lazily-initialized instance of this class.
      */
     public static DefaultNetworkStore getInstance() {
         synchronized (DefaultNetworkStore.class) {
@@ -86,7 +87,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
     }
 
     /**
-     * Use {@link:getInstance()}
+     * Use {@link this.getInstance()}
      */
     private DefaultNetworkStore() {
         loadAllFeatures();
@@ -187,12 +188,14 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
             LOGGER.info("No records to be Added");
         } else {
             // Add the instances to be Added
+            // TODO: Code this
         }
 
         if (toBeRemoved.isEmpty()) {
             LOGGER.info("No records to be Removed");
         } else {
             // Delete files for the records to be removed
+            // TODO: Code this
         }
 
     }
@@ -281,24 +284,6 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
     }
 
     /**
-     * @throws IOException
-     * @deprecated - use {@link this.loadAllFeatures()} instead.
-     */
-    private void loadFromDefault() {
-        GeoJsonUtil networkStorageUtil = new GeoJsonUtil(JsonStoreType.NETWORK);
-        DefaultFeatureCollection features = null;
-        try {
-            features = networkStorageUtil
-                    .readFeatureCollection("mainNetwork.geojson");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        allLineFeatures = TranslateUtil
-                .featureCollectionToLineFeatures(features);
-        refreshSegmentData();
-    }
-
-    /**
      * Builds some internal data structures based on a refreshed set of
      * LineFeatures.
      */
@@ -321,20 +306,21 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * Note that DB implementations may be using the database's algorithm for
      * assigning PKs.
      * 
-     * @return
+     * @return Integer for the newly assigned ID.
      * @see com.clueride.dao.NetworkStore#addNew(com.clueride.feature.Edge)
      */
     @Override
     public Integer addNew(Edge edge) {
         // For creation of new instance, we make a copy TODO: Looks cumbersome
+        TrackImpl.defineIdProvider(idProvider);  // Allows DB-based ID Assignment
         TrackImpl newTrack = new TrackImpl(edge.getDisplayName(), edge.getUrl());
-        Integer id = newTrack.getId();
+        Integer newId = newTrack.getId();
         Edge newEdge = new EdgeImpl(newTrack,
                 edge.getLineString());
 
         allLineFeatures.add(newEdge);
-        allFeatureMap.put(id, newEdge);
-        return id;
+        allFeatureMap.put(newId, newEdge);
+        return newId;
     }
 
     /**
@@ -408,7 +394,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
     }
 
     /**
-     * @return
+     * @return Integer of the last provided Edge ID.
      */
     public int getLastEdgeId() {
         return idProvider.getLastId();

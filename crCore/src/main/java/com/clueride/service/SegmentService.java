@@ -35,7 +35,6 @@ import com.clueride.io.JsonStoreType;
  * Handles requests for Segments of all types.
  *
  * @author jett
- *
  */
 public class SegmentService {
     private static final Logger LOGGER = Logger.getLogger(SegmentService.class);

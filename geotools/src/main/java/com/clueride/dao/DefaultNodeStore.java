@@ -17,6 +17,17 @@
  */
 package com.clueride.dao;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.geotools.feature.DefaultFeatureCollection;
+
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.NodeGroup;
@@ -25,15 +36,6 @@ import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreLocation;
 import com.clueride.io.JsonStoreType;
-import org.geotools.feature.DefaultFeatureCollection;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Implementation of NodeStore using file system.
@@ -89,7 +91,7 @@ public class DefaultNodeStore implements NodeStore {
      */
     @Override
     public void persistAndReload() throws IOException {
-        persistAndReloadLocations();
+        persistAndReloadNodes();
         persistAndReloadGroups();
     }
 
@@ -97,7 +99,7 @@ public class DefaultNodeStore implements NodeStore {
      * @throws IOException
      * 
      */
-    public void persistAndReloadLocations() throws IOException {
+    public void persistAndReloadNodes() throws IOException {
         GeoJsonUtil storageUtil = new GeoJsonUtil(ourStoreType);
         DefaultFeatureCollection featureCollection = TranslateUtil
                 .nodesToFeatureCollection(nodes);
