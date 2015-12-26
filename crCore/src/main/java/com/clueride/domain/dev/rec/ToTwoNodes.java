@@ -17,12 +17,15 @@
  */
 package com.clueride.domain.dev.rec;
 
+import com.clueride.domain.GeoNode;
+
 /**
- * Description.
+ * When a proposed Track runs from a new Node and meets the Network at a Node on
+ * each end, this class is used to carry that extra information about the two Nodes.
  *
  * @author jett
- *
  */
 public interface ToTwoNodes extends OnTrack {
-
+    GeoNode getStartNode();
+    GeoNode getEndNode();
 }
