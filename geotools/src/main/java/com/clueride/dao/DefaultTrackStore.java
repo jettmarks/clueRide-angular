@@ -17,20 +17,24 @@
  */
 package com.clueride.dao;
 
-import com.clueride.domain.TrackFeatureImpl;
-import com.clueride.feature.LineFeature;
-import com.clueride.feature.TrackFeature;
-import com.clueride.io.GeoJsonUtil;
-import com.clueride.io.JsonStoreType;
-import org.apache.log4j.Logger;
-import org.geotools.feature.DefaultFeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
+
+import com.clueride.domain.TrackFeatureImpl;
+import com.clueride.domain.dev.Track;
+import com.clueride.domain.dev.TrackImpl;
+import com.clueride.feature.LineFeature;
+import com.clueride.feature.TrackFeature;
+import com.clueride.io.GeoJsonUtil;
+import com.clueride.io.JsonStoreType;
+import com.clueride.service.TrackIdProvider;
 
 /**
  * TODO: Description.
@@ -45,6 +49,7 @@ public class DefaultTrackStore implements TrackStore {
             .getLogger(DefaultTrackStore.class);
 
     private static DefaultTrackStore instance = null;
+    private TrackIdProvider idProvider = new TrackIdProvider();
     private static Map<Integer, TrackFeature> trackPerId = new HashMap<>();
     private static GeoJsonUtil jsonUtilTracks = new GeoJsonUtil(JsonStoreType.RAW);
 
@@ -72,6 +77,7 @@ public class DefaultTrackStore implements TrackStore {
         for (SimpleFeature feature : features) {
             TrackFeature trackFeature = new TrackFeatureImpl(feature);
             trackPerId.put(trackFeature.getId(), trackFeature);
+            idProvider.registerId(trackFeature.getId());
         }
         LOGGER.info("Loading complete: " + this.toString());
     }
@@ -108,6 +114,14 @@ public class DefaultTrackStore implements TrackStore {
     @Override
     public TrackFeature getTrackById(Integer id) {
         return trackPerId.get(id);
+    }
+
+    @Override
+    public Integer persistTrack(TrackFeature trackFeature) {
+        Integer trackId = idProvider.getId();
+        Track trackData = new TrackImpl(trackFeature.getDisplayName(), trackFeature.getUrl());
+//        trackData.s
+        return trackId;
     }
 
     /**

@@ -17,18 +17,22 @@
  */
 package com.clueride.apps;
 
-import com.clueride.feature.Edge;
-import com.clueride.geo.TranslateUtil;
-import com.clueride.gpx.TrackUtil;
-import com.clueride.io.GeoJsonUtil;
-import com.clueride.io.JsonStoreType;
-import com.jettmarks.gmaps.encoder.Track;
-import com.vividsolutions.jts.geom.LineString;
-import org.opengis.feature.simple.SimpleFeature;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+
+import com.jettmarks.gmaps.encoder.Track;
+import com.vividsolutions.jts.geom.LineString;
+
+import com.clueride.dao.DefaultTrackStore;
+import com.clueride.dao.TrackStore;
+import com.clueride.domain.TrackFeatureImpl;
+import com.clueride.domain.dev.GpxBasedTrackImpl;
+import com.clueride.domain.dev.TrackImpl;
+import com.clueride.feature.TrackFeature;
+import com.clueride.gpx.TrackUtil;
+import com.clueride.io.GeoJsonUtil;
+import com.clueride.io.JsonStoreType;
 
 /**
  * This reads GPX files and turns them into a JSON Feature file for each.
@@ -42,7 +46,8 @@ import java.util.Map;
  */
 public class GPXtoFeature {
 
-    private static String tag = "bikeTrain";
+    private static String tag = "inbox";
+    private static TrackStore trackStore = DefaultTrackStore.getInstance();
 
     /**
      * Very useful utility, but I'll resurrect it when I need it.
@@ -60,23 +65,25 @@ public class GPXtoFeature {
             directory.mkdir();
         }
 
+        // Load TrackStore so we know which IDs have been assigned
+        trackStore.getLineFeatures();
+
         List<Track> tracks = TrackUtil.getTracksForTag(tag);
         System.out.println("Number of tracks: " + tracks.size());
 
         Map<Track, LineString> linesByName = TrackUtil
                 .trackToLineString(tracks);
 
-        List<Edge> segments =
-                TranslateUtil.lineStringToSegment(linesByName);
-
         GeoJsonUtil jsonUtilRaw = new GeoJsonUtil(JsonStoreType.SEGMENTS);
-        for (Edge segment : segments) {
-            // TODO: Move to new way of doing things
-            // SimpleFeature feature = TranslateUtil.segmentToFeature(segment);
-            SimpleFeature feature = null;
-            jsonUtilRaw.writeFeatureToFile(feature, tag +
-                    File.separator + segment.getUrl() + ".geojson");
+        for (Map.Entry<Track,LineString> entry : linesByName.entrySet()) {
+            Track track = entry.getKey();
+            TrackImpl trackDetails = new GpxBasedTrackImpl(
+                    track.getDisplayName(),
+                    track.getName()
+            );
+            TrackFeature trackFeature = new TrackFeatureImpl(trackDetails, entry.getValue());
+            jsonUtilRaw.writeFeatureToFile(trackFeature.getFeature(), tag +
+                    File.separator + track.getName() + ".geojson");
         }
-
     }
 }

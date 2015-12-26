@@ -22,18 +22,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.geotools.geometry.jts.JTSFactoryFinder;
-
 import com.jettmarks.gmaps.encoder.ParseGPX;
 import com.jettmarks.gmaps.encoder.Track;
 import com.jettmarks.gmaps.encoder.Trackpoint;
 import com.jettmarks.routes.common.ResourceManager;
-import com.jettmarks.routes.repo.LocalRoutes;
 import com.jettmarks.routes.server.rtsrc.RouteSource;
 import com.jettmarks.routes.server.rtsrc.RouteSourceBase;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import org.geotools.geometry.jts.JTSFactoryFinder;
 
 /**
  * Utilities for handling GPX resources.
@@ -56,14 +54,16 @@ public class TrackUtil {
                 .getInstance("Local Drive");
         String[] tagList = new String[1];
         tagList[0] = tag;
+        // TODO: Hook this up to an inbox that gets read instead of hard-coding the file names.
+        String routeId = "11583447";
 //        for (int routeId : LocalRoutes.getRouteIds(tag)) {
-//            String routeName = routeId + ".gpx";
-//            String sUrl = localRouteSource.getRouteURL(routeName, tagList);
-//            String rawGPX = ResourceManager.getResource(sUrl);
-//            ParseGPX parser = new ParseGPX();
-//            Track track = parser.getTrackFromGPX(rawGPX);
-//            track.setName("" + routeId);
-//            tracks.add(track);
+            String routeName = routeId + ".gpx";
+            String sUrl = localRouteSource.getRouteURL(routeName, tagList);
+            String rawGPX = ResourceManager.getResource(sUrl);
+            ParseGPX parser = new ParseGPX();
+            Track track = parser.getTrackFromGPX(rawGPX);
+            track.setName("" + routeId);
+            tracks.add(track);
 //        }
         return tracks;
     }
