@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright 2015 Jett Marks
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,8 @@ import com.clueride.domain.dev.TrackImpl;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
 import com.clueride.feature.SegmentFeature;
+import com.clueride.feature.TrackFeature;
+import com.clueride.geo.SplitLineString;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreLocation;
@@ -40,10 +42,12 @@ import com.clueride.service.EdgeIDProvider;
 import com.clueride.service.MemoryBasedEdgeIDProvider;
 
 /**
- * TODO: Description.
+ * Persistence at the Network level, covering the Nodes and Edges/Segments.
+ *
+ * There is also some validation of the Nodes against the Edges so Network consistency
+ * can be ensured.
  *
  * @author jett
- *
  */
 public class DefaultNetworkStore implements NetworkStore, TestModeAware {
     private static final Logger LOGGER = Logger
@@ -188,14 +192,14 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
             LOGGER.info("No records to be Added");
         } else {
             // Add the instances to be Added
-            // TODO: Code this
+            // TODO: CA-63 Code this
         }
 
         if (toBeRemoved.isEmpty()) {
             LOGGER.info("No records to be Removed");
         } else {
             // Delete files for the records to be removed
-            // TODO: Code this
+            // TODO: CA-63 Code this
         }
 
     }
@@ -305,7 +309,10 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * 
      * Note that DB implementations may be using the database's algorithm for
      * assigning PKs.
-     * 
+     *
+     * This looks like the landing place for CA-65 code tying together Stores and
+     * what we want to add upon approval of a recommendation.
+     *
      * @return Integer for the newly assigned ID.
      * @see com.clueride.dao.NetworkStore#addNew(com.clueride.feature.Edge)
      */
@@ -357,9 +364,16 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      *      com.clueride.domain.GeoNode)
      */
     @Override
-    public void splitEdge(Integer id, GeoNode geoNode) {
-        // TODO Auto-generated method stub
+    public void splitEdge(Integer id, GeoNode splittingNode) {
+        Edge edge = this.getEdgeById(id);
+        SplitLineString splitLineString = new SplitLineString((TrackFeature) edge, splittingNode);
+        addNew(new EdgeImpl(splitLineString.getSubTrackFeature(SplitLineString.START).getFeature()));
+        addNew(new EdgeImpl(splitLineString.getSubTrackFeature(SplitLineString.END).getFeature()));
+        delete(id);
+    }
 
+    private void delete(Integer id) {
+        // TODO: CA-65 Make sure this gets back to the Stores/FeatureCollection
     }
 
     /**
