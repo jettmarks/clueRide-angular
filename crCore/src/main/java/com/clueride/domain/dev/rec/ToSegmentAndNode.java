@@ -17,12 +17,21 @@
  */
 package com.clueride.domain.dev.rec;
 
+import com.clueride.domain.GeoNode;
+import com.clueride.feature.Edge;
+
 /**
- * Description.
+ * When a proposed track runs in two directions -- each hitting the network --
+ * and one end hits a Node and the other end hits an Edge/Segment, this class
+ * is used.
+ *
+ * The Edge captured here will still need to be split into two new Edges which
+ * replace this original Edge.
  *
  * @author jett
- *
  */
 public interface ToSegmentAndNode extends OnTrack {
-
+    GeoNode getNetworkNode();
+    Edge getSegment();
+    GeoNode getSplittingNode();
 }

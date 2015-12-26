@@ -17,12 +17,12 @@
  */
 package com.clueride.domain.dev.rec;
 
+import com.google.common.base.Objects;
+
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.LineFeature;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
-import com.google.common.base.Objects;
-
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_NODE;
 
 /**
@@ -32,20 +32,20 @@ import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_NODE;
  *
  */
 public class ToNodeImpl extends OnTrackImpl implements ToNode {
-    private GeoNode node;
+    private GeoNode networkNode;
 
     public ToNodeImpl(GeoNode reqNode, LineFeature trackStart,
-            GeoNode node) {
+            GeoNode networkNode) {
         super(reqNode, (TrackFeature) trackStart);
-        this.node = node;
-        addFeature(TranslateUtil.geoNodeToFeature(node));
+        this.networkNode = networkNode;
+        addFeature(TranslateUtil.geoNodeToFeature(networkNode));
     }
 
     /**
-     * @return the node
+     * @return the networkNode
      */
-    public GeoNode getNode() {
-        return node;
+    public GeoNode getNetworkNode() {
+        return networkNode;
     }
 
     /**
@@ -62,7 +62,7 @@ public class ToNodeImpl extends OnTrackImpl implements ToNode {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("node", node)
+                .add("networkNode", networkNode)
                 .toString();
     }
 }

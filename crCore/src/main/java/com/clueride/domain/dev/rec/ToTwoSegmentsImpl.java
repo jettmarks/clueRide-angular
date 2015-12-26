@@ -17,49 +17,47 @@
  */
 package com.clueride.domain.dev.rec;
 
+import com.google.common.base.Objects;
+
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
-import com.google.common.base.Objects;
-
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_SEGMENTS;
 
 /**
- * Description.
+ * When a proposed track runs through the New Node and intersects the Network on
+ * both ends, and each end meets the Network at a Segment, this class captures the
+ * extra information needed to add this Node and the new Segments.
  *
  * @author jett
- *
  */
 public class ToTwoSegmentsImpl extends OnTrackImpl implements ToTwoSegments {
-    private Edge segment1;
-    private Edge segment2;
+    private Edge segmentStart;
+    private Edge segmentEnd;
+    private GeoNode splittingNodeStart;
+    private GeoNode splittingNodeEnd;
 
-    public ToTwoSegmentsImpl(GeoNode reqNode, TrackFeature onTrack,
-            Edge segment1, Edge segment2, DefaultGeoNode splittingNodeStart,
-            DefaultGeoNode splittingNodeEnd) {
+    public ToTwoSegmentsImpl(
+            GeoNode reqNode,
+            TrackFeature onTrack,
+            Edge segmentStart,
+            Edge segmentEnd,
+            DefaultGeoNode splittingNodeStart,
+            DefaultGeoNode splittingNodeEnd
+    ) {
         super(reqNode, onTrack);
-        this.segment1 = segment1;
-        addFeature(TranslateUtil.segmentToFeature(segment1));
-        this.segment2 = segment2;
-        addFeature(TranslateUtil.segmentToFeature(segment2));
+
+        this.segmentStart = segmentStart;
+        addFeature(segmentStart.getFeature());
+        this.segmentEnd = segmentEnd;
+        addFeature(segmentEnd.getFeature());
+
         addFeature(TranslateUtil.geoNodeToFeature(splittingNodeStart));
         addFeature(TranslateUtil.geoNodeToFeature(splittingNodeEnd));
-    }
-
-    /**
-     * @return the segment1
-     */
-    public Edge getSegment1() {
-        return segment1;
-    }
-
-    /**
-     * @return the segment2
-     */
-    public Edge getSegment2() {
-        return segment2;
+        this.splittingNodeStart = splittingNodeStart;
+        this.splittingNodeEnd = splittingNodeEnd;
     }
 
     /**
@@ -70,14 +68,34 @@ public class ToTwoSegmentsImpl extends OnTrackImpl implements ToTwoSegments {
         return TRACK_TO_2_SEGMENTS;
     }
 
+    @Override
+    public Edge getStartSegment() {
+        return segmentStart;
+    }
+
+    @Override
+    public GeoNode getSplittingNodeStart() {
+        return splittingNodeStart;
+    }
+
+    @Override
+    public Edge getEndSegment() {
+        return segmentEnd;
+    }
+
+    @Override
+    public GeoNode getSplittingNodeEnd() {
+        return splittingNodeEnd;
+    }
+
     /**
      * @see Object#toString()
      */
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("segment1", segment1)
-                .add("segment2", segment2)
+                .add("segmentStart", segmentStart)
+                .add("segmentEnd", segmentEnd)
                 .toString();
     }
 }

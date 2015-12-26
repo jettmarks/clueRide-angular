@@ -17,44 +17,44 @@
  */
 package com.clueride.domain.dev.rec;
 
+import com.google.common.base.Objects;
+
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
-import com.google.common.base.Objects;
-
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_2_NODES;
 
 /**
- * Description.
+ * When a proposed Track runs from a new Node and meets the Network at a Node on
+ * each end, this class is used to carry that extra information about the two Nodes.
  *
  * @author jett
- *
  */
 public class ToTwoNodesImpl extends OnTrackImpl implements ToTwoNodes {
-    private GeoNode node1;
-    private GeoNode node2;
+    private GeoNode startNode;
+    private GeoNode endNode;
 
     public ToTwoNodesImpl(GeoNode reqNode, TrackFeature track,
             GeoNode node1, GeoNode node2) {
         super(reqNode, track);
-        this.node1 = node1;
+        this.startNode = node1;
         addFeature(TranslateUtil.geoNodeToFeature(node1));
-        this.node2 = node2;
+        this.endNode = node2;
         addFeature(TranslateUtil.geoNodeToFeature(node2));
     }
 
     /**
-     * @return the node1
+     * @return the startNode
      */
-    public GeoNode getNode1() {
-        return node1;
+    public GeoNode getStartNode() {
+        return startNode;
     }
 
     /**
-     * @return the node2
+     * @return the endNode
      */
-    public GeoNode getNode2() {
-        return node2;
+    public GeoNode getEndNode() {
+        return endNode;
     }
 
     /**
@@ -71,8 +71,8 @@ public class ToTwoNodesImpl extends OnTrackImpl implements ToTwoNodes {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("node1", node1)
-                .add("node2", node2)
+                .add("startNode", startNode)
+                .add("endNode", endNode)
                 .toString();
     }
 }

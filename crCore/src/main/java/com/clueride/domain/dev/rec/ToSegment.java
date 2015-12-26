@@ -17,12 +17,19 @@
  */
 package com.clueride.domain.dev.rec;
 
+import com.clueride.domain.GeoNode;
+import com.clueride.feature.Edge;
+
 /**
- * Description.
+ * When a proposed track runs from a new Node and meets an existing Segment/Edge,
+ * the additional pieces for an "OnTrack" recommendation will be the Edge on the
+ * network -- which still needs to be split to be useful -- and the "splitting"
+ * node at which that split occurs; this interface provides for those two pieces
+ * of information.
  *
  * @author jett
- *
  */
 public interface ToSegment extends OnTrack {
-
+    Edge getSegment();
+    GeoNode getSplittingNode();
 }

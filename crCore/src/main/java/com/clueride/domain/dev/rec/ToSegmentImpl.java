@@ -17,14 +17,14 @@
  */
 package com.clueride.domain.dev.rec;
 
+import com.google.common.base.Objects;
+
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
-import com.google.common.base.Objects;
-
 import static com.clueride.domain.dev.rec.NetworkRecType.TRACK_TO_SEGMENT;
 
 /**
@@ -40,6 +40,12 @@ public class ToSegmentImpl extends OnTrackImpl implements ToSegment {
     private GeoNode splittingNode;
 
     /**
+     * All the pieces for this recommendation come into this constructor.
+     *
+     * Note that the existing Network Edge will need to be split at the
+     * splittingNode and that two new segments are created which replace
+     * the original segment.
+     *
      * @param reqNode
      *            - Node for which we're preparing the Recommendation.
      * @param track
@@ -53,7 +59,6 @@ public class ToSegmentImpl extends OnTrackImpl implements ToSegment {
             Edge edge, GeoNode splittingNode) {
         super(reqNode, (TrackFeature) track);
         this.segment = edge;
-        // addFeature(TranslateUtil.segmentToFeature(edge));
         addFeature(((EdgeImpl) edge).getFeature());
         this.splittingNode = splittingNode;
         addFeature(TranslateUtil.geoNodeToFeature(splittingNode));
@@ -64,6 +69,11 @@ public class ToSegmentImpl extends OnTrackImpl implements ToSegment {
      */
     public Edge getSegment() {
         return segment;
+    }
+
+    @Override
+    public GeoNode getSplittingNode() {
+        return splittingNode;
     }
 
     /**

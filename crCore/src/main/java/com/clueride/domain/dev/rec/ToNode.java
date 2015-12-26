@@ -17,12 +17,16 @@
  */
 package com.clueride.domain.dev.rec;
 
+import com.clueride.domain.GeoNode;
+
 /**
- * Description.
+ * When a proposed track runs from a new Node and meets an existing Network Node,
+ * the additional piece for an "OnTrack" recommendation will be the Node on the
+ * Network where the track joins the Network; this interface provides accessing
+ * that Node.
  *
  * @author jett
- *
  */
 public interface ToNode extends OnTrack {
-
+    GeoNode getNetworkNode();
 }

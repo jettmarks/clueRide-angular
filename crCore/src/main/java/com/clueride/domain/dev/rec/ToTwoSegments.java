@@ -17,12 +17,19 @@
  */
 package com.clueride.domain.dev.rec;
 
+import com.clueride.domain.GeoNode;
+import com.clueride.feature.Edge;
+
 /**
- * Description.
+ * When a proposed track runs through the New Node and intersects the Network on
+ * both ends, and each end meets the Network at a Segment, this class captures the
+ * extra information needed to add this Node and the new Segments.
  *
  * @author jett
- *
  */
 public interface ToTwoSegments extends OnTrack {
-
+    Edge getStartSegment();
+    GeoNode getSplittingNodeStart();
+    Edge getEndSegment();
+    GeoNode getSplittingNodeEnd();
 }
