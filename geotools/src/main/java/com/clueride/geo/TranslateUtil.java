@@ -20,10 +20,11 @@ package com.clueride.geo;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
@@ -37,11 +38,6 @@ import com.clueride.domain.factory.NodeFactory;
 import com.clueride.feature.Edge;
 import com.clueride.feature.FeatureType;
 import com.clueride.feature.LineFeature;
-import com.clueride.poc.geotools.TempSegmentImpl;
-import com.jettmarks.gmaps.encoder.Track;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
 
 /**
  * Methods to translate from one type to another.
@@ -208,31 +204,6 @@ public class TranslateUtil {
         segmentFeatureBuilder.add((LineString) trackFeature
                 .getDefaultGeometry());
         return segmentFeatureBuilder.buildFeature(null);
-    }
-
-    /**
-     * This is taking Tracks and turning into Segments rather than LineStrings.
-     * 
-     * TODO: Rename this appropriately; hierarchy to find out who is using it.
-     * 
-     * @param linesByName
-     * @return
-     */
-    public static List<Edge> lineStringToSegment(
-            Map<Track, LineString> linesByName) {
-        List<Edge> segments;
-        segments = new ArrayList<Edge>();
-        int index = 0;
-        for (Entry<Track, LineString> trackEntry : linesByName.entrySet()) {
-            index++;
-            // Segment segment =
-            // SegmentFactory.getInstance(trackEntry.getValue());
-            TempSegmentImpl segment = new TempSegmentImpl(index);
-            segment.setDisplayName(trackEntry.getKey().getDisplayName());
-            segment.setUrl(trackEntry.getKey().getName());
-            segments.add((Edge) segment);
-        }
-        return segments;
     }
 
     /**

@@ -39,4 +39,7 @@ public interface TrackStore {
     Set<LineFeature> getLineFeatures();
 
     TrackFeature getTrackById(Integer id);
+
+    // TODO: This may not yet be incoroporated; is it necessary?
+    Integer persistTrack(TrackFeature trackFeature);
 }

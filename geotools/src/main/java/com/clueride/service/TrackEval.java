@@ -17,11 +17,20 @@
  */
 package com.clueride.service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.DefaultNodeStore;
 import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.NodeStore;
+import com.clueride.dao.DefaultNodeStore;
 import com.clueride.dao.NetworkStore;
+import com.clueride.dao.NodeStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
@@ -29,15 +38,6 @@ import com.clueride.feature.TrackFeature;
 import com.clueride.geo.IntersectionUtil;
 import com.clueride.geo.LengthToPoint;
 import com.clueride.geo.SplitLineString;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import org.apache.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import static com.clueride.geo.SplitLineString.START;
 
 /**
@@ -84,6 +84,13 @@ public class TrackEval {
     private Map<Edge, Double> distancePerEdge = new HashMap<>();
     private Map<Edge, GeoNode> splitPerEdge = new HashMap<>();
 
+    /**
+     * Accepts a given track and uses the existing Network to determine where and
+     * how the track might be connected.
+     * Incoming TrackFeature is typically one of the split tracks that comes from
+     * a track the new location is sitting upon.
+     * @param sourceTrack
+     */
     public TrackEval(TrackFeature sourceTrack) {
         this.sourceTrack = sourceTrack;
         prepareEvaluation();
@@ -227,23 +234,29 @@ public class TrackEval {
     public Edge findNearestNetworkEdge() {
         LOGGER.debug("Finding Edge nearest to start of track: " + sourceTrack.getNodeList().get(0));
         Edge networkEdge = null;
+        boolean envelopeFound = false;
         LineString lsSource = sourceTrack.getLineString();
 
         // Only need to get the envelope once
         Geometry envelope = lsSource.getEnvelope();
+        Geometry bufferedSource = lsSource.buffer(GeoProperties.BUFFER_TOLERANCE);
 
         for (Edge edge : EDGE_STORE.getEdges()) {
             LineString lsNetwork = edge.getLineString();
             // Check first if the boundaries overlap at all
             if (!envelope.intersects(lsNetwork.getEnvelope())) {
+//            if (!buffer.intersects(lsNetwork.getEnvelope())) {
                 // LOGGER.debug("No overlap with " + edge.toString());
                 continue;
             }
+            envelopeFound = true;
 
             // This is the part that could stand optimization
             Double intersectDistance;
-            if (lsNetwork.intersects(lsSource)
-                    || lsNetwork.crosses(lsSource)) {
+//            if (lsNetwork.intersects(lsSource)
+//                    || lsNetwork.crosses(lsSource)) {
+            if (lsNetwork.intersects(bufferedSource)
+                    || lsNetwork.crosses(bufferedSource)) {
                 LOGGER.debug("INTERSECTION with " + edge.toString());
                 Point intersection = IntersectionUtil
                         .walkToIntersectingNode(lsSource, lsNetwork);
@@ -264,6 +277,9 @@ public class TrackEval {
                     }
                 }
             }
+        }
+        if (!envelopeFound) {
+            LOGGER.info("No Envelope overlapping this Track: " + sourceTrack.getId());
         }
         splittingNode = new DefaultGeoNode(splittingPoint);
         return networkEdge;

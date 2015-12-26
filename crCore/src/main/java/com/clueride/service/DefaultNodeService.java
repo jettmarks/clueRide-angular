@@ -155,6 +155,8 @@ public class DefaultNodeService implements NodeService {
         Integer nodeId = nodeStore.addNew(rec.getNewNode());
         LOGGER.info("New Node with ID: " + nodeId);
 
+        Integer splittingNodeId = nodeStore.addNew(rec.getSplittingNode());
+
         rec.logRecommendationSummary();
         SegmentService.addSegment(rec.getProposedTrack());
 
