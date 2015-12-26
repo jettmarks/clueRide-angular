@@ -91,12 +91,14 @@ public class DefaultNodeService implements NodeService {
                 .getLastProposal();
         List<NetworkRecommendation> recs = networkProposal.getRecommendations();
         if (networkProposal.hasMultipleRecommendations()) {
+            // TODO: Depends on a signature that is able to tell us which Rec to use
             LOGGER.warn("Not handling Multiple Rec proposals yet.");
         } else {
             Rec rec = (Rec) recs.get(0);
             switch (rec.getRecType()) {
                 case ON_SEGMENT:
                 case ON_NODE:
+                    // TODO: May become part of the signature for a RecommendationService
                     LOGGER.warn("We don't have a way to select "+rec.getRecType());
                     break;
 
@@ -109,11 +111,11 @@ public class DefaultNodeService implements NodeService {
                 case TRACK_TO_SEGMENT_AND_NODE:
                     addTrackToSegmentAndNodeRec((ToSegmentAndNode) rec);
                     break;
-                case TRACK_TO_2_NODES:
-                    addTrackToTwoNodesRec((ToTwoNodes) rec);
-                    break;
                 case TRACK_TO_2_SEGMENTS:
                     addTrackToTwoSegmentsRec((ToTwoSegments) rec);
+                    break;
+                case TRACK_TO_2_NODES:
+                    addTrackToTwoNodesRec((ToTwoNodes) rec);
                     break;
 
                 case UNDEFINED:
@@ -125,61 +127,160 @@ public class DefaultNodeService implements NodeService {
         return "{\"status\": \"OK\"}";
     }
 
-    private static void addTrackToNodeRec(ToNode rec) {
+    /**
+     * Prepares the following items for adding to the network:
+     * <ul>
+     *     <li>The New Node itself.</li>
+     *     <li>The Edge connecting the Node to the Network Node.</li>
+     * </ul>
+     *
+     * These are then persisted.
+     * @param rec - ToNode instance containing the New Node and the new Edge
+     *            which connects the New Node to the Network Node.
+     */
+    private void addTrackToNodeRec(ToNode rec) {
         LOGGER.info("From this Rec: "+rec);
         LOGGER.info("Preparing the following pieces to add to the Network:");
         LOGGER.info("New Loc: " + rec.getNewNode().getName());
         rec.logRecommendationSummary();
+
+        Integer nodeId = nodeStore.addNew(rec.getNewNode());
+        LOGGER.info("New Node with ID: " + nodeId);
 
         SegmentService.addSegment(rec.getProposedTrack());
     }
 
     /**
      * Prepares these items for adding to the network:
-     * <UL>
-     * <LI>The Location Node itself
-     * <LI>The Edge connecting the Location to the Segment (from the Track)
-     * <LI>The Splitting Node (also the end of the previous Edge)
-     * <LI>Two new Edges that result from splitting the original Segment.
-     * <LI>Removal of the original Segment.
-     * </UL>
-     *
-     * And then ask these be persisted.
-     *
-     * @param rec - to be added to the Network.
+     * <ul>
+     * <li>The Location Node itself
+     * <li>The Edge connecting the Location to the Segment (from the Track)
+     * <li>The existing Network Edge/Segment where the proposed Edge meets the network.</li>
+     * <li>The Splitting Node (also the end of the previous Edge).
+     * </ul>
+     * We also tell the SegmentService about the existing Network Edge and the
+     * location where we join in so the Edge can be split into two Edges creating
+     * a three-way intersection at that Splitting Node.
+     * These are then persisted.
+     * @param rec - Containing specific elements to be added to the Network.
      */
     private void addTrackToSegmentRec(ToSegment rec) {
         LOGGER.info("From this Rec: " + rec);
         LOGGER.info("Preparing the following pieces to add to the Network:");
 
+        // Two Nodes:
+        Integer nodeId = nodeStore.addNew(rec.getNewNode());
+        LOGGER.info("New Node with ID: " + nodeId);
+        Integer splittingNodeId = nodeStore.addNew(rec.getSplittingNode());
+        LOGGER.info("Splitting Node with ID: " + splittingNodeId);
+
+        // Accepted Proposal for Edge/Segment from new node to the existing segment
+        SegmentService.addSegment(rec.getProposedTrack());
+
+        // Split of the Existing Network Node
+        SegmentService.splitSegment(rec.getSegment(), rec.getSplittingNode());
+        rec.logRecommendationSummary();
+    }
+
+    /**
+     * Prepares the following items for adding to the network:
+     * <ul>
+     *     <li>The New Node itself.</li>
+     *     <li>The Edge in one direction connecting the Node to a Network Node or Edge.</li>
+     *     <li>The Edge in the other direction connecting the new Node to either a Network Node or Edge.</li>
+     *     <li>The existing Network Edge/Segment where the proposed Edge meets the network.</li>
+     *     <li>The Splitting Node where the proposed Edge meets the Network Edge.
+     * </ul>
+     * We also tell the SegmentService about the existing Network Edge and the
+     * location where we join in so the Edge can be split into two Edges creating
+     * a three-way intersection at that Splitting Node.
+     * @param rec - Containing specific elements to be added to the Network.
+     */
+    private void addTrackToSegmentAndNodeRec(ToSegmentAndNode rec) {
+        LOGGER.info("From this Rec: "+rec);
+        LOGGER.info("Preparing the following pieces to add to the Network:");
+
+        // Two Nodes:
+        Integer nodeId = nodeStore.addNew(rec.getNewNode());
+        LOGGER.info("New Node with ID: " + nodeId);
+        Integer splittingNodeId = nodeStore.addNew(rec.getSplittingNode());
+        LOGGER.info("Splitting Node with ID: " + splittingNodeId);
+
+        // Accepted Proposal for Edge/Segment from new node to the existing segment
+        SegmentService.addSegment(rec.getProposedTracks()[0]);
+        SegmentService.addSegment(rec.getProposedTracks()[1]);
+
+        // Split of the Existing Network Node
+        SegmentService.splitSegment(rec.getSegment(), rec.getSplittingNode());
+        rec.logRecommendationSummary();
+    }
+
+    /**
+     * Prepares these items for adding to the network:
+     * <ul>
+     *     <li>The New Node itself.</li>
+     *     <li>A new Edge in one direction from the new Node over to a Network Edge.</li>
+     *     <li>A new Edge in the other direction from the new Node over to a Network Edge.</li>
+     *     <li>The Splitting Node where the first Edge hits the Network</li>
+     *     <li>The Splitting Node where the second Edge hits the Network</li>
+     * </ul>
+     * These are then persisted.
+     * We also tell the SegmentService about the two existing Network Edges and the
+     * location where we join in so those Edges can be split into two Edges creating
+     * a three-way intersection at that Splitting Node.
+     * @param rec - ToTwoSegments recommendation containing New Node, the two Edges
+     *            leading in either direction toward two other existing Network Edges
+     *            and the two Splitting Nodes, one for each Network Edge to be split.
+     */
+    private void addTrackToTwoSegmentsRec(ToTwoSegments rec) {
+        LOGGER.info("From this Rec: "+rec);
+        LOGGER.info("Preparing the following pieces to add to the Network:");
+
+        // Two Nodes:
+        Integer nodeId = nodeStore.addNew(rec.getNewNode());
+        LOGGER.info("New Node with ID: " + nodeId);
+        Integer splittingNodeEndId = nodeStore.addNew(rec.getSplittingNodeEnd());
+        LOGGER.info("Splitting Node with ID: " + splittingNodeEndId);
+        Integer splittingNodeStartId = nodeStore.addNew(rec.getSplittingNodeStart());
+        LOGGER.info("Splitting Node with ID: " + splittingNodeStartId);
+
+        // Accepted Proposal for Edge/Segment from new node to the existing segment
+        SegmentService.addSegment(rec.getProposedTracks()[0]);
+        SegmentService.addSegment(rec.getProposedTracks()[1]);
+
+        // Split of the Existing Network Node
+        SegmentService.splitSegment(rec.getEndSegment(), rec.getSplittingNodeEnd());
+        SegmentService.splitSegment(rec.getStartSegment(), rec.getSplittingNodeStart());
+
+        rec.logRecommendationSummary();
+    }
+
+    /**
+     * Prepares the following items for adding to the network:
+     * <ul>
+     *     <li>The New Node itself.</li>
+     *     <li>The Edge in one direction connecting the Node to the Network Node.</li>
+     *     <li>The Edge in the other direction connecting the Node to another Network Node.</li>
+     * </ul>
+     * These are then persisted.
+     * @param rec - Containing specific elements to be added to the Network.
+     */
+    private void addTrackToTwoNodesRec(ToTwoNodes rec) {
+        LOGGER.info("From this Rec: " + rec);
+        LOGGER.info("Preparing the following pieces to add to the Network:");
+
+        /* New Node: */
         Integer nodeId = nodeStore.addNew(rec.getNewNode());
         LOGGER.info("New Node with ID: " + nodeId);
 
-        Integer splittingNodeId = nodeStore.addNew(rec.getSplittingNode());
+        /* Accepted Proposal for Edge/Segment from new node to the existing node in each direction. */
+        SegmentService.addSegment(rec.getProposedTracks()[0]);
+        SegmentService.addSegment(rec.getProposedTracks()[1]);
 
         rec.logRecommendationSummary();
-        SegmentService.addSegment(rec.getProposedTrack());
-
-//        for (SimpleFeature feature : rec.getFeatureCollection()) {
-//            feature.getFeatureType().getTypeName();
-//        }
-
     }
 
-    private static void addTrackToTwoSegmentsRec(ToTwoSegments rec) {
-        LOGGER.info("From this Rec: "+rec);
-
-    }
-
-    private static void addTrackToTwoNodesRec(ToTwoNodes rec) {
-        LOGGER.info("From this Rec: " + rec);
-
-    }
-
-    private static void addTrackToSegmentAndNodeRec(ToSegmentAndNode rec) {
-        LOGGER.info("From this Rec: "+rec);
-
-    }
+    /* Node Group Endpoint. */
 
     @Override
     public String getNodeGroups() {
@@ -197,6 +298,7 @@ public class DefaultNodeService implements NodeService {
 
     @Override
     public String setNodeGroup(Integer id, Double lat, Double lon) {
+        // TODO: Put this back in
         return null;
     }
 

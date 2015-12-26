@@ -80,7 +80,7 @@ public class SegmentService {
     /**
      * 
      */
-    // TODO: Need to work this out soon
+    // TODO: CA-65 Persistance and the Stores
     public static void saveChanges() {
 //        try {
 //            networkStore.persistAndReload();
@@ -95,5 +95,8 @@ public class SegmentService {
         } else {
             networkStore.addNew(new EdgeImpl(proposedTrack.getFeature()));
         }
+    }
+
+    public static void deleteSegment(Edge segment) {
     }
 }

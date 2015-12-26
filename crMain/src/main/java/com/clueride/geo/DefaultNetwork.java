@@ -70,7 +70,7 @@ public class DefaultNetwork implements Network {
             .getInstance().get("group.radius.degrees");
     // private static final double BUFFER_TOLERANCE = 0.00007;
     private static DefaultNetwork instance = null;
-    // TODO: Move from featureCollection to reliance on the Stores
+    // TODO: CA-65 Move from featureCollection to reliance on the Stores
     private DefaultFeatureCollection featureCollection;
     private Set<LineFeature> allLineFeatures;
     private List<LineString> allLineStrings = new ArrayList<>();
@@ -100,7 +100,7 @@ public class DefaultNetwork implements Network {
         networkStore = DefaultNetworkStore.getInstance();
         try {
             allLineFeatures = networkStore.getLineFeatures();
-            // TODO: Move from featureCollection to reliance on the Stores
+            // TODO: CA-65 Move from featureCollection to reliance on the Stores
             featureCollection = TranslateUtil
                     .lineFeatureSetToFeatureCollection(allLineFeatures);
 
@@ -127,7 +127,7 @@ public class DefaultNetwork implements Network {
         nodeSet = nodeStore.getNodes();
         allLineStrings = new ArrayList<>();
 
-        // TODO: Move from featureCollection to reliance on the Stores
+        // TODO: CA-65 Move from featureCollection to reliance on the Stores
         for (SimpleFeature feature : featureCollection) {
             LineString lineString = (LineString) feature.getDefaultGeometry();
             if (lineString != null) {
@@ -148,7 +148,7 @@ public class DefaultNetwork implements Network {
      */
     @Inject
     DefaultNetwork(DefaultFeatureCollection defaultFeatureCollection) {
-        // TODO: Move from featureCollection to reliance on the Stores
+        // TODO: CA-65 Move from featureCollection to reliance on the Stores
         featureCollection = defaultFeatureCollection;
         try {
             trackStore = LoadService.getInstance().loadTrackStore();
@@ -219,17 +219,14 @@ public class DefaultNetwork implements Network {
     @Override
     @Deprecated
     public void add(TrackFeature trackFeature) {
-        // TODO: Move from featureCollection to reliance on the Stores
+        // TODO: CA-65 Move from featureCollection to reliance on the Stores
         featureCollection.add(trackFeature.getFeature());
         refresh();
     }
 
     /**
      * (non-Javadoc)
-     * 
-     * @see com.clueride.poc.Network#evaluateState(com.clueride.domain.Node)
-     * 
-     * @deprecated - using LocationService.buildProposalForNewNode instead.
+     * @deprecated - using NodeService.buildProposalForNewNode instead.
      */
     @Override
     public NetworkProposal evaluateNodeState(GeoNode geoNode) {
@@ -253,12 +250,8 @@ public class DefaultNetwork implements Network {
         } else if (addCoveringSegments(geoNode)) {
             return recordState(newLocProposal, NodeNetworkState.ON_SEGMENT);
         } else {
-            // TODO: Nodes probably should be picked up inside the
-            // track/intersection evaluation.
-            // TODO: NearByNodes
             addNearestNodes(geoNode);
 
-            // TODO: Move each of these toward NetworkRecommendation proposals
             IntersectionScore intersectionScore = findMatchingTracks(geoNode);
             int tracksFound = intersectionScore.getTrackCount();
             if (tracksFound == 1) {
@@ -490,8 +483,6 @@ public class DefaultNetwork implements Network {
      * 
      * Those are then added to the node.
      * 
-     * TODO: Add them to the NetworkRecommendation instead of the node.
-     * 
      * If we find matching tracks, record the segments/nodes where the
      * intersection occurs to avoid having to perform another search later.
      * 
@@ -499,6 +490,7 @@ public class DefaultNetwork implements Network {
      * intersecting track -- insert the point into the track.
      * 
      * @param geoNode
+     * @deprecated - in favor of the NodeService code.
      */
     private IntersectionScore findMatchingTracks(GeoNode geoNode) {
         LOGGER.info("start - findMatchingTracks");
@@ -508,12 +500,10 @@ public class DefaultNetwork implements Network {
 
         // Out of the covering tracks, which pass through our nearest nodes?
         for (TrackFeature trackFeature : candidateTracks) {
-            // TODO: turn keepTrack into a method off the eval/builder.
             boolean keepTrack = false;
             LineString trackLineString = trackFeature.getLineString();
 
             // Check our list of nodes
-            // TODO: NearByNodes
             for (GeoNode node : geoNode.getNearByNodes()) {
                 if (trackLineString.buffer(GeoProperties.NODE_TOLERANCE)
                         .covers(node.getPoint())) {
@@ -534,10 +524,7 @@ public class DefaultNetwork implements Network {
             }
 
             // Check our list of Segments for crossings and intersections
-            // TODO: SimpleFeature -> Edge
-            // TODO: This only handles the edges and ignores the segments;
             // Segments as edges?
-            // TODO: Move from featureCollection to reliance on the Stores
             for (Edge edge : DefaultNetworkStore.getInstance()
                     .getEdges()) {
                 // SegmentFeature segmentFeature = new SegmentFeatureImpl(
@@ -593,7 +580,7 @@ public class DefaultNetwork implements Network {
      * 
      * At this point, we should have two line segments, each consisting of a
      * single pair of coordinates. Those four coordinates are what is passed to
-     * the LineIntesector tool. That tool can provide us with the point where
+     * the LineIntersector tool. That tool can provide us with the point where
      * the two line segments cross, and thus the point that we're looking for.
      * 
      * Once we have that point, we insert it into the track at the appropriate
@@ -608,6 +595,7 @@ public class DefaultNetwork implements Network {
      *            - Segment which is already part of the network.
      * @return SimpleFeature - wrapping a LineString that holds the original
      *         track with the intersecting point inserted.
+     * @deprecated - in favor of NodeService code.
      */
     private LineString crossingTrackToIntersectingTrack(GeoNode geoNode,
             LineString trackLineString,
@@ -671,19 +659,6 @@ public class DefaultNetwork implements Network {
         // Check that the intersection now occurs
 
         return reconstructedLineString;
-    }
-
-    /**
-     * TODO: Move to separate class.
-     * 
-     * @param coordinates
-     */
-    @SuppressWarnings("unused")
-    private void dumpCoordinates(List<Coordinate> coordinates) {
-        int i = 0;
-        for (Coordinate coordinate : coordinates) {
-            System.out.println(i++ + ": " + coordinate);
-        }
     }
 
     /**
@@ -752,7 +727,6 @@ public class DefaultNetwork implements Network {
         SegmentService.splitSegment(existingSegmentToSplit, endNode);
         SegmentService.saveChanges();
         allLineFeatures = networkStore.getLineFeatures();
-        // TODO: Move from featureCollection to reliance on the Stores
         featureCollection = TranslateUtil
                 .lineFeatureSetToFeatureCollection(allLineFeatures);
         refresh();
@@ -773,9 +747,8 @@ public class DefaultNetwork implements Network {
      * We'll also be interested in a similar algorithm with Tracks and the
      * intersection of those tracks with nearby segments containing the nodes.
      * 
-     * TODO: Prepare nearest nodes instead of all of them.
-     * 
      * @param geoNode
+     * @deprecated - in favor of NodeService code.
      */
     private void addNearestNodes(GeoNode geoNode) {
         // List<GeoNode> nearestNodes = new ArrayList<>();
@@ -846,7 +819,7 @@ public class DefaultNetwork implements Network {
         LOGGER.debug("Requesting network for display");
         String result = "";
         GeoJsonUtil geoJsonUtil = new GeoJsonUtil(JsonStoreType.LOCATION);
-        // TODO: Move from featureCollection to reliance on the Stores
+        // TODO: CA-65 Move from featureCollection to reliance on the Stores
         result = geoJsonUtil.toString(featureCollection);
         return result;
     }
