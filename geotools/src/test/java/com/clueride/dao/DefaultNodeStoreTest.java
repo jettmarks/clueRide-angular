@@ -17,18 +17,22 @@
  */
 package com.clueride.dao;
 
-import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.Node;
+import java.util.Collection;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.vividsolutions.jts.geom.Point;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
-
+import com.clueride.domain.DefaultGeoNode;
+import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.Node;
+import com.clueride.domain.factory.PointFactory;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * Exercises the DefaultNodeStoreTest class.
@@ -66,5 +70,15 @@ public class DefaultNodeStoreTest {
         for (Node node : nodes) {
             System.out.println(node);
         }
+    }
+
+    @Test
+    public void testPersistShowDiff() {
+        NodeStore nodeStore = injector.getInstance(NodeStore.class);
+        Point point = PointFactory.getJtsInstance(-84.1, 33.4, 300.0);
+        Integer lastId = nodeStore.addNew(new DefaultGeoNode(point));
+        assertTrue(lastId > 0);
+        System.out.println("Last ID: " + lastId);
+        nodeStore.persist();
     }
 }

@@ -17,6 +17,7 @@
  */
 package com.clueride.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -165,6 +166,13 @@ public class DefaultNetwork implements Network {
      */
     @Override
     public void storesReadyForPublishing() {
+        try {
+            // TODO: Is this what I want?
+            networkStore.persist();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        nodeStore.persist();
         featureCollection = TranslateUtil
                 .lineFeatureSetToFeatureCollection(allLineFeatures);
     }

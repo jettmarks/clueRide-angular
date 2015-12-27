@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright 2015 Jett Marks
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,18 @@
 package com.clueride.dao;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 
 import com.clueride.domain.GeoNode;
@@ -44,6 +48,7 @@ import com.clueride.io.JsonStoreType;
  */
 @Singleton
 public class DefaultNodeStore implements NodeStore {
+    private static final Logger LOGGER = Logger.getLogger(DefaultNodeStore.class);
 
     /** Storage for Nodes; typically the endpoints of Segments. */
     private static final String LOCATIONS_FILE_NAME = "locations.geojson";
@@ -51,10 +56,10 @@ public class DefaultNodeStore implements NodeStore {
     private static final String LOCATION_GROUPS_FILE_NAME = "locationGroups.geojson";
 
     private JsonStoreType ourStoreType = JsonStoreType.LOCATION;
-    private Integer maxNodeId = 0;
-    private Set<GeoNode> nodes = new HashSet<>();
-    private Set<NodeGroup> nodeGroups = new HashSet<>();
-    private Map<Integer, Node> nodeMap = new HashMap<>();
+    private static Integer maxNodeId = 0;
+    private static Set<GeoNode> nodes = null;
+    private static Set<NodeGroup> nodeGroups = new HashSet<>();
+    private static Map<Integer, Node> nodeMap = new HashMap<>();
 
     private static DefaultNodeStore instance;
 
@@ -75,7 +80,31 @@ public class DefaultNodeStore implements NodeStore {
      */
     @Inject
     public DefaultNodeStore() {
-        loadLocationsFromDefault();
+        if (nodes == null) {
+            loadLocationsFromDefault();
+        }
+    }
+
+    /**
+     *
+     */
+    private void loadLocationsFromDefault() {
+        GeoJsonUtil storageUtil = new GeoJsonUtil(ourStoreType);
+        DefaultFeatureCollection featureCollection = null;
+        try {
+            featureCollection = storageUtil
+                    .readFeatureCollection(LOCATIONS_FILE_NAME);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        nodes = TranslateUtil.featureCollectionToNodes(featureCollection);
+        for (GeoNode node : nodes) {
+            nodeMap.put(node.getId(), node);
+            if (maxNodeId < node.getId()) {
+                maxNodeId = node.getId();
+            }
+        }
+        NodeFactory.setMaxNodeId(maxNodeId);
     }
 
     /**
@@ -96,8 +125,86 @@ public class DefaultNodeStore implements NodeStore {
     }
 
     /**
+     * Stores differences in the Memory and Disk copies before shoving this out
+     * to disk; assumes that the in-memory copy is the official copy and we're just
+     * taking a snapshot record (not to imply that previous copies are kept -- that
+     * would have to happen outside this method/class).
+     */
+    @Override
+    public void persist() {
+        List<Integer> inMemoryIDs = new ArrayList<>();
+        List<Integer> onDiskIDs = new ArrayList<>();
+
+        for (Node node : nodes) {
+            inMemoryIDs.add(node.getId());
+        }
+        dumpList("In Memory IDs", inMemoryIDs);
+
+        GeoJsonUtil jsonUtilNodes = new GeoJsonUtil(JsonStoreType.LOCATION);
+        Set<GeoNode> nodesOnDisk = Collections.EMPTY_SET;
+        try {
+            nodesOnDisk = TranslateUtil.featureCollectionToNodes(
+                    jsonUtilNodes.readFeatureCollection(LOCATIONS_FILE_NAME)
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (Node node : nodesOnDisk) {
+            onDiskIDs.add(node.getId());
+        }
+        dumpList("On Disk IDs", onDiskIDs);
+
+        List<Integer> toBeAdded = new ArrayList<>();
+        for (Integer rec : inMemoryIDs) {
+            if (!onDiskIDs.contains(rec)) {
+                toBeAdded.add(rec);
+                LOGGER.info("Adding " + rec);
+            }
+        }
+
+        List<Integer> toBeRemoved = new ArrayList<>();
+        for (Integer rec : onDiskIDs) {
+            if (!inMemoryIDs.contains(rec)) {
+                toBeRemoved.add(rec);
+                LOGGER.info("Removing " + rec);
+            }
+        }
+
+        if (toBeAdded.isEmpty()) {
+            LOGGER.info("No records to be Added");
+        } else {
+            // Add the instances to be Added
+            // TODO: CA-63 Code this
+        }
+
+        if (toBeRemoved.isEmpty()) {
+            LOGGER.info("No records to be Removed");
+        } else {
+            // Delete files for the records to be removed
+            // TODO: CA-63 Code this
+        }
+    }
+    /**
+     * Lists out in order the values in the passed list.
+     *
+     * Package visibility for diagnostics and testing.
+     *
+     * @param message to be displayed as a "header"
+     * @param listToDump what we want to see listed out.
+     */
+    void dumpList(String message, List<Integer> listToDump) {
+        System.out.println(message);
+        List<Integer> sortedList = new ArrayList<>(listToDump);
+        Collections.sort(sortedList);
+        for (Integer id : sortedList) {
+            System.out.println(id);
+        }
+    }
+
+    /**
      * @throws IOException
-     * 
+     *
      */
     public void persistAndReloadNodes() throws IOException {
         GeoJsonUtil storageUtil = new GeoJsonUtil(ourStoreType);
@@ -142,28 +249,6 @@ public class DefaultNodeStore implements NodeStore {
             loadLocationsFromDefault();
         }
         return nodes;
-    }
-
-    /**
-     * 
-     */
-    private void loadLocationsFromDefault() {
-        GeoJsonUtil storageUtil = new GeoJsonUtil(ourStoreType);
-        DefaultFeatureCollection featureCollection = null;
-        try {
-            featureCollection = storageUtil
-                    .readFeatureCollection(LOCATIONS_FILE_NAME);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        nodes = TranslateUtil.featureCollectionToNodes(featureCollection);
-        for (GeoNode node : nodes) {
-            nodeMap.put(node.getId(), node);
-            if (maxNodeId < node.getId()) {
-                maxNodeId = node.getId();
-            }
-        }
-        NodeFactory.setMaxNodeId(maxNodeId);
     }
 
     /**
