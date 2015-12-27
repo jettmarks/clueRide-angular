@@ -17,15 +17,14 @@
  */
 package com.clueride.domain;
 
-import com.clueride.feature.FeatureType;
+import com.vividsolutions.jts.geom.LineString;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.TrackImpl;
 import com.clueride.feature.Edge;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
+import com.clueride.feature.FeatureType;
 
 /**
  * Close to a TrackFeatureImpl, but this holds Network Segments before they are
@@ -102,20 +101,6 @@ public class EdgeImpl extends TrackFeatureImpl implements Edge {
     public Node getEnd() {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    /**
-     * Not clear we'll keep this.
-     */
-    public Point getGeoStart() {
-        return ((LineString) feature.getDefaultGeometry()).getStartPoint();
-    }
-
-    /**
-     * Not clear we'll keep this.
-     */
-    public Point getGeoEnd() {
-        return ((LineString) feature.getDefaultGeometry()).getEndPoint();
     }
 
     /**

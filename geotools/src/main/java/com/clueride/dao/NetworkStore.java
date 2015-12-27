@@ -18,6 +18,7 @@
 package com.clueride.dao;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import com.vividsolutions.jts.geom.Point;
@@ -82,7 +83,7 @@ public interface NetworkStore {
      * 
      * @return Set of the Edges defined for the network.
      */
-    Set<Edge> getEdges();
+    List<Edge> getEdges();
 
     /**
      * Segments and not {@link Edge}s.

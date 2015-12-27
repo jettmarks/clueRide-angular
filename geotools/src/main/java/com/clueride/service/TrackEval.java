@@ -59,11 +59,13 @@ import static com.clueride.geo.SplitLineString.START;
  */
 public class TrackEval {
     private static final Logger LOGGER = Logger.getLogger(TrackEval.class);
+
     /** Our picture of the current network. */
-    private static final NodeStore LOCATION_STORE = DefaultNodeStore
-            .getInstance();
-    private static final NetworkStore EDGE_STORE = DefaultNetworkStore
-            .getInstance();
+    // TODO: CA-64 Switch to Guice Dependency Injection
+    private static final NodeStore NODE_STORE = DefaultNodeStore.getInstance();
+    // TODO: CA-64 Switch to Guice Dependency Injection
+    private static final NetworkStore EDGE_STORE = DefaultNetworkStore.getInstance();
+
     /** What we're evaluating. */
     private final TrackFeature sourceTrack;
     /** Selected Node. */
@@ -198,8 +200,8 @@ public class TrackEval {
         Geometry envelope = lsSource.getEnvelope();
         Geometry buffer = lsSource.buffer(GeoProperties.NODE_TOLERANCE);
 
-        // Run through all network nodes in the LOCATION_STORE
-        Set<GeoNode> nodeSet = LOCATION_STORE.getNodes();
+        // Run through all network nodes in the NODE_STORE
+        Set<GeoNode> nodeSet = NODE_STORE.getNodes();
         for (GeoNode geoNode : nodeSet) {
             Point point = geoNode.getPoint();
             if (envelope.covers(point) && buffer.covers(point)) {
@@ -245,16 +247,12 @@ public class TrackEval {
             LineString lsNetwork = edge.getLineString();
             // Check first if the boundaries overlap at all
             if (!envelope.intersects(lsNetwork.getEnvelope())) {
-//            if (!buffer.intersects(lsNetwork.getEnvelope())) {
-                // LOGGER.debug("No overlap with " + edge.toString());
                 continue;
             }
             envelopeFound = true;
 
             // This is the part that could stand optimization
             Double intersectDistance;
-//            if (lsNetwork.intersects(lsSource)
-//                    || lsNetwork.crosses(lsSource)) {
             if (lsNetwork.intersects(bufferedSource)
                     || lsNetwork.crosses(bufferedSource)) {
                 LOGGER.debug("INTERSECTION with " + edge.toString());

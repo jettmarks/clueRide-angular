@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright 2015 Jett Marks
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,39 +15,37 @@
  *
  * Created Aug 21, 2015
  */
-package com.clueride.geo;
+package com.clueride.service;
 
 import java.util.List;
 
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.feature.TrackFeature;
 
 /**
  * Abstraction of a Network - the body of connected Segments and Nodes.
  *
  * @author jett
- *
  */
 public interface Network {
 
     /**
-     * @param connectedNode
-     * @return
-     */
-    public abstract boolean canReach(GeoNode connectedNode);
-
-    /**
      * @param trackFeature
+     * @deprecated - coming out with the LoadService
      */
-    public abstract void add(TrackFeature trackFeature);
+    void add(TrackFeature trackFeature);
+
+    List<GeoNode> getSortedNodes(GeoNode geoNode);
 
     /**
-     * @param connectedNode
-     * @return
+     * Takes the 'published' copy of the network and turns it into a JSON string for the client to display.
+     * @return JSON-formatted FeatureCollection containing all the Segments in the Network.
      */
-    public abstract NetworkProposal evaluateNodeState(GeoNode connectedNode);
+    String getNetworkForDisplay();
 
-    public abstract List<GeoNode> getSortedNodes(GeoNode geoNode);
-
+    /**
+     * Serves as a signal that changes have occurred to the underlying Stores and that those changes
+     * may now be committed to the memory space which serves requests.
+     */
+    void storesReadyForPublishing();
 }

@@ -17,8 +17,22 @@
  */
 package com.clueride.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.*;
+import com.clueride.dao.DefaultNetworkStore;
+import com.clueride.dao.DefaultNodeStore;
+import com.clueride.dao.DefaultTrackStore;
+import com.clueride.dao.NetworkStore;
+import com.clueride.dao.NodeStore;
+import com.clueride.dao.TrackStore;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeGroup;
@@ -26,14 +40,6 @@ import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.IntersectionUtil;
 import com.clueride.geo.LengthToPoint;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import org.apache.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Given a set of Geo Elements provide a set of evaluations against the
@@ -112,7 +118,7 @@ public class GeoEval {
      * @return
      */
     public Integer matchesSegmentId(GeoNode geoNode) {
-        Set<Edge> edgeSet = EDGE_STORE.getEdges();
+        List<Edge> edgeSet = EDGE_STORE.getEdges();
         for (Edge edge : edgeSet) {
             LineString lineString = edge.getLineString();
             // Perform faster envelope test before checking buffered coverage

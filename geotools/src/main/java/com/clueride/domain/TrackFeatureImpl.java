@@ -17,13 +17,8 @@
  */
 package com.clueride.domain;
 
-import com.clueride.domain.dev.Node;
-import com.clueride.domain.dev.Track;
-import com.clueride.domain.dev.UnratedSegment;
-import com.clueride.domain.factory.PointFactory;
-import com.clueride.feature.Edge;
-import com.clueride.feature.FeatureType;
-import com.clueride.feature.TrackFeature;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -31,8 +26,13 @@ import com.vividsolutions.jts.geom.LineString;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.clueride.domain.dev.Node;
+import com.clueride.domain.dev.Track;
+import com.clueride.domain.dev.UnratedSegment;
+import com.clueride.domain.factory.PointFactory;
+import com.clueride.feature.Edge;
+import com.clueride.feature.FeatureType;
+import com.clueride.feature.TrackFeature;
 
 /**
  * Represents a Raw Track (often from RideWithGPS at the {@link Track} getUrl() method) which
@@ -91,7 +91,7 @@ public class TrackFeatureImpl implements TrackFeature {
      * Creates the separate Domain and Geometry instances from a fully-formed
      * Feature.
      * 
-     * @param lineStringFeature
+     * @param lineStringFeature - SimpleFeature holding both geometry and meta-data.
      */
     public TrackFeatureImpl(SimpleFeature lineStringFeature) {
         Object obj = lineStringFeature.getDefaultGeometry();
@@ -208,17 +208,28 @@ public class TrackFeatureImpl implements TrackFeature {
         return feature;
     }
 
+    @Override
+    public GeoNode getGeoStart() {
+        return new DefaultGeoNode(lineString.getStartPoint());
+    }
+
+    @Override
+    public GeoNode getGeoEnd() {
+        return new DefaultGeoNode(lineString.getEndPoint());
+    }
+
     /**
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("TrackFeatureImpl [id=").append(id).append(
-                ", displayName=").append(displayName).append(", url=").append(
-                url).append(", size=").append(lineString.getNumPoints())
-                .append("]");
-        return builder.toString();
+        return new StringBuilder()
+                .append("TrackFeatureImpl [id=").append(id)
+                .append(", displayName=").append(displayName)
+                .append(", url=").append(url)
+                .append(", size=").append(lineString.getNumPoints())
+                .append("]")
+                .toString();
     }
 
 }

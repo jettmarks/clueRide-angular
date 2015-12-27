@@ -17,22 +17,23 @@
  */
 package com.clueride.dao;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.geotools.feature.DefaultFeatureCollection;
+
 import com.clueride.feature.TrackFeature;
-import com.clueride.geo.DefaultNetwork;
-import com.clueride.geo.Network;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
 import com.clueride.poc.geotools.TrackStore;
-import org.geotools.feature.DefaultFeatureCollection;
-
-import java.io.IOException;
-import java.util.List;
+import com.clueride.service.DefaultNetwork;
+import com.clueride.service.Network;
 
 /**
  * Description.
  *
  * @author jett
- *
+ * @deprecated - replaced by Stores.
  */
 public class LoadService {
 
