@@ -20,6 +20,7 @@ package com.clueride.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Point;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -28,7 +29,6 @@ import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.UnratedSegment;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
-import com.vividsolutions.jts.geom.Point;
 
 /**
  * Description.
@@ -52,7 +52,7 @@ public class DefaultGeoNode implements GeoNode {
     private Edge proposedSegment;
 
     /**
-     * @param intersection
+     * @param point - Supplies coordinates using this Geometry instance.
      */
     public DefaultGeoNode(Point point) {
         this.setPoint(point);
@@ -62,7 +62,7 @@ public class DefaultGeoNode implements GeoNode {
      * 
      */
     public DefaultGeoNode() {
-        // TODO Auto-generated constructor stub
+        // TODO Auto-generated constructor stub -- Do we use a no-arg constructor anywhere?  Why?
     }
 
     /**
@@ -206,7 +206,6 @@ public class DefaultGeoNode implements GeoNode {
     }
 
     /**
-     * @see com.clueride.domain.GeoNode#addTrack(org.opengis.feature.simple.SimpleFeature)
      * @deprecated - should be part of the NetworkProposal instead.
      */
     public void addTrack(SimpleFeature feature) {
@@ -317,7 +316,6 @@ public class DefaultGeoNode implements GeoNode {
     }
 
     /**
-     * @see com.clueride.domain.GeoNode#setProposedTrack(com.com.clueride.feature.Edge)
      * @deprecated - should be part of the NetworkProposal instead.
      */
     public void setProposedSegment(Edge proposedSegment) {

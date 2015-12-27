@@ -17,6 +17,8 @@
  */
 package com.clueride.domain.dev.rec;
 
+import java.util.List;
+
 import com.clueride.feature.TrackFeature;
 
 /**
@@ -32,7 +34,7 @@ public interface OnTrack extends Rec {
     TrackFeature getSourceTrack();
 
     TrackFeature getProposedTrack();
-    TrackFeature[] getProposedTracks();
+    List<TrackFeature> getProposedTracks();
 
     void addProposedTrack(TrackFeature trackStart);
 }

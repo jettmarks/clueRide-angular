@@ -18,7 +18,13 @@
 package com.clueride.dao;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
@@ -58,6 +64,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
 
     // TODO: EDGE for unrated segments, NETWORK for fully-formed SegmentFeature.
 
+    // TODO: Look at the Memory-leak and threading issues with not treating this as final
     private Set<LineFeature> allLineFeatures = new HashSet<>();
     private Set<Edge> allEdges = new HashSet<>();
     private Set<SegmentFeature> allSegments = new HashSet<>();
@@ -225,8 +232,8 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * @see com.clueride.dao.NetworkStore#getEdges()
      */
     @Override
-    public Set<Edge> getEdges() {
-        return allEdges;
+    public List<Edge> getEdges() {
+        return new ArrayList(allFeatureMap.values());
     }
 
     /**
@@ -373,7 +380,13 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
     }
 
     private void delete(Integer id) {
-        // TODO: CA-65 Make sure this gets back to the Stores/FeatureCollection
+        LineFeature edgeToDelete = allFeatureMap.get(id);
+        if (edgeToDelete == null) {
+            LOGGER.warn("Attempted to delete ID " + id + " from Network, but it isn't found");
+        } else {
+            allLineFeatures.remove(edgeToDelete);
+            allFeatureMap.remove(id);
+        }
     }
 
     /**

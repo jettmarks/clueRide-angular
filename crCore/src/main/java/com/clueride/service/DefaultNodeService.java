@@ -35,7 +35,13 @@ import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.domain.dev.NewLocProposal;
 import com.clueride.domain.dev.NodeGroup;
-import com.clueride.domain.dev.rec.*;
+import com.clueride.domain.dev.rec.DiagnosticRec;
+import com.clueride.domain.dev.rec.Rec;
+import com.clueride.domain.dev.rec.ToNode;
+import com.clueride.domain.dev.rec.ToSegment;
+import com.clueride.domain.dev.rec.ToSegmentAndNode;
+import com.clueride.domain.dev.rec.ToTwoNodes;
+import com.clueride.domain.dev.rec.ToTwoSegments;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
@@ -124,6 +130,7 @@ public class DefaultNodeService implements NodeService {
                     LOGGER.warn("Rec Type: " + rec.getRecType());
             }
         }
+        DefaultNetwork.getInstance().storesReadyForPublishing();
         return "{\"status\": \"OK\"}";
     }
 
@@ -207,8 +214,8 @@ public class DefaultNodeService implements NodeService {
         LOGGER.info("Splitting Node with ID: " + splittingNodeId);
 
         // Accepted Proposal for Edge/Segment from new node to the existing segment
-        SegmentService.addSegment(rec.getProposedTracks()[0]);
-        SegmentService.addSegment(rec.getProposedTracks()[1]);
+        SegmentService.addSegment(rec.getProposedTracks().get(0));
+        SegmentService.addSegment(rec.getProposedTracks().get(1));
 
         // Split of the Existing Network Node
         SegmentService.splitSegment(rec.getSegment(), rec.getSplittingNode());
@@ -245,8 +252,8 @@ public class DefaultNodeService implements NodeService {
         LOGGER.info("Splitting Node with ID: " + splittingNodeStartId);
 
         // Accepted Proposal for Edge/Segment from new node to the existing segment
-        SegmentService.addSegment(rec.getProposedTracks()[0]);
-        SegmentService.addSegment(rec.getProposedTracks()[1]);
+        SegmentService.addSegment(rec.getProposedTracks().get(0));
+        SegmentService.addSegment(rec.getProposedTracks().get(1));
 
         // Split of the Existing Network Node
         SegmentService.splitSegment(rec.getEndSegment(), rec.getSplittingNodeEnd());
@@ -274,8 +281,8 @@ public class DefaultNodeService implements NodeService {
         LOGGER.info("New Node with ID: " + nodeId);
 
         /* Accepted Proposal for Edge/Segment from new node to the existing node in each direction. */
-        SegmentService.addSegment(rec.getProposedTracks()[0]);
-        SegmentService.addSegment(rec.getProposedTracks()[1]);
+        SegmentService.addSegment(rec.getProposedTracks().get(0));
+        SegmentService.addSegment(rec.getProposedTracks().get(1));
 
         rec.logRecommendationSummary();
     }

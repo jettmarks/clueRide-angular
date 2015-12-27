@@ -86,7 +86,7 @@ public class SegmentFeatureImpl extends EdgeImpl implements
     }
 
     /**
-     * @see com.com.clueride.feature.Edge#isOneWay()
+     * @see com.com.clueride.feature.SegmentFeature#isOneWay()
      */
     @Override
     public boolean isOneWay() {
@@ -95,7 +95,7 @@ public class SegmentFeatureImpl extends EdgeImpl implements
     }
 
     /**
-     * @see com.com.clueride.feature.Edge#setOneWay(boolean)
+     * @see com.com.clueride.feature.SegmentFeature#setOneWay(boolean)
      */
     @Override
     public void setOneWay(boolean oneWay) {

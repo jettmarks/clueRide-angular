@@ -1,8 +1,8 @@
 package com.clueride.dao;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
@@ -102,10 +102,10 @@ public class DefaultNetworkStoreTest {
 
     // @Test
     public void getEdges() {
-        Set<Edge> expected = new HashSet<>();
+        List<Edge> expected = new ArrayList<>();
         expected.add(edge);
         toTest.addNew(edge);
-        Set<Edge> actual = toTest.getEdges();
+        List<Edge> actual = toTest.getEdges();
     }
 
 //    @Test

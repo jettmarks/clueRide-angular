@@ -22,7 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.clueride.geo.DefaultNetwork;
+import com.clueride.service.DefaultNetwork;
 
 /**
  * Maps between the Network end point and the NetworkService which knows how to
