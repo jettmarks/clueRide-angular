@@ -17,12 +17,12 @@
  */
 package com.clueride.dao;
 
+import java.io.IOException;
+import java.util.Set;
+
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.NodeGroup;
-
-import java.io.IOException;
-import java.util.Set;
 
 /**
  * Manages the set of Nodes.
@@ -48,6 +48,15 @@ public interface NodeStore {
      * @throws IOException
      */
     void persistAndReload() throws IOException;
+
+    /**
+     * This method follows the approach that the in-memory copy is the
+     * "official" copy and when persisted, involves comparing what
+     * is on disk with what is in memory to come up with a list of changes.
+     *
+     * This follows what is happening in the Edges/Segments.
+     */
+    void persist();
 
     /**
      * This holds the Locations -- if we need them, this is the place to go.
