@@ -72,10 +72,14 @@ public class DefaultNodeStoreTest {
         }
     }
 
-    @Test
+    /**
+     * This test will call persist to write the file out to disk; make
+     * sure you have a backup before uncommenting and running this test.
+     */
+//    @Test
     public void testPersistShowDiff() {
         NodeStore nodeStore = injector.getInstance(NodeStore.class);
-        Point point = PointFactory.getJtsInstance(-84.1, 33.4, 300.0);
+        Point point = PointFactory.getJtsInstance(33.7, -84.4, 300.0);
         Integer lastId = nodeStore.addNew(new DefaultGeoNode(point));
         assertTrue(lastId > 0);
         System.out.println("Last ID: " + lastId);

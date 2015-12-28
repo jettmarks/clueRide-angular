@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright 2015 Jett Marks
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,15 +17,17 @@
  */
 package com.clueride.io;
 
-import com.clueride.domain.EdgeImpl;
-import com.clueride.domain.GeoNode;
-import com.clueride.domain.SegmentFeatureImpl;
-import com.clueride.domain.TrackFeatureImpl;
-import com.clueride.feature.Edge;
-import com.clueride.feature.FeatureType;
-import com.clueride.feature.LineFeature;
-import com.clueride.feature.SegmentFeature;
-import com.clueride.geo.TranslateUtil;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vividsolutions.jts.geom.LineString;
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -35,9 +37,15 @@ import org.geotools.geojson.geom.GeometryJSON;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import com.clueride.domain.EdgeImpl;
+import com.clueride.domain.GeoNode;
+import com.clueride.domain.SegmentFeatureImpl;
+import com.clueride.domain.TrackFeatureImpl;
+import com.clueride.feature.Edge;
+import com.clueride.feature.FeatureType;
+import com.clueride.feature.LineFeature;
+import com.clueride.feature.SegmentFeature;
+import com.clueride.geo.TranslateUtil;
 
 /**
  * Utility for working with the file-based JSON datastore.
@@ -189,8 +197,16 @@ public class GeoJsonUtil {
         }
         FeatureIterator<SimpleFeature> featureIterator = featureJson
                 .streamFeatureCollection(file.getCanonicalFile());
-        while (featureIterator.hasNext()) {
-            features.add(featureIterator.next());
+        SimpleFeature lastFeature = null;
+        try {
+            while (featureIterator.hasNext()) {
+                lastFeature = featureIterator.next();
+                features.add(lastFeature);
+            }
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("Last successful feature: " + lastFeature);
+        } catch (RuntimeException e) {
+            LOGGER.error("Last successful feature: " + lastFeature);
         }
         return features;
     }
@@ -254,11 +270,11 @@ public class GeoJsonUtil {
 
     /**
      * Writes a feature out to the filename supplied using the Schema and
-     * location mapped to the {@link currentType}.
+     * location mapped to the {@link this.currentType}.
      * 
      * @param feature - SimpleFeature
      *            representing a feature of the type that matches the
-     *            {@link currentType}.
+     *            {@link this.currentType}.
      * @param fileName - String
      *            representation of the simple file name with extension, but not
      *            the directory.
