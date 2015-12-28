@@ -194,6 +194,8 @@ public class GeoJsonUtil {
         FeatureJSON featureJson = new FeatureJSON(geometryJson);
         if (haveSchema) {
             featureJson.setFeatureType(FeatureType.SEGMENT_FEATURE_TYPE);
+        } else {
+            featureJson.setFeatureType(FeatureType.POINT_FEATURE_TYPE);
         }
         FeatureIterator<SimpleFeature> featureIterator = featureJson
                 .streamFeatureCollection(file.getCanonicalFile());
@@ -203,10 +205,11 @@ public class GeoJsonUtil {
                 lastFeature = featureIterator.next();
                 features.add(lastFeature);
             }
-        } catch (IllegalArgumentException e) {
-            LOGGER.error("Last successful feature: " + lastFeature);
         } catch (RuntimeException e) {
+            // Help with diagnosing the problem; where did it last work?
             LOGGER.error("Last successful feature: " + lastFeature);
+            LOGGER.error("Exception Message: " + e.getMessage());
+            e.printStackTrace();
         }
         return features;
     }
