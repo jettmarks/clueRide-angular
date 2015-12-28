@@ -17,6 +17,7 @@
  */
 package com.clueride.dao;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -195,18 +196,29 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
             }
         }
 
+        GeoJsonUtil jsonUtilEdgeOut = new GeoJsonUtil(JsonStoreType.EDGE);
         if (toBeAdded.isEmpty()) {
             LOGGER.info("No records to be Added");
         } else {
             // Add the instances to be Added
-            // TODO: CA-63 Code this
+            for (Integer edgeId : toBeAdded) {
+                // TODO: Revisit this cast: LineFeature or Genericize?
+                Edge edge = (Edge) allFeatureMap.get(edgeId);
+                String fileName = "edge-" + edge.getId() + ".geojson";
+                jsonUtilEdgeOut.writeFeatureToFile(edge.getFeature(), fileName);
+            }
         }
 
         if (toBeRemoved.isEmpty()) {
             LOGGER.info("No records to be Removed");
         } else {
             // Delete files for the records to be removed
-            // TODO: CA-63 Code this
+            for (Integer edgeId : toBeRemoved) {
+                String fileName = "edge-" + edgeId + ".geojson";
+                File fileToDelete = new File(
+                        JsonStoreLocation.toString(JsonStoreType.EDGE) + File.separator + fileName);
+                fileToDelete.delete();
+            }
         }
 
     }
