@@ -171,20 +171,28 @@ public class DefaultNodeStore implements NodeStore {
             }
         }
 
+        try {
+            persistAndReloadNodes();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /*
+         * To be used if I switch to individual files for Nodes.
         if (toBeAdded.isEmpty()) {
             LOGGER.info("No records to be Added");
         } else {
             // Add the instances to be Added
-            // TODO: CA-63 Code this
         }
 
         if (toBeRemoved.isEmpty()) {
             LOGGER.info("No records to be Removed");
         } else {
             // Delete files for the records to be removed
-            // TODO: CA-63 Code this
         }
+         */
     }
+
     /**
      * Lists out in order the values in the passed list.
      *
