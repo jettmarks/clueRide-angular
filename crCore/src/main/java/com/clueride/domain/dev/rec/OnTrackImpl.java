@@ -26,10 +26,10 @@ import com.clueride.domain.GeoNode;
 import com.clueride.feature.TrackFeature;
 
 /**
- * Description.
+ * Base Implementation of the various Recommendations that involve adding
+ * a new Track-based Edge to the Network.
  *
  * @author jett
- *
  */
 public class OnTrackImpl extends RecImpl implements OnTrack {
 
@@ -55,6 +55,14 @@ public class OnTrackImpl extends RecImpl implements OnTrack {
         // TODO: Figure out what goes here; should come from the sourceTrack, but
         // needs to be one of the features we're running around with.
         return null;
+    }
+
+    @Override
+    public int getFeatureCount() {
+        // We're adding some stuff here.  Tally up the features.
+        // First cut at tallying this is to look at what has been added to the featureCollection
+        int featureCount = featureCollection.size();
+        return featureCount;
     }
 
     /**

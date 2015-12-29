@@ -30,11 +30,14 @@ public class DefaultNodeServiceTest {
     @Inject
     private NodeStore nodeStore;
 
+    @Inject
+    private RecommendationService recommendationService;
+
     private DefaultNodeService toTest;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        toTest = new DefaultNodeService(nodeStore);
+        toTest = new DefaultNodeService(nodeStore, recommendationService);
     }
 
     @Test

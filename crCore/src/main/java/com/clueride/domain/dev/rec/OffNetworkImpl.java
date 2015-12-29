@@ -53,6 +53,12 @@ public class OffNetworkImpl extends RecImpl implements OffNetwork {
         return null;
     }
 
+    @Override
+    public int getFeatureCount() {
+        // Nothing found, so nothing to count.
+        return 0;
+    }
+
     /**
      * @see java.lang.Object#toString()
      */

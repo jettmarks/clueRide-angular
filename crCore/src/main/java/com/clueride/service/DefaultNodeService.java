@@ -57,11 +57,21 @@ public class DefaultNodeService implements NodeService {
     private static final Logger LOGGER = Logger.getLogger(DefaultNodeService.class);
 
     private final NodeStore nodeStore;
+    private final RecommendationService recommendationService;
     private static int countBuildNewLocRequests;
 
+    /**
+     * Injectable constructor.
+     * @param nodeStore - persistence of Nodes.
+     * @param recommendationService - supports requests to add to the Network.
+     */
     @Inject
-    public DefaultNodeService(NodeStore nodeStore) {
+    public DefaultNodeService(
+            NodeStore nodeStore,
+            RecommendationService recommendationService
+    ) {
         this.nodeStore = nodeStore;
+        this.recommendationService = recommendationService;
     }
 
     @Override
@@ -76,7 +86,7 @@ public class DefaultNodeService implements NodeService {
 
         GeoNode newNode;
         newNode = getCandidateNode(lat, lon);
-        NetworkProposal networkProposal = buildProposalForNewNode(newNode);
+        NetworkProposal networkProposal = recommendationService.buildProposalForNewNode(newNode);
         NetworkProposalStore.add(networkProposal);
         result = networkProposal.toJson();
         return result;
@@ -335,7 +345,6 @@ public class DefaultNodeService implements NodeService {
      * Replacing the Network.evaluatNodeState() method.
      *
      * @return
-     */
     protected NetworkProposal buildProposalForNewNode(GeoNode newLoc) {
         LOGGER.debug("start - buildProposalForNewNode(): "
                 + countBuildNewLocRequests++);
@@ -370,9 +379,10 @@ public class DefaultNodeService implements NodeService {
                 newLocProposal.add(rec);
             }
         }
+        logProposal(newLocProposal);
         return newLocProposal;
     }
-
+     */
 
     /** Builds a proposal that contains all the points on our Network. */
     private NetworkProposal buildAllNodesProposal() {

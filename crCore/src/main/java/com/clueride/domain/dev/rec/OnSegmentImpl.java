@@ -69,6 +69,13 @@ public class OnSegmentImpl extends RecImpl implements OnSegment {
         return null;
     }
 
+    @Override
+    public int getFeatureCount() {
+        // Interesting since this recommends a split of one Segment into Two, but no features?
+        // TODO: Understanding this may help determine how I want to implement this Rec
+        return 0;
+    }
+
     /**
      * @see java.lang.Object#toString()
      */

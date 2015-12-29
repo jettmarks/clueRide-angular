@@ -64,6 +64,12 @@ public class OnNodeImpl extends RecImpl implements OnNode {
         return null;
     }
 
+    @Override
+    public int getFeatureCount() {
+        // We match existing node, so no new features to be recommended.
+        return 0;
+    }
+
     /**
      * @see java.lang.Object#toString()
      */

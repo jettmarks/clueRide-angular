@@ -45,4 +45,10 @@ public interface NetworkRecommendation {
 
     /** Provide a list of the Recommendations on the current LOGGER. */
     void logRecommendationSummary();
+
+    /**
+     * Count of the number of Features in the Recommendation.
+     * @return count does not include the starting node (whether there is one or not).
+     */
+    int getFeatureCount();
 }

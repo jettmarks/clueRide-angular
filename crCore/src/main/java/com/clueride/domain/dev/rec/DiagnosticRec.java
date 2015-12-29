@@ -56,6 +56,11 @@ public class DiagnosticRec extends RecImpl {
         super.logRecommendationSummary();
     }
 
+    @Override
+    public int getFeatureCount() {
+        return features.size();
+    }
+
     public void addFeature(SimpleFeature feature) {
         super.addFeature(feature);
     }

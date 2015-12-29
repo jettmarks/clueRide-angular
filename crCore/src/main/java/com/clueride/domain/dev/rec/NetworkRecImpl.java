@@ -103,6 +103,11 @@ public class NetworkRecImpl implements NetworkRecommendation {
         }
     }
 
+    @Override
+    public int getFeatureCount() {
+        return featureCollection.size();
+    }
+
     /**
      * @see java.lang.Object#toString()
      */
