@@ -17,13 +17,17 @@
  */
 package com.clueride.domain.dev.rec;
 
-import com.clueride.domain.dev.NetworkRecommendation;
-import com.clueride.service.DefaultRecIdProvider;
-import com.clueride.service.RecIdProvider;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 
+import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.NetworkRecommendation;
+import com.clueride.service.DefaultRecIdProvider;
+import com.clueride.service.RecIdProvider;
 import static com.clueride.domain.dev.rec.NetworkRecType.UNDEFINED;
 
 /**
@@ -106,6 +110,11 @@ public class NetworkRecImpl implements NetworkRecommendation {
     @Override
     public int getFeatureCount() {
         return featureCollection.size();
+    }
+
+    @Override
+    public List<GeoNode> getNodeList() {
+        return Collections.EMPTY_LIST;
     }
 
     /**

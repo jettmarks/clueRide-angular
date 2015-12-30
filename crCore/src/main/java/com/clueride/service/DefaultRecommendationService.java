@@ -17,9 +17,12 @@
  */
 package com.clueride.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
+import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
 
 import com.clueride.dao.NodeStore;
@@ -83,12 +86,28 @@ public class DefaultRecommendationService implements RecommendationService {
             }
         }
         logProposal(newNodeProposal);
+        collapseProposal(newNodeProposal);
+        logProposal(newNodeProposal);
         return newNodeProposal;
     }
 
-    private void logProposal(NewLocProposal newLocProposal) {
+    private void collapseProposal(NewLocProposal newNodeProposal) {
+        Map<String, NetworkRecommendation> nodeMap = new HashMap<>();
+        for (NetworkRecommendation rec : newNodeProposal.getRecommendations()) {
+            PointKey pointKey = new PointKey(rec.getNodeList());
+            if (nodeMap.containsKey(pointKey.getKey())) {
+                // Duplicate Recommendation ?
+                LOGGER.info("Rec " + rec.getId() + ": already encountered Point " + pointKey.getKey());
+            } else {
+                LOGGER.info("Rec " + rec.getId() + " has the PointKey " + pointKey.getKey());
+                nodeMap.put(pointKey.getKey(), rec);
+            }
+        }
+    }
+
+    private void logProposal(NewLocProposal newNodeProposal) {
         LOGGER.info("Proposal Summary: ");
-        List<NetworkRecommendation> recommendations = newLocProposal.getRecommendations();
+        List<NetworkRecommendation> recommendations = newNodeProposal.getRecommendations();
         LOGGER.info("Total of " + recommendations.size() + " recommendations");
         for (NetworkRecommendation rec : recommendations) {
             String baseMsg = "Rec ID: " + rec.getId() +
@@ -102,4 +121,51 @@ public class DefaultRecommendationService implements RecommendationService {
         }
     }
 
+    /**
+     * Knows how to turn a Recommendation's list of nodes into a unique key.
+     *
+     * For the purposes of determining whether or not two recommendations joining a given
+     * proposed node to the network are indeed the same, we look at an ordered pair of the points
+     * -- or just a single point.  The String representation of those points is the Key.
+     */
+    public class PointKey {
+        String key;
+
+        public PointKey(List<GeoNode> geoNodes) {
+            if (geoNodes.isEmpty()) {
+                key = "NO_NEW_NODES";
+            } else if (geoNodes.size() == 1) {
+                key = geoNodes.get(0).getPoint().toString();
+            } else {
+                Point point0 = geoNodes.get(0).getPoint();
+                Point point1 = geoNodes.get(1).getPoint();
+                switch (Double.compare(point0.getX(),point1.getX())) {
+                    case -1:
+                        key = point0.toString() + "-" + point1.toString();
+                        break;
+                    case 0:
+                        switch (Double.compare(point0.getY(),point1.getY())) {
+                            case -1:
+                                key = point0.toString() + "-" + point1.toString();
+                                break;
+                            case 0:
+                                LOGGER.error("Same Node found on both ends of Recommendation: " + point0.toString());
+                                key = point0.toString() + "-" + point1.toString();
+                                break;
+                            case 1:
+                                key = point1.toString() + "-" + point0.toString();
+                                break;
+                        }
+                        break;
+                    case 1:
+                        key = point1.toString() + "-" + point0.toString();
+                        break;
+                }
+            }
+        }
+
+        public String getKey() {
+            return key;
+        }
+    }
 }

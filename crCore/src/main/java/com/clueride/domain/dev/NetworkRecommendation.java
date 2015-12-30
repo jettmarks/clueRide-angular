@@ -17,8 +17,12 @@
  */
 package com.clueride.domain.dev;
 
-import com.clueride.domain.dev.rec.NetworkRecType;
+import java.util.List;
+
 import org.geotools.feature.DefaultFeatureCollection;
+
+import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.rec.NetworkRecType;
 
 /**
  * Holds information regarding one particular Recommendation within a Proposal.
@@ -51,4 +55,6 @@ public interface NetworkRecommendation {
      * @return count does not include the starting node (whether there is one or not).
      */
     int getFeatureCount();
+
+    List<GeoNode> getNodeList();
 }

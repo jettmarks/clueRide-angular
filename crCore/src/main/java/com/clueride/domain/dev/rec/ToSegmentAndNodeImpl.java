@@ -17,6 +17,9 @@
  */
 package com.clueride.domain.dev.rec;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.common.base.Objects;
 
 import com.clueride.domain.EdgeImpl;
@@ -92,6 +95,11 @@ public class ToSegmentAndNodeImpl extends OnTrackImpl implements
     @Override
     public GeoNode getSplittingNode() {
         return splittingNode;
+    }
+
+    @Override
+    public List<GeoNode> getNodeList() {
+        return Arrays.asList(getNetworkNode(), getSplittingNode());
     }
 
     @Override
