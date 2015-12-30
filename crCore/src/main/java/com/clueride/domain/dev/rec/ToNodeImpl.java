@@ -17,6 +17,9 @@
  */
 package com.clueride.domain.dev.rec;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.google.common.base.Objects;
 
 import com.clueride.domain.GeoNode;
@@ -54,6 +57,11 @@ public class ToNodeImpl extends OnTrackImpl implements ToNode {
     @Override
     public NetworkRecType getRecType() {
         return TRACK_TO_NODE;
+    }
+
+    @Override
+    public List<GeoNode> getNodeList() {
+        return Collections.singletonList(getNetworkNode());
     }
 
     /**

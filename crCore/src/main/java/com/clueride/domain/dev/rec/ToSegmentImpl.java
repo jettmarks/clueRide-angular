@@ -17,6 +17,9 @@
  */
 package com.clueride.domain.dev.rec;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.google.common.base.Objects;
 
 import com.clueride.domain.EdgeImpl;
@@ -82,6 +85,11 @@ public class ToSegmentImpl extends OnTrackImpl implements ToSegment {
     @Override
     public NetworkRecType getRecType() {
         return TRACK_TO_SEGMENT;
+    }
+
+    @Override
+    public List<GeoNode> getNodeList() {
+        return Collections.singletonList(getSplittingNode());
     }
 
     /**

@@ -17,6 +17,9 @@
  */
 package com.clueride.domain.dev.rec;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.common.base.Objects;
 
 import com.clueride.domain.GeoNode;
@@ -63,6 +66,11 @@ public class ToTwoNodesImpl extends OnTrackImpl implements ToTwoNodes {
     @Override
     public NetworkRecType getRecType() {
         return TRACK_TO_2_NODES;
+    }
+
+    @Override
+    public List<GeoNode> getNodeList() {
+        return Arrays.asList(getStartNode(), getEndNode());
     }
 
     /**

@@ -17,6 +17,9 @@
  */
 package com.clueride.domain.dev.rec;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.common.base.Objects;
 
 import com.clueride.domain.DefaultGeoNode;
@@ -86,6 +89,11 @@ public class ToTwoSegmentsImpl extends OnTrackImpl implements ToTwoSegments {
     @Override
     public GeoNode getSplittingNodeEnd() {
         return splittingNodeEnd;
+    }
+
+    @Override
+    public List<GeoNode> getNodeList() {
+        return Arrays.asList(getSplittingNodeStart(),getSplittingNodeEnd());
     }
 
     /**
