@@ -8,3 +8,9 @@
 	border-style: solid;
 	border-color: #40F;
 }
+
+.workingFrame {
+    float: left;
+    width: 46%;
+    margin: 6px;
+}

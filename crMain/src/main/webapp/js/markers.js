@@ -1,6 +1,7 @@
+L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 
 var defaultMarkerIcon = L.AwesomeMarkers.icon({
-//    icon: 'coffee',
+    icon: 'flag',
     markerColor: 'darkblue'
 });
 

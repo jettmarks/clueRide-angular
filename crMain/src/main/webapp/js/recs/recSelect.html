@@ -1,0 +1,17 @@
+<link rel="stylesheet" href="js/recs/recs.css">
+<div class="recSelect" ng-controller="RecSelectController">
+
+  <div class="btn-group" uib-dropdown uib-keyboard-nav>
+    <button id="simple-btn-keyboard-nav"
+            type="button"
+            class="btn btn-primary" uib-dropdown-toggle>
+      {{selectedRec.name}} ({{selectedRec.id}}) <span class="caret"></span>
+    </button>
+    <ul class="uib-dropdown-menu" role="menu"
+        aria-labelledby="simple-btn-keyboard-nav">
+      <li ng-repeat="rec in recs">
+        <a href="#" ng-bind="rec.name" ng-click="select(rec)"></a>
+      </li>
+    </ul>
+  </div>
+</div>
