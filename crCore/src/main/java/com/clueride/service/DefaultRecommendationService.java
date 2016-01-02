@@ -44,6 +44,8 @@ public class DefaultRecommendationService implements RecommendationService {
     private static final Logger LOGGER = Logger.getLogger(DefaultRecommendationService.class);
     private final NodeStore nodeStore;
     private static int countBuildNewLocRequests;
+    // TODO: Use the NetworkProposalStore; this isn't thread safe.
+    private static NewLocProposal lastProposal;
 
     @Inject
     public DefaultRecommendationService(NodeStore nodeStore) {
@@ -88,7 +90,20 @@ public class DefaultRecommendationService implements RecommendationService {
         logProposal(newNodeProposal);
         collapseProposal(newNodeProposal);
         logProposal(newNodeProposal);
+        lastProposal = newNodeProposal;
         return newNodeProposal;
+    }
+
+    @Override
+    public String getRecGeometry(Integer recId) {
+        for (NetworkRecommendation rec : lastProposal.getRecommendations()) {
+            if (rec.getId() == recId) {
+                NewLocProposal p = new NewLocProposal(lastProposal.getNode());
+                p.add(rec);
+                return  p.toJson();
+            }
+        }
+        return lastProposal.toJson();
     }
 
     private void collapseProposal(NewLocProposal newNodeProposal) {
@@ -128,7 +143,7 @@ public class DefaultRecommendationService implements RecommendationService {
      * proposed node to the network are indeed the same, we look at an ordered pair of the points
      * -- or just a single point.  The String representation of those points is the Key.
      */
-    public class PointKey {
+    public static class PointKey {
         String key;
 
         public PointKey(List<GeoNode> geoNodes) {

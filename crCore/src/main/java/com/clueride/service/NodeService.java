@@ -52,4 +52,6 @@ public interface NodeService {
     String setNodeGroup(Integer id, Double lat, Double lon);
 
     String showAllNodes();
+
+    String getRecGeometry(Integer recId);
 }

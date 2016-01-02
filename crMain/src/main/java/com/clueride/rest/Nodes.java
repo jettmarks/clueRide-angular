@@ -17,12 +17,18 @@
  */
 package com.clueride.rest;
 
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import com.clueride.rest.dto.LatLonPair;
 import com.clueride.service.NodeService;
-
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 
 /**
  * Maps between the locations end point and the LocationService which knows how
@@ -42,19 +48,16 @@ public class Nodes {
     }
 
     /**
-     * This version is used for diagnostics from the browser address, but
-     * performs the same functions as {@link this.getNewLocationPost}.
-     * 
-     * @param lat
-     * @param lon
+     * Return the geometry corresponding to a particular Recommendation.
+     *
+     * @param recId
      * @return
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
-    public String getNewLocation(@QueryParam("lat") Double lat,
-            @QueryParam("lon") Double lon) {
-        return nodeService.addNewNode(lat, lon);
+    public String getNewLocation(@QueryParam("recId") Integer recId) {
+        return nodeService.getRecGeometry(recId);
     }
 
     /**
