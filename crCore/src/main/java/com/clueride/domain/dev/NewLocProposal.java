@@ -17,17 +17,18 @@
  */
 package com.clueride.domain.dev;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
+
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.rec.NetworkRecImpl;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
-import org.apache.log4j.Logger;
-import org.geotools.feature.DefaultFeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Implementation of NetworkProposal that involves adding a new Location to the
@@ -45,18 +46,18 @@ public class NewLocProposal implements NetworkProposal {
     private List<NetworkRecommendation> networkRecommendations = new ArrayList<>();
     private NodeNetworkState nodeNetworkState;
 
-    private final GeoNode newLoc;
+    private final GeoNode newNode;
 
     /**
-     * @param newLoc
+     * @param node - GeoNode to be added to the network.
      */
-    public NewLocProposal(GeoNode newLoc) {
-        if (newLoc == null) {
+    public NewLocProposal(GeoNode node) {
+        if (node == null) {
             throw new IllegalArgumentException(
                     "Cannot provide null/empty Location");
         }
 
-        this.newLoc = newLoc;
+        this.newNode = node;
         setNodeNetworkState(NodeNetworkState.UNDEFINED);
         synchronized (lastId) {
             this.id = lastId++;
@@ -97,7 +98,7 @@ public class NewLocProposal implements NetworkProposal {
         DefaultFeatureCollection fcPoints = new DefaultFeatureCollection();
         DefaultFeatureCollection fcNonPoints = new DefaultFeatureCollection();
         // Feature for the New Location we're adding; Rec should not provide this
-        fcPoints.add(TranslateUtil.geoNodeToFeature(newLoc));
+        fcPoints.add(TranslateUtil.geoNodeToFeature(newNode));
         for (NetworkRecommendation rec : networkRecommendations) {
             ((NetworkRecImpl) rec).logRecommendationSummary();
             for (SimpleFeature feature : rec.getFeatureCollection()) {
@@ -144,7 +145,7 @@ public class NewLocProposal implements NetworkProposal {
      */
     private void setNodeNetworkState(NodeNetworkState nodeNetworkState) {
         this.nodeNetworkState = nodeNetworkState;
-        this.newLoc.setState(nodeNetworkState);
+        this.newNode.setState(nodeNetworkState);
     }
 
     /**
@@ -153,6 +154,10 @@ public class NewLocProposal implements NetworkProposal {
     public void add(NetworkRecommendation networkRecommendation) {
         LOGGER.info(networkRecommendation);
         networkRecommendations.add(networkRecommendation);
+    }
+
+    public GeoNode getNode() {
+        return newNode;
     }
 
     /**
@@ -164,7 +169,7 @@ public class NewLocProposal implements NetworkProposal {
         builder.append("NewLocProposal [id=").append(id).append(
                 ", numberNetworkRecs=").append(networkRecommendations.size())
                 .append(", nodeNetworkState=").append(nodeNetworkState).append(
-                        ", newLoc=").append(newLoc).append("]");
+                        ", newNode=").append(newNode).append("]");
         return builder.toString();
     }
 }

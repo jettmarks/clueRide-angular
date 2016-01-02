@@ -35,4 +35,6 @@ public interface RecommendationService {
      * existing Network.
      */
     NetworkProposal buildProposalForNewNode(GeoNode newNode);
+
+    String getRecGeometry(Integer recId);
 }

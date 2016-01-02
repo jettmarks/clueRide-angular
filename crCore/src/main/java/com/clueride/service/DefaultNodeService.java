@@ -17,6 +17,7 @@
  */
 package com.clueride.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,8 @@ import java.util.Set;
 import com.google.inject.Inject;
 import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.dao.NetworkProposalStore;
@@ -35,6 +38,7 @@ import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.domain.dev.NewLocProposal;
 import com.clueride.domain.dev.NodeGroup;
+import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.rec.DiagnosticRec;
 import com.clueride.domain.dev.rec.Rec;
 import com.clueride.domain.dev.rec.ToNode;
@@ -43,12 +47,9 @@ import com.clueride.domain.dev.rec.ToSegmentAndNode;
 import com.clueride.domain.dev.rec.ToTwoNodes;
 import com.clueride.domain.dev.rec.ToTwoSegments;
 import com.clueride.domain.factory.PointFactory;
-import com.clueride.feature.TrackFeature;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
-import com.clueride.service.builder.NewLocRecBuilder;
-import com.clueride.service.builder.TrackRecBuilder;
 
 /**
  * Default Implementation of NodeService.
@@ -88,8 +89,8 @@ public class DefaultNodeService implements NodeService {
         newNode = getCandidateNode(lat, lon);
         NetworkProposal networkProposal = recommendationService.buildProposalForNewNode(newNode);
         NetworkProposalStore.add(networkProposal);
-        result = networkProposal.toJson();
-        return result;
+        ProposalSummary proposalSummary = new ProposalSummary((NewLocProposal) networkProposal);
+        return proposalSummary.toJson();
     }
 
     /**
@@ -325,6 +326,13 @@ public class DefaultNodeService implements NodeService {
         String result = networkProposal.toJson();
         return result;
     }
+
+    @Override
+    public String getRecGeometry(Integer recId) {
+        LOGGER.info("Requesting Geometry for Rec ID: " + recId);
+        return recommendationService.getRecGeometry(recId);
+    }
+
     /**
      * @param lat
      * @param lon
@@ -393,5 +401,60 @@ public class DefaultNodeService implements NodeService {
         }
         newLocProposal.add(diagRec);
         return newLocProposal;
+    }
+
+    private static class ProposalSummary {
+        private NodeNetworkState type;
+        private List<RecKey> recs = new ArrayList<>();
+        private Integer defaultRecId = -1;
+
+        public NodeNetworkState getType() {
+            return type;
+        }
+
+        public List<RecKey> getRecs() {
+            return recs;
+        }
+
+        public Integer getDefaultRecId() {
+            return defaultRecId;
+        }
+
+        public ProposalSummary(NewLocProposal networkProposal) {
+            type = networkProposal.getNodeNetworkState();
+            for (NetworkRecommendation rec : networkProposal.getRecommendations()) {
+                if (defaultRecId == -1) {
+                    defaultRecId = rec.getId();
+                }
+                DefaultRecommendationService.PointKey pointKey = new DefaultRecommendationService.PointKey(rec.getNodeList());
+                RecKey recKey = new RecKey();
+                recKey.id = rec.getId();
+                recKey.name = pointKey.getKey();
+                recs.add(recKey);
+            }
+        }
+
+        public String toJson() {
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            try {
+                return ow.writeValueAsString(this);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
+
+        private class RecKey {
+            Integer id;
+            String name;
+
+            public Integer getId() {
+                return id;
+            }
+
+            public String getName() {
+                return name;
+            }
+        }
     }
 }

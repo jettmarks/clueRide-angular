@@ -1,7 +1,7 @@
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 
 var defaultMarkerIcon = L.AwesomeMarkers.icon({
-    icon: 'flag',
+    icon: 'android-add',
     markerColor: 'darkblue'
 });
 
@@ -16,7 +16,7 @@ var mouseoverMarkerIcon = L.AwesomeMarkers.icon({
 });
 
 var iconMarkerSingleTrack = L.AwesomeMarkers.icon({
-//    icon: 'coffee',
+    icon: 'android-done',
     markerColor: 'darkGreen'
 });
 
@@ -31,12 +31,12 @@ var iconMarkerOnSegment = L.AwesomeMarkers.icon({
 });
 
 var iconMarkerOnMultiTrack = L.AwesomeMarkers.icon({
-//    icon: 'coffee',
+    icon: 'android-done-all',
     markerColor: 'orange'
 });
 
 var iconMarkerOffNetwork = L.AwesomeMarkers.icon({
-//    icon: 'coffee',
+    icon: 'heart-broken',
     markerColor: 'red'
 });
 
