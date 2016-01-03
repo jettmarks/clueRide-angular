@@ -87,6 +87,16 @@ public class NewNodeProposal implements NetworkProposal {
         return networkRecommendations;
     }
 
+    @Override
+    public NetworkRecommendation getRecommendation(Integer recId) {
+        for (NetworkRecommendation rec : networkRecommendations) {
+            if (recId.equals(rec.getId())) {
+                return rec;
+            }
+        }
+        return null;
+    }
+
     /**
      * @see com.clueride.domain.dev.NetworkProposal#toJson()
      */

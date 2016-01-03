@@ -28,6 +28,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.clueride.rest.dto.LatLonPair;
+import com.clueride.rest.dto.RecId;
 import com.clueride.service.NodeService;
 
 /**
@@ -50,13 +51,14 @@ public class Nodes {
     /**
      * Return the geometry corresponding to a particular Recommendation.
      *
-     * @param recId
-     * @return
+     * @param recId - Unique ID for the Recommendation whose geometry is being requested
+     *              for display on the map.
+     * @return JSON String based on a Feature Collection.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
-    public String getNewLocation(@QueryParam("recId") Integer recId) {
+    public String getRecGeometry(@QueryParam("recId") Integer recId) {
         return nodeService.getRecGeometry(recId);
     }
 
@@ -64,8 +66,8 @@ public class Nodes {
      * Accepts LatLonPair (in JSON) representing a new node we want to add to
      * the network, and returns potential links to the existing network.
      * 
-     * @param pair
-     * @return
+     * @param pair - Lat/Lon of a Node in consideration for adding to the network.
+     * @return JSON String carrying recommendation summary.
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -73,7 +75,7 @@ public class Nodes {
     @Path("new")
     public String getNewLocationPost(LatLonPair pair) {
         return nodeService.addNewNode(pair.lat, pair.lon);
-        // TODO: Put in the Diagnostics package/bag
+        // TODO: CA-55 Put in the Diagnostics package/bag
         // return new LocationService().showPointsOnTrack(pair.lat, pair.lon);
     }
 
@@ -84,14 +86,13 @@ public class Nodes {
      * 
      * Data regarding the segment is held server-side for performing the actions
      * required to add the segment to the network.
-     * 
-     * TODO: Considering using an ID to select the particular data instance involved.
      */
     @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
-    public String confirmProposedSegment() {
-        return nodeService.confirmNewNode();
+    public String confirmProposedSegment(RecId recId ) {
+        return nodeService.confirmRecommendation(recId.recId);
     }
 
     @GET

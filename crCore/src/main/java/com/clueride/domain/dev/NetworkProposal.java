@@ -34,6 +34,14 @@ public interface NetworkProposal {
 
     List<NetworkRecommendation> getRecommendations();
 
+    /**
+     * Returns the specific recommendation matching the ID provided.
+     * @param recId - ID of a recommendation which originated from this proposal.
+     * @return Subclass of NetworkRecommendation matching the unique recId or null if
+     * the record is not found.
+     */
+    NetworkRecommendation getRecommendation(Integer recId);
+
     String toJson();
 
     /**

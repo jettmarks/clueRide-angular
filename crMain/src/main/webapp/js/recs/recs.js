@@ -58,7 +58,9 @@
             });
             layer.on('click', function() {
                 console.log("Selecting the recommended Segment");
-                locResource.confirm({}, function (confirmResponse) {
+                locResource.confirm({
+                    recId: viewModel.selectedRec.id
+                }, function (confirmResponse) {
                     var response = {};
                     angular.extend(response, confirmResponse);
                     if (response.status === 'OK') {
