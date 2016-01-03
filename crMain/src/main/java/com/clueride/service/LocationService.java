@@ -35,7 +35,7 @@ import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NetworkRecommendation;
-import com.clueride.domain.dev.NewLocProposal;
+import com.clueride.domain.dev.NewNodeProposal;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.rec.DiagnosticRec;
 import com.clueride.domain.dev.rec.Rec;
@@ -131,7 +131,7 @@ public class LocationService {
      */
     private NetworkProposal buildPointsOnTrackProposal(GeoNode newLoc) {
         GeoEval geoEval = GeoEval.getInstance();
-        NewLocProposal newLocProposal = new NewLocProposal(newLoc);
+        NewNodeProposal newNodeProposal = new NewNodeProposal(newLoc);
         List<TrackFeature> coveringTracks = geoEval.listCoveringTracks(newLoc);
         DiagnosticRec diagRec = new DiagnosticRec(newLoc);
         if (coveringTracks.size() == 1) {
@@ -143,8 +143,8 @@ public class LocationService {
                                 .getPointN(i))));
             }
         }
-        newLocProposal.add(diagRec);
-        return newLocProposal;
+        newNodeProposal.add(diagRec);
+        return newNodeProposal;
     }
 
     /**
@@ -159,23 +159,23 @@ public class LocationService {
         LOGGER.debug("start - buildProposalForNewNode(): "
                 + countBuildNewLocRequests++);
         GeoEval geoEval = GeoEval.getInstance();
-        NewLocProposal newLocProposal = new NewLocProposal(newLoc);
+        NewNodeProposal newNodeProposal = new NewNodeProposal(newLoc);
         NewLocRecBuilder recBuilder = new NewLocRecBuilder(newLoc);
 
         // Check if our node happens to already be on the network list of nodes
         Integer matchingNodeId = geoEval.matchesNetworkNode(newLoc);
         if (matchingNodeId > 0) {
             // Found matching node; add as a recommendation
-            newLocProposal.add(recBuilder.onNode(matchingNodeId));
-            return newLocProposal;
+            newNodeProposal.add(recBuilder.onNode(matchingNodeId));
+            return newNodeProposal;
         }
 
         // Check if our node happens to be on the network list of edges
         Integer matchingSegmentId = geoEval.matchesSegmentId(newLoc);
         if (matchingSegmentId > 0) {
             // TODO: Missing from here: splitting the segment on the node
-            newLocProposal.add(recBuilder.onSegment(matchingSegmentId));
-            return newLocProposal;
+            newNodeProposal.add(recBuilder.onSegment(matchingSegmentId));
+            return newNodeProposal;
         }
 
         // Try a Track-based proposal
@@ -185,10 +185,10 @@ public class LocationService {
                     track);
             Rec rec = trackRecBuilder.build();
             if (rec != null) {
-                newLocProposal.add(rec);
+                newNodeProposal.add(rec);
             }
         }
-        return newLocProposal;
+        return newNodeProposal;
     }
 
     /**
@@ -358,12 +358,12 @@ public class LocationService {
 
     /** Builds a proposal that contains all the points on our Network. */
     private static NetworkProposal buildAllNodesProposal() {
-        NewLocProposal newLocProposal = new NewLocProposal(new DefaultGeoNode());
+        NewNodeProposal newNodeProposal = new NewNodeProposal(new DefaultGeoNode());
         DiagnosticRec diagRec = new DiagnosticRec(null);
         for (GeoNode geoNode : nodeStore.getNodes()) {
             diagRec.addFeature(TranslateUtil.geoNodeToFeature(geoNode));
         }
-        newLocProposal.add(diagRec);
-        return newLocProposal;
+        newNodeProposal.add(diagRec);
+        return newNodeProposal;
     }
 }

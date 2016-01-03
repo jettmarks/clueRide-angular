@@ -64,6 +64,11 @@ public class ToNodeImpl extends OnTrackImpl implements ToNode {
         return Collections.singletonList(getNetworkNode());
     }
 
+    @Override
+    public Double getScore() {
+        return super.getScore();
+    }
+
     /**
      * @see Object#toString()
      */
