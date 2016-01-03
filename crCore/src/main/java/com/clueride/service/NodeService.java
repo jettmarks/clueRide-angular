@@ -35,17 +35,19 @@ public interface NodeService {
      * Adding a candidate Node to the network which has yet been evaluated
      * against the network.
      *
-     * @param lat
-     * @param lon
-     * @return
+     * @param lat - Latitude of the Node.
+     * @param lon - Longitude of the Node.
+     * @return JSON String listing the results of evaluating whether this Node is on
+     * the Network or requires adding Edges to reach the network.
      */
     String addNewNode(Double lat, Double lon);
 
     /**
-     * Accept the current Proposal.
-     * @return
+     * Accept specific recommendation from the Proposal identified by the ID.
+     * @param recId - unique ID of the recommendation to confirm.
+     * @return the string "OK" to indicate success.
      */
-    String confirmNewNode();
+    String confirmRecommendation(Integer recId);
 
     String getNodeGroups();
 

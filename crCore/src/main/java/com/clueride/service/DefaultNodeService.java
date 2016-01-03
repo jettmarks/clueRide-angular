@@ -97,18 +97,16 @@ public class DefaultNodeService implements NodeService {
      * The NetworkProposal instance we stashed away will hold the details needed
      * to create the objects we add to the persisted network.
      *
+     * @param recId - Integer representing the unique recommendation to be committed
+     *              to the network.
      * @return upon success, returns JSON status:OK.
      */
     @Override
-    public String confirmNewNode() {
+    public String confirmRecommendation(Integer recId) {
         NetworkProposal networkProposal = NetworkProposalStore
                 .getLastProposal();
-        List<NetworkRecommendation> recs = networkProposal.getRecommendations();
-        if (networkProposal.hasMultipleRecommendations()) {
-            // TODO: Depends on a signature that is able to tell us which Rec to use
-            LOGGER.warn("Not handling Multiple Rec proposals yet.");
-        } else {
-            Rec rec = (Rec) recs.get(0);
+        Rec rec = (Rec) networkProposal.getRecommendation(recId);
+        if (rec != null) {
             switch (rec.getRecType()) {
                 case ON_SEGMENT:
                 case ON_NODE:
