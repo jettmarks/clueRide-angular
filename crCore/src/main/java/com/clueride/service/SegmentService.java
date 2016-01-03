@@ -45,7 +45,7 @@ public class SegmentService {
      * @param type
      *            represents both the type and the location of the
      *            data to be retrieved.
-     * @return
+     * @return String representing the entire feature collection of segments.
      */
     public static String getFeatureCollection(JsonStoreType type) {
         LOGGER.debug("Requesting Feature Collection for " + type);
@@ -62,34 +62,28 @@ public class SegmentService {
     }
 
     /**
-     * @param segment
+     * @param edge - Edge to be added to the Network Store.
+     *             @deprecated - Not sure what we're using now.
      */
-    public static void addSegment(Edge segment) {
-        networkStore.addNew(segment);
+    public static void addSegment(Edge edge) {
+        networkStore.addNew(edge);
     }
 
     /**
-     * @param segmentToSplit
-     * @param endNode
+     * @param segmentToSplit - Original Edge that now becomes two pieces.
+     * @param splittingNode -  Node at which the split occurs.
      */
     public static void splitSegment(Edge segmentToSplit,
-            GeoNode endNode) {
-        networkStore.splitEdge(segmentToSplit.getId(), endNode);
-    }
-
-    /**
-     * 
-     */
-    // TODO: CA-65 Persistance and the Stores
-    public static void saveChanges() {
-//        try {
-//            networkStore.persistAndReload();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+            GeoNode splittingNode) {
+        networkStore.splitEdge(segmentToSplit.getId(), splittingNode);
     }
 
     public static void addSegment(TrackFeature proposedTrack) {
+        // CA-83 Change the name if we've still got it listed as "Proposed"
+        if ("Proposed".equals(proposedTrack.getDisplayName())) {
+            proposedTrack.setDisplayName("unnamed");
+        }
+
         if (proposedTrack instanceof Edge) {
             networkStore.addNew((Edge) proposedTrack);
         } else {
@@ -97,6 +91,11 @@ public class SegmentService {
         }
     }
 
+    /**
+     * This may come back, but right now, we're taking care of any segments we
+     * are replacing.
+     * @param segment - Edge to remove from the Network.
+     */
     public static void deleteSegment(Edge segment) {
     }
 }
