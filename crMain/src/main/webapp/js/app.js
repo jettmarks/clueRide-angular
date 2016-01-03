@@ -68,7 +68,6 @@ crNetEdit.controller("AppController", [
     
         // Bind the scope's segments with the service's segments
         NetworkRefresh.refresh();
-        $scope.gjNetwork = newNodeService.gjNetwork();
         $scope.gjNetwork.segments = NetworkRefresh.segments();
         $scope.selectedSegment = NetworkRefresh.selectedSegment();
         $scope.showNodes = LocModule.showNodes($scope,LocDiagResource);

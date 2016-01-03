@@ -15,26 +15,6 @@
 
     RecSelectController.$inject = [ '$scope', 'LocResource', 'NetworkRefresh', 'newNodeService'];
 
-    function init(vm) {
-        // Temporary values for the dropdown
-        var tempRecs = [
-            {
-                id: 1,
-                name: 'POINT(-84.12345,34.12345)'
-            },
-            {
-                id: 2,
-                name: 'POINT(-84.22345,34.12345)'
-            },
-            {
-                id: 3,
-                name: 'POINT(-84.32345,34.12345)'
-            }
-        ];
-
-        angular.extend(vm.recs, tempRecs);
-    }
-
     function RecSelectController ($scope, LocResource, NetworkRefresh, newNodeService) {
         var vm = this;
 
@@ -49,7 +29,6 @@
 
         locResource = LocResource;
         networkRefresh = NetworkRefresh;
-        //init(vm);
 
         function select(rec) {
             vm.selectedRec = rec;
@@ -95,7 +74,7 @@
         }
     }
 
-    function featuresToMap(pointFeature, checkNode) {
+    function featuresToMap(pointFeature) {
         /* Our extension of the local network. */
         angular.extend(network, {
             newPoints: {
@@ -147,7 +126,7 @@
                 rec = {
                     id: 0,
                     name: 'Off Network'
-                }
+                };
                 break;
 
             case 'UNDEFINED':
@@ -155,7 +134,7 @@
                 rec = {
                     id: 0,
                     name: 'Undefined'
-                }
+                };
                 break;
         }
         //viewModel.select(networkProposal.recs[0]);
