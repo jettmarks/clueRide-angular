@@ -17,7 +17,6 @@
  */
 package com.clueride.domain.dev.rec;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -29,6 +28,7 @@ import com.clueride.domain.dev.NetworkRecommendation;
 import com.clueride.service.DefaultRecIdProvider;
 import com.clueride.service.RecIdProvider;
 import static com.clueride.domain.dev.rec.NetworkRecType.UNDEFINED;
+import static java.util.Collections.EMPTY_LIST;
 
 /**
  * Base Class of much of the Recommendation class tree.
@@ -114,7 +114,12 @@ public class NetworkRecImpl implements NetworkRecommendation {
 
     @Override
     public List<GeoNode> getNodeList() {
-        return Collections.EMPTY_LIST;
+        return EMPTY_LIST;
+    }
+
+    @Override
+    public boolean isDoubleEnded() {
+        return false;
     }
 
     /**

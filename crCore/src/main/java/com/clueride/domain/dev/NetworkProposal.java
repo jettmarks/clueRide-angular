@@ -37,7 +37,9 @@ public interface NetworkProposal {
     String toJson();
 
     /**
-     * @return
+     * @return Representation of the evaluation of a new Node request; rather bewhiskered.
      */
     NodeNetworkState getNodeNetworkState();
+
+    void resetRecommendationList();
 }

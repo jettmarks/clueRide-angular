@@ -38,12 +38,12 @@ import com.clueride.feature.TrackFeature;
  * important one since it bridges the gap between on-network and off-network.
  * 
  * This class handles the Assembly, Evaluation, and Proposal of a
- * NewLocProposal. The NewLocProposal is held while the user takes a look on the
- * map (which was built from the NewLocProposal) and when confirmed, the data is
+ * NewNodeProposal. The NewNodeProposal is held while the user takes a look on the
+ * map (which was built from the NewNodeProposal) and when confirmed, the data is
  * used to create and persist new Nodes and Segments.
  *
  * @author jett
- *
+ * @deprecated - May be able to pull this out now.
  */
 public class IntersectionScore {
 

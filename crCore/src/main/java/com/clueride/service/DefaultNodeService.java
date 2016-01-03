@@ -36,7 +36,7 @@ import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NetworkRecommendation;
-import com.clueride.domain.dev.NewLocProposal;
+import com.clueride.domain.dev.NewNodeProposal;
 import com.clueride.domain.dev.NodeGroup;
 import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.rec.DiagnosticRec;
@@ -59,7 +59,6 @@ public class DefaultNodeService implements NodeService {
 
     private final NodeStore nodeStore;
     private final RecommendationService recommendationService;
-    private static int countBuildNewLocRequests;
 
     /**
      * Injectable constructor.
@@ -83,13 +82,11 @@ public class DefaultNodeService implements NodeService {
 
     @Override
     public String addNewNode(Double lat, Double lon) {
-        String result = "";
-
         GeoNode newNode;
         newNode = getCandidateNode(lat, lon);
         NetworkProposal networkProposal = recommendationService.buildProposalForNewNode(newNode);
         NetworkProposalStore.add(networkProposal);
-        ProposalSummary proposalSummary = new ProposalSummary((NewLocProposal) networkProposal);
+        ProposalSummary proposalSummary = new ProposalSummary((NewNodeProposal) networkProposal);
         return proposalSummary.toJson();
     }
 
@@ -323,8 +320,7 @@ public class DefaultNodeService implements NodeService {
     @Override
     public String showAllNodes() {
         NetworkProposal networkProposal = buildAllNodesProposal();
-        String result = networkProposal.toJson();
-        return result;
+        return networkProposal.toJson();
     }
 
     @Override
@@ -334,9 +330,10 @@ public class DefaultNodeService implements NodeService {
     }
 
     /**
-     * @param lat
-     * @param lon
-     * @return
+     * Turns lat/lon pair into skeleton GeoNode instance.
+     * @param lat - Latitude of Node.
+     * @param lon - Longitude of Node.
+     * @return GeoNode representing a point being considered.
      */
     private GeoNode getCandidateNode(Double lat, Double lon) {
         GeoNode newLocation;
@@ -346,61 +343,15 @@ public class DefaultNodeService implements NodeService {
         return newLocation;
     }
 
-    /**
-     * Given a proposed New Location, find out how it connects to the network
-     * and recommend a connection if one doesn't already exist.
-     *
-     * Replacing the Network.evaluatNodeState() method.
-     *
-     * @return
-    protected NetworkProposal buildProposalForNewNode(GeoNode newLoc) {
-        LOGGER.debug("start - buildProposalForNewNode(): "
-                + countBuildNewLocRequests++);
-        GeoEval geoEval = GeoEval.getInstance();
-        // TODO: CA-23 - renaming Loc to Node
-        NewLocProposal newLocProposal = new NewLocProposal(newLoc);
-        NewLocRecBuilder recBuilder = new NewLocRecBuilder(newLoc);
-
-        // Check if our node happens to already be on the network list of nodes
-        Integer matchingNodeId = geoEval.matchesNetworkNode(newLoc);
-        if (matchingNodeId > 0) {
-            // Found matching node; add as a recommendation
-            newLocProposal.add(recBuilder.onNode(matchingNodeId));
-            return newLocProposal;
-        }
-
-        // Check if our node happens to be on the network list of edges
-        Integer matchingSegmentId = geoEval.matchesSegmentId(newLoc);
-        if (matchingSegmentId > 0) {
-            // TODO: Missing from here: splitting the segment on the node
-            newLocProposal.add(recBuilder.onSegment(matchingSegmentId));
-            return newLocProposal;
-        }
-
-        // Try a Track-based proposal
-        List<TrackFeature> coveringTracks = geoEval.listCoveringTracks(newLoc);
-        for (TrackFeature track : coveringTracks) {
-            TrackRecBuilder trackRecBuilder = new TrackRecBuilder(newLoc,
-                    track);
-            Rec rec = trackRecBuilder.build();
-            if (rec != null) {
-                newLocProposal.add(rec);
-            }
-        }
-        logProposal(newLocProposal);
-        return newLocProposal;
-    }
-     */
-
     /** Builds a proposal that contains all the points on our Network. */
     private NetworkProposal buildAllNodesProposal() {
-        NewLocProposal newLocProposal = new NewLocProposal(new DefaultGeoNode());
-        DiagnosticRec diagRec = new DiagnosticRec(null);
+        NewNodeProposal newNodeProposal = new NewNodeProposal(new DefaultGeoNode());
+        DiagnosticRec diagnosticRec = new DiagnosticRec(null);
         for (GeoNode geoNode : nodeStore.getNodes()) {
-            diagRec.addFeature(TranslateUtil.geoNodeToFeature(geoNode));
+            diagnosticRec.addFeature(TranslateUtil.geoNodeToFeature(geoNode));
         }
-        newLocProposal.add(diagRec);
-        return newLocProposal;
+        newNodeProposal.add(diagnosticRec);
+        return newNodeProposal;
     }
 
     private static class ProposalSummary {
@@ -412,15 +363,17 @@ public class DefaultNodeService implements NodeService {
             return type;
         }
 
+        @SuppressWarnings("unused")     // Is used by Jackson
         public List<RecKey> getRecs() {
             return recs;
         }
 
+        @SuppressWarnings("unused")     // Is used by Jackson
         public Integer getDefaultRecId() {
             return defaultRecId;
         }
 
-        public ProposalSummary(NewLocProposal networkProposal) {
+        public ProposalSummary(NewNodeProposal networkProposal) {
             type = networkProposal.getNodeNetworkState();
             for (NetworkRecommendation rec : networkProposal.getRecommendations()) {
                 if (defaultRecId == -1) {

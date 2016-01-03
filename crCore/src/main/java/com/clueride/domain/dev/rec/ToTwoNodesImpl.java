@@ -46,6 +46,11 @@ public class ToTwoNodesImpl extends OnTrackImpl implements ToTwoNodes {
         addFeature(TranslateUtil.geoNodeToFeature(node2));
     }
 
+    @Override
+    public boolean isDoubleEnded() {
+        return true;
+    }
+
     /**
      * @return the startNode
      */
