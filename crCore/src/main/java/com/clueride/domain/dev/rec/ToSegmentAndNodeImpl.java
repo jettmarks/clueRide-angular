@@ -22,7 +22,6 @@ import java.util.List;
 
 import com.google.common.base.Objects;
 
-import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
@@ -63,11 +62,16 @@ public class ToSegmentAndNodeImpl extends OnTrackImpl implements
     ) {
         super(reqNode, track);
         this.edge = edge;
-        addFeature(((EdgeImpl) edge).getFeature());
+        addFeature(edge.getFeature());
         addFeature(TranslateUtil.geoNodeToFeature(splittingNode));
         this.splittingNode = splittingNode;
         this.networkNode = networkNode;
         addFeature(TranslateUtil.geoNodeToFeature(networkNode));
+    }
+
+    @Override
+    public boolean isDoubleEnded() {
+        return true;
     }
 
     /**

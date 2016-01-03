@@ -41,7 +41,7 @@ public interface NetworkRecommendation {
     NetworkRecType getRecType();
 
     /**
-     * @return
+     * @return Ranks one recommendation against others.
      */
     Double getScore();
 
@@ -57,4 +57,6 @@ public interface NetworkRecommendation {
     int getFeatureCount();
 
     List<GeoNode> getNodeList();
+
+    boolean isDoubleEnded();
 }

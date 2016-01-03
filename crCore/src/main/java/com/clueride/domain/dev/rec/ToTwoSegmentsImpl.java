@@ -63,6 +63,11 @@ public class ToTwoSegmentsImpl extends OnTrackImpl implements ToTwoSegments {
         this.splittingNodeEnd = splittingNodeEnd;
     }
 
+    @Override
+    public boolean isDoubleEnded() {
+        return true;
+    }
+
     /**
      * @see com.clueride.domain.dev.rec.NetworkRecImpl#getRecType()
      */

@@ -52,17 +52,12 @@ public class OnTrackImpl extends RecImpl implements OnTrack {
      */
     @Override
     public Double getScore() {
-        // TODO: Figure out what goes here; should come from the sourceTrack, but
-        // needs to be one of the features we're running around with.
-        return null;
+        return sourceTrack.getLineString().getLength();
     }
 
     @Override
     public int getFeatureCount() {
-        // We're adding some stuff here.  Tally up the features.
-        // First cut at tallying this is to look at what has been added to the featureCollection
-        int featureCount = featureCollection.size();
-        return featureCount;
+        return featureCollection.size();
     }
 
     /**

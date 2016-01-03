@@ -17,6 +17,9 @@
  */
 package com.clueride.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +32,7 @@ import com.clueride.dao.NodeStore;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NetworkRecommendation;
-import com.clueride.domain.dev.NewLocProposal;
+import com.clueride.domain.dev.NewNodeProposal;
 import com.clueride.domain.dev.rec.OnTrack;
 import com.clueride.domain.dev.rec.Rec;
 import com.clueride.feature.TrackFeature;
@@ -45,7 +48,7 @@ public class DefaultRecommendationService implements RecommendationService {
     private final NodeStore nodeStore;
     private static int countBuildNewLocRequests;
     // TODO: Use the NetworkProposalStore; this isn't thread safe.
-    private static NewLocProposal lastProposal;
+    private static NewNodeProposal lastProposal;
 
     @Inject
     public DefaultRecommendationService(NodeStore nodeStore) {
@@ -58,7 +61,7 @@ public class DefaultRecommendationService implements RecommendationService {
                 + countBuildNewLocRequests++);
         GeoEval geoEval = GeoEval.getInstance();
         // TODO: CA-23 - renaming Loc to Node
-        NewLocProposal newNodeProposal = new NewLocProposal(newNode);
+        NewNodeProposal newNodeProposal = new NewNodeProposal(newNode);
         NewLocRecBuilder recBuilder = new NewLocRecBuilder(newNode);
 
         // Check if our node happens to already be on the network list of nodes
@@ -97,8 +100,8 @@ public class DefaultRecommendationService implements RecommendationService {
     @Override
     public String getRecGeometry(Integer recId) {
         for (NetworkRecommendation rec : lastProposal.getRecommendations()) {
-            if (rec.getId() == recId) {
-                NewLocProposal p = new NewLocProposal(lastProposal.getNode());
+            if (rec.getId().equals(recId)) {
+                NewNodeProposal p = new NewNodeProposal(lastProposal.getNode());
                 p.add(rec);
                 return  p.toJson();
             }
@@ -106,7 +109,7 @@ public class DefaultRecommendationService implements RecommendationService {
         return lastProposal.toJson();
     }
 
-    private void collapseProposal(NewLocProposal newNodeProposal) {
+    private void collapseProposal(NewNodeProposal newNodeProposal) {
         Map<String, NetworkRecommendation> nodeMap = new HashMap<>();
         for (NetworkRecommendation rec : newNodeProposal.getRecommendations()) {
             PointKey pointKey = new PointKey(rec.getNodeList());
@@ -118,17 +121,49 @@ public class DefaultRecommendationService implements RecommendationService {
                 nodeMap.put(pointKey.getKey(), rec);
             }
         }
+
+        // Sort results by number of ends and distance
+        List<NetworkRecommendation> doubleEndedRecs = new ArrayList<>();
+        List<NetworkRecommendation> singleEndedRecs = new ArrayList<>();
+
+        for (NetworkRecommendation rec : nodeMap.values()) {
+            if (rec.isDoubleEnded()) {
+                doubleEndedRecs.add(rec);
+            } else {
+                singleEndedRecs.add(rec);
+            }
+        }
+        Collections.sort(doubleEndedRecs, new Comparator<NetworkRecommendation>() {
+            @Override
+            public int compare(NetworkRecommendation networkRecommendation, NetworkRecommendation t1) {
+                return Double.compare(t1.getScore(), networkRecommendation.getScore());
+            }
+        });
+        Collections.sort(singleEndedRecs, new Comparator<NetworkRecommendation>() {
+            @Override
+            public int compare(NetworkRecommendation networkRecommendation, NetworkRecommendation t1) {
+                return Double.compare(t1.getScore(), networkRecommendation.getScore());
+            }
+        });
+
+        // Add sorted lists back to the original proposal
+        newNodeProposal.resetRecommendationList();
+        for (NetworkRecommendation rec : doubleEndedRecs) {
+            newNodeProposal.add(rec);
+        }
+        for (NetworkRecommendation rec : singleEndedRecs) {
+            newNodeProposal.add(rec);
+        }
     }
 
-    private void logProposal(NewLocProposal newNodeProposal) {
+    private void logProposal(NewNodeProposal newNodeProposal) {
         LOGGER.info("Proposal Summary: ");
         List<NetworkRecommendation> recommendations = newNodeProposal.getRecommendations();
         LOGGER.info("Total of " + recommendations.size() + " recommendations");
         for (NetworkRecommendation rec : recommendations) {
-            String baseMsg = "Rec ID: " + rec.getId() +
+            String fullMessage = "Rec ID: " + rec.getId() +
                             " of type " + rec.getRecType() +
                             " has " + rec.getFeatureCount() + " features";
-            String fullMessage = baseMsg;
             if (rec instanceof OnTrack) {
                 fullMessage += "; based on Track " + ((OnTrack) rec).getSourceTrackId();
             }

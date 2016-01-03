@@ -25,21 +25,20 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.rec.NetworkRecImpl;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
 
 /**
- * Implementation of NetworkProposal that involves adding a new Location to the
+ * Implementation of NetworkProposal that involves adding a new Node to the
  * network.
  *
  * @author jett
  *
  */
-public class NewLocProposal implements NetworkProposal {
+public class NewNodeProposal implements NetworkProposal {
 
-    private static final Logger LOGGER = Logger.getLogger(NewLocProposal.class);
+    private static final Logger LOGGER = Logger.getLogger(NewNodeProposal.class);
 
     private static Integer lastId = 1;
     private Integer id;
@@ -51,7 +50,7 @@ public class NewLocProposal implements NetworkProposal {
     /**
      * @param node - GeoNode to be added to the network.
      */
-    public NewLocProposal(GeoNode node) {
+    public NewNodeProposal(GeoNode node) {
         if (node == null) {
             throw new IllegalArgumentException(
                     "Cannot provide null/empty Location");
@@ -100,7 +99,7 @@ public class NewLocProposal implements NetworkProposal {
         // Feature for the New Location we're adding; Rec should not provide this
         fcPoints.add(TranslateUtil.geoNodeToFeature(newNode));
         for (NetworkRecommendation rec : networkRecommendations) {
-            ((NetworkRecImpl) rec).logRecommendationSummary();
+            rec.logRecommendationSummary();
             for (SimpleFeature feature : rec.getFeatureCollection()) {
                 if (feature.getFeatureType().getTypeName().contains("PointType")) {
                     fcPoints.add(feature);
@@ -110,7 +109,7 @@ public class NewLocProposal implements NetworkProposal {
             }
         }
         String pointResult = jsonRespWriter.toString(fcPoints);
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         stringBuffer.append(pointResult.substring(0, pointResult.length()-2));
         for (SimpleFeature feature : fcNonPoints) {
             stringBuffer.append(",").append(jsonRespWriter.toString(feature));
@@ -138,6 +137,14 @@ public class NewLocProposal implements NetworkProposal {
     }
 
     /**
+     * Remove all recommendations in preparation to collapse and sort
+     */
+    @Override
+    public void resetRecommendationList() {
+        networkRecommendations.clear();
+    }
+
+    /**
      * Clients "set" this by adding recommendations.
      * 
      * @param nodeNetworkState
@@ -149,7 +156,7 @@ public class NewLocProposal implements NetworkProposal {
     }
 
     /**
-     * @param networkRecommendation
+     * @param networkRecommendation - Recommendation to be added to the Proposal.
      */
     public void add(NetworkRecommendation networkRecommendation) {
         LOGGER.info(networkRecommendation);
@@ -166,7 +173,7 @@ public class NewLocProposal implements NetworkProposal {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("NewLocProposal [id=").append(id).append(
+        builder.append("NewNodeProposal [id=").append(id).append(
                 ", numberNetworkRecs=").append(networkRecommendations.size())
                 .append(", nodeNetworkState=").append(nodeNetworkState).append(
                         ", newNode=").append(newNode).append("]");
