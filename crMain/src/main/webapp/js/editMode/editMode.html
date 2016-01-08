@@ -1,0 +1,16 @@
+<link rel="stylesheet" href="js/editMode/editMode.css">
+<div class="editMode" ng-controller="Controller as vm">
+  <div class="btn-group" uib-dropdown uib-keyboard-nav>
+    <button id="simple-btn-keyboard-nav"
+            type="button"
+            class="btn btn-primary" uib-dropdown-toggle>
+      {{vm.selectedEditMode.name}}<span class="caret"></span>
+    </button>
+    <ul class="uib-dropdown-menu" role="menu"
+        aria-labelledby="simple-btn-keyboard-nav">
+      <li ng-repeat="editMode in vm.editModes">
+        <a href="#" ng-bind="editMode.name" ng-click="vm.select(editMode)"></a>
+      </li>
+    </ul>
+  </div>
+</div>

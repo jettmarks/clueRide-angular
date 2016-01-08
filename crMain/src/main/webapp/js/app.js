@@ -1,35 +1,45 @@
-var crNetEdit = angular.module("crNetEdit", [
-    'leaflet-directive',
-    'crMain.services',
-    'crNetEdit.LocGroupModule',
-    'crNetEdit.LocModule',
-    'where',
-    'network',
-    'crNetEdit.recs',
-    'ui.bootstrap'
-]);
+(function (angular) {
+    "use strict";
 
-crNetEdit.controller("AppController", [ 
-    "$scope",
-    'leafletData',
-    '$http',
-    'RawSegments',
-    'LocResource',
-    'LocDiagResource',
-    'NetworkResource',
-    'NetworkRefresh',
-    'newNodeService',
-    function($scope,
-             leafletData,
-             $http,
-             RawSegments,
-             LocResource,
-             LocDiagResource,
-             NetworkResource,
-             NetworkRefresh,
-             newNodeService
+    var viewModel;
+
+    angular
+        .module('crNetEdit', [
+            'leaflet-directive',
+            'crMain.services',
+            'crNetEdit.LocGroupModule',
+            'crNetEdit.LocModule',
+            'crNetEdit.EditModeModule',
+            'crNetEdit.Feature',
+            'where',
+            'network',
+            'crNetEdit.recs',
+            'ui.bootstrap'
+        ])
+        .controller('AppController', AppController)
+    ;
+
+    AppController.$inject = [
+        "$scope",
+        'leafletData',
+        'RawSegments',
+        'LocDiagResource',
+        'NetworkRefresh',
+        'newNodeService'
+    ];
+
+    function AppController ($scope,
+                            leafletData,
+                            RawSegments,
+                            LocDiagResource,
+                            NetworkRefresh,
+                            newNodeService
     ) {
-        $scope.layers = {
+        var mapModel = this;
+
+        viewModel = mapModel;
+
+        mapModel.layers = {
             baselayers: {
                 ocm: {
                     name: 'OpenCycleMap',
@@ -43,9 +53,9 @@ crNetEdit.controller("AppController", [
                     type: 'xyz'
                 }
             }
-        }
+        };
 
-        angular.extend($scope, {
+        angular.extend(mapModel, {
             center: {
                 lat: 33.7627,
                 lng: -84.3527,
@@ -65,57 +75,59 @@ crNetEdit.controller("AppController", [
             },
             showNodes: {}
         });
-    
+
         // Bind the scope's segments with the service's segments
         NetworkRefresh.refresh();
-        $scope.gjNetwork.segments = NetworkRefresh.segments();
-        $scope.selectedSegment = NetworkRefresh.selectedSegment();
-        $scope.showNodes = LocModule.showNodes($scope,LocDiagResource);
-    
-    RawSegments.get({}, function(featureCollection) {
-		angular.extend($scope.gjTracks, {
-		    segments: {
-				data: featureCollection,
-				style: {
-				    opacity: 0.7,
-				    color: '#444',
-				    weight: 4,
-				},
-		
-				onEachFeature: function (feature, layer) {
-		
-				    layer.on('mouseover', function(e) {
-						e.target.setStyle({
-						    weight: 8,
-						    opacity: 1.0
-						});
-				    });
-		
-				    layer.on('mouseout', function(e) {
-						e.target.setStyle({
-						    weight: 4,
-						    opacity: 0.7
-						});
-				    });
-		
-				    layer.on('click', function(e) {
-						$scope.selectedFeature = this.feature;
-				    });
-				} 
-		    }
-		});
-    });
+        mapModel.gjNetwork.segments = NetworkRefresh.segments();
+        mapModel.selectedSegment = NetworkRefresh.selectedSegment();
+        mapModel.showNodes = LocModule.showNodes($scope, LocDiagResource);
 
-    
-    // TODO: Set this up so we can turn on/off the response (goes in LocModule)
-    leafletData.getMap('networkMap').then(function(networkMap) {
-        // Responds to mouse-click to submit lat/lon and return point candidate
-        networkMap.on('click', function (mouseEvent) {
-	        newNodeService.checkNode(mouseEvent.latlng);
-        });
-        networkMap.on('mousemove', function (mouseEvent) {
-            $scope.mouse.location = mouseEvent.latlng;
-        });
-    });
+        RawSegments.get({}, loadTracks);
 
-}]);
+        // TODO: CA-86 Set this up so we can turn on/off the response (goes in LocModule)
+        leafletData.getMap('networkMap').then(function (networkMap) {
+            // Responds to mouse-click to submit lat/lon and return point candidate
+            networkMap.on('click', function (mouseEvent) {
+                newNodeService.checkNode(mouseEvent.latlng);
+            });
+            networkMap.on('mousemove', function (mouseEvent) {
+                mapModel.mouse.location = mouseEvent.latlng;
+            });
+        });
+    }
+
+    function loadTracks(featureCollection) {
+        angular.extend(viewModel.gjTracks, {
+            segments: {
+                data: featureCollection,
+                style: {
+                    opacity: 0.7,
+                    color: '#444',
+                    weight: 4,
+                },
+                onEachFeature: onEachTrackFeature
+            }
+        });
+    }
+
+    function onEachTrackFeature(feature, layer) {
+        layer.on('mouseover', function (e) {
+            e.target.setStyle({
+                weight: 8,
+                opacity: 1.0
+            });
+        });
+
+        layer.on('mouseout', function (e) {
+            e.target.setStyle({
+                weight: 4,
+                opacity: 0.7
+            });
+        });
+
+        layer.on('click', function (e) {
+            viewModel.selectedFeature = feature;
+        });
+    }
+
+}(window.angular));
