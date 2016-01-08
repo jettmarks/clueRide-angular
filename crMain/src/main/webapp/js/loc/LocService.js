@@ -37,9 +37,10 @@ LocModule
 
 
     function showNodes($scope, LocDiagResource) {
+        var mapModel = $scope.mapModel;
         LocDiagResource.showAllNodes( {},
             function (pointFeature) {
-                angular.extend($scope.gjNetwork, {
+                angular.extend(mapModel.gjNetwork, {
                     newPoints: {
                         data: pointFeature,
                         pointToLayer: function (feature, latlng) {
