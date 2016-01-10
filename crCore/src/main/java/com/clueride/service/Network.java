@@ -20,6 +20,7 @@ package com.clueride.service;
 import java.util.List;
 
 import com.clueride.domain.GeoNode;
+import com.clueride.feature.LineFeature;
 import com.clueride.feature.TrackFeature;
 
 /**
@@ -48,4 +49,6 @@ public interface Network {
      * may now be committed to the memory space which serves requests.
      */
     void storesReadyForPublishing();
+
+    List<LineFeature> getLineFeaturesForNodeId(Integer pointId);
 }

@@ -56,4 +56,6 @@ public interface NodeService {
     String showAllNodes();
 
     String getRecGeometry(Integer recId);
+
+    String getMatchingSegments(Integer pointId);
 }
