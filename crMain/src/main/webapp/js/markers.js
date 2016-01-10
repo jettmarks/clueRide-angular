@@ -16,7 +16,7 @@ var mouseoverMarkerIcon = L.AwesomeMarkers.icon({
 });
 
 var iconMarkerSingleTrack = L.AwesomeMarkers.icon({
-    icon: 'android-done',
+    icon: 'android-done',   /* Single check-mark */
     markerColor: 'darkGreen'
 });
 
@@ -31,13 +31,19 @@ var iconMarkerOnSegment = L.AwesomeMarkers.icon({
 });
 
 var iconMarkerOnMultiTrack = L.AwesomeMarkers.icon({
-    icon: 'android-done-all',
+    icon: 'android-done-all',   /* Multiple check-mark */
     markerColor: 'orange'
 });
 
 var iconMarkerOffNetwork = L.AwesomeMarkers.icon({
-    icon: 'heart-broken',
+    icon: 'heart-broken',    /* Heart with a crack */
     markerColor: 'red'
+});
+
+var iconMarkerEditable = L.AwesomeMarkers.icon({
+    //icon: 'arrow-move',
+    icon: 'arrow-expand',
+    markerColor: 'lightBlue'
 });
 
 function getMarkerIcon(id, state, selected) {
@@ -68,6 +74,19 @@ function getMarkerIcon(id, state, selected) {
     }
 }
 
+
+function getEditableIcon(latLng) {
+    return {
+        lat: latLng.lat,
+        lng: latLng.lng,
+        message: "Editable Marker",
+        icon: {
+            type: 'awesomeMarker',
+            icon: 'arrow-move',
+            markerColor: 'blue'
+        }
+    }
+}
 
 
 function pointMouseover(leafletEvent) {

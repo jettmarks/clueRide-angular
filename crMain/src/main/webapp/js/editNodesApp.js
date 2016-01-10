@@ -1,3 +1,4 @@
+// TODO: This is obsolete and replaced by CA-89
 var crNetEdit = angular.module("crNetEdit", [
         'leaflet-directive', 
         'crMain.services',

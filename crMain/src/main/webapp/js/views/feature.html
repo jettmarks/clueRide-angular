@@ -1,9 +1,15 @@
-<div>
-  TrackID: <span ng-bind="feature.properties.trackId"></span>
-  URL: <span ng-bind="feature.properties.url"></span><p>
-  Name: <span ng-bind="feature.properties.name"></span><p>
-  Length: <span ng-bind="feature.geometry.coordinates.length"></span>
-  Type: <span ng-bind="feature.geometry.type"></span><p>
-  Starting Point: <span ng-bind="feature.geometry.coordinates[0]"></span>
-  Ending Point: <span ng-bind="feature.geometry.coordinates[feature.geometry.coordinates.length-1]"></span>
+<link rel="stylesheet" href="js/views/views.css">
+<div class="dataview">
+  <div ng-show="feature.properties">
+    TrackID: <span ng-bind="feature.properties.trackId"></span>
+    URL: <span ng-bind="feature.properties.url"></span><p>
+    Name: <span ng-bind="feature.properties.name"></span><p>
+    Length: <span ng-bind="feature.geometry.coordinates.length"></span>
+    Type: <span ng-bind="feature.geometry.type"></span><p>
+    Starting Point: <span ng-bind="feature.geometry.coordinates[0]"></span>
+    Ending Point: <span ng-bind="feature.geometry.coordinates[feature.geometry.coordinates.length-1]"></span>
+  </div>
+  <div ng-hide="feature.properties">
+    No Track Selected
+  </div>
 </div>

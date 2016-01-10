@@ -1,4 +1,4 @@
-<html ng-app="crNetEdit">
+<html >
 <head>
   <title>Clueride Network Editor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,8 +18,8 @@
 
   <script src="js/app.js"></script>
   <script src="js/services.js"></script>
-  <script src="js/loc/LocModule.js"></script>
-  <script src="js/loc/LocService.js"></script>
+  <script src="js/node/NodeAddModule.js"></script>
+  <script src="js/node/NodeEditModule.js"></script>
   <script src="js/network/NetworkModule.js"></script>
   <script src="js/network/NetworkService.js"></script>
   <script src="js/lg/LocGroupModule.js"></script>
@@ -27,25 +27,32 @@
   <script src="js/where/where.js"></script>
   <script src="js/recs/recs.js"></script>
   <script src="js/editMode/EditModeModule.js"></script>
+  <script src="js/map/MapModule.js"></script>
   <script src="js/views/Feature.js"></script>
   <script src="js/markers.js"></script>
 
 </head>
 
-<body ng-controller="AppController as mapModel">
+<body ng-app="crNetEdit">
+
+<div class="maps" ng-controller="AppController as mapModel">
   <div class="mapFrame" id="network">
-	<leaflet id="networkMap" layers="mapModel.layers" center="mapModel.center" markers="mapModel.markers"
-	         geojson="mapModel.gjNetwork" geojson-nested="true"
-	         width="100%" height="100%"></leaflet>
+    <leaflet id="networkMap" layers="mapModel.layers" center="mapModel.center"
+             event-broadcast="mapModel.events"
+             markers="mapModel.editableMarkers"
+             geojson="mapModel.gjNetwork" geojson-nested="true"
+             width="100%" height="100%"></leaflet>
   </div>
   <div class="mapFrame" id="tracks">
-	<leaflet id="tracksMap" layers="mapModel.layers" center="mapModel.center" markers="mapModel.markers"
-	         geojson="mapModel.gjTracks" geojson-nested="true"
-	         width="100%" height="100%"></leaflet>
+    <leaflet id="tracksMap" layers="mapModel.layers" center="mapModel.center"
+             markers="mapModel.gjTracks.markers"
+             geojson="mapModel.gjTracks" geojson-nested="true"
+             width="100%" height="100%"></leaflet>
   </div>
+
   <h1>Network Editing</h1>
   <div class="workingFrame">
-    <cr-edit-mode></cr-edit-mode>
+    <!--<cr-edit-mode></cr-edit-mode>-->
     <cr-rec-select network="mapModel.gjNetwork"></cr-rec-select>
     <p> Segment ID: <span ng-bind="mapModel.selectedSegment.properties.edgeId"></span>
     <p> <span><button ng-click="NetworkRefresh.refresh()">Refresh</button></span>
@@ -54,8 +61,10 @@
   </div>
   <div class="workingFrame">
     <cr-feature feature="mapModel.selectedFeature"></cr-feature>
-    <show-nodes></show-nodes>
+    <cr-show-nodes edit-markers="mapModel.editableMarkers"></cr-show-nodes>
     <pointer-location pointer="mapModel.mouse"></pointer-location>
   </div>
+</div>
+
 </body>
 </html>
