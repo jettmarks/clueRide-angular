@@ -117,4 +117,10 @@ public class Nodes {
         return nodeService.showAllNodes();
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("segment")
+    public String getMatchingSegments(@QueryParam("pointId") Integer pointId) {
+        return nodeService.getMatchingSegments(pointId);
+    }
 }

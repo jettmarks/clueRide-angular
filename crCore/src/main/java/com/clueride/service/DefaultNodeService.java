@@ -47,6 +47,7 @@ import com.clueride.domain.dev.rec.ToSegmentAndNode;
 import com.clueride.domain.dev.rec.ToTwoNodes;
 import com.clueride.domain.dev.rec.ToTwoSegments;
 import com.clueride.domain.factory.PointFactory;
+import com.clueride.feature.LineFeature;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
@@ -317,6 +318,7 @@ public class DefaultNodeService implements NodeService {
 
     @Override
     public String showAllNodes() {
+        LOGGER.info("Requesting All Nodes");
         NetworkProposal networkProposal = buildAllNodesProposal();
         return networkProposal.toJson();
     }
@@ -325,6 +327,13 @@ public class DefaultNodeService implements NodeService {
     public String getRecGeometry(Integer recId) {
         LOGGER.info("Requesting Geometry for Rec ID: " + recId);
         return recommendationService.getRecGeometry(recId);
+    }
+
+    @Override
+    public String getMatchingSegments(Integer pointId) {
+        LOGGER.info("Requesting Matching Edges for Node ID " + pointId);
+        NetworkProposal networkProposal = buildMatchingSegmentsProposal(pointId);
+        return networkProposal.toJson();
     }
 
     /**
@@ -347,6 +356,23 @@ public class DefaultNodeService implements NodeService {
         DiagnosticRec diagnosticRec = new DiagnosticRec(null);
         for (GeoNode geoNode : nodeStore.getNodes()) {
             diagnosticRec.addFeature(TranslateUtil.geoNodeToFeature(geoNode));
+        }
+        newNodeProposal.add(diagnosticRec);
+        return newNodeProposal;
+    }
+
+    /**
+     * Given a Node's Point ID, find all segments which are connected to that Node.
+     * @param pointId - Integer representing the Node of interest.
+     * @return NetworkProposal containing a list of connected Segments.
+     */
+    private NetworkProposal buildMatchingSegmentsProposal(Integer pointId) {
+        NewNodeProposal newNodeProposal = new NewNodeProposal(new DefaultGeoNode());
+        DiagnosticRec diagnosticRec = new DiagnosticRec(null);
+        Network networkService = DefaultNetwork.getInstance();
+        List<LineFeature> edgesPerNode = networkService.getLineFeaturesForNodeId(pointId);
+        for (LineFeature lineFeature : edgesPerNode) {
+            diagnosticRec.addFeature(lineFeature.getFeature());
         }
         newNodeProposal.add(diagnosticRec);
         return newNodeProposal;

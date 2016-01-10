@@ -5,19 +5,22 @@
         viewModel,
         mapScope = {},
         subjectMarker,
+        nodeSegmentMatchResource = {showConnectingEdges: function () {}},
         locDiagResource = {showAllNodes: function () {}};
 
     angular
         .module('crNetEdit.NodeEditModule', ['crNetEdit.MapModule','leaflet-directive', 'ngResource'])
         .controller('NodeEditController', NodeEditController)
         .factory('LocDiagResource', NodeDiagResource)
+        .service('NodeSegmentMatchResource', NodeSegmentMatchResource)
+        .service('NodeUpdateResource', NodeUpdateResource)
         .service('ShowNodesService', ShowNodesService)
         .directive('crShowNodes', showNodesDirective)
     ;
 
-    NodeEditController.$inject = ['$scope','LocDiagResource','MapService'];
+    NodeEditController.$inject = ['$scope','LocDiagResource','NodeSegmentMatchResource','MapService'];
 
-    function NodeEditController ($scope, LocDiagResource, MapService) {
+    function NodeEditController ($scope, LocDiagResource, NodeSegmentMatchResource, MapService) {
         var vm = this;
 
         $scope.nodeModule = {name: "NodeEditModule"};
@@ -29,7 +32,8 @@
         vm.editStatus = {
             editInProgress: false,
             editPointId: {},
-            editPointLatLng: {}
+            editPointLatLng: {},
+            matchingEdgeIds: []
         }
         vm.updateEditStatus = updateEditStatus;
         viewModel = vm;     // For reading, but not writing
@@ -44,11 +48,44 @@
         }
 
         locDiagResource = LocDiagResource;
+        nodeSegmentMatchResource = NodeSegmentMatchResource;
     }
 
     function NodeDiagResource ($resource) {
         return $resource('/crMain/rest/nodes/allNodes', {}, {
             showAllNodes: {
+                method: 'GET',
+                params: {},
+                isArray: false
+            }
+        });
+    }
+
+    /**
+     * Updates an existing Node with a new Lat/Lon pair.
+     * @param $resource
+     * @constructor
+     */
+    function NodeUpdateResource ($resource) {
+        return $resource('/crMain/rest/nodes/update', {}, {
+            updateNode: {
+                method: 'PUT',
+                params: {},
+                isArray: false
+            }
+        });
+    }
+
+    /**
+     * Retrieves the segments (as Feature Collection) matching
+     * the given Node's Point ID.
+     * @param $resource
+     * @returns {FeatureCollection}
+     * @constructor
+     */
+    function NodeSegmentMatchResource ($resource) {
+        return $resource('/crMain/rest/nodes/segment', {}, {
+            getMatchingSegments: {
                 method: 'GET',
                 params: {},
                 isArray: false
@@ -100,10 +137,16 @@
         if (viewModel.editStatus.editInProgress) {
             /* We have a marker out there; Change which marker is being edited. */
             subjectMarker.setOpacity(1.0);
+            setFeatureLocation(subjectMarker.feature.properties.pointId,
+                viewModel.editStatus.editPointLatLng.lat,
+                viewModel.editStatus.editPointLatLng.lng
+            );
         }
         /* Record details of the node being selected for edit. */
         subjectMarker = e.target;
         markerPointId = subjectMarker.feature.properties.pointId;
+        /* Temporarily remove the subjectMarker by changing its lat/lon in the Feature List */
+        hideTargetMarker(markerPointId);
 
         /* Begin editing with a brand new marker. */
         mapScope.$on('leafletDirectiveMarker.dragend', function (event, args) {
@@ -111,7 +154,9 @@
         });
 
         console.log("Editing " + markerPointId);
-        subjectMarker.setOpacity(0);
+        subjectMarker.setOpacity(0.0);
+        //e.target.setOpacity(0.0);
+        //subjectMarker.options.opacity = 0.0;
         editMarker = getEditableIcon(e.target.getLatLng());
         editMarker.draggable = true;
         angular.extend(editMarkers, {
@@ -122,13 +167,32 @@
         viewModel.updateEditStatus({
             editInProgress: true,
             editPointId: markerPointId,
-            editPointLatLng: subjectMarker.getLatLng()
+            editPointLatLng: subjectMarker.getLatLng(),
+            matchingEdgeIds: []
         });
+        showConnectingEdges(markerPointId);
+    }
+
+    function hideTargetMarker (pointId) {
+        setFeatureLocation(pointId, 0.0, 0.0);
+    }
+
+    function setFeatureLocation(pointId, lat, lng) {
+        var featureList = mapScope.mapModel.gjNetwork.newPoints.data.features;
+
+        for (var feature in featureList) {
+            if (!!featureList[feature].properties && !!featureList[feature].properties.pointId) {
+                if (featureList[feature].properties.pointId === pointId) {
+                    featureList[feature].geometry.coordinates[0] = lng;
+                    featureList[feature].geometry.coordinates[1] = lat;
+                }
+            }
+        }
     }
 
     function ShowNodesService () {
         return {
-            showNodes: showNodes
+            showNodes: showNodesForEditing
         }
     }
 
@@ -167,6 +231,31 @@
                 })
             }
         );
+    }
+
+    function showConnectingEdges (pointId) {
+        nodeSegmentMatchResource.getMatchingSegments( {
+            pointId: pointId
+        }, addMatchingEdgeToMap);
+    }
+
+    function addMatchingEdgeToMap (lineFeature) {
+        var mapModel = mapScope.mapModel;
+        angular.extend(mapModel.gjNetwork, {
+            matchingEdges: {
+                data: lineFeature,
+                style: {
+                    color: '#FF7',
+                    opacity: 0.8,
+                    weight: 14
+                },
+                onEachFeature: captureEdgeId
+            }
+        });
+    }
+
+    function captureEdgeId (feature, layer) {
+        viewModel.editStatus.matchingEdgeIds.push(feature.properties.edgeId);
     }
 
 }(window.angular));

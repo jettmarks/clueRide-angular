@@ -1,6 +1,7 @@
 <div class="showNodes, dataview" ng-controller="NodeEditController as vm">
     <div ng-show="vm.editStatus.editInProgress">
         Editing Node {{vm.editStatus.editPointId}} <br>
+        Matching Edge IDs: {{vm.editStatus.matchingEdgeIds}} <br>
         Current Location: {{vm.editStatus.editPointLatLng}} <br>
         <button ng-click="acceptEdit()">Accept</button>
         <button ng-click="cancelEdit()">Cancel</button>

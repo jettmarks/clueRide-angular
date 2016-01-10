@@ -74,7 +74,7 @@ public class DefaultNetwork implements Network {
     private Set<GeoNode> nodeSet;
     private NetworkStore networkStore;
     private NodeStore nodeStore;
-
+    private Map<Integer,List<LineFeature>> lineFeaturesPerNodeId = new HashMap<>();
 
     public static DefaultNetwork getInstance() {
         // TODO: This is a big chunk of work to bite off within a synchronized block
@@ -112,6 +112,8 @@ public class DefaultNetwork implements Network {
      * node set.
      * @deprecated - only useful if the FeatureCollection comes before the LineFeatures;
      * no longer happening.
+     * Well, I am dependent on the validateConnections now since it is building one
+     * of my maps (as of CA-90).
      */
     private void init() {
         nodeSet = nodeStore.getNodes();
@@ -175,6 +177,11 @@ public class DefaultNetwork implements Network {
         nodeStore.persist();
         featureCollection = TranslateUtil
                 .lineFeatureSetToFeatureCollection(allLineFeatures);
+    }
+
+    @Override
+    public List<LineFeature> getLineFeaturesForNodeId(Integer pointId) {
+        return new ArrayList<>(lineFeaturesPerNodeId.get(pointId));
     }
 
     /**
@@ -287,9 +294,20 @@ public class DefaultNetwork implements Network {
 
     /* Node & Edge endpoint validation. */
 
+    /**
+     * Checks that each end of the Line Feature is a registered Node.
+     *
+     * Has the added responsibility of adding the Line Features to the
+     * Map of features per Node by ID.
+     */
     private boolean validateConnections(LineFeature lineFeature) {
-        if (verifyNodeIdAssignment(lineFeature.getGeoStart()) &&
-                verifyNodeIdAssignment(lineFeature.getGeoEnd())) {
+        Integer startNodeId = verifyNodeIdAssignment(lineFeature.getGeoStart());
+        Integer endNodeId = verifyNodeIdAssignment(lineFeature.getGeoEnd());
+
+        addNodesFeature(lineFeature, startNodeId);
+        addNodesFeature(lineFeature, endNodeId);
+
+        if (startNodeId > 0 && endNodeId > 0) {
             return true;
         } else {
             LOGGER.error("Line Feature " + lineFeature.getId() + " has unregistered nodes");
@@ -297,21 +315,36 @@ public class DefaultNetwork implements Network {
         }
     }
 
+    private void addNodesFeature(LineFeature lineFeature, Integer nodeId) {
+        if (nodeId < 0) {
+            return;
+        }
+
+        List<LineFeature> featuresForNode;
+        if (!lineFeaturesPerNodeId.containsKey(nodeId)) {
+            featuresForNode = new ArrayList<>();
+            lineFeaturesPerNodeId.put(nodeId, featuresForNode);
+        } else {
+            featuresForNode = lineFeaturesPerNodeId.get(nodeId);
+        }
+        featuresForNode.add(lineFeature);
+    }
+
     /**
+     * Checks that the Endpoint Node provided lies within the pool of known Nodes.
      * TODO: Factor this into a separate class.
      *
      * @param endPointNode - either start or end of a LineString.
      */
-    public boolean verifyNodeIdAssignment(GeoNode endPointNode) {
+    public Integer verifyNodeIdAssignment(GeoNode endPointNode) {
         Integer nodeId = matchesNetworkNode(endPointNode);
         if (nodeId > 0) {
             endPointNode.setId(nodeId);
-            return true;
         } else {
             LOGGER.error("Node " + endPointNode
                     + " doesn't match stored list of nodes");
-            return false;
         }
+        return nodeId;
     }
 
     public Integer matchesNetworkNode(GeoNode geoNode) {
