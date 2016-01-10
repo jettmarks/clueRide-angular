@@ -8,8 +8,10 @@
             'leaflet-directive',
             'crMain.services',
             'crNetEdit.LocGroupModule',
-            'crNetEdit.LocModule',
+            'crNetEdit.NodeAddModule',
+            'crNetEdit.NodeEditModule',
             'crNetEdit.EditModeModule',
+            'crNetEdit.MapModule',
             'crNetEdit.Feature',
             'where',
             'network',
@@ -22,18 +24,24 @@
     AppController.$inject = [
         "$scope",
         'leafletData',
+        'leafletMarkerEvents',
         'RawSegments',
         'LocDiagResource',
         'NetworkRefresh',
-        'newNodeService'
+        'newNodeService',
+        'ShowNodesService',
+        'MapService'
     ];
 
     function AppController ($scope,
                             leafletData,
+                            leafletMarkerEvents,
                             RawSegments,
                             LocDiagResource,
                             NetworkRefresh,
-                            newNodeService
+                            newNodeService,
+                            ShowNodesService,
+                            MapService
     ) {
         var mapModel = this;
 
@@ -52,6 +60,16 @@
                     url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                     type: 'xyz'
                 }
+            }
+        };
+
+        // TODO: May be able to pull this back up into the NodeEditModule
+        mapModel.editableMarkers = {};
+
+        /* TODO: This probably belongs somewhere else. */
+        mapModel.events = {
+            markers: {
+                enable: leafletMarkerEvents.getAvailableEvents()
             }
         };
 
@@ -77,10 +95,12 @@
         });
 
         // Bind the scope's segments with the service's segments
+        MapService.setMapScope($scope);
         NetworkRefresh.refresh();
         mapModel.gjNetwork.segments = NetworkRefresh.segments();
         mapModel.selectedSegment = NetworkRefresh.selectedSegment();
-        mapModel.showNodes = LocModule.showNodes($scope, LocDiagResource);
+
+        //mapModel.showNodes = ShowNodesService.showNodes();
 
         RawSegments.get({}, loadTracks);
 

@@ -1,22 +1,26 @@
 (function (angular) {
     'use strict';
 
-    var locResource,
+    var nodeAddResource,
         networkRefresh,
         viewModel,
         network;
 
     angular
-        .module('crNetEdit.recs', ['crNetEdit.LocModule','ui.bootstrap'])
+        .module('crNetEdit.recs', ['crNetEdit.NodeAddModule','ui.bootstrap'])
         .controller('RecSelectController', RecSelectController)
         .service('newNodeService', newNodeService)
         .directive('crRecSelect', crRecSelect)
     ;
 
-    RecSelectController.$inject = [ '$scope', 'LocResource', 'NetworkRefresh', 'newNodeService'];
+    RecSelectController.$inject = [ '$scope', 'NodeAddResource', 'NetworkRefresh', 'newNodeService'];
 
-    function RecSelectController ($scope, LocResource, NetworkRefresh, newNodeService) {
+    function RecSelectController ($scope, NodeAddResource, NetworkRefresh, newNodeService) {
         var vm = this;
+
+        $scope.recsModule = {
+            name: 'recs'
+        };
 
         vm.recs = [];
         vm.selectedRec = {
@@ -27,7 +31,8 @@
         viewModel = vm;
         network = $scope.$parent.network;
 
-        locResource = LocResource;
+        // Local copies of resources for use in local functions
+        nodeAddResource = NodeAddResource;
         networkRefresh = NetworkRefresh;
 
         function select(rec) {
@@ -58,7 +63,7 @@
             });
             layer.on('click', function() {
                 console.log("Selecting the recommended Segment");
-                locResource.confirm({
+                nodeAddResource.confirm({
                     recId: viewModel.selectedRec.id
                 }, function (confirmResponse) {
                     var response = {};
@@ -107,7 +112,7 @@
     }
 
     function requestRec (recId) {
-        locResource.request({
+        nodeAddResource.request({
             recId: recId
         }, featuresToMap )
     }
@@ -139,12 +144,11 @@
                 };
                 break;
         }
-        //viewModel.select(networkProposal.recs[0]);
         viewModel.select(rec);
     }
 
     function checkNewNode(latlng) {
-        locResource.check({
+        nodeAddResource.check({
             lat: latlng.lat,
             lon: latlng.lng
         }, populateDropdown)
