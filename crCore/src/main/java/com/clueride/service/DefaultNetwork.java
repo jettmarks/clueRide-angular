@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +75,7 @@ public class DefaultNetwork implements Network {
     private Set<GeoNode> nodeSet;
     private NetworkStore networkStore;
     private NodeStore nodeStore;
-    private Map<Integer,List<LineFeature>> lineFeaturesPerNodeId = new HashMap<>();
+    private Map<Integer,Set<LineFeature>> lineFeaturesPerNodeId = new HashMap<>();
 
     public static DefaultNetwork getInstance() {
         // TODO: This is a big chunk of work to bite off within a synchronized block
@@ -320,9 +321,9 @@ public class DefaultNetwork implements Network {
             return;
         }
 
-        List<LineFeature> featuresForNode;
+        Set<LineFeature> featuresForNode;
         if (!lineFeaturesPerNodeId.containsKey(nodeId)) {
-            featuresForNode = new ArrayList<>();
+            featuresForNode = new HashSet<>();
             lineFeaturesPerNodeId.put(nodeId, featuresForNode);
         } else {
             featuresForNode = lineFeaturesPerNodeId.get(nodeId);

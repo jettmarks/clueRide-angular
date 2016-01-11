@@ -241,6 +241,8 @@
 
     function addMatchingEdgeToMap (lineFeature) {
         var mapModel = mapScope.mapModel;
+        /* Want to clear after the promise is resolved, but before re-populating. */
+        viewModel.editStatus.matchingEdgeIds = [];
         angular.extend(mapModel.gjNetwork, {
             matchingEdges: {
                 data: lineFeature,
