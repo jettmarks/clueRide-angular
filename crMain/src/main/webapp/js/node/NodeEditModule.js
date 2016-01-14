@@ -152,12 +152,6 @@
             lat: args.model.lat,
             lng: args.model.lng
         }, addMatchingEdgeToMap );
-
-        // TODO: This is the wrong one (CA-96)
-        //viewModel.editStatus.editPointLatLng = {
-        //    lat: args.model.lat,
-        //    lng: args.model.lng
-        //}
     }
 
     /**
