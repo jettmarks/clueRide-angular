@@ -47,11 +47,10 @@ public class EdgeImpl extends TrackFeatureImpl implements Edge {
     private boolean selected;
 
     /**
-     * @param track
-     * @param lineString
+     * @param track - Details of the display name and URL.
+     * @param lineString - Geometry of this Track.
      */
-    public EdgeImpl(TrackImpl track,
-            LineString lineString) {
+    public EdgeImpl(TrackImpl track, LineString lineString) {
         super(track, lineString);
     }
 
@@ -86,12 +85,24 @@ public class EdgeImpl extends TrackFeatureImpl implements Edge {
     }
 
     /**
+     * Stopgap sort of constructor for adjusting the coordinates of an existing Edge.
+     * TODO: This can probably be improved; look at callers and make smaller.
+     */
+    public EdgeImpl(Edge originalEdge, LineString newLineString) {
+        super(originalEdge.getId());
+        this.displayName = originalEdge.getDisplayName();
+        this.url = originalEdge.getUrl();
+        this.lineString = newLineString;
+        this.selected = false;
+        this.feature = buildFeature();
+    }
+
+    /**
      * @see com.clueride.domain.dev.UnratedSegment#getStart()
      */
     @Override
     public Node getStart() {
-        // TODO Auto-generated method stub
-        return null;
+        return new DefaultGeoNode(lineString.getStartPoint());
     }
 
     /**
@@ -99,8 +110,7 @@ public class EdgeImpl extends TrackFeatureImpl implements Edge {
      */
     @Override
     public Node getEnd() {
-        // TODO Auto-generated method stub
-        return null;
+        return new DefaultGeoNode(lineString.getEndPoint());
     }
 
     /**
