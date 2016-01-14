@@ -6,26 +6,40 @@
         mapScope = {},
         subjectMarker,
         nodeSegmentMatchResource = {showConnectingEdges: function () {}},
+        nodeUpdateResource = {updateNode: function () {}},
         locDiagResource = {showAllNodes: function () {}};
 
     angular
         .module('crNetEdit.NodeEditModule', ['crNetEdit.MapModule','leaflet-directive', 'ngResource'])
         .controller('NodeEditController', NodeEditController)
         .factory('LocDiagResource', NodeDiagResource)
-        .service('NodeSegmentMatchResource', NodeSegmentMatchResource)
-        .service('NodeUpdateResource', NodeUpdateResource)
+        .factory('NodeSegmentMatchResource', NodeSegmentMatchResource)
+        .factory('NodeUpdateResource', NodeUpdateResource)
         .service('ShowNodesService', ShowNodesService)
         .directive('crShowNodes', showNodesDirective)
     ;
 
-    NodeEditController.$inject = ['$scope','LocDiagResource','NodeSegmentMatchResource','MapService'];
+    NodeEditController.$inject = [
+        '$scope',
+        'LocDiagResource',
+        'NodeSegmentMatchResource',
+        'NodeUpdateResource',
+        'MapService'
+    ];
 
-    function NodeEditController ($scope, LocDiagResource, NodeSegmentMatchResource, MapService) {
+    function NodeEditController (
+        $scope,
+        LocDiagResource,
+        NodeSegmentMatchResource,
+        NodeUpdateResource,
+        MapService
+    ) {
         var vm = this;
 
         $scope.nodeModule = {name: "NodeEditModule"};
         $scope.showNodesForEditing = showNodesForEditing;
         $scope.acceptEdit = acceptEdit;
+        $scope.cancelEdit = cancelEdit;
 
         $scope.vm = vm;
 
@@ -49,6 +63,7 @@
 
         locDiagResource = LocDiagResource;
         nodeSegmentMatchResource = NodeSegmentMatchResource;
+        nodeUpdateResource = NodeUpdateResource;
     }
 
     function NodeDiagResource ($resource) {
@@ -62,13 +77,20 @@
     }
 
     /**
-     * Updates an existing Node with a new Lat/Lon pair.
+     * Updates an existing Node with a new Lat/Lon pair and brings back
+     * the updated Edges.  Once user accepts the new location and Edges,
+     * confirms the node update.
      * @param $resource
      * @constructor
      */
     function NodeUpdateResource ($resource) {
         return $resource('/crMain/rest/nodes/update', {}, {
             updateNode: {
+                method: 'GET',
+                params: {},
+                isArray: false
+            },
+            confirmNode: {
                 method: 'PUT',
                 params: {},
                 isArray: false
@@ -123,12 +145,29 @@
 
     function updateEditedMarker (event, args) {
         console.log("Edit Location: " + args.model.lat + "," + args.model.lng);
-        viewModel.editStatus.editPointLatLng = {
+
+        // Service request to redraw affected edges based on node's new location
+        nodeUpdateResource.updateNode({
+            pointId: viewModel.editStatus.editPointId,
             lat: args.model.lat,
             lng: args.model.lng
-        }
+        }, addMatchingEdgeToMap );
+
+        // TODO: This is the wrong one (CA-96)
+        //viewModel.editStatus.editPointLatLng = {
+        //    lat: args.model.lat,
+        //    lng: args.model.lng
+        //}
     }
 
+    /**
+     * Node to edit has been selected for editing, so this function takes the target
+     * marker, sets it off to the side and replaces it (same lat/lng) with another
+     * marker that we let the user move around on the map.
+     * If another marker had already been selected without accept/cancel, we swap out
+     * the previous marker.
+     * @param e
+     */
     function makeNodeEditable(e) {
         var editMarker,
             markerPointId;

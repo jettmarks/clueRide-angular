@@ -75,8 +75,6 @@ public class Nodes {
     @Path("new")
     public String getNewLocationPost(LatLonPair pair) {
         return nodeService.addNewNode(pair.lat, pair.lon);
-        // TODO: CA-55 Put in the Diagnostics package/bag
-        // return new LocationService().showPointsOnTrack(pair.lat, pair.lon);
     }
 
     /**
@@ -110,6 +108,9 @@ public class Nodes {
         return nodeService.setNodeGroup(id, lat, lon);
     }
 
+    // TODO: CA-55 Put in the Diagnostics package/bag
+    // return new LocationService().showPointsOnTrack(pair.lat, pair.lon);
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("allNodes")
@@ -123,4 +124,16 @@ public class Nodes {
     public String getMatchingSegments(@QueryParam("pointId") Integer pointId) {
         return nodeService.getMatchingSegments(pointId);
     }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("update")
+    public String getUpdatedEdges(
+            @QueryParam("pointId") Integer pointId,
+            @QueryParam("lat") Double lat,
+            @QueryParam("lng") Double lng
+    ) {
+        return nodeService.getEdgesAtNewLocation(pointId, lat, lng);
+    }
+
 }

@@ -58,4 +58,6 @@ public interface NodeService {
     String getRecGeometry(Integer recId);
 
     String getMatchingSegments(Integer pointId);
+
+    String getEdgesAtNewLocation(Integer pointId, Double lat, Double lng);
 }

@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.inject.Inject;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -33,6 +36,7 @@ import com.clueride.dao.NetworkProposalStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DefaultNodeGroup;
+import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NetworkRecommendation;
@@ -47,6 +51,7 @@ import com.clueride.domain.dev.rec.ToSegmentAndNode;
 import com.clueride.domain.dev.rec.ToTwoNodes;
 import com.clueride.domain.dev.rec.ToTwoSegments;
 import com.clueride.domain.factory.PointFactory;
+import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;
@@ -332,7 +337,15 @@ public class DefaultNodeService implements NodeService {
     @Override
     public String getMatchingSegments(Integer pointId) {
         LOGGER.info("Requesting Matching Edges for Node ID " + pointId);
-        NetworkProposal networkProposal = buildMatchingSegmentsProposal(pointId);
+        NetworkProposal networkProposal = buildAdjustedEdgesProposal(pointId);
+        return networkProposal.toJson();
+    }
+
+    @Override
+    public String getEdgesAtNewLocation(Integer pointId, Double lat, Double lng) {
+        LOGGER.info("Requesting updated Edges for Node ID " + pointId +
+                " at new location (" + lat + "," + lng + ")");
+        NetworkProposal networkProposal = buildAdjustedEdgesProposal(pointId, lat, lng);
         return networkProposal.toJson();
     }
 
@@ -366,7 +379,7 @@ public class DefaultNodeService implements NodeService {
      * @param pointId - Integer representing the Node of interest.
      * @return NetworkProposal containing a list of connected Segments.
      */
-    private NetworkProposal buildMatchingSegmentsProposal(Integer pointId) {
+    private NetworkProposal buildAdjustedEdgesProposal(Integer pointId) {
         NewNodeProposal newNodeProposal = new NewNodeProposal(new DefaultGeoNode());
         DiagnosticRec diagnosticRec = new DiagnosticRec(null);
         Network networkService = DefaultNetwork.getInstance();
@@ -376,6 +389,53 @@ public class DefaultNodeService implements NodeService {
         }
         newNodeProposal.add(diagnosticRec);
         return newNodeProposal;
+    }
+
+    /**
+     * Given a Node's Point ID and a new location for that point, adjust the edges
+     * which share that Node so the point matches the new location, and return that
+     * set of adjusted edges.
+     * @param pointId - Integer representing the Node being moved.
+     * @param lat - New Latitude.
+     * @param lng - New Longitude.
+     * @return NetworkProposal containing list of adjusted edges.
+     */
+    private NetworkProposal buildAdjustedEdgesProposal(Integer pointId, Double lat, Double lng) {
+        NewNodeProposal newNodeProposal = new NewNodeProposal(new DefaultGeoNode());
+        DiagnosticRec diagnosticRec = new DiagnosticRec(null);
+        Network networkService = DefaultNetwork.getInstance();
+        List<LineFeature> edgesPerNode = networkService.getLineFeaturesForNodeId(pointId);
+        for (LineFeature lineFeature : edgesPerNode) {
+            SimpleFeature adjustedFeature = adjustFeature(lineFeature, lat, lng);
+            diagnosticRec.addFeature(adjustedFeature);
+        }
+        newNodeProposal.add(diagnosticRec);
+        return newNodeProposal;
+    }
+
+    /**
+     * Accepts a SimpleFeature representing an existing Edge whose endpoint -- which one is
+     * figured out here -- is being moved to the new lat/lng.
+     * @param feature - Generally an Edge; should be renamed.
+     * @param lat - new Latitude for the point being adjusted.
+     * @param lng - new Longitude for the point being adjusted.
+     * @return New SimpleFeature with the location adjusted; ID is unchanged.
+     */
+    private SimpleFeature adjustFeature(LineFeature feature, Double lat, Double lng) {
+        Point adjustedEndPoint = PointFactory.getJtsInstance(lat, lng, 0.0);
+        Coordinate[] coordinates = feature.getLineString().getCoordinates();
+        Double distanceToStart = adjustedEndPoint.distance(feature.getGeoStart().getPoint());
+        Double distanceToEnd = adjustedEndPoint.distance(feature.getGeoEnd().getPoint());
+        if (distanceToStart < distanceToEnd) {
+            coordinates[0].setOrdinate(0,lng);
+            coordinates[0].setOrdinate(1,lat);
+        } else {
+            int index = coordinates.length - 1;
+            coordinates[index].setOrdinate(0, lng);
+            coordinates[index].setOrdinate(1,lat);
+        }
+        LineString adjustedLineString = new GeometryFactory().createLineString(coordinates);
+        return  (new EdgeImpl((Edge)feature, adjustedLineString)).getFeature();
     }
 
     private static class ProposalSummary {

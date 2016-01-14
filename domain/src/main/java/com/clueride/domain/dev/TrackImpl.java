@@ -39,8 +39,8 @@ public class TrackImpl implements Track {
     /**
      * Canonical constructor.
      * 
-     * @param displayName
-     * @param url
+     * @param displayName - String displayed as the Name of this Track.
+     * @param url - portion of RideWithGPS.com URL that is specific to this Track.
      */
     public TrackImpl(String displayName, String url) {
         this.displayName = displayName;
