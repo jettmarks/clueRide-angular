@@ -35,7 +35,7 @@ public interface NodeStore {
     /**
      * Tells us where the node data can be found.
      * 
-     * @return
+     * @return - String representation of the Path of where the node data is stored.
      */
     String getStoreLocation();
 
@@ -61,22 +61,22 @@ public interface NodeStore {
     /**
      * This holds the Locations -- if we need them, this is the place to go.
      * 
-     * @return
+     * @return - Set of the Nodes in memory.
      */
     Set<GeoNode> getNodes();
 
     /**
      * This holds the Location Groups.
      * 
-     * @return
+     * @return - Set of Location Groups in memory.
      */
     Set<NodeGroup> getNodeGroups();
 
     /**
      * Choose a particular Node by its ID.
      * 
-     * @param id
-     * @return
+     * @param id - unique identifier for the Node.
+     * @return Node matching the ID (or null if not found).
      */
     Node getNodeById(Integer id);
 
@@ -96,4 +96,10 @@ public interface NodeStore {
      */
     Integer addNew(NodeGroup nodeGroup);
 
+    /**
+     * Accepts a definition of a Node and writes it to disk, expecting that we're overwriting
+     * an earlier version of the same Node.
+     * @param newNode - Node we want to update on disk.
+     */
+    void persistNode(GeoNode newNode) throws IOException;
 }

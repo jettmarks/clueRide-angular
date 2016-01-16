@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright 2015 Jett Marks
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,6 @@
  */
 package com.clueride.domain.dev;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
@@ -36,13 +33,10 @@ import com.clueride.io.JsonStoreType;
  * @author jett
  *
  */
-public class NewNodeProposal implements NetworkProposal {
+public class NewNodeProposal extends NetworkProposalBaseImpl implements NetworkProposal {
 
     private static final Logger LOGGER = Logger.getLogger(NewNodeProposal.class);
 
-    private static Integer lastId = 1;
-    private Integer id;
-    private List<NetworkRecommendation> networkRecommendations = new ArrayList<>();
     private NodeNetworkState nodeNetworkState;
 
     private final GeoNode newNode;
@@ -51,6 +45,7 @@ public class NewNodeProposal implements NetworkProposal {
      * @param node - GeoNode to be added to the network.
      */
     public NewNodeProposal(GeoNode node) {
+        super();
         if (node == null) {
             throw new IllegalArgumentException(
                     "Cannot provide null/empty Location");
@@ -58,43 +53,6 @@ public class NewNodeProposal implements NetworkProposal {
 
         this.newNode = node;
         setNodeNetworkState(NodeNetworkState.UNDEFINED);
-        synchronized (lastId) {
-            this.id = lastId++;
-        }
-    }
-
-    /**
-     * @see com.clueride.domain.dev.NetworkProposal#getId()
-     */
-    @Override
-    public Integer getId() {
-        return id;
-    }
-
-    /**
-     * @see com.clueride.domain.dev.NetworkProposal#hasMultipleRecommendations()
-     */
-    @Override
-    public boolean hasMultipleRecommendations() {
-        return networkRecommendations.size() > 1;
-    }
-
-    /**
-     * @see com.clueride.domain.dev.NetworkProposal#getRecommendations()
-     */
-    @Override
-    public List<NetworkRecommendation> getRecommendations() {
-        return networkRecommendations;
-    }
-
-    @Override
-    public NetworkRecommendation getRecommendation(Integer recId) {
-        for (NetworkRecommendation rec : networkRecommendations) {
-            if (recId.equals(rec.getId())) {
-                return rec;
-            }
-        }
-        return null;
     }
 
     /**
@@ -147,14 +105,6 @@ public class NewNodeProposal implements NetworkProposal {
     }
 
     /**
-     * Remove all recommendations in preparation to collapse and sort
-     */
-    @Override
-    public void resetRecommendationList() {
-        networkRecommendations.clear();
-    }
-
-    /**
      * Clients "set" this by adding recommendations.
      * 
      * @param nodeNetworkState
@@ -163,14 +113,6 @@ public class NewNodeProposal implements NetworkProposal {
     private void setNodeNetworkState(NodeNetworkState nodeNetworkState) {
         this.nodeNetworkState = nodeNetworkState;
         this.newNode.setState(nodeNetworkState);
-    }
-
-    /**
-     * @param networkRecommendation - Recommendation to be added to the Proposal.
-     */
-    public void add(NetworkRecommendation networkRecommendation) {
-        LOGGER.info(networkRecommendation);
-        networkRecommendations.add(networkRecommendation);
     }
 
     public GeoNode getNode() {

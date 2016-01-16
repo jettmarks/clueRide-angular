@@ -126,7 +126,14 @@
         }
     }
 
+    function acceptResponse() {
+        // Nothing to do at this time
+    }
+
     function acceptEdit() {
+        nodeUpdateResource.confirmNode({
+            pointId: viewModel.editStatus.editPointId
+        }, acceptResponse);
         cancelEdit();
     }
 

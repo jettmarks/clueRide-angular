@@ -59,5 +59,23 @@ public interface NodeService {
 
     String getMatchingSegments(Integer pointId);
 
+    /**
+     * Given a Node's ID and a new Lat/Lon position, edit the Edges connected
+     * to that node and return a Feature Collection with the updated Edges (the
+     * Node itself will be still active in the browser and the position is
+     * already known by the client).
+     * @param pointId - Unique Integer representing the Node to edit.
+     * @param lat - Latitude of the new location.
+     * @param lng - Longitude of the new location.
+     * @return Feature Collection with the updated Edges.
+     */
     String getEdgesAtNewLocation(Integer pointId, Double lat, Double lng);
+
+    /**
+     * Accepts the last recommended position for the Node as the one to be
+     * committed to the database.
+     * @param pointId - Unique Integer representing the Node to edit.
+     * @return String "OK" to confirm.
+     */
+    String confirmEdgesAtNewLocation(Integer pointId);
 }

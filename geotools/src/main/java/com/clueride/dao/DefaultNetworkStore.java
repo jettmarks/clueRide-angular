@@ -31,6 +31,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.config.TestModeAware;
 import com.clueride.domain.EdgeImpl;
@@ -160,8 +161,11 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * 
      * It is understood that each particular record is immutable; if we need
      * changes, the change is a new record with new ID and the old record/file
-     * is removed.
-     * 
+     * is removed.  However, if we want to avoid having to relink all the courses
+     * that are connected through the Edges/Segments, we'll want to have something
+     * that can serve as a reference across these changes; the persistEdge method
+     * will provide updates to existing instances while keeping the same ID.
+     *
      * @throws IOException
      */
     public void persist() throws IOException {
@@ -221,6 +225,19 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
             }
         }
 
+    }
+
+    // TODO: Sort out what I want to hold/persist
+    public void persistEdge(Edge edge) {
+        GeoJsonUtil jsonUtilEdgeOut = new GeoJsonUtil(JsonStoreType.EDGE);
+        String fileName = "edge-" + edge.getId() + ".geojson";
+        jsonUtilEdgeOut.writeFeatureToFile(edge.getFeature(), fileName);
+    }
+
+    public void persistFeature(SimpleFeature feature) {
+        GeoJsonUtil jsonUtilEdgeOut = new GeoJsonUtil(JsonStoreType.EDGE);
+        String fileName = "edge-" + feature.getAttribute("edgeId") + ".geojson";
+        jsonUtilEdgeOut.writeFeatureToFile(feature, fileName);
     }
 
     /**
