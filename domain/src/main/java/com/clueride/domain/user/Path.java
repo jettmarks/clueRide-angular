@@ -19,7 +19,11 @@ package com.clueride.domain.user;
 
 import java.util.SortedSet;
 
+import com.clueride.domain.Profile;
+import com.clueride.domain.Rating;
+import com.clueride.domain.Step;
 import com.clueride.domain.dev.Arc;
+import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.Segment;
 
 /**
@@ -27,12 +31,29 @@ import com.clueride.domain.dev.Segment;
  * {@link Location}s.
  *
  * @author jett
- *
  */
-public interface Path extends Arc {
+public interface Path extends Arc, Step {
     SortedSet<Segment> getSegments();
 
     Location getDeparture();
 
     Location getDestination();
+
+    @Override
+    Node getStart();
+
+    @Override
+    Node getEnd();
+
+    @Override
+    Rating getRating();
+
+    @Override
+    Rating getRating(Profile profile);
+
+    @Override
+    Double getDistanceMiles();
+
+    @Override
+    Double getDistanceMeters();
 }

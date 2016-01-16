@@ -17,16 +17,18 @@
  */
 package com.clueride.domain.user;
 
-import com.clueride.service.IdProvider;
-import com.clueride.service.MemoryBasedLocationIdProvider;
-import com.google.common.base.Optional;
-
-import javax.annotation.concurrent.Immutable;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.Immutable;
+
+import com.google.common.base.Optional;
+
+import com.clueride.domain.Step;
+import com.clueride.service.IdProvider;
+import com.clueride.service.MemoryBasedLocationIdProvider;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -35,7 +37,7 @@ import static java.util.Objects.requireNonNull;
  * @author jett
  */
 @Immutable
-public class Location {
+public class Location implements Step {
     private final Integer id;
     private final String name;
     private final String description;
