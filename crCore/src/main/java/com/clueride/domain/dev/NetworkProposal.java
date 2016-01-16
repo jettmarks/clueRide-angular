@@ -20,7 +20,7 @@ package com.clueride.domain.dev;
 import java.util.List;
 
 /**
- * Holds the Proposal for adding/editing network elements (Segments and Nodes)
+ * Holds the Proposal for adding/editing network elements (Edges and Nodes)
  * while the user is reviewing and then once selected is prepared for updating
  * the network.
  *
@@ -28,10 +28,23 @@ import java.util.List;
  *
  */
 public interface NetworkProposal {
+    /**
+     * Unique identifier for this Network Proposal, generated when the NetworkProposal is generated.
+     * @return Identifier for this Network Proposal.
+     */
     Integer getId();
 
+    /**
+     * Shortcut method to determine if there are more than one recommendations in the list.
+     * @return true if there are more than one recommendations.
+     */
     boolean hasMultipleRecommendations();
 
+    /**
+     * Provides list of all the recommendations that are part of this Proposal.
+     * @return List of all the proposal's recommendations, may be empty, but generally has a single Rec, and
+     * in some instances, multiple recs the client should choose amongst.
+     */
     List<NetworkRecommendation> getRecommendations();
 
     /**
@@ -42,6 +55,11 @@ public interface NetworkProposal {
      */
     NetworkRecommendation getRecommendation(Integer recId);
 
+    /**
+     * Recommendations are returned as JSON and more specifically, Feature Collections
+     * which the Leaflet client-side mapping library can understand and display on a map.
+     * @return String GeoJSON representing a Feature Collection of the Recommendation(s).
+     */
     String toJson();
 
     /**

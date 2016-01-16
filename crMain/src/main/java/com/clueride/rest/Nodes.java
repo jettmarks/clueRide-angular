@@ -28,6 +28,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.clueride.rest.dto.LatLonPair;
+import com.clueride.rest.dto.PointId;
 import com.clueride.rest.dto.RecId;
 import com.clueride.service.NodeService;
 
@@ -136,4 +137,11 @@ public class Nodes {
         return nodeService.getEdgesAtNewLocation(pointId, lat, lng);
     }
 
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("update")
+    public String confirmUpdatedEdges(PointId pointId) {
+        return nodeService.confirmEdgesAtNewLocation(pointId.pointId);
+    }
 }

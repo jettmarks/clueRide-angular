@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.vividsolutions.jts.geom.Point;
+import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
@@ -47,7 +48,7 @@ public interface NetworkStore {
     /**
      * Tells us where the network data can be found.
      * 
-     * @return
+     * @return - String array listing the paths of the stores.
      */
     String[] getStoreLocations();
 
@@ -71,10 +72,19 @@ public interface NetworkStore {
     void persist() throws IOException;
 
     /**
+     * This goes against the "each record is immutable" current because it became
+     * clear that a course with references to Edge/Segment IDs would be better off
+     * if the IDs were not changed each time some trivial aspect of the path had
+     * changed.  So we have this method now.
+     * @param feature - what we want to persist.
+     */
+    void persistFeature(SimpleFeature feature);
+
+    /**
      * All Line Features in the network: {@link SegmentFeature}s as well as
      * {@link Edge}s.
      * 
-     * @return
+     * @return - Set of the Line Features in the Network.
      */
     Set<LineFeature> getLineFeatures();
 
@@ -88,15 +98,15 @@ public interface NetworkStore {
     /**
      * Segments and not {@link Edge}s.
      * 
-     * @return
+     * @return - Set of the Segments defined in the network.
      */
     Set<SegmentFeature> getSegments();
 
     /**
      * Choose a particular Edge by its ID.
      * 
-     * @param id
-     * @return
+     * @param id - Unique identifier for the Edge of interest.
+     * @return the matching Edge or null if not found.
      */
     Edge getEdgeById(Integer id);
 

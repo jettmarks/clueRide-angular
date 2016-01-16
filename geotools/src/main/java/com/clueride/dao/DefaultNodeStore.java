@@ -77,7 +77,7 @@ public class DefaultNodeStore implements NodeStore {
     }
 
     /**
-     * Use {@link:getInstance()}
+     * Use {@link #getInstance()}
      */
     @Inject
     public DefaultNodeStore() {
@@ -200,6 +200,13 @@ public class DefaultNodeStore implements NodeStore {
          */
     }
 
+    @Override
+    public void persistNode(GeoNode updatedNode) throws IOException {
+        GeoNode nodeFromMemory = (GeoNode) getNodeById(updatedNode.getId());
+        nodeFromMemory.setPoint(updatedNode.getPoint());
+        persistAndReloadNodes();
+    }
+
     /**
      * Lists out in order the values in the passed list.
      *
@@ -278,7 +285,7 @@ public class DefaultNodeStore implements NodeStore {
     }
 
     /**
-     * 
+     *
      */
     private void loadGroupsFromDefault() {
         GeoJsonUtil storageUtil = new GeoJsonUtil(ourStoreType);
@@ -310,7 +317,7 @@ public class DefaultNodeStore implements NodeStore {
     /**
      * Assumption is that this is a newly created node which has not yet
      * received an ID or has been placed in our datastore.
-     * 
+     *
      * @see NodeStore#addNew(com.clueride.domain.dev.Node)
      */
     @Override

@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.dao.DefaultNetworkStore;
 import com.clueride.dao.NetworkStore;
@@ -62,14 +63,6 @@ public class SegmentService {
     }
 
     /**
-     * @param edge - Edge to be added to the Network Store.
-     *             @deprecated - Not sure what we're using now.
-     */
-    public static void addSegment(Edge edge) {
-        networkStore.addNew(edge);
-    }
-
-    /**
      * @param segmentToSplit - Original Edge that now becomes two pieces.
      * @param splittingNode -  Node at which the split occurs.
      */
@@ -91,11 +84,7 @@ public class SegmentService {
         }
     }
 
-    /**
-     * This may come back, but right now, we're taking care of any segments we
-     * are replacing.
-     * @param segment - Edge to remove from the Network.
-     */
-    public static void deleteSegment(Edge segment) {
+    public static void updateSegment(SimpleFeature feature) {
+        networkStore.persistFeature(feature);
     }
 }
