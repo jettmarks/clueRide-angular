@@ -1,7 +1,7 @@
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 
 var defaultMarkerIcon = L.AwesomeMarkers.icon({
-    icon: 'android-add',
+    icon: 'flag',
     markerColor: 'darkblue'
 });
 
