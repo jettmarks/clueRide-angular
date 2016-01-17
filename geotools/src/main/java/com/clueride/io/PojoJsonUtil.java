@@ -28,6 +28,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
+import com.clueride.domain.Course;
+import com.clueride.domain.GameCourse;
 import com.clueride.domain.GamePath;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.Path;
@@ -180,5 +182,47 @@ public class PojoJsonUtil {
             throw new RuntimeException("Unexpected I/O error", e);
         }
         return path;
+    }
+
+    public static List<Course> loadCourses() {
+        final JsonStoreType storeType = JsonStoreType.COURSE;
+        List<Course> courses = new ArrayList<>();
+        File directory = new File(JsonStoreLocation.toString(storeType));
+        if (!directory.canWrite()) {
+            directory.mkdir();
+        } else {
+            for (File child : directory.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String s) {
+                    LOGGER.debug("Checking for file at " + s);
+                    return s.contains(JsonPrefixMap.toString(storeType));
+                }
+            })) {
+                LOGGER.debug("Checking for JSON file in the directory " + child.getName());
+                for (File file : child.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File file2, String s) {
+                        return s.startsWith(JsonPrefixMap.toString(storeType)) && s.endsWith(".json");
+                    }
+                })) {
+                    courses.add(loadCourse(file));
+                }
+            }
+        }
+        return courses;
+    }
+
+    private static Course loadCourse(File file) {
+        Course course;
+        try {
+            synchronized (objectMapper) {
+                GameCourse.Builder builder = objectMapper.readValue(file, GameCourse.Builder.class);
+                course = builder.build();
+                pathIdProvider.registerId(course.getId());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected I/O error", e);
+        }
+        return course;
     }
 }

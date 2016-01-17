@@ -30,11 +30,12 @@ import com.clueride.service.MemoryBasedCourseIdProvider;
 /**
  * Implementation of Course used for Games.
  */
-public class GameCourse implements Course, MappableFeature{
+public class GameCourse implements Course {
     private final Integer id;
-    private Location departure;
-    private Location destination;
+//    private Location departure;
+//    private Location destination;
     private List<Step> steps;
+    private List<Integer> pathIds;
     private String description;
     private String name;
 
@@ -48,9 +49,10 @@ public class GameCourse implements Course, MappableFeature{
 
         stepIndex = 0;
         this.steps = ImmutableList.copyOf(builder.getSteps());
-        this.departure = (Location) steps.get(0);
-        this.lastStep = steps.size() - 1;
-        this.destination = (Location) steps.get(lastStep);
+        this.pathIds = ImmutableList.copyOf(builder.getPathIds());
+//        this.departure = (Location) steps.get(0);
+//        this.lastStep = steps.size() - 1;
+//        this.destination = (Location) steps.get(lastStep);
     }
 
     @Override
@@ -69,13 +71,8 @@ public class GameCourse implements Course, MappableFeature{
     }
 
     @Override
-    public Location getDeparture() {
-        return departure;
-    }
-
-    @Override
-    public Location getDestination() {
-        return destination;
+    public List<Integer> getPathIds() {
+        return pathIds;
     }
 
     @Override
@@ -96,31 +93,20 @@ public class GameCourse implements Course, MappableFeature{
         return steps.get(stepIndex++);
     }
 
-    @Override
-    public List<Step> getSteps() {
-        return null;
-    }
-
-    @Override
-    public String getGeoJson() {
-        return null;
-    }
-
     public static class Builder {
         private Integer id;
-
         private String name;
-
         private String description;
 
         private List<Step> steps;
-
         private IdProvider idProvider;
+        private List<Integer> pathIds;
 
         private Builder() {
             idProvider = new MemoryBasedCourseIdProvider();
             id = idProvider.getId();
             steps = new ArrayList<>();
+            pathIds = new ArrayList<>();
         }
         public static Builder getBuilder() {
             return new Builder();
@@ -142,6 +128,11 @@ public class GameCourse implements Course, MappableFeature{
 
         public Builder setId(Integer id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder addPathId(int id) {
+            pathIds.add(id);
             return this;
         }
 
@@ -168,6 +159,10 @@ public class GameCourse implements Course, MappableFeature{
         public GameCourse build() {
             // Validations happen here
             return new GameCourse(this);
+        }
+
+        public List<Integer> getPathIds() {
+            return pathIds;
         }
     }
 }

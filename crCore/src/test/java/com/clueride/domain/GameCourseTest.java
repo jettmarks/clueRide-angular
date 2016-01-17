@@ -74,19 +74,21 @@ public class GameCourseTest {
         assertEquals(actual, expected, "ID should have been assigned");
     }
 
-    @Test
-    public void testGetDeparture() throws Exception {
-        Location expected = startLocation;
-        Location actual = toTest.getDeparture();
-        assertEquals(actual, expected, "Departure location should be first location provided");
-    }
+//    @Test
+    // TODO: Move to a controller/service that uses this instance to obtain the Departure
+//    public void testGetDeparture() throws Exception {
+//        Location expected = startLocation;
+//        Location actual = toTest.getDeparture();
+//        assertEquals(actual, expected, "Departure location should be first location provided");
+//    }
 
-    @Test
-    public void testGetDestination() throws Exception {
-        Location expected = destinationLocation;
-        Location actual = toTest.getDestination();
-        assertEquals(actual, expected, "Destination location should be last location provided");
-    }
+//    @Test
+    // TODO: Move to a controller/service that uses this instance to obtain the Departure
+//    public void testGetDestination() throws Exception {
+//        Location expected = destinationLocation;
+//        Location actual = toTest.getDestination();
+//        assertEquals(actual, expected, "Destination location should be last location provided");
+//    }
 
     @Test
     public void testNextStep() throws Exception {

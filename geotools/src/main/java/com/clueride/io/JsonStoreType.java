@@ -30,5 +30,5 @@ package com.clueride.io;
  * @author jett
  */
 public enum JsonStoreType {
-    UNKNOWN, OTHER, BASE, SEGMENTS, RAW, EDGE, NETWORK, LOCATION, LOCATION_GROUP, PATH;
+    UNKNOWN, OTHER, BASE, SEGMENTS, RAW, EDGE, NETWORK, LOCATION, LOCATION_GROUP, PATH, COURSE;
 }

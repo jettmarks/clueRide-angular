@@ -30,8 +30,10 @@ public interface Course {
     Integer getId();
     String getName();
     String getDescription();
-    Location getDeparture();
-    Location getDestination();
+    List<Integer> getPathIds();
+
+//    Location getDeparture();
+//    Location getDestination();
 
     Step nextStep();
     Step currentStep();
@@ -45,5 +47,5 @@ public interface Course {
      */
     Step completeCurrentStep();
 
-    List<Step> getSteps();
+//    List<Step> getSteps();
 }
