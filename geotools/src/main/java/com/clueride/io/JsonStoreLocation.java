@@ -34,17 +34,18 @@ public class JsonStoreLocation implements TestModeAware {
     private static boolean testMode = false;
 
     static {
-        map = new HashMap<JsonStoreType, String>();
+        map = new HashMap<>();
         map.put(JsonStoreType.BASE, "/home/jett/jsonFeatures");
         map.put(JsonStoreType.SEGMENTS, "/home/jett/jsonFeatures/segments");
         map.put(JsonStoreType.RAW, "/home/jett/jsonFeatures/segments/raw");
         map.put(JsonStoreType.EDGE, "/home/jett/jsonFeatures/segments/edge");
+        map.put(JsonStoreType.PATH, "/home/jett/jsonFeatures/paths");
         map.put(JsonStoreType.NETWORK,
                 "/home/jett/jsonFeatures/segments/network");
         map.put(JsonStoreType.LOCATION, "/home/jett/jsonFeatures/locations");
         map.put(JsonStoreType.OTHER, "/home/jett/jsonFeatures/other");
 
-        testMap = new HashMap<JsonStoreType, String>();
+        testMap = new HashMap<>();
         testMap.put(JsonStoreType.BASE, "/home/jett/jsonFeatures-test");
         testMap.put(JsonStoreType.SEGMENTS,
                 "/home/jett/jsonFeatures-test/segments");
@@ -52,6 +53,7 @@ public class JsonStoreLocation implements TestModeAware {
                 "/home/jett/jsonFeatures-test/segments/raw");
         testMap.put(JsonStoreType.EDGE,
                 "/home/jett/jsonFeatures-test/segments/edge");
+        testMap.put(JsonStoreType.PATH, "/home/jett/jsonFeatures-test/paths");
         testMap.put(JsonStoreType.NETWORK,
                 "/home/jett/jsonFeatures-test/segments/network");
         testMap.put(JsonStoreType.LOCATION,

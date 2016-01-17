@@ -21,14 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 
-import com.clueride.domain.dev.Node;
+import javax.annotation.Nonnull;
+
+import com.google.common.collect.ImmutableList;
+
+import com.clueride.dao.DefaultNetworkStore;
+import com.clueride.dao.DefaultNodeStore;
 import com.clueride.domain.dev.Segment;
-import com.clueride.domain.user.Location;
 import com.clueride.domain.user.Path;
 import com.clueride.feature.Edge;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedPathIdProvider;
-import com.clueride.service.eval.NetworkEval;
+import com.clueride.service.NetworkEval;
+import com.clueride.service.NetworkEvalImpl;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Representation of a Path between two Locations and made up of an ordered set of Edges/Segments.
@@ -54,6 +60,7 @@ public class GamePath implements Path {
         this.id = builder.getId();
         this.startNodeId = builder.getStartNodeId();
         this.endNodeId = builder.getEndNodeId();
+        this.edgeIds = ImmutableList.copyOf(builder.getEdgeIds());
     }
 
     @Override
@@ -82,42 +89,12 @@ public class GamePath implements Path {
     }
 
     @Override
-    public Location getDeparture() {
+    public Integer getStartLocationId() {
         return null;
     }
 
     @Override
-    public Location getDestination() {
-        return null;
-    }
-
-    @Override
-    public Node getStart() {
-        return null;
-    }
-
-    @Override
-    public Node getEnd() {
-        return null;
-    }
-
-    @Override
-    public Rating getRating() {
-        return null;
-    }
-
-    @Override
-    public Rating getRating(Profile profile) {
-        return null;
-    }
-
-    @Override
-    public Double getDistanceMiles() {
-        return null;
-    }
-
-    @Override
-    public Double getDistanceMeters() {
+    public Integer getEndLocationId() {
         return null;
     }
 
@@ -129,9 +106,18 @@ public class GamePath implements Path {
         private Integer startNodeId;
         private Integer endNodeId;
         private NetworkEval networkEval;
+        private Integer startLocationId;
+        private Integer endLocationId;
 
-        private Builder(NetworkEval networkEval) {
-            this.networkEval = networkEval;
+        public Builder() {
+            this(new NetworkEvalImpl(
+                    DefaultNodeStore.getInstance(),
+                    DefaultNetworkStore.getInstance()
+            ));
+        }
+
+        private Builder(@Nonnull NetworkEval networkEval) {
+            this.networkEval = requireNonNull(networkEval);
             idProvider = new MemoryBasedPathIdProvider();
             id = idProvider.getId();
             edges = new ArrayList<>();
@@ -173,6 +159,7 @@ public class GamePath implements Path {
             return null;
         }
 
+        @Override
         public Integer getId() {
             return id;
         }
@@ -181,52 +168,14 @@ public class GamePath implements Path {
             return edges;
         }
 
+        @Override
         public Integer getStartNodeId() {
             return startNodeId;
         }
 
+        @Override
         public Integer getEndNodeId() {
             return endNodeId;
-        }
-
-        @Override
-        public Location getDeparture() {
-            return null;
-        }
-
-        @Override
-        public Location getDestination() {
-            return null;
-        }
-
-        @Override
-        public Node getStart() {
-            return null;
-        }
-
-        @Override
-        public Node getEnd() {
-            return null;
-        }
-
-        @Override
-        public Rating getRating() {
-            return null;
-        }
-
-        @Override
-        public Rating getRating(Profile profile) {
-            return null;
-        }
-
-        @Override
-        public Double getDistanceMiles() {
-            return null;
-        }
-
-        @Override
-        public Double getDistanceMeters() {
-            return null;
         }
 
         @Override
@@ -234,8 +183,33 @@ public class GamePath implements Path {
             return edgeIds;
         }
 
+        @Override
+        public Integer getStartLocationId() {
+            return startLocationId;
+        }
+
+        @Override
+        public Integer getEndLocationId() {
+            return null;
+        }
+
         public static Builder getBuilder(NetworkEval networkEval) {
             return new Builder(networkEval);
+        }
+
+        public Builder setEdgeIds(List<Integer> edgeIds) {
+            this.edgeIds = edgeIds;
+            return this;
+        }
+
+        public Builder withStartLocationId(Integer startLocationId) {
+            this.startLocationId = startLocationId;
+            return this;
+        }
+
+        public Builder withEndLocationId(Integer endLocationId) {
+            this.endLocationId = endLocationId;
+            return this;
         }
     }
 }

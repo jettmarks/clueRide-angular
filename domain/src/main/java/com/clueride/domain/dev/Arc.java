@@ -27,6 +27,8 @@ import com.clueride.domain.Rating;
  * 
  * Most of the line-based geometries will have these properties.
  *
+ * These are derived properties for the most part and are generally not persisted.
+ *
  * @author jett
  */
 public interface Arc {

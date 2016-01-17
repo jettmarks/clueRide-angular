@@ -1,11 +1,3 @@
-package com.clueride.dao;
-
-import com.clueride.domain.user.Location;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
 /**
  * Copyright 2015 Jett Marks
  * <p/>
@@ -23,10 +15,17 @@ import java.util.List;
  * <p/>
  * Created by jett on 11/23/15.
  */
+package com.clueride.dao;
+
+import java.io.IOException;
+import java.util.Collection;
+
+import com.clueride.domain.user.Location;
+
 public interface LocationStore {
     /**
      * Accepts a fully constructed Location to the store and returns the ID.
-     *
+     * This does write out to the disk.
      * @param location newly and fully constructed Location, ready to persist.
      * @return ID of the new Location.
      */

@@ -17,22 +17,26 @@
  */
 package com.clueride.domain.user;
 
+import java.util.List;
 import java.util.SortedSet;
 
-import com.clueride.domain.Profile;
-import com.clueride.domain.Rating;
 import com.clueride.domain.Step;
-import com.clueride.domain.dev.Arc;
-import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.Segment;
 
 /**
  * Represents a particular choice of Segments to travel between two
  * {@link Location}s.
  *
+ * Also holds
+ * <ul>
+ *     <li>List of Edge IDs</li>
+ *     <li>Node ID of Departure</li>
+ *     <li>Node ID of Destination</li>
+ * </ul>
+ *
  * @author jett
  */
-public interface Path extends Arc, Step {
+public interface Path extends Step {
     SortedSet<Segment> getSegments();
 
     /**
@@ -54,25 +58,21 @@ public interface Path extends Arc, Step {
      */
     Integer getEndNodeId();
 
-    Location getDeparture();
+    /**
+     * Retrieves ordered List of IDs for the Edges.
+     * @return ordered List of Edges.
+     */
+    List<Integer> getEdgeIds();
 
-    Location getDestination();
+    /**
+     * ID of the departure Location.
+     * @return unique Integer representing the Departure Location.
+     */
+    Integer getStartLocationId();
 
-    @Override
-    Node getStart();
-
-    @Override
-    Node getEnd();
-
-    @Override
-    Rating getRating();
-
-    @Override
-    Rating getRating(Profile profile);
-
-    @Override
-    Double getDistanceMiles();
-
-    @Override
-    Double getDistanceMeters();
+    /**
+     * ID of the Destination Location.
+     * @return unique Integer representing the Destination Location.
+     */
+    Integer getEndLocationId();
 }

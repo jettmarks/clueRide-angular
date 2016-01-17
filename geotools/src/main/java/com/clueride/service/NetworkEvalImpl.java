@@ -15,7 +15,7 @@
  *
  * Created by jett on 1/16/16.
  */
-package com.clueride.service.eval;
+package com.clueride.service;
 
 import javax.inject.Inject;
 

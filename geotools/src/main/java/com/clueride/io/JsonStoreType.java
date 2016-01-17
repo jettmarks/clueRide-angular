@@ -18,11 +18,17 @@
 package com.clueride.io;
 
 /**
- * Description.
+ * Enumeration of the recognized types of JSON Stores.
+ *
+ * These serve as keys into a few Maps:
+ * <ul>
+ * <li>{@link JsonStoreLocation}</li>
+ * <li>{@link JsonSchemaTypeMap}</li>
+ * <li>{@link JsonPrefixMap}</li>
+ * </ul>
  *
  * @author jett
- *
  */
 public enum JsonStoreType {
-    UNKNOWN, OTHER, BASE, SEGMENTS, RAW, EDGE, NETWORK, LOCATION, LOCATION_GROUP;
+    UNKNOWN, OTHER, BASE, SEGMENTS, RAW, EDGE, NETWORK, LOCATION, LOCATION_GROUP, PATH;
 }

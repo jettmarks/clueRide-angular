@@ -29,8 +29,8 @@ import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedPathIdProvider;
-import com.clueride.service.eval.NetworkEval;
-import com.clueride.service.eval.NetworkEvalImpl;
+import com.clueride.service.NetworkEval;
+import com.clueride.service.NetworkEvalImpl;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.assertEquals;
 

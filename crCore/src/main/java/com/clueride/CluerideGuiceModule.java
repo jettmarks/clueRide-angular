@@ -25,10 +25,10 @@ import com.clueride.service.DefaultLocationService;
 import com.clueride.service.DefaultNodeService;
 import com.clueride.service.DefaultRecommendationService;
 import com.clueride.service.LocationService;
+import com.clueride.service.NetworkEval;
+import com.clueride.service.NetworkEvalImpl;
 import com.clueride.service.NodeService;
 import com.clueride.service.RecommendationService;
-import com.clueride.service.eval.NetworkEval;
-import com.clueride.service.eval.NetworkEvalImpl;
 
 /**
  * Bindings for Guice in the Clueride Module.
