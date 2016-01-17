@@ -17,6 +17,8 @@
  */
 package com.clueride.domain.dev;
 
+import java.util.List;
+
 import com.clueride.domain.Profile;
 import com.clueride.domain.Rating;
 
@@ -39,4 +41,6 @@ public interface Arc {
     Double getDistanceMiles();
 
     Double getDistanceMeters();
+
+    List<Integer> getEdgeIds();
 }

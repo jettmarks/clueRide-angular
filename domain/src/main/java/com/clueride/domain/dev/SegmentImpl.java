@@ -17,6 +17,8 @@
  */
 package com.clueride.domain.dev;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -135,6 +137,11 @@ public class SegmentImpl extends UnratedSegmentImpl implements Segment {
      */
     public Double getDistanceMeters() {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Integer> getEdgeIds() {
         return null;
     }
 

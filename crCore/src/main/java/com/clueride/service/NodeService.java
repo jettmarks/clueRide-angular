@@ -42,21 +42,27 @@ public interface NodeService {
      */
     String addNewNode(Double lat, Double lon);
 
-    /**
-     * Accept specific recommendation from the Proposal identified by the ID.
-     * @param recId - unique ID of the recommendation to confirm.
-     * @return the string "OK" to indicate success.
-     */
-    String confirmRecommendation(Integer recId);
+    // TODO: Diagnostic Service?  This is being used however to Edit Nodes.
+    String showAllNodes();
 
     String getNodeGroups();
 
     String setNodeGroup(Integer id, Double lat, Double lon);
 
-    String showAllNodes();
-
+    // TODO: Probably goes over to the RecommendationService
     String getRecGeometry(Integer recId);
 
+    /**
+     * Accept specific recommendation from the Proposal identified by the ID.
+     * @param recId - unique ID of the recommendation to confirm.
+     * @return the string "OK" to indicate success.
+     */
+    // TODO: Probably goes over to the RecommendationService
+    String confirmRecommendation(Integer recId);
+
+
+
+    // TODO: Probably would go over to the EdgeService
     String getMatchingSegments(Integer pointId);
 
     /**
@@ -69,6 +75,7 @@ public interface NodeService {
      * @param lng - Longitude of the new location.
      * @return Feature Collection with the updated Edges.
      */
+    // TODO: Probably would go over to the EdgeService
     String getEdgesAtNewLocation(Integer pointId, Double lat, Double lng);
 
     /**
@@ -77,5 +84,6 @@ public interface NodeService {
      * @param pointId - Unique Integer representing the Node to edit.
      * @return String "OK" to confirm.
      */
+    // TODO: Probably would go over to the EdgeService
     String confirmEdgesAtNewLocation(Integer pointId);
 }

@@ -211,7 +211,7 @@ public class DefaultNetwork implements Network {
     }
 
     /* Bike Parking for methods on their way someplace more Bike Friendly. */
-
+    /* Many of these have been deprecated. */
 
     /**
      * TODO: Find a better location for this.
@@ -261,6 +261,7 @@ public class DefaultNetwork implements Network {
      * @param lineStringToEnd
      * @param nodesToMeasure
      * @return
+     * @deprecated
      */
     public Map<GeoNode, Double> evaluateDistanceMapPerNode(
             LineString lineStringToStart,
@@ -279,6 +280,7 @@ public class DefaultNetwork implements Network {
      * TODO: Move this to a class which would perform the evaluation (start with NodeService impl's build Proposal).
      * @param geoNode
      * @return
+     * @deprecated
      */
     private Integer withinLocationGroup(GeoNode geoNode) {
         Integer matchingId = -1;
@@ -293,13 +295,13 @@ public class DefaultNetwork implements Network {
         return matchingId;
     }
 
-    /* Node & Edge endpoint validation. */
+    /* Node & Edge endpoint validation; geotools service package is a better spot. */
 
     /**
      * Checks that each end of the Line Feature is a registered Node.
      *
      * Has the added responsibility of adding the Line Features to the
-     * Map of features per Node by ID.
+     * Map of features per Node by ID and adding the verified Nodes to the Feature.
      */
     private boolean validateConnections(LineFeature lineFeature) {
         Integer startNodeId = verifyNodeIdAssignment(lineFeature.getGeoStart());
@@ -333,7 +335,7 @@ public class DefaultNetwork implements Network {
 
     /**
      * Checks that the Endpoint Node provided lies within the pool of known Nodes.
-     * TODO: Factor this into a separate class.
+     * TODO: Factor this into a separate class.  See GeoEval class in geotools module.
      *
      * @param endPointNode - either start or end of a LineString.
      */

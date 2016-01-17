@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Jett Marks
+ * Copyright 2016 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 12/5/15.
+ * Created by jett on 1/16/16.
  */
-package com.clueride.config;
+package com.clueride.service.eval;
 
-import com.google.inject.AbstractModule;
-
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.DefaultNodeStore;
-import com.clueride.dao.NetworkStore;
-import com.clueride.dao.NodeStore;
+import com.clueride.domain.user.Path;
 
 /**
- * Bindings for GeoTools Guice Module.
+ * Evaluations of Network Connectivity outside of a Geometry-dependent level.
  */
-public class GeoToolsGuiceModule extends AbstractModule {
-    @Override
-    protected void configure() {
-        bind(NodeStore.class).to(DefaultNodeStore.class);
-        bind(NetworkStore.class).to(DefaultNetworkStore.class);
-    }
+public interface NetworkEval {
+    /**
+     * Start at the Starting Node and walk the segment/edges in sequence to make
+     * sure they end at the Ending Node.
+     * @param path - Path to be evaluated.
+     * @throws IllegalStateException if there is a gap in the sequence.
+     */
+    void checkPathEdgesFromStartToEnd(Path path);
 }

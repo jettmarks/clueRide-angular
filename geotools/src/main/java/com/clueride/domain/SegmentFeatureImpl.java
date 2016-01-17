@@ -17,6 +17,8 @@
  */
 package com.clueride.domain;
 
+import java.util.List;
+
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Segment;
@@ -86,7 +88,7 @@ public class SegmentFeatureImpl extends EdgeImpl implements
     }
 
     /**
-     * @see com.com.clueride.feature.SegmentFeature#isOneWay()
+     * @see com.clueride.feature.SegmentFeature#isOneWay()
      */
     @Override
     public boolean isOneWay() {
@@ -95,7 +97,7 @@ public class SegmentFeatureImpl extends EdgeImpl implements
     }
 
     /**
-     * @see com.com.clueride.feature.SegmentFeature#setOneWay(boolean)
+     * @see com.clueride.feature.SegmentFeature#setOneWay(boolean)
      */
     @Override
     public void setOneWay(boolean oneWay) {
@@ -104,7 +106,7 @@ public class SegmentFeatureImpl extends EdgeImpl implements
     }
 
     /**
-     * @see com.com.clueride.feature.Edge#getRating()
+     * @see com.clueride.feature.Edge#getRating()
      */
     @Override
     public Rating getRating() {
@@ -113,7 +115,7 @@ public class SegmentFeatureImpl extends EdgeImpl implements
     }
 
     /**
-     * @see com.com.clueride.feature.Edge#setRating(com.clueride.domain.Rating)
+     * @see com.clueride.feature.Edge#setRating(com.clueride.domain.Rating)
      */
     @Override
     public void setRating(Rating rating) {
@@ -122,7 +124,7 @@ public class SegmentFeatureImpl extends EdgeImpl implements
     }
 
     /**
-     * @see com.com.clueride.feature.Edge#getDistanceMiles()
+     * @see com.clueride.feature.Edge#getDistanceMiles
      */
     @Override
     public Double getDistanceMiles() {
@@ -145,6 +147,11 @@ public class SegmentFeatureImpl extends EdgeImpl implements
     @Override
     public Double getDistanceMeters() {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Integer> getEdgeIds() {
         return null;
     }
 

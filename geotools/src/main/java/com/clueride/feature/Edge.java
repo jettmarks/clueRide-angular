@@ -17,6 +17,7 @@
  */
 package com.clueride.feature;
 
+import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.UnratedSegment;
 
 /**

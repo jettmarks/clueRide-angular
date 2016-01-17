@@ -159,11 +159,12 @@ public class LocationService {
         LOGGER.debug("start - buildProposalForNewNode(): "
                 + countBuildNewLocRequests++);
         GeoEval geoEval = GeoEval.getInstance();
+        NodeEval nodeEval = NodeEval.getInstance();
         NewNodeProposal newNodeProposal = new NewNodeProposal(newLoc);
         NewLocRecBuilder recBuilder = new NewLocRecBuilder(newLoc);
 
         // Check if our node happens to already be on the network list of nodes
-        Integer matchingNodeId = geoEval.matchesNetworkNode(newLoc);
+        Integer matchingNodeId = nodeEval.matchesNetworkNodeId(newLoc);
         if (matchingNodeId > 0) {
             // Found matching node; add as a recommendation
             newNodeProposal.add(recBuilder.onNode(matchingNodeId));
