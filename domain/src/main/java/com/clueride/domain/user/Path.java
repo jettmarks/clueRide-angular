@@ -35,6 +35,25 @@ import com.clueride.domain.dev.Segment;
 public interface Path extends Arc, Step {
     SortedSet<Segment> getSegments();
 
+    /**
+     * Uniquely identifies this particular sequence of segments/edges between
+     * two nodes.
+     * @return Integer representing this Path.
+     */
+    Integer getId();
+
+    /**
+     * ID of the Node at the start of this Path; the Departure.
+     * @return Integer representing the point of departure.
+     */
+    Integer getStartNodeId();
+
+    /**
+     * ID of the Node at the end of this Path; the Destination.
+     * @return Integer representing the destination point.
+     */
+    Integer getEndNodeId();
+
     Location getDeparture();
 
     Location getDestination();

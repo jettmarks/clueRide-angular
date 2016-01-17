@@ -60,12 +60,13 @@ public class DefaultRecommendationService implements RecommendationService {
         LOGGER.debug("start - buildProposalForNewNode(): "
                 + countBuildNewLocRequests++);
         GeoEval geoEval = GeoEval.getInstance();
+        NodeEval nodeEval = NodeEval.getInstance();
         // TODO: CA-23 - renaming Loc to Node
         NewNodeProposal newNodeProposal = new NewNodeProposal(newNode);
         NewLocRecBuilder recBuilder = new NewLocRecBuilder(newNode);
 
         // Check if our node happens to already be on the network list of nodes
-        Integer matchingNodeId = geoEval.matchesNetworkNode(newNode);
+        Integer matchingNodeId = nodeEval.matchesNetworkNodeId(newNode);
         if (matchingNodeId > 0) {
             // Found matching node; add as a recommendation
             newNodeProposal.add(recBuilder.onNode(matchingNodeId));

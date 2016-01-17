@@ -18,13 +18,17 @@
 package com.clueride.domain;
 
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.dev.TrackImpl;
+import com.clueride.exception.UnmatchedPointException;
 import com.clueride.feature.Edge;
 import com.clueride.feature.FeatureType;
+import com.clueride.service.NodeEval;
 
 /**
  * Close to a TrackFeatureImpl, but this holds Network Segments before they are
@@ -38,13 +42,21 @@ import com.clueride.feature.FeatureType;
  *
  */
 public class EdgeImpl extends TrackFeatureImpl implements Edge {
+    private static final Logger LOGGER = Logger.getLogger(EdgeImpl.class);
 
     /**
-     *
+     * Members
+     */
+    private boolean selected;
+    private Node startNode;
+    private Node endNode;
+
+    /*
+     * Setup the helper instances.
      */
     private static final SimpleFeatureBuilder EDGE_FEATURE_BUILDER =
             new SimpleFeatureBuilder(FeatureType.EDGE_FEATURE_TYPE);
-    private boolean selected;
+    private static final NodeEval NODE_EVAL = NodeEval.getInstance();
 
     /**
      * @param track - Details of the display name and URL.
@@ -69,6 +81,18 @@ public class EdgeImpl extends TrackFeatureImpl implements Edge {
         this.lineString = (LineString) lineStringFeature.getDefaultGeometry();
         this.selected = false;  // Default value
         this.feature = buildFeature();
+        this.startNode = findNodeForPoint(lineString.getStartPoint());
+        this.endNode = findNodeForPoint(lineString.getEndPoint());
+    }
+
+    private Node findNodeForPoint(Point startPoint) {
+        try {
+            return NODE_EVAL.getMatchingNode(startPoint);
+        } catch (UnmatchedPointException e) {
+            LOGGER.error("Edge ID " + getId() + " has endpoint that is not a Node");
+            // TODO: there's probably a better solution, but I don't know what it is yet.
+            return null;
+        }
     }
 
     @Override
@@ -102,7 +126,7 @@ public class EdgeImpl extends TrackFeatureImpl implements Edge {
      */
     @Override
     public Node getStart() {
-        return new DefaultGeoNode(lineString.getStartPoint());
+        return startNode;
     }
 
     /**
@@ -110,7 +134,7 @@ public class EdgeImpl extends TrackFeatureImpl implements Edge {
      */
     @Override
     public Node getEnd() {
-        return new DefaultGeoNode(lineString.getEndPoint());
+        return endNode;
     }
 
     /**

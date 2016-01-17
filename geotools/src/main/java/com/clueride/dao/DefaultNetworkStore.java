@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
@@ -100,9 +102,10 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
     }
 
     /**
-     * Use {@link this.getInstance()}
+     * Use {@link this.getInstance()} if not using DI.
      */
-    private DefaultNetworkStore() {
+    @Inject
+    public DefaultNetworkStore() {
         loadAllFeatures();
     }
 

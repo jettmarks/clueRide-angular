@@ -33,9 +33,7 @@ import com.clueride.dao.DefaultTrackStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.dao.TrackStore;
-import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.NodeGroup;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.IntersectionUtil;
@@ -55,8 +53,6 @@ public class GeoEval {
     private static final Logger LOGGER = Logger.getLogger(GeoEval.class);
 
     private static GeoEval instance;
-    private static final Double LOC_GROUP_RADIUS_DEG = (Double) GeoProperties
-            .getInstance().get("group.radius.degrees");
     private static final NodeStore LOCATION_STORE = DefaultNodeStore
             .getInstance();
     private static final NetworkStore EDGE_STORE = DefaultNetworkStore
@@ -65,7 +61,7 @@ public class GeoEval {
             .getInstance();
 
     /**
-     * @return
+     * @return an instance of ourself.
      */
     public static GeoEval getInstance() {
         if (instance == null) {
@@ -78,42 +74,13 @@ public class GeoEval {
     }
 
     /**
-     * 
-     * @param geoNode
-     * @return
-     */
-    public Integer matchesNetworkNode(GeoNode geoNode) {
-        Point point = geoNode.getPoint();
-        // Check Network Nodes first
-        Set<GeoNode> nodeSet = LOCATION_STORE.getNodes();
-        for (GeoNode node : nodeSet) {
-            if (node.getPoint().buffer(GeoProperties.NODE_TOLERANCE).covers(
-                    point)) {
-                return node.getId();
-            }
-        }
-
-        // Exhausted the Network Nodes, check the location groups
-        Set<NodeGroup> locGroups = LOCATION_STORE.getNodeGroups();
-        for (NodeGroup nodeGroup : locGroups) {
-            Point checkPoint = ((DefaultNodeGroup) nodeGroup).getPoint();
-            if (checkPoint.buffer(LOC_GROUP_RADIUS_DEG).covers(point)) {
-                return nodeGroup.getId();
-            }
-        }
-
-        // Nothing matched; give up and return Node ID indicating no match
-        return -1;
-    }
-
-    /**
      * Given a node, checks to see if any network segment/edge covers the node.
-     * 
+     *
      * This implementation could be made more efficient by checking the bounds
      * first.
-     * 
+     *
      * TODO: Inconsistent Naming (Id versus no Id)
-     * 
+     *
      * @param geoNode
      * @return
      */
@@ -155,13 +122,13 @@ public class GeoEval {
     /**
      * Checks the given LineString to see if it intersects the network at one of
      * the nodes (or Location Groups).
-     * 
+     *
      * Algorithm is to check envelope overlap and if passes that simple test, we
      * see if the point sits within the buffer of the LineString.
-     * 
+     *
      * Distances along the LineString are computed for any matches and if we've
      * found the shortest distance, we record the Node to be returned.
-     * 
+     *
      * @param lineString
      *            - Potential Track into the Network.
      * @return null if no network node is covered by this lineString, or the
@@ -199,8 +166,8 @@ public class GeoEval {
     }
 
     /**
-     * @param lsEnd
-     * @return
+     * @param lineString - the string we're interested in checking for nearest Edge.
+     * @return The nearest Edge for the LineString passed.
      */
     public Edge getNearestNetworkEdge(LineString lineString) {
         Edge networkEdge = null;
@@ -224,9 +191,7 @@ public class GeoEval {
                 LOGGER.debug("INTERSECTION with " + edge.toString());
                 Point intersection = IntersectionUtil
                         .findFirstIntersection(lineString, lsNetwork);
-                if (intersection == null) {
-                    continue;
-                } else {
+                if (intersection != null) {
                     LengthToPoint lengthToPoint = new LengthToPoint(lineString,
                             intersection.getCoordinate());
                     intersectDistance = lengthToPoint.getLength();
@@ -241,5 +206,4 @@ public class GeoEval {
         }
         return networkEdge;
     }
-
 }

@@ -17,6 +17,8 @@
  */
 package com.clueride;
 
+import com.google.inject.AbstractModule;
+
 import com.clueride.dao.FileImageStore;
 import com.clueride.dao.ImageStore;
 import com.clueride.service.DefaultLocationService;
@@ -25,8 +27,8 @@ import com.clueride.service.DefaultRecommendationService;
 import com.clueride.service.LocationService;
 import com.clueride.service.NodeService;
 import com.clueride.service.RecommendationService;
-
-import com.google.inject.AbstractModule;
+import com.clueride.service.eval.NetworkEval;
+import com.clueride.service.eval.NetworkEvalImpl;
 
 /**
  * Bindings for Guice in the Clueride Module.
@@ -38,5 +40,6 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(LocationService.class).to(DefaultLocationService.class);
         bind(NodeService.class).to(DefaultNodeService.class);
         bind(ImageStore.class).to(FileImageStore.class);
+        bind(NetworkEval.class).to(NetworkEvalImpl.class);
     }
 }

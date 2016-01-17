@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Jett Marks
+ * Copyright 2016 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 12/5/15.
+ * Created by jett on 1/16/16.
  */
-package com.clueride.config;
-
-import com.google.inject.AbstractModule;
-
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.DefaultNodeStore;
-import com.clueride.dao.NetworkStore;
-import com.clueride.dao.NodeStore;
+package com.clueride.exception;
 
 /**
- * Bindings for GeoTools Guice Module.
+ * Thrown when looking for a Node matching the endpoint of a LineString amongst
+ * the Nodes known to the Network.
  */
-public class GeoToolsGuiceModule extends AbstractModule {
-    @Override
-    protected void configure() {
-        bind(NodeStore.class).to(DefaultNodeStore.class);
-        bind(NetworkStore.class).to(DefaultNetworkStore.class);
+public class UnmatchedPointException extends RuntimeException {
+    public UnmatchedPointException(String s) {
+        super(s);
     }
 }
