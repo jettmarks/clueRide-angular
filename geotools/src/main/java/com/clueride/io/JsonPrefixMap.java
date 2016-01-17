@@ -30,6 +30,7 @@ public class JsonPrefixMap {
         prefixMap = new HashMap<>();
         prefixMap.put(JsonStoreType.LOCATION, "loc");
         prefixMap.put(JsonStoreType.PATH, "path");
+        prefixMap.put(JsonStoreType.COURSE, "course");
     }
 
     public static String toString(JsonStoreType storeType) {
