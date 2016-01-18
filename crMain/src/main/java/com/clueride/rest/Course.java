@@ -44,13 +44,14 @@ public class Course {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("data")
     public String getCourseMetaData(@QueryParam("courseId") Integer courseId) {
         return courseService.getCourseMetaData(courseId);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("show")
+    @Path("map")
     public String getCourseGeometry(@QueryParam("courseId") Integer courseId) {
         return courseService.getCourseGeometry(courseId);
     }

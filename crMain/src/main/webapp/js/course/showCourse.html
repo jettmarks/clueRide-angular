@@ -1,0 +1,6 @@
+<link rel="stylesheet" href="js/views/views.css">
+<div class="showCourse, dataview" ng-controller="CourseController as vm">
+  Course ID: {{vm.course.id}} Name: {{vm.course.name}} <br>
+  {{vm.course.description}}<br>
+  <button ng-click="vm.courseToMap()">Show Course</button>
+</div>

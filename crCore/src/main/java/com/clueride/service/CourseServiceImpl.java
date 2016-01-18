@@ -46,6 +46,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public String getCourseMetaData(Integer courseId) {
+        LOGGER.info("Requesting Course Data for Course " + courseId);
         if (courseId == null) {
             LOGGER.info("Returning all " + courseStore.getCourses().size());
             ObjectMapper objectMapper = new ObjectMapper();
@@ -71,6 +72,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public String getCourseGeometry(Integer courseId) {
+        LOGGER.info("Requesting Course Geometry for Course " + courseId);
         Course course = courseStore.getCourseById(courseId);
         return courseBuilder.getCourseFeatureCollection(course);
     }
