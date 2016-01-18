@@ -12,6 +12,7 @@
             'crNetEdit.NodeEditModule',
             'crNetEdit.EditModeModule',
             'crNetEdit.MapModule',
+            'crNetEdit.CourseModule',
             'crNetEdit.Feature',
             'where',
             'network',
