@@ -18,6 +18,7 @@
 package com.clueride.dao;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.clueride.domain.Course;
 
@@ -47,4 +48,10 @@ public interface CourseStore {
      * @param course - Instance of Course to replace the one already in the store.
      */
     void update(Course course);
+
+    /**
+     * Returns Metadata for all Courses.
+     * @return List of all Courses.
+     */
+    List<Course> getCourses();
 }
