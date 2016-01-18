@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 
 import com.clueride.domain.Course;
@@ -80,6 +81,11 @@ public class JsonCourseStore implements CourseStore {
     public void update(Course course) {
         Integer id = course.getId();
         courseMap.put(id, course);
+    }
+
+    @Override
+    public List<Course> getCourses() {
+        return ImmutableList.copyOf(courseMap.values());
     }
 
     private void validate(Course course) {

@@ -21,6 +21,8 @@ import com.google.inject.AbstractModule;
 
 import com.clueride.dao.FileImageStore;
 import com.clueride.dao.ImageStore;
+import com.clueride.service.CourseService;
+import com.clueride.service.CourseServiceImpl;
 import com.clueride.service.DefaultLocationService;
 import com.clueride.service.DefaultNodeService;
 import com.clueride.service.DefaultRecommendationService;
@@ -38,6 +40,7 @@ public class CluerideGuiceModule extends AbstractModule {
     protected void configure() {
         bind(RecommendationService.class).to(DefaultRecommendationService.class);
         bind(LocationService.class).to(DefaultLocationService.class);
+        bind(CourseService.class).to(CourseServiceImpl.class);
         bind(NodeService.class).to(DefaultNodeService.class);
         bind(ImageStore.class).to(FileImageStore.class);
         bind(NetworkEval.class).to(NetworkEvalImpl.class);
