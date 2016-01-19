@@ -17,9 +17,12 @@
  */
 package com.clueride.dao;
 
-import com.clueride.domain.user.Clue;
-import com.clueride.domain.user.Location;
-import com.clueride.domain.user.LocationType;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -28,12 +31,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.clueride.domain.user.Location;
+import com.clueride.domain.user.LocationType;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -109,17 +108,18 @@ public class JsonLocationStoreTest {
         String expectedDescription = "Here's a nice spot to spread out the blanket or toss the frisbee.";
         LocationType expectedLocationType = LocationType.PICNIC;
         Integer expectedNodeId = 5;
-        List<Clue> expectedClues = new ArrayList<>();
+        List<Integer> expectedClues = new ArrayList<>();
         List<URL> expectedImageUrls = new ArrayList<>();
         expectedImageUrls.add(new URL("https://clueride.com/"));
-        expectedClues.add(Clue.Builder.builder().build());
+        expectedClues.add(1);
+        expectedClues.add(2);
 
         builder = Location.Builder.builder()
                 .setName(expectedName)
                 .setDescription(expectedDescription)
                 .setLocationType(expectedLocationType)
                 .setNodeId(expectedNodeId)
-                .setClues(expectedClues)
+                .setClueIds(expectedClues)
                 .setImageUrls(expectedImageUrls);
         return builder;
     }

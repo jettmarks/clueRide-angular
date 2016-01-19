@@ -17,21 +17,24 @@
  */
 package com.clueride.service;
 
-import com.clueride.dao.*;
-import com.clueride.domain.factory.PointFactory;
-import com.clueride.domain.user.Clue;
-import com.clueride.domain.user.Location;
-import com.clueride.domain.user.LocationType;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.clueride.dao.DefaultNodeStore;
+import com.clueride.dao.ImageStore;
+import com.clueride.dao.JsonLocationStore;
+import com.clueride.dao.LocationStore;
+import com.clueride.dao.NodeStore;
+import com.clueride.domain.factory.PointFactory;
+import com.clueride.domain.user.Location;
+import com.clueride.domain.user.LocationType;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.assertNotNull;
@@ -93,8 +96,9 @@ public class DefaultLocationServiceTest {
 
         List<URL> imageList = new ArrayList<>();
         imageList.add(new URL("http://localhost:8080/"));
-        List<Clue> clueList = new ArrayList<>();
-        clueList.add(Clue.Builder.builder().build());
+        List<Integer> clueList = new ArrayList<>();
+        clueList.add(1);
+        clueList.add(2);
 
         // Prepare fake locations
         List<Location> locationList = new ArrayList<>();
@@ -107,7 +111,7 @@ public class DefaultLocationServiceTest {
                             .setDescription("Description for Loc " + id)
                             .setLocationType(LocationType.BAR)
                             .setImageUrls(imageList)
-                            .setClues(clueList)
+                            .setClueIds(clueList)
                             .build());
         }
         when(locationStore.getLocations()).thenReturn(locationList);

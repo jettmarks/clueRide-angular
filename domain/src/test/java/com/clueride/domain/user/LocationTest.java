@@ -17,14 +17,21 @@
  */
 package com.clueride.domain.user;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.base.Optional;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.net.URL;
-import java.util.*;
-
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 public class LocationTest {
 
@@ -36,19 +43,20 @@ public class LocationTest {
     String expectedDescription = "Here's a nice spot to spread out the blanket or toss the frisbee.";
     LocationType expectedLocationType = LocationType.PICNIC;
     Integer expectedNodeId = 123;
-    List<Clue> expectedClues = new ArrayList<>();
+    List<Integer> expectedClues = new ArrayList<>();
     List<URL> expectedImageUrls = new ArrayList<>();
 
     @BeforeMethod
     public void setUp() throws Exception {
-        expectedClues.add(Clue.Builder.builder().build());
+        expectedClues.add(1);
+        expectedClues.add(2);
         expectedImageUrls.add(new URL("https://clueride.com/"));
         builder = Location.Builder.builder()
                 .setName(expectedName)
                 .setDescription(expectedDescription)
                 .setLocationType(expectedLocationType)
                 .setNodeId(expectedNodeId)
-                .setClues(expectedClues)
+                .setClueIds(expectedClues)
                 .setImageUrls(expectedImageUrls);
     }
 
@@ -164,10 +172,10 @@ public class LocationTest {
         toTest = builder.build();
         assertNotNull(toTest);
 
-        List<Clue> actual = toTest.getClues();
+        List<Integer> actual = toTest.getClueIds();
         assertTrue(actual.size() > 0);
 
-        builder.setClues(Collections.<Clue>emptyList());
+        builder.setClueIds(Collections.<Integer>emptyList());
         toTest = builder.build();
     }
 
