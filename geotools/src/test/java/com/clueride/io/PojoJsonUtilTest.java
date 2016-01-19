@@ -17,13 +17,15 @@
  */
 package com.clueride.io;
 
-import com.clueride.domain.user.Location;
+import java.util.List;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.List;
-
-import static org.testng.Assert.*;
+import com.clueride.domain.user.Location;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Exercises the PojoJsonUtilTest class.
@@ -51,6 +53,6 @@ public class PojoJsonUtilTest {
     public void testLoadLocationId() throws Exception {
         Location location = PojoJsonUtil.loadLocationId(1);
         assertNotNull(location);
-        assertEquals(location.getId(), new Integer(2));
+        assertEquals(location.getId(), new Integer(1));
     }
 }

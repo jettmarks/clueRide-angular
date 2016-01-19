@@ -1,13 +1,36 @@
 (function (angular) {
     'use strict';
 
-    var module = angular.module('gameState', []),
+    var viewModel,
         gameStates = {},
         gameStatePerKey = [],
         currentLocationIndex = 0,
+        courseDataResource,
         currentGameState;
 
-    module.run(function () {
+    angular
+        .module('gameState', ['common.CourseResource'])
+        .controller('GameStateController',GameStateController)
+        .service('gameStateService', gameStateService)
+        .run(gameStateInit)
+    ;
+
+    GameStateController.$inject = ['$scope', 'CourseDataResource'];
+
+    function GameStateController($scope, CourseDataResource) {
+        var vm = this;
+
+        courseDataResource = CourseDataResource;
+    }
+
+    function dataToModel(course) {
+        viewModel.course = course;
+    }
+
+    function gameStateInit (CourseDataResource) {
+        CourseDataResource.getData({
+            /* Future: put the course ID here. */
+        }, dataToModel);
 
         gameStates = {
             beginPlay: {
@@ -31,7 +54,7 @@
                 title: 'Play',
                 nextView: '',
                 nextState: 'atLocation'
-              },
+              }
             },
             riding: {
               title: 'Riding',
@@ -52,7 +75,7 @@
                 title: 'Next Stop',
                 nextView: 'location',
                 nextState: 'riding'
-              },
+              }
             },
             atLocation: {
               title: 'Got a Clue?',
@@ -74,7 +97,7 @@
                 title: 'Where are we going?',
 //                nextView: 'chooseLocation',
                 nextState: 'riding'
-              },
+              }
             }
         };
         gameStatePerKey = {
@@ -84,9 +107,15 @@
         };
 
         currentGameState = currentGameState || gameStatePerKey['beginPlay'];
-    });
 
-    module.service('gameStateService', function () {
+
+    }
+
+    function setCourseScope(courseScope) {
+        viewModel = courseScope;
+    }
+
+    function gameStateService () {
         return {
             currentGameState: function () {return currentGameState},
             updateGameState: function (stateName) {
@@ -102,8 +131,9 @@
             },
             currentIndex: function () {
                 return currentLocationIndex;
-            }
+            },
+            setCourseScope: setCourseScope
         };
-    });
+    }
 
 }(window.angular));

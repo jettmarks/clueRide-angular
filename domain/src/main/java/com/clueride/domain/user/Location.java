@@ -43,7 +43,7 @@ public class Location implements Step {
     private final String description;
     private final LocationType locationType;
     private final Integer nodeId;
-    private final List<Clue> clues;
+    private final List<Integer> clueIds;
     private final List<URL> imageUrls;
     private final Optional<Integer> locationGroupId;
     private final Optional<Establishment> establishment;
@@ -61,8 +61,8 @@ public class Location implements Step {
         if (imageUrls.isEmpty()) {
             throw new IllegalArgumentException("Location must have at least one image");
         }
-        clues = requireNonNull(builder.getClues(), "Location clues missing");
-        if (clues.isEmpty()) {
+        clueIds = requireNonNull(builder.getClueIds(), "Location clues missing");
+        if (clueIds.isEmpty()) {
             throw new IllegalArgumentException("Location must have at least one clue");
         }
 
@@ -135,8 +135,8 @@ public class Location implements Step {
         return locationGroupId;
     }
 
-    public List<Clue> getClues() {
-        return clues;
+    public List<Integer> getClueIds() {
+        return clueIds;
     }
 
     public Optional<Establishment> getEstablishment() {
@@ -153,7 +153,7 @@ public class Location implements Step {
         private String description;
         private LocationType locationType;
         private Integer nodeId;
-        private List<Clue> clues;
+        private List<Integer> clueIds;
         private List<URL> imageUrls;
 
         private Optional<Establishment> establishment;
@@ -235,12 +235,12 @@ public class Location implements Step {
             return this;
         }
 
-        public List<Clue> getClues() {
-            return clues;
+        public List<Integer> getClueIds() {
+            return clueIds;
         }
 
-        public Builder setClues(List<Clue> clues) {
-            this.clues = clues;
+        public Builder setClueIds(List<Integer> clueIds) {
+            this.clueIds = clueIds;
             return this;
         }
 
