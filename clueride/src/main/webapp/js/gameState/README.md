@@ -7,8 +7,11 @@ Course State Tracking
 ----
 There are two parameters used to track the macro state of the Course:
 
-1. Current Location Index which matches a Path (should probably refactor to Current Path Index).
+1. Current Path Index 
 2. Clue Solved
+
+Path Index == -1 means the course has not yet started.  Players are gathering at the Start Location
+and the first clue has not yet been revealed/solved.
 
 For a given Path Index:
 
@@ -22,6 +25,36 @@ Pager is enabled up to Path Index | Pager enabled up to Path Index + 1
 
 Transitions
 ----
+There are three groups of transitions:
+
+1. Team Events, often Server Push Events
+2. Course Transitions such as clue solved and destination reached.
+3. User clicks to browse the history and related views of the history.
+
+### Team Events
+* Course is selected.
+* Team Leader reveals clue for current location.
+* Clue is solved by fellow Team Member.
+* Destination is reached by Team Member/Leader.
+
+### Course Transitions
+* Clue is Solved by submitting correct answer.
+* Destination is Reached
+
+### User selections
+Each of the "Balloons" has an action.  There are the classes of actions that cause 
+transitions to other states.
+
+* Last Location (when not at the first location)
+* Next Location (when not at the most recent location)
+
+There are also User selections that reveal a view of a point in history.
+
+* View Map
+* View Location
+* View Clue
+
+## Other aspects of Transitions
 ### At the start of the game
 Assuming Course has been selected and participants arrived, the departure of the first Path is revealed and the Clue State starts out as "Not Solved".
 ### After Clue is solved
