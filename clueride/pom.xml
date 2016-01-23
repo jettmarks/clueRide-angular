@@ -27,8 +27,23 @@
                 <artifactId>jasmine-maven-plugin</artifactId>
                 <version>2.1</version>
                 <configuration>
+                    <preloadSources>
+                        <source>
+                            ${project.basedir}/src/main/webapp/lib/js/angular-1.4.3/angular.min.js
+                        </source>
+                        <source>
+                            ${project.basedir}/src/main/webapp/lib/js/angular-1.4.3/angular-mocks.js
+                        </source>
+                        <source>
+                            ${project.basedir}/src/main/webapp/lib/js/angular-1.4.3/angular-resource.min.js
+                        </source>
+                    </preloadSources>
                     <jsSrcDir>src/main/webapp/js</jsSrcDir>
                     <jsTestSrcDir>src/test/webapp/js</jsTestSrcDir>
+                    <sourceIncludes>
+                        <include>gameState/*.js</include>
+                        <include>course/*.js</include>
+                    </sourceIncludes>
                 </configuration>
             </plugin>
         </plugins>
