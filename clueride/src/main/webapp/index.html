@@ -41,6 +41,7 @@
     <script src="js/course/CourseResource.js"></script>
     <script src="js/course/CourseModule.js"></script>
     <script src="js/gameState/gameState.js"></script>
+    <script src="js/bubbles/bubble.js"></script>
     <script src="js/balloon/balloon.js"></script>
     <script src="js/gps/gps.js"></script>
     <script src="js/map/map.js"></script>
@@ -72,7 +73,7 @@
 
       <div class="navbar navbar-app navbar-absolute-top">
         <div class="navbar-brand navbar-brand-center" ui-yield-to="title">
-          {{currentGameState.title}}
+          {{state.currentGameState.title}}
         </div>
         <div class="btn-group pull-left">
           <div ui-toggle="uiSidebarLeft" class="btn sidebar-toggle">

@@ -1,26 +1,30 @@
 (function (angular) {
     'use strict';
 
-    var module = angular.module('balloon', []),
-        counter = 0,
+    var counter = 0,
         gsSvc;
 
-    module.controller('BalloonController', ['$scope','$rootScope','gameStateService',
-        function($scope, $rootScope, gameStateService) {
+    angular
+        .module('balloon', [])
+        .controller('BalloonController', BalloonController)
+        .directive('crBalloon', BalloonDirective);
+
+    BalloonController.$inject = ['$scope','$rootScope','gameStateService'];
+
+    function BalloonController($scope, $rootScope, gameStateService) {
+        $scope.currentGameState = gameStateService.currentGameState();
+        $scope.setGameState = function (stateName) {
+            gameStateService.updateGameState(stateName);
             $scope.currentGameState = gameStateService.currentGameState();
-            $scope.setGameState = function (stateName) {
-                gameStateService.updateGameState(stateName);
-                $scope.currentGameState = gameStateService.currentGameState();
-                $rootScope.$broadcast('gameStateChanged');
-            }
-            gsSvc = gameStateService.updateGameState;
-
-            counter++;
-            window.console.log("Scope:"+$scope.$id+" Pass:"+counter+" - "+$scope.setGameState);
+            $rootScope.$broadcast('gameStateChanged');
         }
-    ]);
+        gsSvc = gameStateService.updateGameState;
 
-    module.directive('crBalloon', function() {
+        counter++;
+        window.console.log("Scope:"+$scope.$id+" Pass:"+counter+" - "+$scope.setGameState);
+    }
+
+    function BalloonDirective () {
         return {
             scope: {
                 bid: '@'
@@ -76,7 +80,7 @@
                 $scope.$on('$destroy', unbind);
             },
             templateUrl: 'js/balloon/balloon.html'
-        };
-    });
+        }
+    }
 
 }(window.angular));

@@ -26,13 +26,13 @@
         describe("initially", function () {
             it('should have initial state of "beginPlay"', function () {
                 expect(toTest.currentGameStateKey()).toEqual('beginPlay');
-                expect(toTest.currentGameState().balloon3.dialog).toBeUndefined();
+                expect(toTest.currentGameState().bubble3.dialog).toBeUndefined();
             });
             it('should allow choosing Team', function () {
-                expect(toTest.currentGameState().balloon1.dialog).toEqual('joinTeam');
+                expect(toTest.currentGameState().bubble1.dialog).toEqual('joinTeam');
             });
             it('should allow setting GPS options', function () {
-                expect(toTest.currentGameState().balloon2.dialog).toEqual('setGpsMode');
+                expect(toTest.currentGameState().bubble2.dialog).toEqual('setGpsMode');
             });
             it('should have no Path visible', function () {
                 expect(toTest.currentGameState().pathIndex).toEqual(-1);
@@ -47,7 +47,7 @@
         describe("after Team Leader has Started Play", function () {
             it('Clues should be visible', function () {
                 toTest.updateGameState('atLocation');
-                expect(toTest.currentGameState().balloon2.dialog).toEqual('solveClue');
+                expect(toTest.currentGameState().bubble2.dialog).toEqual('solveClue');
             });
             it('Clue questions should not yet be solved', function () {
                 expect(toTest.mostRecentClueSolved()).toEqual(false);
@@ -57,13 +57,13 @@
             });
             // TODO: The initial location should probably be available once course is selected
             it('should allow viewing initial location', function () {
-                expect(toTest.currentGameState().balloon1.nextView).toEqual('location');
+                expect(toTest.currentGameState().bubble1.nextView).toEqual('location');
                 expect(toTest.currentGameState().locationIndex).toEqual(0);
             });
             it('should show "unsolved" dialog for "Where are we Going?"', function () {
                 // TODO: Put this back in after we start walking clues
-                //expect(toTest.currentGameState().balloon3.nextState).toBeUndefined();
-                expect(toTest.currentGameState().balloon3.dialog).toEqual('clueNotSolved');
+                //expect(toTest.currentGameState().bubble3.nextState).toBeUndefined();
+                expect(toTest.currentGameState().bubble3.dialog).toEqual('clueNotSolved');
             });
         });
 
@@ -76,11 +76,11 @@
                 expect(toTest.currentGameState().pathIndex).toEqual(0);
             });
             it('should allow reaching previous location', function () {
-                expect(toTest.currentGameState().balloon1.nextView).toEqual('location');
+                expect(toTest.currentGameState().bubble1.nextView).toEqual('location');
                 expect(toTest.currentGameState().locationIndex).toEqual(0);
             });
             it('should allow reaching next location', function () {
-                expect(toTest.currentGameState().balloon3.nextView).toEqual('location');
+                expect(toTest.currentGameState().bubble3.nextView).toEqual('location');
                 expect(toTest.currentGameState().locationIndex).toEqual(1);
             });
         });
