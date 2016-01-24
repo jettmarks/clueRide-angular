@@ -4,7 +4,6 @@
     angular
         .module('crNetEdit.Feature', [])
         .controller('Controller', Controller)
-        //.service('Service', Service)
         .directive('crFeature', crFeature)
     ;
 
@@ -13,13 +12,6 @@
     function Controller() {
         var vm = this;
     }
-
-    //function Service() {
-    //    return {
-    //        request: requestFunction,
-    //        confirm: confirmFunction
-    //    };
-    //}
 
     function crFeature() {
         return {

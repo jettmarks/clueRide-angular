@@ -1,0 +1,22 @@
+<link rel="stylesheet" href="./js/bubbles/bubble.css">
+<div class="home" ng-controller="BubbleController">
+  <div class="bubbleContainer">
+    <div class="bubbles">
+      <cr-bubble bubble="$parent.state.currentGameState.bubble1" bid="bubble1"></cr-bubble>
+      <cr-bubble bubble="$parent.state.currentGameState.bubble2" bid="bubble2"></cr-bubble>
+      <cr-bubble bubble="$parent.state.currentGameState.bubble3" bid="bubble3"></cr-bubble>
+      <!-- Thought we could get away with this, but no-->
+      <!--<cr-bubble bid="bubble1"></cr-bubble>-->
+      <!--<cr-bubble bid="bubble2"></cr-bubble>-->
+      <!--<cr-bubble bid="bubble3"></cr-bubble>-->
+    </div>
+  </div>
+</div>
+
+<div ui-content-for="modals">
+  <!--The following show up as unpopulated scopes and siblings of the bubbles' scope -->
+  <div ng-include="'joinTeam.html'"></div>
+  <div ng-include="'setGpsMode.html'"></div>
+  <div ng-include="'solveClue.html'"></div>
+  <!--<div ng-include="'clueNotSolvedWarning.html'"></div>-->
+</div>

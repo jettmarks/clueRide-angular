@@ -7,6 +7,7 @@ var app = angular.module('clueridePlayer', [
   'team',
   'gps',
   'balloon',
+  'crPlayer.Bubble',
   'gameState',
   'crMap',
   'crLocation',
@@ -40,7 +41,8 @@ app.run(function($transform) {
 // in order to avoid unwanted routing.
 // 
 app.config(function($routeProvider) {
-  $routeProvider.when('/',              {templateUrl: 'home.html', reloadOnSearch: false});
+  //$routeProvider.when('/',              {templateUrl: 'home.html', reloadOnSearch: false});
+  $routeProvider.when('/',              {templateUrl: 'birdseye.html', reloadOnSearch: false});
   $routeProvider.when('/map',           {templateUrl: 'js/map/map.html', reloadOnSearch: false});
   $routeProvider.when('/location',      {templateUrl: 'js/loc/loc.html', reloadOnSearch: false});
   $routeProvider.when('/locEdit',       {templateUrl: 'js/locEdit/locEdit.html', reloadOnSearch: false});
@@ -291,16 +293,8 @@ function($rootScope, $scope, gameStateService ) {
     $rootScope.loading = false;
   });
 
-  $rootScope.$on('gameStateChanged', function (event, args) {
-    $scope.currentGameState = gameStateService.currentGameState();
-    // Echo this back down to listeners
-    $scope.$broadcast('updateGameState');
-  });
-
   // Bind the Course to the scope
   $scope.course = {};
   gameStateService.setCourseScope($scope);
-
-  $scope.currentGameState = gameStateService.currentGameState();
 
 }]);

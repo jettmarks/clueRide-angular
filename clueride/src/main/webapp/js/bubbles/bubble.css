@@ -1,0 +1,79 @@
+
+.bubbleContainer {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+@media screen and (max-width: 360px) {
+    .bubbles {
+        background-image: url("logo_blank.png");
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 400px;
+        width: 320px;
+        color: white;
+        position: relative;
+    }
+
+    .bubble {
+        position: absolute;
+        width: 100px;
+        height: 75px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .bubble1 {
+        top: 42px;
+        left: -4px;
+    }
+
+    .bubble2 {
+        top: 101px;
+        left: 230px;
+    }
+
+    .bubble3 {
+        top: 296px;
+        left: 102px;
+    }
+}
+
+
+@media screen and (min-width: 360px) {
+    .bubbles {
+        background-image: url("logo_blank.png");
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 400px;
+        width: 360px;
+        color: white;
+        position: relative;
+    }
+
+    .bubble {
+        position: absolute;
+        width: 100px;
+        height: 75px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .bubble1 {
+        top: 42px;
+        left: 16px;
+    }
+
+    .bubble2 {
+        top: 101px;
+        left: 250px;
+    }
+
+    .bubble3 {
+        top: 296px;
+        left: 122px;
+    }
+}

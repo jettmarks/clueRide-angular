@@ -123,22 +123,22 @@
             beginPlay: {
                 title: 'Get Ready',
                 pathIndex: -1,
-                balloon1: {
-                    bid: 'balloon1',
+                bubble1: {
+                    bid: 'bubble1',
                     title: 'Join a Team?',
                     dialog: 'joinTeam',
                     nextView: '',
                     nextState: 'beginPlay'
                 },
-                balloon2: {
-                    bid: 'balloon2',
+                bubble2: {
+                    bid: 'bubble2',
                     title: 'GPS?',
                     dialog: 'setGpsMode',
                     nextView: '',
                     nextState: 'beginPlay'
                 },
-                balloon3: {
-                    bid: 'balloon3',
+                bubble3: {
+                    bid: 'bubble3',
                     title: 'Play',
                     nextView: '',
                     nextState: 'atLocation'
@@ -147,20 +147,20 @@
             riding: {
                 title: 'Riding',
                 pathIndex: 0,
-                balloon1: {
-                    bid: 'balloon1',
+                bubble1: {
+                    bid: 'bubble1',
                     title: 'Last Stop',
                     nextView: '',
                     nextState: 'atLocation'
                 },
-                balloon2: {
-                    bid: 'balloon2',
+                bubble2: {
+                    bid: 'bubble2',
                     title: 'Where are we now?',
                     nextView: 'map',
                     nextState: 'riding'
                 },
-                balloon3: {
-                    bid: 'balloon3',
+                bubble3: {
+                    bid: 'bubble3',
                     title: 'Next Stop',
                     nextView: 'location',
                     nextState: 'riding'
@@ -170,21 +170,21 @@
                 title: 'Got a Clue?',
                 pathIndex: -1,
                 locationIndex: 0,
-                balloon1: {
-                    bid: 'balloon1',
+                bubble1: {
+                    bid: 'bubble1',
                     title: 'Current Location',
                     nextView: 'location',
                     nextState: 'atLocation'
                 },
-                balloon2: {
-                    bid: 'balloon2',
+                bubble2: {
+                    bid: 'bubble2',
                     title: 'Solve Clue',
                     dialog: 'solveClue',
                     nextView: '',
                     nextState: 'atLocation'
                 },
-                balloon3: {
-                    bid: 'balloon3',
+                bubble3: {
+                    bid: 'bubble3',
                     title: 'Where are we going?',
 //                nextView: 'chooseLocation',
                     dialog: 'clueNotSolved',
