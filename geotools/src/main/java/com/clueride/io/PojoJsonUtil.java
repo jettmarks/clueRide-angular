@@ -33,6 +33,7 @@ import com.clueride.domain.GameCourse;
 import com.clueride.domain.GamePath;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.Path;
+import com.clueride.rest.dto.ClueRideState;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedLocationIdProvider;
 import com.clueride.service.MemoryBasedPathIdProvider;
@@ -140,6 +141,16 @@ public class PojoJsonUtil {
 
     public static String generateLocation(Location location) throws JsonProcessingException {
         return objectMapper.writeValueAsString(location);
+    }
+
+    /**
+     * Given a ClueRideState, return the JSON representation for serialization across the wire.
+     * @param clueRideState - ClueRideState instance to be turned into JSON.
+     * @return JSON String representing the state.
+     * @throws JsonProcessingException
+     */
+    public static String generateClueRideState(ClueRideState clueRideState) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(clueRideState);
     }
 
     public static List<Path> loadPaths() {
