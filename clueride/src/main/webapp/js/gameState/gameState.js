@@ -52,14 +52,14 @@
     /* Events changing Game State: */
     function clueSolve() {
         state.mostRecentClueSolvedFlag = true;
-        gameStates['atLocation'].pathIndex++;
-        gameStates['riding'].pathIndex++;
+        state.pathIndex++;
         updateGameState('riding');
     }
 
     function arrived() {
         state.currentGameStateKey = 'atLocation';
         state.mostRecentClueSolvedFlag = false;
+        // TODO: Not sure this is useful
         gameStates['riding'].locationIndex++;
     }
 
@@ -141,7 +141,9 @@
     }
 
     function stateToModel(data) {
-        viewModel.state = data;
+        //viewModel.state = data;
+        viewModel.state.pathIndex = data.pathIndex;
+        updateGameState(data.currentGameStateKey);
     }
 
     function gameStateInit (CourseDataResource, GameStateResource) {
@@ -155,7 +157,6 @@
         gameStates = {
             beginPlay: {
                 title: 'Get Ready',
-                pathIndex: -1,
                 bubble1: {
                     bid: 'bubble1',
                     title: 'Join a Team?',
@@ -179,7 +180,6 @@
             },
             riding: {
                 title: 'Riding',
-                pathIndex: 0,
                 bubble1: {
                     bid: 'bubble1',
                     title: 'Last Stop',
@@ -201,7 +201,6 @@
             },
             atLocation: {
                 title: 'Got a Clue?',
-                pathIndex: -1,
                 locationIndex: 0,
                 bubble1: {
                     bid: 'bubble1',

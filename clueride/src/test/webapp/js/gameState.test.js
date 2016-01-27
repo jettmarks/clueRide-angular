@@ -35,7 +35,7 @@
                 expect(toTest.currentGameState().bubble2.dialog).toEqual('setGpsMode');
             });
             it('should have no Path visible', function () {
-                expect(toTest.currentGameState().pathIndex).toEqual(-1);
+                expect(toTest.currentIndex()).toEqual(-1);
             });
 
             // TODO: Move this to a Map Test
@@ -53,7 +53,7 @@
                 expect(toTest.mostRecentClueSolved()).toEqual(false);
             });
             it('should have no Path visible', function () {
-                expect(toTest.currentGameState().pathIndex).toEqual(-1);
+                expect(toTest.currentIndex()).toEqual(-1);
             });
             // TODO: The initial location should probably be available once course is selected
             it('should allow viewing initial location', function () {
@@ -73,7 +73,7 @@
                 expect(toTest.currentGameStateKey()).toEqual('riding');
             });
             it('should have first Path visible', function () {
-                expect(toTest.currentGameState().pathIndex).toEqual(0);
+                expect(toTest.currentIndex()).toEqual(0);
             });
             it('should allow reaching previous location', function () {
                 expect(toTest.currentGameState().bubble1.nextView).toEqual('location');
@@ -91,7 +91,7 @@
                 expect(toTest.currentGameStateKey()).toEqual('atLocation');
             });
             it('should have first Path visible', function () {
-                expect(toTest.currentGameState().pathIndex).toEqual(0);
+                expect(toTest.currentIndex()).toEqual(0);
             });
             it('should have Clue questions hidden', function () {});
         });
