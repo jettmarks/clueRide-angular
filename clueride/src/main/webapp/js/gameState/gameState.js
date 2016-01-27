@@ -5,12 +5,16 @@
         gameStates = {},
         gameStatePerKey = [],
         courseDataResource = {},
+        gameStateResource = {},
     /* Consider user state versus overall game/team state. */
         state = {
             /* Incremented as clues are solved and destinations reached. */
             pathIndex: -1,
             /* Reviews history of opened Paths -- capped by pathIndex. */
             historyIndex: 0,
+
+            /* Crutch. */
+            teamId: 42,
 
             currentGameState: {},
             mostRecentClueSolvedFlag: false,
@@ -20,8 +24,9 @@
 
     angular
         .module('gameState', ['common.CourseResource'])
-        .controller('GameStateController',GameStateController)
+        .controller('GameStateController', GameStateController)
         .service('gameStateService', gameStateService)
+        .factory('GameStateResource', GameStateResource)
         .run(gameStateInit)
     ;
 
@@ -62,6 +67,7 @@
     function updateGameState(newState) {
         state.currentGameStateKey = newState;
         state.currentGameState = gameStatePerKey[newState];
+        gameStateResource.updateState(state);
     }
 
     function gameStateService () {
@@ -114,10 +120,37 @@
         };
     }
 
-    function gameStateInit (CourseDataResource) {
+    /**
+     * Retrieve for a Team and Update for a Team.
+     * @returns {*}
+     * @constructor
+     */
+    function GameStateResource($resource) {
+        return $resource('/rest/gameState/team', {}, {
+            getState: {
+                method: 'GET',
+                /* Hardcoded until we have more than one team. */
+                params: {teamId: 42},
+                isArray: false
+            },
+            updateState: {
+                method: 'PUT'
+                /* Hardcoded until we have more than one team. */
+            }
+        });
+    }
+
+    function stateToModel(data) {
+        viewModel.state = data;
+    }
+
+    function gameStateInit (CourseDataResource, GameStateResource) {
         CourseDataResource.getData({
             /* Future: put the course ID here. */
         }, dataToModel);
+
+        gameStateResource = GameStateResource;
+        gameStateResource.get({}, stateToModel);
 
         gameStates = {
             beginPlay: {

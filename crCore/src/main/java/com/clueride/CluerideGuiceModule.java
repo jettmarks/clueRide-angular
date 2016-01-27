@@ -26,6 +26,8 @@ import com.clueride.service.CourseServiceImpl;
 import com.clueride.service.DefaultLocationService;
 import com.clueride.service.DefaultNodeService;
 import com.clueride.service.DefaultRecommendationService;
+import com.clueride.service.GameStateService;
+import com.clueride.service.GameStateServiceImpl;
 import com.clueride.service.LocationService;
 import com.clueride.service.NetworkEval;
 import com.clueride.service.NetworkEvalImpl;
@@ -41,6 +43,7 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(RecommendationService.class).to(DefaultRecommendationService.class);
         bind(LocationService.class).to(DefaultLocationService.class);
         bind(CourseService.class).to(CourseServiceImpl.class);
+        bind(GameStateService.class).to(GameStateServiceImpl.class);
         bind(NodeService.class).to(DefaultNodeService.class);
         bind(ImageStore.class).to(FileImageStore.class);
         bind(NetworkEval.class).to(NetworkEvalImpl.class);
