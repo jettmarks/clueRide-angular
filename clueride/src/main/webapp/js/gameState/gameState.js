@@ -57,17 +57,48 @@
     }
 
     function arrived() {
-        state.currentGameStateKey = 'atLocation';
-        state.mostRecentClueSolvedFlag = false;
         // TODO: Not sure this is useful
-        gameStates['riding'].locationIndex++;
+        gameStates['atLocation'].locationIndex++;
+        updateGameState('atLocation');
+        state.mostRecentClueSolvedFlag = false;
     }
 
     /* Making the change of state. */
     function updateGameState(newState) {
-        state.currentGameStateKey = newState;
-        state.currentGameState = gameStatePerKey[newState];
-        gameStateResource.updateState(state);
+        if (historyTransition(newState)) {
+            updateHistory(newState);
+        } else {
+            state.currentGameStateKey = newState;
+            state.currentGameState = gameStatePerKey[newState];
+            /* Only update state on server if we're not browsing history. */
+            gameStateResource.updateState(state);
+        }
+    }
+
+    function historyTransition(newState) {
+        return (newState.indexOf('history') > -1);
+    }
+
+    function updateHistory(historyState) {
+        if (historyState === 'history_back') {
+            state.historyIndex--;
+        } else if (historyState === 'history_forward') {
+            state.historyIndex++;
+        }
+        if (state.historyIndex < 0) {
+            state.historyIndex = 0;
+        }
+        if (state.historyIndex > state.pathIndex) {
+            if (state.mostRecentClueSolvedFlag) {
+                updateGameState('riding');
+            } else {
+                updateGameState('atLocation');
+            }
+        } else {
+            state.currentGameStateKey = 'history';
+            state.currentGameState = gameStatePerKey['history'];
+            state.currentGameState.title = "Location " + state.historyIndex;
+        }
     }
 
     function gameStateService () {
@@ -184,7 +215,7 @@
                     bid: 'bubble1',
                     title: 'Last Stop',
                     nextView: '',
-                    nextState: 'atLocation'
+                    nextState: 'history'
                 },
                 bubble2: {
                     bid: 'bubble2',
@@ -222,13 +253,34 @@
                     dialog: 'clueNotSolved',
                     nextState: 'riding'
                 }
+            },
+            history: {
+                title: 'History <Location>',
+                locationIndex: 0,
+                bubble1: {
+                    bid: 'bubble1',
+                    title: 'Previous Location',
+                    nextState: 'history_back'
+                },
+                bubble2: {
+                    bid: 'bubble2',
+                    title: 'View Current Location',
+                    nextView: 'location',
+                    nextState: 'atLocation'
+                },
+                bubble3: {
+                    bid: 'bubble3',
+                    title: 'Next Location',
+                    nextState: 'history_forward'
+                }
             }
         };
 
         gameStatePerKey = {
             beginPlay: gameStates.beginPlay,
             atLocation: gameStates.atLocation,
-            riding: gameStates.riding
+            riding: gameStates.riding,
+            history: gameStates.history
         };
 
         state.currentGameState = gameStatePerKey[state.currentGameStateKey];

@@ -19,6 +19,7 @@
     }
 
     function BubbleDirective($rootScope, $location) {
+
         function bubbleClicked(bid) {
             var bubble = local.gsSvc.currentGameState()[bid],
                 dialogFlag = !!bubble.dialog,

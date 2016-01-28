@@ -76,12 +76,10 @@
                 expect(toTest.currentIndex()).toEqual(0);
             });
             it('should allow reaching previous location', function () {
-                expect(toTest.currentGameState().bubble1.nextView).toEqual('location');
-                expect(toTest.currentGameState().locationIndex).toEqual(0);
+                expect(toTest.currentGameState().bubble1.nextState).toEqual('history');
             });
             it('should allow reaching next location', function () {
                 expect(toTest.currentGameState().bubble3.nextView).toEqual('location');
-                expect(toTest.currentGameState().locationIndex).toEqual(1);
             });
         });
 
@@ -92,8 +90,14 @@
             });
             it('should have first Path visible', function () {
                 expect(toTest.currentIndex()).toEqual(0);
+                expect(toTest.currentGameState().locationIndex).toEqual(1);
             });
-            it('should have Clue questions hidden', function () {});
+            it('should have Clue questions visible', function () {
+                expect(toTest.currentGameState().bubble2.dialog).toEqual('solveClue');
+            });
+            it('should have Clue questions unanswered', function () {
+                expect(toTest.mostRecentClueSolved()).toBeFalsy();
+            });
         });
 
     });
