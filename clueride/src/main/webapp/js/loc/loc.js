@@ -13,7 +13,8 @@
     LocationController.$inject = ['$scope', 'gameStateService'];
 
     function LocationController($scope, gameStateService) {
-        var locIndex = gameStateService.currentIndex();
+        //var locIndex = gameStateService.currentIndex();
+        var locIndex = gameStateService.getLocationIndex();
 
         viewModel = this;
         $scope.viewModel = viewModel;
@@ -61,7 +62,7 @@
     function pageChanged(gameStateService) {
         var locIndex = $scope.currentPage-1;
         $scope.location = viewModel.locations[locIndex];
-        gameStateService.setCurrentLocation(locIndex);
+        gameStateService.setHistoryLocation(locIndex);
     }
 
     function backImg () {

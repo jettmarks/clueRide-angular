@@ -33,9 +33,7 @@
     GameStateController.$inject = ['$scope', 'CourseDataResource'];
 
     function GameStateController($scope, CourseDataResource) {
-        var vm = this;
-
-        $scope.vm = vm;
+        $scope.vm = this;
 
         courseDataResource = CourseDataResource;
     }
@@ -57,7 +55,6 @@
     }
 
     function arrived() {
-        // TODO: Not sure this is useful
         gameStates['atLocation'].locationIndex++;
         updateGameState('atLocation');
         state.mostRecentClueSolvedFlag = false;
@@ -101,26 +98,31 @@
         }
     }
 
+    /**
+     * This is based on both the Path Index and walking the History Index as well as taking into account
+     * that we'll want to show some details of the initial location prior to "arriving" at that location.
+     */
+    function getLocationIndex() {
+        // Let's see if this works
+        if (state.pathIndex < 0) {
+            return 0;
+        }
+        return state.historyIndex;
+    }
+
     function gameStateService () {
         return {
             currentGameState: function () {return state.currentGameState},
             currentGameStateKey: function () {return state.currentGameStateKey},
             updateGameState: updateGameState,
 
-            // TODO: Bring this closer to the Location view
-            currentLocation: function () {
-                return {location: {
-                    name: 'BeltLine'
-                }};
-            },
-
             /* Events triggering change of state. */
             /* May not be the best trigger event. */
             clueSolved: clueSolve,
             arrived: arrived,
 
-            setCurrentLocation: function (newIndex) {
-                state.pathIndex = newIndex;
+            setHistoryLocation: function (newIndex) {
+                state.historyIndex = newIndex;
             },
 
             /* Flags. */
@@ -129,22 +131,18 @@
             },
 
             /* Indices. */
-            currentIndex: function () {
-                return state.pathIndex;
-            },
+            getLocationIndex: getLocationIndex,
+
             maxVisibleLocationIndex: function () {
                 return state.maxVisibleLocationIndex;
             },
+            // TODO: Connect this with the Location Bar CA-126
             maxVisiblePathIndex: function () {
                 if (state.mostRecentClueSolvedFlag) {
                     return state.pathIndex;
                 } else {
                     return state.pathIndex - 1;
                 }
-            },
-            /* Useful for the Location View. */
-            visibleLocationCount: function () {
-
             },
             // TODO: Find better way to set the scope; link in Controller
             setCourseScope: setCourseScope
@@ -276,6 +274,7 @@
             }
         };
 
+        // TODO: Is this really necessary?
         gameStatePerKey = {
             beginPlay: gameStates.beginPlay,
             atLocation: gameStates.atLocation,
