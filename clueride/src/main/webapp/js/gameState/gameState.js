@@ -33,9 +33,7 @@
     GameStateController.$inject = ['$scope', 'CourseDataResource'];
 
     function GameStateController($scope, CourseDataResource) {
-        var vm = this;
-
-        $scope.vm = vm;
+        $scope.vm = this;
 
         courseDataResource = CourseDataResource;
     }
@@ -57,17 +55,59 @@
     }
 
     function arrived() {
-        state.currentGameStateKey = 'atLocation';
+        gameStates['atLocation'].locationIndex++;
+        updateGameState('atLocation');
         state.mostRecentClueSolvedFlag = false;
-        // TODO: Not sure this is useful
-        gameStates['riding'].locationIndex++;
     }
 
     /* Making the change of state. */
     function updateGameState(newState) {
-        state.currentGameStateKey = newState;
-        state.currentGameState = gameStatePerKey[newState];
-        gameStateResource.updateState(state);
+        if (historyTransition(newState)) {
+            updateHistory(newState);
+        } else {
+            state.currentGameStateKey = newState;
+            state.currentGameState = gameStatePerKey[newState];
+            /* Only update state on server if we're not browsing history. */
+            gameStateResource.updateState(state);
+        }
+    }
+
+    function historyTransition(newState) {
+        return (newState.indexOf('history') > -1);
+    }
+
+    function updateHistory(historyState) {
+        if (historyState === 'history_back') {
+            state.historyIndex--;
+        } else if (historyState === 'history_forward') {
+            state.historyIndex++;
+        }
+        if (state.historyIndex < 0) {
+            state.historyIndex = 0;
+        }
+        if (state.historyIndex > state.pathIndex) {
+            if (state.mostRecentClueSolvedFlag) {
+                updateGameState('riding');
+            } else {
+                updateGameState('atLocation');
+            }
+        } else {
+            state.currentGameStateKey = 'history';
+            state.currentGameState = gameStatePerKey['history'];
+            state.currentGameState.title = "Location " + state.historyIndex;
+        }
+    }
+
+    /**
+     * This is based on both the Path Index and walking the History Index as well as taking into account
+     * that we'll want to show some details of the initial location prior to "arriving" at that location.
+     */
+    function getLocationIndex() {
+        // Let's see if this works
+        if (state.pathIndex < 0) {
+            return 0;
+        }
+        return state.historyIndex;
     }
 
     function gameStateService () {
@@ -76,20 +116,13 @@
             currentGameStateKey: function () {return state.currentGameStateKey},
             updateGameState: updateGameState,
 
-            // TODO: Bring this closer to the Location view
-            currentLocation: function () {
-                return {location: {
-                    name: 'BeltLine'
-                }};
-            },
-
             /* Events triggering change of state. */
             /* May not be the best trigger event. */
             clueSolved: clueSolve,
             arrived: arrived,
 
-            setCurrentLocation: function (newIndex) {
-                state.pathIndex = newIndex;
+            setHistoryLocation: function (newIndex) {
+                state.historyIndex = newIndex;
             },
 
             /* Flags. */
@@ -98,22 +131,18 @@
             },
 
             /* Indices. */
-            currentIndex: function () {
-                return state.pathIndex;
-            },
+            getLocationIndex: getLocationIndex,
+
             maxVisibleLocationIndex: function () {
                 return state.maxVisibleLocationIndex;
             },
+            // TODO: Connect this with the Location Bar CA-126
             maxVisiblePathIndex: function () {
                 if (state.mostRecentClueSolvedFlag) {
                     return state.pathIndex;
                 } else {
                     return state.pathIndex - 1;
                 }
-            },
-            /* Useful for the Location View. */
-            visibleLocationCount: function () {
-
             },
             // TODO: Find better way to set the scope; link in Controller
             setCourseScope: setCourseScope
@@ -184,7 +213,7 @@
                     bid: 'bubble1',
                     title: 'Last Stop',
                     nextView: '',
-                    nextState: 'atLocation'
+                    nextState: 'history'
                 },
                 bubble2: {
                     bid: 'bubble2',
@@ -222,13 +251,35 @@
                     dialog: 'clueNotSolved',
                     nextState: 'riding'
                 }
+            },
+            history: {
+                title: 'History <Location>',
+                locationIndex: 0,
+                bubble1: {
+                    bid: 'bubble1',
+                    title: 'Previous Location',
+                    nextState: 'history_back'
+                },
+                bubble2: {
+                    bid: 'bubble2',
+                    title: 'View Current Location',
+                    nextView: 'location',
+                    nextState: 'atLocation'
+                },
+                bubble3: {
+                    bid: 'bubble3',
+                    title: 'Next Location',
+                    nextState: 'history_forward'
+                }
             }
         };
 
+        // TODO: Is this really necessary?
         gameStatePerKey = {
             beginPlay: gameStates.beginPlay,
             atLocation: gameStates.atLocation,
-            riding: gameStates.riding
+            riding: gameStates.riding,
+            history: gameStates.history
         };
 
         state.currentGameState = gameStatePerKey[state.currentGameStateKey];
