@@ -1,13 +1,28 @@
 (function (angular) {
     'use strict';
 
-    var module = angular.module('status', []);
+    var gsSvc,
+        currentPage;
 
-    module.controller('StatusController',
-        function($scope) {
-            $scope.currentPage = 3;
-            $scope.totalItems = 5;
-        }
-    );
+    angular
+        .module('status', ['crPlayer.GameState','crLocation'])
+        .controller('StatusController', StatusController)
+    ;
+
+    StatusController.$inject = ['$scope','gameStateService','locationService'];
+
+    function StatusController($scope, gameStateService, locationService) {
+        gsSvc = gameStateService;
+        $scope.vm.pathIndex = gsSvc.currentGameState().pathIndex;
+        $scope.currentPage = currentPage;
+        currentPage = gsSvc.getLocationIndex();
+        $scope.onPageChange = onPageChange;
+        // TODO: Read from the Location Service
+        $scope.getLocationCount = locationService.getLocationCount;
+    }
+
+    function onPageChange() {
+        gsSvc.setHistoryLocation(currentPage);
+    }
 
 }(window.angular));

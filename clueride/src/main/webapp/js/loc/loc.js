@@ -5,9 +5,10 @@
         gameStateService;
 
     angular
-        .module('crLocation',['gameState'])
+        .module('crLocation',['crPlayer.GameState'])
         .controller('LocationController', LocationController)
         .directive('backImg', backImg)
+        .service('locationService', locationService)
     ;
 
     LocationController.$inject = ['$scope', 'gameStateService'];
@@ -20,6 +21,7 @@
         $scope.viewModel = viewModel;
         viewModel.gameStateService = gameStateService;
 
+        // TODO: Read these from the Course/Path service (CA-127)
         viewModel.locations = [
             {
                 name: "Peace Monument, Piedmont Park",
@@ -63,6 +65,18 @@
         var locIndex = $scope.currentPage-1;
         $scope.location = viewModel.locations[locIndex];
         gameStateService.setHistoryLocation(locIndex);
+    }
+
+    function getLocationCount() {
+        // TODO: CA-127
+        //return viewModel.locations.length;
+        return 6;
+    }
+
+    function locationService() {
+        return {
+            getLocationCount: getLocationCount
+        }
     }
 
     function backImg () {

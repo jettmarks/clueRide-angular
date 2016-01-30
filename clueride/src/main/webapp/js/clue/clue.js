@@ -4,7 +4,7 @@
     var self = {};
 
     angular
-        .module('clue', ['ui.bootstrap', 'gameState'])
+        .module('clue', ['ui.bootstrap', 'crPlayer.GameState'])
         .controller('ClueController', ClueController);
 
     ClueController.$inject = ['$scope', 'gameStateService'];

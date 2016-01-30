@@ -23,7 +23,7 @@
         };
 
     angular
-        .module('gameState', ['common.CourseResource'])
+        .module('crPlayer.GameState', ['common.CourseResource'])
         .controller('GameStateController', GameStateController)
         .service('gameStateService', gameStateService)
         .factory('GameStateResource', GameStateResource)
@@ -86,6 +86,8 @@
             state.historyIndex = 0;
         }
         if (state.historyIndex > state.pathIndex) {
+            /* Cap the history Index to avoid walking over the edge. */
+            state.historyIndex = state.pathIndex;
             if (state.mostRecentClueSolvedFlag) {
                 updateGameState('riding');
             } else {
