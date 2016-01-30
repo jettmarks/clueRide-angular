@@ -5,7 +5,7 @@
         local = {};
 
     angular
-        .module('crPlayer.Bubble', ['gameState'])
+        .module('crPlayer.Bubble', ['crPlayer.GameState'])
         .controller('BubbleController', BubbleController)
         .directive('crBubble', BubbleDirective);
 
