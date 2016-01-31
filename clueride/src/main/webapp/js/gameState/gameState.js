@@ -119,6 +119,9 @@
 
     function gameStateService () {
         return {
+            // TODO: Find better way to set the scope; link in Controller
+            setCourseScope: setCourseScope,
+
             currentGameState: function () {return state.currentGameState},
             currentGameStateKey: function () {return state.currentGameStateKey},
             updateGameState: updateGameState,
@@ -141,18 +144,15 @@
             getLocationIndex: getLocationIndex,
 
             maxVisibleLocationIndex: function () {
-                return state.maxVisibleLocationIndex;
-            },
-            // TODO: Connect this with the Location Bar CA-126
-            maxVisiblePathIndex: function () {
-                if (state.mostRecentClueSolvedFlag) {
-                    return state.pathIndex;
+                var candidateIndex = state.pathIndex;
+                if (candidateIndex < 0) {
+                    return 0;
+                } else if (state.mostRecentClueSolvedFlag) {
+                    return candidateIndex + 1;
                 } else {
-                    return state.pathIndex - 1;
+                    return candidateIndex;
                 }
-            },
-            // TODO: Find better way to set the scope; link in Controller
-            setCourseScope: setCourseScope
+            }
         };
     }
 

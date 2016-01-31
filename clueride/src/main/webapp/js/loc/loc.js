@@ -2,7 +2,15 @@
     'use strict';
 
     var viewModel,
-        gameStateService;
+        localModel = {
+            gsSvc: {}
+        },
+        locState = {
+            currentPage: 1,
+            pageChanged: pageChanged,
+            lastLocationIndex: lastLocationIndex,
+            location: {}
+        };
 
     angular
         .module('crLocation',['crPlayer.GameState'])
@@ -11,61 +19,32 @@
         .service('locationService', locationService)
     ;
 
-    LocationController.$inject = ['$scope', 'gameStateService'];
+    LocationController.$inject = ['gameStateService'];
 
-    function LocationController($scope, gameStateService) {
+    function LocationController(gameStateService) {
         var locIndex = gameStateService.getLocationIndex();
 
-        //viewModel = this;
-        //$scope.viewModel = viewModel;
+        localModel.gsSvc = gameStateService;
 
-        //viewModel.locations = [
-        //    {
-        //        name: "Peace Monument, Piedmont Park",
-        //        description: "Long bit of text we'll pull together.",
-        //        imgUrl: [
-        //            'http://img.clueride.com/img/1/1.jpg',
-        //            'http://img.clueride.com/img/1/2.jpg',
-        //            'http://img.clueride.com/img/1/3.jpg'
-        //        ]
-        //    },
-        //    {
-        //        name: "BeltLine - White Rhino",
-        //        description: "We love the BeltLine",
-        //        imgUrl: ['http://img.clueride.com/img/2/1.jpg']
-        //    },
-        //    {
-        //        name: "Gandhi",
-        //        description: "Inspired MLK",
-        //        imgUrl: ['http://img.clueride.com/img/3/1.jpg']
-        //    },
-        //    {
-        //        name: "Sweet Auburn Curb Market",
-        //        description: "Lots under one roof",
-        //        imgUrl: ['http://img.clueride.com/img/4/1.jpg']
-        //    },
-        //    {
-        //        name: "Oakland Cemetery",
-        //        description: "Visit with the residents",
-        //        imgUrl: ['http://img.clueride.com/img/5/1.jpg']
-        //    }
-        //];
-
-        viewModel.location = viewModel.locations[locIndex];
+        locState.location = viewModel.locations[locIndex];
 
         // Zero-based index vs. one-based page number
-        viewModel.currentPage = locIndex+1;
-        viewModel.pageChanged = pageChanged;
+        locState.currentPage = locIndex+1;
     }
 
-    function pageChanged(gameStateService) {
-        var locIndex = $scope.currentPage-1;
-        $scope.location = viewModel.locations[locIndex];
-        gameStateService.setHistoryLocation(locIndex);
+    function lastLocationIndex() {
+        return localModel.gsSvc.maxVisibleLocationIndex();
+    }
+
+    function pageChanged() {
+        var locIndex = locState.currentPage-1;
+        locState.location = viewModel.locations[locIndex];
+        localModel.gsSvc.setHistoryLocation(locIndex);
     }
 
     function setLocationScope(locationScope) {
         viewModel = locationScope;
+        viewModel.locationState = locState;
     }
 
     function getLocationCount() {
