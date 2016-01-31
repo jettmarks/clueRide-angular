@@ -3,75 +3,83 @@
 
     var deviceCoords = {lat: 0.0, lon: 0.0},
         saveImageUrl = "",
-        locationToEdit = {},
-        module = angular.module('crLocEdit',['camera'])
+        locationToEdit = {};
 
-        .controller('LocEditController', [
-            '$scope', '$location', '$window', 'FileUploader', 'LocationEditor',
-            function ($scope, $location, $window, FileUploader, LocationEditor) {
-                $scope.imageState = {
-                    cameraOpen: true,
-                    cameraImage: false
-                };
+    angular
+        .module('crLocEdit',['camera'])
+        .controller('LocEditController', LocationEditController)
+        .factory('LocationEditResource', LocationEditResource)
+        .factory('LocationEditor', LocationEditor)
+    ;
 
-                // Position is returned asynchronously, and requires some delay; kick it off now.
-                requestGpsLocation();
+    LocationEditController.$inject = ['$scope', '$location', '$window', 'FileUploader', 'LocationEditor'];
 
-                // List of Nearby Locations also requires some delay; kick it off too
-                LocationEditor.getNearestLocations().$promise.then(function (locations) {
-                    $scope.locationSelected = locations[0];
-                    locationToEdit = locations[0];
-                    updateSaveUrl();
+    function LocationEditController($scope, $location, $window, FileUploader, LocationEditor) {
+        $scope.imageState = {
+            cameraOpen: true,
+            cameraImage: false
+        };
+
+        // Position is returned asynchronously, and requires some delay; kick it off now.
+        requestGpsLocation();
+
+        // List of Nearby Locations also requires some delay; kick it off too
+        LocationEditor.getNearestLocations().$promise.then(function (locations) {
+            $scope.locationSelected = locations[0];
+            locationToEdit = locations[0];
+            updateSaveUrl();
+        });
+
+        $scope.locationSelected = "Loading Locations ...";
+
+        $scope.locationMap = LocationEditor.locationMap();
+
+        $scope.locEdit = {};
+
+        /**
+         * Performs Save by converting the image data to Blob for the upload code
+         * and adding the Location ID and Coordinates via the URL which has already
+         * been constructed from reading the device's current location.
+         */
+        $scope.locEdit.save = function () {
+            var file = dataURItoBlob($scope.imageState.cameraImage),
+                uploader = new FileUploader({
+                    url: saveImageUrl,
+                    method: 'POST',
+                    autoUpload: true
                 });
 
-                $scope.locationSelected = "Loading Locations ...";
+            uploader.addToQueue(file);
 
-                $scope.locationMap = LocationEditor.locationMap();
+            $location.path('location');
+        };
 
-                $scope.locEdit = {};
+        $scope.locEdit.cancel = function () {
+            $window.history.back();
+        };
 
-                /**
-                 * Performs Save by converting the image data to Blob for the upload code
-                 * and adding the Location ID and Coordinates via the URL which has already
-                 * been constructed from reading the device's current location.
-                 */
-                $scope.locEdit.save = function () {
-                    var file = dataURItoBlob($scope.imageState.cameraImage),
-                        uploader = new FileUploader({
-                            url: saveImageUrl,
-                            method: 'POST',
-                            autoUpload: true
-                        });
+        $scope.recordSelection = function (selectedItem) {
+            $scope.locationSelected = $scope.locationMap[selectedItem];
+            locationToEdit = $scope.locationSelected;
+            updateSaveUrl();
+        }
+    }
 
-                    uploader.addToQueue(file);
 
-                    $location.path('location');
-                };
-
-                $scope.locEdit.cancel = function () {
-                    $window.history.back();
-                };
-
-                $scope.recordSelection = function (selectedItem) {
-                    $scope.locationSelected = $scope.locationMap[selectedItem];
-                    locationToEdit = $scope.locationSelected;
-                    updateSaveUrl();
-                }
-            }
-        ]);
-
-    module.factory('LocationEditResource', function ($resource) {
+    function LocationEditResource($resource) {
         return $resource('/rest/location/nearest',
             {lat: 34.0, lon: -81.0},
             {
-            get: {
-                method: 'GET',
-                isArray: true
+                get: {
+                    method: 'GET',
+                    isArray: true
+                }
             }
-        });
-    });
+        );
+    }
 
-    module.factory('LocationEditor', function (LocationEditResource) {
+
+    function LocationEditor(LocationEditResource) {
         var locationMap = {};
 
         return {
@@ -93,7 +101,7 @@
             },
             locationMap: function () {return locationMap}
         }
-    });
+    }
 
     function requestGpsLocation () {
         // Capture the current lat/lon

@@ -17,14 +17,6 @@
  */
 package com.clueride.service;
 
-import com.clueride.dao.ImageStore;
-import com.clueride.dao.LocationStore;
-import com.clueride.domain.user.Location;
-import com.clueride.io.PojoJsonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.vividsolutions.jts.geom.Point;
-
-import javax.inject.Inject;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -34,24 +26,46 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
+
+import com.clueride.dao.CourseStore;
+import com.clueride.dao.ImageStore;
+import com.clueride.dao.LocationStore;
+import com.clueride.dao.PathStore;
+import com.clueride.domain.Course;
+import com.clueride.domain.user.Location;
+import com.clueride.domain.user.Path;
+import com.clueride.io.PojoJsonUtil;
+
 /**
  * Services requests for Locations.
  */
 public class DefaultLocationService implements LocationService {
+    private static final Logger LOGGER = Logger.getLogger(DefaultLocationService.class);
 
     private final LocationStore locationStore;
     private final NodeService nodeService;
     private final ImageStore imageStore;
+    private final CourseStore courseStore;
+    private final PathStore pathStore;
 
     @Inject
     public DefaultLocationService(
             LocationStore locationStore,
             ImageStore imageStore,
-            NodeService nodeService
+            NodeService nodeService,
+            CourseStore courseStore,
+            PathStore pathStore
     ) {
         this.locationStore = locationStore;
         this.imageStore = imageStore;
         this.nodeService = nodeService;
+        this.courseStore = courseStore;
+        this.pathStore = pathStore;
     }
 
     @Override
@@ -68,6 +82,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public String getNearestLocations(Double lat, Double lon) {
+        LOGGER.info("Retrieving Nearest Locations for (" + lat + ", " + lon + ")");
         // Brute force approach of running through all locations and keeping the top five
         List<Location> locationList = new ArrayList<>();
         for (Location location : locationStore.getLocations()) {
@@ -75,6 +90,10 @@ public class DefaultLocationService implements LocationService {
         }
         Collections.sort(locationList, new LocationDistanceComparator(lat, lon));
 
+        return getJsonStringForLocationList(locationList);
+    }
+
+    public String getJsonStringForLocationList(List<Location> locationList) {
         StringBuilder jsonBuilder = new StringBuilder();
         jsonBuilder.append('[');
         int count = 0;
@@ -91,6 +110,22 @@ public class DefaultLocationService implements LocationService {
         }
         jsonBuilder.append(']');
         return jsonBuilder.toString();
+    }
+
+    @Override
+    public String getCourseLocations(Integer courseId) {
+        LOGGER.info("Retrieving Course Locations for Course " + courseId);
+        List<Location> locations = new ArrayList<>();
+        Course course = courseStore.getCourseById(courseId);
+        Path path = null;
+        for (Integer pathId : course.getPathIds()) {
+            path = pathStore.getPathById(pathId);
+            locations.add(locationStore.getLocationById(path.getStartLocationId()));
+        }
+        if (path != null) {
+            locations.add(locationStore.getLocationById(path.getEndLocationId()));
+        }
+        return getJsonStringForLocationList(locations);
     }
 
     private class LocationDistanceComparator implements Comparator<Location> {

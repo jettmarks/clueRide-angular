@@ -5,6 +5,7 @@
         .module('common.CourseResource', ['ngResource'])
         .factory('CourseMapResource', CourseMapResource)
         .factory('CourseDataResource', CourseDataResource)
+        .factory('CourseLocationResource', CourseLocationResource)
     ;
 
     function CourseMapResource ($resource) {
@@ -25,6 +26,17 @@
                 /* Hardcoded until we have more than one course. */
                 params: {courseId: 2},
                 isArray: false
+            }
+        });
+    }
+
+    function CourseLocationResource ($resource) {
+        return $resource('/rest/location/course', {}, {
+            getData: {
+                method: 'GET',
+                /* Hardcoded until we have more than one course. */
+                params: {courseId: 2},
+                isArray: true
             }
         });
     }

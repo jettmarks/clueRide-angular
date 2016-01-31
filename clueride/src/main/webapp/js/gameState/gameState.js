@@ -3,8 +3,8 @@
 
     var viewModel,
         gameStates = {},
-        gameStatePerKey = [],
         courseDataResource = {},
+        courseLocationResource = function () {},
         gameStateResource = {},
     /* Consider user state versus overall game/team state. */
         state = {
@@ -30,16 +30,21 @@
         .run(gameStateInit)
     ;
 
-    GameStateController.$inject = ['$scope', 'CourseDataResource'];
+    GameStateController.$inject = ['$scope', 'CourseDataResource', 'CourseLocationResource'];
 
-    function GameStateController($scope, CourseDataResource) {
+    function GameStateController($scope, CourseDataResource, CourseLocationResource) {
         $scope.vm = this;
 
         courseDataResource = CourseDataResource;
+        courseLocationResource = CourseLocationResource;
     }
 
     function dataToModel(course) {
         viewModel.course = course;
+    }
+
+    function courseLocationsToModel(locations) {
+        viewModel.locations = locations;
     }
 
     function setCourseScope(courseScope) {
@@ -66,7 +71,7 @@
             updateHistory(newState);
         } else {
             state.currentGameStateKey = newState;
-            state.currentGameState = gameStatePerKey[newState];
+            state.currentGameState = gameStates[newState];
             /* Only update state on server if we're not browsing history. */
             gameStateResource.updateState(state);
         }
@@ -95,7 +100,7 @@
             }
         } else {
             state.currentGameStateKey = 'history';
-            state.currentGameState = gameStatePerKey['history'];
+            state.currentGameState = gameStates['history'];
             state.currentGameState.title = "Location " + state.historyIndex;
         }
     }
@@ -172,15 +177,22 @@
     }
 
     function stateToModel(data) {
-        //viewModel.state = data;
         viewModel.state.pathIndex = data.pathIndex;
-        updateGameState(data.currentGameStateKey);
+        if (data.currentGameStateKey) {
+            updateGameState(data.currentGameStateKey);
+        } else {
+            updateGameState('beginPlay');
+        }
     }
 
-    function gameStateInit (CourseDataResource, GameStateResource) {
+    function gameStateInit (CourseDataResource, GameStateResource, CourseLocationResource) {
         CourseDataResource.getData({
             /* Future: put the course ID here. */
         }, dataToModel);
+
+        CourseLocationResource.getData({
+            /* Future: put the course ID here too. */
+        }, courseLocationsToModel);
 
         gameStateResource = GameStateResource;
         gameStateResource.get({}, stateToModel);
@@ -219,7 +231,7 @@
                 },
                 bubble2: {
                     bid: 'bubble2',
-                    title: 'Where are we now?',
+                    title: 'Path to Next Location',
                     nextView: 'map',
                     nextState: 'riding'
                 },
@@ -276,15 +288,7 @@
             }
         };
 
-        // TODO: Is this really necessary?
-        gameStatePerKey = {
-            beginPlay: gameStates.beginPlay,
-            atLocation: gameStates.atLocation,
-            riding: gameStates.riding,
-            history: gameStates.history
-        };
-
-        state.currentGameState = gameStatePerKey[state.currentGameStateKey];
+        state.currentGameState = gameStates[state.currentGameStateKey];
     }
 
 }(window.angular));

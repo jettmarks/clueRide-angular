@@ -49,4 +49,14 @@ public interface LocationService {
      * @return JSON String representing the nearest five locations to select from.
      */
     String getNearestLocations(Double lat, Double lon);
+
+    /**
+     * Given a Course ID, return an array of ordered locations.
+     * NOTE: the list of locations may not be static.  If choices are provided along the way, this list of Locations
+     * could change (further thought, what is the identity of a course that changes over time?).
+     * @param courseId - Unique identifier representing the course.
+     * @return Ordered array of Locations for the course.
+     */
+    String getCourseLocations(Integer courseId);
+
 }
