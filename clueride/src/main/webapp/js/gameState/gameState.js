@@ -7,6 +7,7 @@
         courseLocationResource = function () {},
         gameStateResource = {},
     /* Consider user state versus overall game/team state. */
+        locationState = {},
         state = {
             /* Incremented as clues are solved and destinations reached. */
             pathIndex: -1,
@@ -49,7 +50,10 @@
 
     function setCourseScope(courseScope) {
         viewModel = courseScope;
+        /* We 'publish' this state. */
         viewModel.state = state;
+        /* We 'subscribe' to this state. */
+        locationState = viewModel.locationState;
     }
 
     /* Events changing Game State: */
@@ -101,7 +105,7 @@
         } else {
             state.currentGameStateKey = 'history';
             state.currentGameState = gameStates['history'];
-            state.currentGameState.title = "Location " + state.historyIndex;
+            state.currentGameState.title = viewModel.locations[state.historyIndex].name;
         }
     }
 
@@ -133,6 +137,7 @@
 
             setHistoryLocation: function (newIndex) {
                 state.historyIndex = newIndex;
+                viewModel.locationState.location = viewModel.locations[newIndex];
             },
 
             /* Flags. */
