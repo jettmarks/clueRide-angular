@@ -1,13 +1,13 @@
 <div class="status cr-common" ng-controller="StatusController as vm">
     <div class="cr-dataview">
         Path Index: {{state.pathIndex}}<br>
-        Location: {{}}
+        Location: {{locationState.location.name}}
     </div>
     <uib-pagination
             total-items="getLocationCount()"
             items-per-page="1"
-            ng-model="currentPage"
-            ng-change="onPageChange()"
+            ng-model="locationState.currentPage"
+            ng-change="locationState.pageChanged()"
             >
     </uib-pagination>
 </div>
