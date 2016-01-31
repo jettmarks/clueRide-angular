@@ -2,17 +2,22 @@
 <div class="location" ng-controller="LocationController">
     <div class="carousel">
         <div class="carousel-inner">
-            <div ng-repeat="imgUrl in location.imgUrl">
+            <div ng-repeat="imgUrl in locationState.location.imageUrls">
                 <div class="carousel-item" back-img="{{imgUrl}}">
                 </div>
             </div>
         </div>
     </div>
     <div class="loc-description">
-        {{location.name}}
+        {{locationState.location.name}}
         <div>
-            <uib-pagination direction-links="false" total-items="5" items-per-page="1"
-                            ng-model="currentPage" ng-change="pageChanged()"></uib-pagination>
+            <uib-pagination
+                    direction-links="false"
+                    total-items="locationState.lastLocationIndex()"
+                    items-per-page="1"
+                    ng-model="locationState.currentPage"
+                    ng-change="locationState.pageChanged()">
+            </uib-pagination>
         </div>
     </div>
 </div>
