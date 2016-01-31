@@ -178,6 +178,7 @@
 
     function stateToModel(data) {
         viewModel.state.pathIndex = data.pathIndex;
+        viewModel.state.mostRecentClueSolvedFlag = data.mostRecentClueSolvedFlag;
         if (data.currentGameStateKey) {
             updateGameState(data.currentGameStateKey);
         } else {
