@@ -51,6 +51,8 @@ public class GamePath implements Path {
     private List<Integer> edgeIds;
     private Integer startNodeId;
     private Integer endNodeId;
+    private Integer startLocationId;
+    private Integer endLocationId;
 
     /**
      * Used by Builder to construct our instances.
@@ -61,6 +63,8 @@ public class GamePath implements Path {
         this.startNodeId = builder.getStartNodeId();
         this.endNodeId = builder.getEndNodeId();
         this.edgeIds = ImmutableList.copyOf(builder.getEdgeIds());
+        this.startLocationId = builder.getStartLocationId();
+        this.endLocationId = builder.getEndLocationId();
     }
 
     @Override
@@ -90,12 +94,12 @@ public class GamePath implements Path {
 
     @Override
     public Integer getStartLocationId() {
-        return null;
+        return startLocationId;
     }
 
     @Override
     public Integer getEndLocationId() {
-        return null;
+        return endLocationId;
     }
 
     public static class Builder implements Path {
@@ -190,7 +194,7 @@ public class GamePath implements Path {
 
         @Override
         public Integer getEndLocationId() {
-            return null;
+            return endLocationId;
         }
 
         public static Builder getBuilder(NetworkEval networkEval) {

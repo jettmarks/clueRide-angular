@@ -27,11 +27,13 @@ import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.dao.CourseStore;
 import com.clueride.dao.DefaultNodeStore;
 import com.clueride.dao.ImageStore;
 import com.clueride.dao.JsonLocationStore;
 import com.clueride.dao.LocationStore;
 import com.clueride.dao.NodeStore;
+import com.clueride.dao.PathStore;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.LocationType;
@@ -47,9 +49,6 @@ public class DefaultLocationServiceTest {
     private static final Logger LOGGER = Logger.getLogger(DefaultLocationServiceTest.class);
 
     @Mock
-    private NodeStore nodeStore;
-
-    @Mock
     private NodeService nodeService;
 
     @Mock
@@ -57,6 +56,12 @@ public class DefaultLocationServiceTest {
 
     @Inject
     private ImageStore imageStore;
+
+    @Inject
+    private CourseStore courseStore;
+
+    @Inject
+    private PathStore pathStore;
 
     private LocationService toTest;
 
@@ -68,9 +73,15 @@ public class DefaultLocationServiceTest {
     @Test
     public void testGetLocation() throws Exception {
         // Actual instances for this test
-        nodeStore = new DefaultNodeStore();
+        NodeStore nodeStore = new DefaultNodeStore();
         locationStore = new JsonLocationStore(nodeStore);
-        toTest = new DefaultLocationService(locationStore, imageStore, nodeService);
+        toTest = new DefaultLocationService(
+                locationStore,
+                imageStore,
+                nodeService,
+                courseStore,
+                pathStore
+        );
         assertNotNull(toTest);
 
         Integer locationId = 1;
@@ -116,7 +127,13 @@ public class DefaultLocationServiceTest {
         }
         when(locationStore.getLocations()).thenReturn(locationList);
 
-        toTest = new DefaultLocationService(locationStore, imageStore, nodeService);
+        toTest = new DefaultLocationService(
+                locationStore,
+                imageStore,
+                nodeService,
+                courseStore,
+                pathStore
+        );
         assertNotNull(toTest);
 
         String actual = toTest.getNearestLocations(-10.0, 12.7);

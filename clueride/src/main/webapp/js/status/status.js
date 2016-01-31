@@ -17,7 +17,6 @@
         $scope.currentPage = currentPage;
         currentPage = gsSvc.getLocationIndex();
         $scope.onPageChange = onPageChange;
-        // TODO: Read from the Location Service
         $scope.getLocationCount = locationService.getLocationCount;
     }
 

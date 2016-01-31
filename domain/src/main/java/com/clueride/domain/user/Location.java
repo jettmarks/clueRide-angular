@@ -99,11 +99,11 @@ public class Location implements Step {
     /**
      * Enumeration of the type of Location.
      * Plays a role in helping select locations and categorizes them.
-     * @return
+     * @return Enumeration of the type of Location.
      */
     public LocationType getLocationType() {
         return locationType;
-    };
+    }
 
     /**
      * Link over to the geographical representation of this Location.

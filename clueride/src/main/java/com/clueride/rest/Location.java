@@ -17,13 +17,20 @@
  */
 package com.clueride.rest;
 
-import com.clueride.service.LocationService;
-import org.glassfish.jersey.media.multipart.FormDataParam;
+import java.io.InputStream;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.io.InputStream;
+
+import org.glassfish.jersey.media.multipart.FormDataParam;
+
+import com.clueride.service.LocationService;
 
 /**
  * Rest API for the Locations.
@@ -81,8 +88,8 @@ public class Location {
 
     /**
      * Endpoint for requesting the nearest 5 locations to offer the user for selection.
-     * @param lat
-     * @param lon
+     * @param lat - Latitude for current location.
+     * @param lon - Longitude for current location.
      * @return JSON array containing Location objects for the five nearest locations.
      */
     @GET
@@ -93,5 +100,12 @@ public class Location {
             @QueryParam("lon") Double lon
     ) {
         return locationService.getNearestLocations(lat, lon);
+    }
+
+    @GET
+    @Path("course")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getCourseLocations(@QueryParam("courseId") Integer courseId) {
+        return locationService.getCourseLocations(courseId);
     }
 }

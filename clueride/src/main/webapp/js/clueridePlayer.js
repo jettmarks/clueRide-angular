@@ -259,7 +259,7 @@ app.directive('dragMe', ['$drag', function($drag){
             drag.reset();
           }
         },
-        { // release touch when movement is outside bounduaries
+        { // release touch when movement is outside boundaries
           sensitiveArea: $element.parent()
         }
       );
@@ -267,13 +267,10 @@ app.directive('dragMe', ['$drag', function($drag){
   };
 }]);
 
-//
-// For this trivial demo we have just a unique MainController 
-// for everything
-//
+/* Main entry point for the application. */
 app.controller('MainController', [
-'$rootScope', '$scope', 'gameStateService',
-function($rootScope, $scope, gameStateService ) {
+'$rootScope', '$scope', 'gameStateService', 'locationService',
+function($rootScope, $scope, gameStateService, locationService ) {
 
   $scope.swiped = function(direction) {
     alert('Swiped ' + direction);
@@ -295,4 +292,7 @@ function($rootScope, $scope, gameStateService ) {
   $scope.course = {};
   gameStateService.setCourseScope($scope);
 
+  /* Bind the Location Service to the Scope. */
+  $scope.locations = {};
+  locationService.setLocationScope($scope);
 }]);
