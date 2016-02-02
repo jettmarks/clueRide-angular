@@ -11,12 +11,14 @@
                         ocm: {
                             name: 'OpenCycleMap',
                             type: 'xyz',
-                            url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+                            // url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+                            /* Proxy the HTTPS */
+                            url: '/tiles/{s}/{z}/{x}/{y}.png',
                             attribution: "All maps &copy; <a href=\"http://www.opencyclemap.org/\">OpenCycleMap</a>"
                         },
                         osm: {
                             name: 'OpenStreetMap',
-                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                             type: 'xyz'
                         }
                     }
