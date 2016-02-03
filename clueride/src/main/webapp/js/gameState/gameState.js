@@ -121,6 +121,16 @@
         return state.historyIndex;
     }
 
+    function getPathId() {
+        /* We don't show a path if the first clue hasn't been solved. */
+        if (state.pathIndex < 0) {
+            return undefined;
+        } else {
+            return viewModel.course.pathIds[state.pathIndex];
+        }
+
+    }
+
     function gameStateService () {
         return {
             // TODO: Find better way to set the scope; link in Controller
@@ -147,6 +157,7 @@
 
             /* Indices. */
             getLocationIndex: getLocationIndex,
+            getPathId: getPathId,
 
             maxVisibleLocationIndex: function () {
                 var candidateIndex = state.pathIndex;
