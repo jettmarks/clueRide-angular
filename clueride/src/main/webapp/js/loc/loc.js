@@ -33,7 +33,8 @@
     }
 
     function lastLocationIndex() {
-        return localModel.gsSvc.maxVisibleLocationIndex();
+        /* Index is zero-based; number of pages is one-based. */
+        return localModel.gsSvc.maxVisibleLocationIndex() + 1;
     }
 
     function pageChanged() {

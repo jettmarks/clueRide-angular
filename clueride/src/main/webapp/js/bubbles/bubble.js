@@ -25,6 +25,12 @@
                 dialogFlag = !!bubble.dialog,
                 pageFlag = !!bubble.nextView;
 
+            // TODO: There may be a less brittle way to do this CA-130
+            if (bubble.title === 'Next Stop') {
+                local.gsSvc.setHistoryLocation(local.gsSvc.maxVisibleLocationIndex());
+            }
+
+            /* Transition based on the Bubble's data. */
             if (dialogFlag) {
                 $rootScope.Ui.turnOn(bubble.dialog);
             } else if (pageFlag) {
