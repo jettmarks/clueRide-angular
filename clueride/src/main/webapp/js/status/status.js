@@ -17,6 +17,7 @@
         currentPage = gsSvc.getLocationIndex();
         $scope.onPageChange = onPageChange;
         $scope.getLocationCount = locationService.getLocationCount;
+        $scope.arrived = gameStateService.arrived;
     }
 
     function onPageChange() {
