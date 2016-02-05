@@ -1,8 +1,12 @@
 <link rel="stylesheet" href="./js/map/map.css"/>
-<div class="map" ng-controller="MapController">
+<div class="map" ng-controller="MapController as mapModel">
     <div class="mapFrame" id="location">
-        <leaflet layers="layers" center="center" markers="markers"
-                 geojson="geojson" geojson-nested="true"
-                 width="100%" height="inherit"></leaflet>
+        <leaflet layers="mapModel.layers"
+                 center="mapModel.center"
+                 markers="mapModel.markers"
+                 geojson="mapModel.geojson"
+                 geojson-nested="true"
+                 width="100%" height="inherit">
+        </leaflet>
     </div>
 </div>
