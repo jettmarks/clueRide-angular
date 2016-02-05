@@ -25,6 +25,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.user.Path;
 import com.clueride.feature.Edge;
 import com.clueride.geo.TranslateUtil;
@@ -54,6 +55,9 @@ public class PathBuilder {
         DefaultFeatureCollection fcNonPoints = new DefaultFeatureCollection();
         GeoNode node;
         node = (GeoNode) nodeStore.getNodeById(path.getStartNodeId());
+        // TODO: Consider the Path object knowing about the appropriate Node State
+        node.setState(NodeNetworkState.PATH_START);
+
         fcPoints.add(TranslateUtil.geoNodeToFeature(node));
         for (Integer edgeId : path.getEdgeIds()) {
             Edge edge = networkStore.getEdgeById(edgeId);
@@ -61,6 +65,7 @@ public class PathBuilder {
         }
 
         node = (GeoNode) nodeStore.getNodeById(path.getEndNodeId());
+        node.setState(NodeNetworkState.PATH_END);
         fcPoints.add(TranslateUtil.geoNodeToFeature(node));
 
         String pointResult = jsonRespWriter.toString(fcPoints);

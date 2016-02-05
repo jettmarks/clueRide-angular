@@ -37,5 +37,7 @@ public enum NodeNetworkState {
     ON_SEGMENT,
     ON_SINGLE_TRACK,
     ON_MULTI_TRACK,
+    PATH_START,
+    PATH_END,
     OFF_NETWORK
 }

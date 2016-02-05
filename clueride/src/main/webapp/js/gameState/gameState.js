@@ -126,9 +126,26 @@
         if (state.pathIndex < 0) {
             return undefined;
         } else {
-            return viewModel.course.pathIds[state.pathIndex];
+            if (viewModel.course.pathIds) {
+                return viewModel.course.pathIds[state.pathIndex];
+            } else {
+                return undefined;
+            }
         }
+    }
 
+    /**
+     * Returns an array of the completed Path IDs, possibly empty.
+     * @returns {Array}
+     */
+    function getCompletedPathIds() {
+        var result = [];
+        for (var i = state.pathIndex-1; i>=0; i--) {
+            if (viewModel.course.pathIds) {
+                result.push(viewModel.course.pathIds[state.pathIndex]);
+            }
+        }
+        return result;
     }
 
     function gameStateService () {
@@ -158,6 +175,7 @@
             /* Indices. */
             getLocationIndex: getLocationIndex,
             getPathId: getPathId,
+            getCompletedPathIds: getCompletedPathIds,
 
             maxVisibleLocationIndex: function () {
                 var candidateIndex = state.pathIndex;
