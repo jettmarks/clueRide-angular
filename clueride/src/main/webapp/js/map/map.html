@@ -1,7 +1,8 @@
 <link rel="stylesheet" href="./js/map/map.css"/>
 <div class="map" ng-controller="MapController as mapModel">
     <div class="mapFrame" id="location">
-        <leaflet layers="mapModel.layers"
+        <leaflet id="gameMap"
+                 layers="mapModel.layers"
                  center="mapModel.center"
                  markers="mapModel.markers"
                  geojson="mapModel.geojson"
