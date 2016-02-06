@@ -121,6 +121,18 @@
         return state.historyIndex;
     }
 
+    function getPathIndex() {
+        return state.pathIndex;
+    }
+
+    function setPathIndex(newPathIndex) {
+        state.pathIndex = newPathIndex;
+        state.pathId = getPathId();
+        if (newPathIndex === -1) {
+            updateGameState('beginPlay');
+        }
+    }
+
     function getPathId() {
         /* We don't show a path if the first clue hasn't been solved. */
         if (state.pathIndex < 0) {
@@ -174,6 +186,8 @@
 
             /* Indices. */
             getLocationIndex: getLocationIndex,
+            getPathIndex: getPathIndex,
+            setPathIndex: setPathIndex,
             getPathId: getPathId,
             getCompletedPathIds: getCompletedPathIds,
 

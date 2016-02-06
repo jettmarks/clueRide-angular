@@ -1,8 +1,8 @@
+<link rel="stylesheet" href="./js/status/status.css"/>
 <div class="status cr-common" ng-controller="StatusController as vm">
-    <div class="cr-dataview">
-        Path Index: {{state.pathIndex}}<br>
-        Location: {{locationState.location.name}}
-    </div>
+
+  <div id="historyControl" class="cr-dataview">
+    Location: {{locationState.location.name}}<br>
     <uib-pagination
             total-items="getLocationCount()"
             items-per-page="1"
@@ -10,7 +10,21 @@
             ng-change="locationState.pageChanged()"
             >
     </uib-pagination>
-    <div class="cr-dataview">
-         <button ng-click="arrived()">Arrived at Location</button>
-    </div>
+  </div>
+
+  <div id="pathControl" class="cr-dataview">
+    Path Index: {{state.pathIndex}}<br>
+    Path ID: {{state.pathId || 'Begin Play'}}<br>
+    <uib-pagination
+            total-items="getLocationCount()"
+            items-per-page="1"
+            ng-model="vm.pageForPath"
+            ng-change="vm.pathChange()"
+            >
+    </uib-pagination>
+  </div>
+
+  <div class="cr-dataview">
+    <button ng-click="arrived()">Arrived at Location</button>
+  </div>
 </div>
