@@ -37,6 +37,7 @@ import com.clueride.dao.PathStore;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.LocationType;
+import com.clueride.service.builder.LocationBuilder;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.assertNotNull;
@@ -56,6 +57,9 @@ public class DefaultLocationServiceTest {
 
     @Inject
     private ImageStore imageStore;
+
+    @Inject
+    private LocationBuilder locationBuilder;
 
     @Inject
     private CourseStore courseStore;
@@ -80,8 +84,8 @@ public class DefaultLocationServiceTest {
                 imageStore,
                 nodeService,
                 courseStore,
-                pathStore
-        );
+                pathStore,
+                locationBuilder);
         assertNotNull(toTest);
 
         Integer locationId = 1;
@@ -132,8 +136,8 @@ public class DefaultLocationServiceTest {
                 imageStore,
                 nodeService,
                 courseStore,
-                pathStore
-        );
+                pathStore,
+                locationBuilder);
         assertNotNull(toTest);
 
         String actual = toTest.getNearestLocations(-10.0, 12.7);

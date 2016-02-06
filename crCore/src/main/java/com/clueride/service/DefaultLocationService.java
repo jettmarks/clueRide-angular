@@ -40,6 +40,7 @@ import com.clueride.domain.Course;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.Path;
 import com.clueride.io.PojoJsonUtil;
+import com.clueride.service.builder.LocationBuilder;
 
 /**
  * Services requests for Locations.
@@ -52,6 +53,7 @@ public class DefaultLocationService implements LocationService {
     private final ImageStore imageStore;
     private final CourseStore courseStore;
     private final PathStore pathStore;
+    private final LocationBuilder locationBuilder;
 
     @Inject
     public DefaultLocationService(
@@ -59,13 +61,15 @@ public class DefaultLocationService implements LocationService {
             ImageStore imageStore,
             NodeService nodeService,
             CourseStore courseStore,
-            PathStore pathStore
+            PathStore pathStore,
+            LocationBuilder locationBuilder
     ) {
         this.locationStore = locationStore;
         this.imageStore = imageStore;
         this.nodeService = nodeService;
         this.courseStore = courseStore;
         this.pathStore = pathStore;
+        this.locationBuilder = locationBuilder;
     }
 
     @Override
@@ -78,6 +82,12 @@ public class DefaultLocationService implements LocationService {
             e.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    public String getLocationGeometry(Integer locationId) {
+        Location location = locationStore.getLocationById(locationId);
+        return locationBuilder.getLocationFeatureCollection(location);
     }
 
     @Override

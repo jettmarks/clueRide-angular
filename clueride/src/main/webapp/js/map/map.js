@@ -5,25 +5,38 @@
         localModel = {};
 
     angular
-        .module('crMap', ['leaflet-directive', 'crPlayer.GameState','crPlayer.Path','ui.bootstrap'])
+        .module('crMap', [
+            'leaflet-directive',
+            'crPlayer.GameState',
+            'crPlayer.Location',
+            'crPlayer.Path',
+            'common.CourseResource',
+            'ui.bootstrap'
+        ])
         .controller("MapController", MapController)
     ;
 
     MapController.$inject = [
-        '$scope',
         'gameStateService',
+        'locationService',
         'PathMapResource',
+        'CourseLocationMapResource',
         'leafletData'];
 
-    function MapController($scope, gameStateService, PathMapResource, leafletData) {
+    function MapController(
+        gameStateService,
+        locationService,
+        PathMapResource,
+        CourseLocationMapResource,
+        leafletData
+    ) {
         var pathId = gameStateService.getPathId(),
             completedPathIds = gameStateService.getCompletedPathIds();
-            localModel.leafletData = leafletData;
 
+        localModel.leafletData = leafletData;
         /* Sets up the Marker prefix so we get the ionic Icons. */
         L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 
-        //network = $scope;
         mapModel = this;
 
         mapModel.layers = {
@@ -65,7 +78,12 @@
                     pathId: completedPathIds[completedPathId]
                 }, featuresToMapHistory );
             }
+        } else if (locationService.locations) {
+            CourseLocationMapResource.getMap({
+                locationId:  locationService.getLocationId()
+            }, locationFeatureToMap );
         }
+
     }
 
     /**
@@ -141,6 +159,38 @@
                 onEachFeature: perFeatureCurrent
             }
         });
+    }
+
+    /**
+     * Used to display a single point on the map, centered and at closest zoom level.
+     * Generally used to show the origination of a Course.
+     * @param pointFeatures - from a GeoJson Feature Collection of a single point/node.
+     */
+    function locationFeatureToMap(pointFeatures) {
+        /* Replace previous dimensions of map. */
+        mapModel.featureBounds = undefined;
+
+        angular.extend(mapModel.geojson, {
+            location: {
+                data: pointFeatures,
+                pointToLayer: pointToLayer,
+                onEachFeature: perLocationFeature
+            }
+        });
+    }
+
+    function perLocationFeature(feature, layer) {
+        var center = {
+            lat: feature.geometry.coordinates[1],
+            lng: feature.geometry.coordinates[0]
+        };
+
+        localModel.leafletData.getMap('gameMap').then(function (gameMap)
+            {
+                gameMap.setView(center, 17);
+            }
+        );
+
     }
 
 }(window.angular));

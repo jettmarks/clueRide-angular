@@ -9,7 +9,7 @@ var app = angular.module('clueridePlayer', [
   'crPlayer.Bubble',
   'crPlayer.GameState',
   'crMap',
-  'crLocation',
+  'crPlayer.Location',
   'crLocEdit',
   'camera',
   'ngResource',
@@ -269,7 +269,10 @@ app.directive('dragMe', ['$drag', function($drag){
 
 /* Main entry point for the application. */
 app.controller('MainController', [
-'$rootScope', '$scope', 'gameStateService', 'locationService',
+  '$rootScope',
+  '$scope',
+  'gameStateService',
+  'locationService',
 function($rootScope, $scope, gameStateService, locationService ) {
 
   $scope.swiped = function(direction) {
@@ -295,4 +298,6 @@ function($rootScope, $scope, gameStateService, locationService ) {
   /* Bind the Location Service to the Scope. */
   $scope.locations = {};
   locationService.setLocationScope($scope);
+  locationService.init(gameStateService);
+
 }]);

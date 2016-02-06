@@ -28,9 +28,17 @@ public interface LocationService {
     /**
      * Given an ID, return the JSON string representing the Location.
      * @param locationId - Unique Integer ID for the Location.
-     * @return String JSON representing User's Loccation domain object.
+     * @return String JSON representing User's Location domain object.
      */
     String getLocation(Integer locationId);
+
+    /**
+     * Given an ID, return the GeoJSON Feature Collection which places the location
+     * on a map.
+     * @param locationId - ID of the location which tells us the Node and its position.
+     * @return GeoJSON Feature Collection with a single Point and its properties.
+     */
+    String getLocationGeometry(Integer locationId);
 
     /**
      * Handles upload request for a new image at the given location.
@@ -58,5 +66,4 @@ public interface LocationService {
      * @return Ordered array of Locations for the course.
      */
     String getCourseLocations(Integer courseId);
-
 }
