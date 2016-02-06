@@ -4,7 +4,7 @@
     var viewModel,
         gameStates = {},
         courseDataResource = {},
-        courseLocationResource = function () {},
+        courseLocationDataResource = function () {},
         gameStateResource = {},
     /* Consider user state versus overall game/team state. */
         locationState = {},
@@ -31,13 +31,13 @@
         .run(gameStateInit)
     ;
 
-    GameStateController.$inject = ['$scope', 'CourseDataResource', 'CourseLocationResource'];
+    GameStateController.$inject = ['$scope', 'CourseDataResource', 'CourseLocationDataResource'];
 
-    function GameStateController($scope, CourseDataResource, CourseLocationResource) {
+    function GameStateController($scope, CourseDataResource, CourseLocationDataResource) {
         $scope.vm = this;
 
         courseDataResource = CourseDataResource;
-        courseLocationResource = CourseLocationResource;
+        courseLocationDataResource = CourseLocationDataResource;
     }
 
     function dataToModel(course) {
@@ -234,12 +234,12 @@
         }
     }
 
-    function gameStateInit (CourseDataResource, GameStateResource, CourseLocationResource) {
+    function gameStateInit (CourseDataResource, GameStateResource, CourseLocationDataResource) {
         CourseDataResource.getData({
             /* Future: put the course ID here. */
         }, dataToModel);
 
-        CourseLocationResource.getData({
+        CourseLocationDataResource.getData({
             /* Future: put the course ID here too. */
         }, courseLocationsToModel);
 

@@ -13,7 +13,7 @@
         };
 
     angular
-        .module('crLocation',['crPlayer.GameState'])
+        .module('crPlayer.Location', ['crPlayer.GameState'])
         .controller('LocationController', LocationController)
         .directive('backImg', backImg)
         .service('locationService', locationService)
@@ -22,6 +22,10 @@
     LocationController.$inject = ['gameStateService'];
 
     function LocationController(gameStateService) {
+        init(gameStateService);
+    }
+
+    function init(gameStateService) {
         var locIndex = gameStateService.getLocationIndex();
 
         localModel.gsSvc = gameStateService;
@@ -52,10 +56,17 @@
         return viewModel.locations.length;
     }
 
+    function getLocationId() {
+        return viewModel.locations[localModel.gsSvc.getLocationIndex()].id;
+    }
+
     function locationService() {
         return {
             setLocationScope: setLocationScope,
-            getLocationCount: getLocationCount
+            getLocationCount: getLocationCount,
+            getLocationId: getLocationId,
+            locations: function () {return viewModel.locations;},
+            init: init
         }
     }
 

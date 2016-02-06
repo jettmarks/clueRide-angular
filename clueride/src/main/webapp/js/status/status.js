@@ -6,7 +6,7 @@
         vm;
 
     angular
-        .module('status', ['crPlayer.GameState','crLocation'])
+        .module('status', ['crPlayer.GameState','crPlayer.Location'])
         .controller('StatusController', StatusController)
     ;
 

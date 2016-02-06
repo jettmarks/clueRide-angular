@@ -53,12 +53,22 @@ public class Location {
     }
 
     /**
-     * Handles GET requests for specific Locations.
+     * Handles GET requests for the data supporting specific Locations.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getLocation(@QueryParam("id") Integer locationId) {
         return locationService.getLocation(locationId);
+    }
+
+    /**
+     * Handles GET requests for a location's Map.
+     */
+    @GET
+    @Path("map")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getLocationGeometry(@QueryParam("locationId") Integer locationId) {
+        return locationService.getLocationGeometry(locationId);
     }
 
     /**
@@ -108,4 +118,5 @@ public class Location {
     public String getCourseLocations(@QueryParam("courseId") Integer courseId) {
         return locationService.getCourseLocations(courseId);
     }
+
 }
