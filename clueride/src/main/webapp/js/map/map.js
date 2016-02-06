@@ -1,18 +1,24 @@
 (function (angular) {
     'use strict';
 
-    var mapModel;
+    var mapModel,
+        localModel = {};
 
     angular
         .module('crMap', ['leaflet-directive', 'crPlayer.GameState','crPlayer.Path','ui.bootstrap'])
         .controller("MapController", MapController)
     ;
 
-    MapController.$inject = ['$scope','gameStateService','PathMapResource'];
+    MapController.$inject = [
+        '$scope',
+        'gameStateService',
+        'PathMapResource',
+        'leafletData'];
 
-    function MapController($scope, gameStateService, PathMapResource) {
+    function MapController($scope, gameStateService, PathMapResource, leafletData) {
         var pathId = gameStateService.getPathId(),
             completedPathIds = gameStateService.getCompletedPathIds();
+            localModel.leafletData = leafletData;
 
         /* Sets up the Marker prefix so we get the ionic Icons. */
         L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
@@ -95,11 +101,22 @@
 
     function perFeatureCurrent(feature, layer) {
         if (feature.geometry.type === 'LineString') {
+            console.log("Feature ID: " + feature.properties.edgeId);
+            if (mapModel.featureBounds) {
+                mapModel.featureBounds.extend(layer.getBounds());
+            } else {
+                mapModel.featureBounds = layer.getBounds();
+            }
             layer.setStyle({
                 color: 'blue',
                 opacity: 0.4,
                 weight: 6
             });
+            localModel.leafletData.getMap('gameMap').then(function (gameMap)
+                {
+                    gameMap.fitBounds(mapModel.featureBounds);
+                }
+            );
         }
     }
 
@@ -114,6 +131,9 @@
     }
 
     function featuresToMapCurrent(pathFeatures) {
+        /* Clear out previous dimensions of map. */
+        mapModel.featureBounds = undefined;
+
         angular.extend(mapModel.geojson, {
             path: {
                 data: pathFeatures,
