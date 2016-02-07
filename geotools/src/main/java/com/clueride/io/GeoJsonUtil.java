@@ -192,10 +192,16 @@ public class GeoJsonUtil {
         DefaultFeatureCollection features = new DefaultFeatureCollection();
         GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
         FeatureJSON featureJson = new FeatureJSON(geometryJson);
-        if (haveSchema) {
-            featureJson.setFeatureType(FeatureType.SEGMENT_FEATURE_TYPE);
+        // TODO: Could improve the fragility of this approach for assigning Feature Type.
+        if (fileName.contains("Group")) {
+            /* Correcting logic for some feature collections (Node Group) CA-103. */
+            featureJson.setFeatureType(FeatureType.NODE_GROUP_FEATURE_TYPE);
         } else {
-            featureJson.setFeatureType(FeatureType.POINT_FEATURE_TYPE);
+            if (haveSchema) {
+                featureJson.setFeatureType(FeatureType.SEGMENT_FEATURE_TYPE);
+            } else {
+                featureJson.setFeatureType(FeatureType.POINT_FEATURE_TYPE);
+            }
         }
         FeatureIterator<SimpleFeature> featureIterator = featureJson
                 .streamFeatureCollection(file.getCanonicalFile());
