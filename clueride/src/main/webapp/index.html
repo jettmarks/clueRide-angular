@@ -43,6 +43,7 @@
     <script src="js/markers.js"></script>
     <script src="js/login/login.js"></script>
     <script src="js/badges/badges.js"></script>
+    <script src="js/menu/menu.js"></script>
     <script src="js/team/team.js"></script>
     <script src="js/course/CourseResource.js"></script>
     <script src="js/path/PathResource.js"></script>
@@ -64,13 +65,12 @@
     >
 
     <!-- Sidebars -->
-    <div ng-include="'sidebar.html'" 
+    <div ng-include="'js/menu/sidebar.html'"
             ui-track-as-search-param='true'
             class="sidebar sidebar-left"></div>
 
-    <!--TODO: Temporarily turned off to keep Team out of Scope-->
-    <!--<div ng-include="'sidebarRight.html'"-->
-            <!--class="sidebar sidebar-right"></div>-->
+    <div ng-include="'sidebarRight.html'"
+            class="sidebar sidebar-right"></div>
 
     <div class="app" 
          ui-swipe-right='Ui.turnOn("uiSidebarLeft")'
