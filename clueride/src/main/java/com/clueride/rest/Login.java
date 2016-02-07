@@ -42,9 +42,8 @@ public class Login {
         List<Badge> result = new ArrayList<>();
         if ("Jett".equals(crCredentials.name) && "adfhg".equals(crCredentials.password)) {
             result.add(Badge.TEAM_LEAD);
-        } else {
-            result.add(Badge.TEAM_MEMBER);
         }
+        result.add(Badge.TEAM_MEMBER);
         return result;
     }
 
