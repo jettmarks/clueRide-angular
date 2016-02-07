@@ -5,14 +5,14 @@
         localModel = {};
 
     angular
-        .module('crPlayer.LoginModule', ['ngResource'])
+        .module('crPlayer.LoginModule', ['ngResource', 'crPlayer.BadgesModule'])
         .controller('LoginController', LoginController)
         .factory('LoginResource', LoginResource)
     ;
 
-    LoginController.$inject = ['LoginResource'];
+    LoginController.$inject = ['LoginResource','BadgesService'];
 
-    function LoginController(LoginResource) {
+    function LoginController(LoginResource, BadgesService) {
         var vm = this;
 
         vm.loginName = "";
@@ -21,6 +21,7 @@
         vm.badges = {};
 
         localModel.loginResource = LoginResource;
+        localModel.badgesService = BadgesService;
 
         viewModel = vm;
     }
@@ -34,7 +35,7 @@
     }
 
     function receiveBadges(data) {
-        viewModel.badges = data;
+        localModel.badgesService.saveBadges(data);
     }
 
     function LoginResource ($resource) {

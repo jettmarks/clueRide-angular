@@ -14,9 +14,7 @@
             if (!toTest) {
                 /* Inject our instance of the service under test. */
                 inject(function($injector) {
-                    //this.gameStateService = $injector.get('gameStateService');
                     self.gameStateService = $injector.get('gameStateService');
-                    //this.gameStateService.clueSolved();
                     // Alias for the service
                     toTest = self.gameStateService;
                 });

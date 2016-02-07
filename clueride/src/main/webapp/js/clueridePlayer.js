@@ -1,12 +1,13 @@
 // 
 // Here is how to define your module 
-// has dependent on mobile-angular-ui
+// has dependency on mobile-angular-ui
 // 
 var app = angular.module('clueridePlayer', [
   'ngRoute',
   'team',
   'gps',
   'crPlayer.LoginModule',
+  'crPlayer.BadgesModule',
   'crPlayer.Bubble',
   'crPlayer.GameState',
   'crMap',
@@ -26,7 +27,7 @@ var app = angular.module('clueridePlayer', [
   // it is at a very beginning stage, so please be careful if you like to use
   // in production. This is intended to provide a flexible, integrated and and 
   // easy to use alternative to other 3rd party libs like hammer.js, with the
-  // final pourpose to integrate gestures into default ui interactions like 
+  // final purpose to integrate gestures into default ui interactions like
   // opening sidebars, turning switches on/off ..
   'mobile-angular-ui.gestures'
 ]);
@@ -274,7 +275,14 @@ app.controller('MainController', [
   '$scope',
   'gameStateService',
   'locationService',
-function($rootScope, $scope, gameStateService, locationService ) {
+  'BadgesService',
+function(
+    $rootScope,
+    $scope,
+    gameStateService,
+    locationService,
+    BadgesService
+) {
 
   $scope.swiped = function(direction) {
     alert('Swiped ' + direction);
@@ -292,7 +300,7 @@ function($rootScope, $scope, gameStateService, locationService ) {
     $rootScope.loading = false;
   });
 
-  // Bind the Course to the scope
+  /* Bind the Course to the scope. */
   $scope.course = {};
   gameStateService.setCourseScope($scope);
 
@@ -300,5 +308,9 @@ function($rootScope, $scope, gameStateService, locationService ) {
   $scope.locations = {};
   locationService.setLocationScope($scope);
   locationService.init(gameStateService);
+
+  /* Bind the Badges Service to the scope. */
+  $scope.badges = {};
+  BadgesService.setBadgeScope($scope);
 
 }]);
