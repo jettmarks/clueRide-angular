@@ -154,7 +154,7 @@
         var result = [];
         for (var i = state.pathIndex-1; i>=0; i--) {
             if (viewModel.course.pathIds) {
-                result.push(viewModel.course.pathIds[state.pathIndex]);
+                result.push(viewModel.course.pathIds[i]);
             }
         }
         return result;

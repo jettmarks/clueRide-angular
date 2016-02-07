@@ -17,13 +17,13 @@
  */
 package com.clueride.feature;
 
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import com.clueride.domain.dev.NodeNetworkState;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
 
 /**
  * Support for the Feature Types used in this application.
@@ -40,6 +40,7 @@ public class FeatureType {
     public static final SimpleFeatureType POINT_FEATURE_TYPE = buildPointInstance();
     public static final SimpleFeatureType NODE_GROUP_FEATURE_TYPE = buildNodeGroupInstance();
     public static final SimpleFeatureType TRACK_FEATURE_TYPE = buildTrackInstance();
+    public static final SimpleFeatureType PATH_FEATURE_TYPE = buildPathInstance();
 
     public static SimpleFeatureType buildEdgeInstance() {
 
@@ -98,6 +99,26 @@ public class FeatureType {
         builder.add("name", String.class);
         builder.add("state", NodeNetworkState.class);
         builder.add("selected", Boolean.class);
+        builder.add("the_geom", Point.class);
+
+        // build the type
+        final SimpleFeatureType featureType = builder.buildFeatureType();
+
+        return featureType;
+    }
+
+    private static SimpleFeatureType buildPathInstance() {
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("PathFeatureType");
+        builder.setNamespaceURI("http://clueride.com/");
+        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate reference system
+
+        // add attributes in order
+        builder.add("pathId", Integer.class);
+        builder.add("startNodeId", Integer.class);
+        builder.add("endNodeId", Integer.class);
+        builder.add("startLocationId", Integer.class);
+        builder.add("endLocationId", Integer.class);
         builder.add("the_geom", Point.class);
 
         // build the type

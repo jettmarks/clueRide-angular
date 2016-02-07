@@ -100,6 +100,14 @@
             });
         });
 
+        // TODO: Get this back into the stream; doesn't like the dependency on course
+        //describe("having set out on second path", function () {
+        //    it('should have completed path different from current path', function () {
+        //        toTest.clueSolved();
+        //        expect(toTest.getPathIndex()).toNotEqual(toTest.getCompletedPathIds()[0]);
+        //    });
+        //});
+
     });
 
 }());

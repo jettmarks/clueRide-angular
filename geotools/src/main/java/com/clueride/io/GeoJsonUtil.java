@@ -336,6 +336,9 @@ public class GeoJsonUtil {
         String result = "";
         GeometryJSON geometryJson = new GeometryJSON(DIGITS_OF_PRECISION);
         FeatureJSON featureJson = new FeatureJSON(geometryJson);
+        if (feature.getFeatureType().equals(FeatureType.PATH_FEATURE_TYPE)) {
+            featureJson.setFeatureType(feature.getFeatureType());
+        }
         try {
             result = featureJson.toString(feature);
         } catch (IOException e) {
