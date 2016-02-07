@@ -6,6 +6,7 @@ var app = angular.module('clueridePlayer', [
   'ngRoute',
   'team',
   'gps',
+  'crPlayer.LoginModule',
   'crPlayer.Bubble',
   'crPlayer.GameState',
   'crMap',
