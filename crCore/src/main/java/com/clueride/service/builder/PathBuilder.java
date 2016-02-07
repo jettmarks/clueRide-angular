@@ -20,6 +20,7 @@ package com.clueride.service.builder;
 import javax.inject.Inject;
 
 import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.dao.NetworkStore;
@@ -28,6 +29,7 @@ import com.clueride.domain.GeoNode;
 import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.user.Path;
 import com.clueride.feature.Edge;
+import com.clueride.feature.FeatureType;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
@@ -53,6 +55,7 @@ public class PathBuilder {
         GeoJsonUtil jsonRespWriter = new GeoJsonUtil(JsonStoreType.OTHER);
         DefaultFeatureCollection fcPoints = new DefaultFeatureCollection();
         DefaultFeatureCollection fcNonPoints = new DefaultFeatureCollection();
+
         GeoNode node;
         node = (GeoNode) nodeStore.getNodeById(path.getStartNodeId());
         // TODO: Consider the Path object knowing about the appropriate Node State
@@ -68,14 +71,33 @@ public class PathBuilder {
         node.setState(NodeNetworkState.PATH_END);
         fcPoints.add(TranslateUtil.geoNodeToFeature(node));
 
-        String pointResult = jsonRespWriter.toString(fcPoints);
         StringBuilder stringBuffer = new StringBuilder();
+
+        // Add in the points
+        String pointResult = jsonRespWriter.toString(fcPoints);
         stringBuffer.append(pointResult.substring(0, pointResult.length()-2));
+
+        // Identify this collection as belonging to a specific path
+        SimpleFeatureBuilder featureBuilder = getPathFeatureBuilder(path);
+        String pathResult = jsonRespWriter.toString(featureBuilder.buildFeature(null));
+        stringBuffer.append(",\n").append(pathResult);
+
+        // Now add in each of the legs/edges
         for (SimpleFeature feature : fcNonPoints) {
             stringBuffer.append(",").append(jsonRespWriter.toString(feature));
         }
 
         stringBuffer.append("]}");
         return stringBuffer.toString();
+    }
+
+    public SimpleFeatureBuilder getPathFeatureBuilder(Path path) {
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(FeatureType.PATH_FEATURE_TYPE);
+        featureBuilder.add(path.getId());
+        featureBuilder.add(path.getStartNodeId());
+        featureBuilder.add(path.getEndNodeId());
+        featureBuilder.add(path.getStartLocationId());
+        featureBuilder.add(path.getEndLocationId());
+        return featureBuilder;
     }
 }

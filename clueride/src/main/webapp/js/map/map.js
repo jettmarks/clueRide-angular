@@ -30,10 +30,12 @@
         CourseLocationMapResource,
         leafletData
     ) {
-        var pathId = gameStateService.getPathId(),
-            completedPathIds = gameStateService.getCompletedPathIds();
+        var pathId = gameStateService.getPathId();
 
         localModel.leafletData = leafletData;
+        localModel.pathMapResource = PathMapResource;
+        localModel.completedPathIds = gameStateService.getCompletedPathIds();
+
         /* Sets up the Marker prefix so we get the ionic Icons. */
         L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 
@@ -70,20 +72,26 @@
 
         /* Put the current path on the map (unless we don't have one). */
         if (pathId) {
+            console.log("Retrieving (current) map for Path " + pathId);
             PathMapResource.getMap({
                 pathId: pathId
             }, featuresToMapCurrent );
-            for (var completedPathId in completedPathIds) {
-                PathMapResource.getMap({
-                    pathId: completedPathIds[completedPathId]
-                }, featuresToMapHistory );
+            for (var completedPathId in localModel.completedPathIds) {
+                makeHistoricalPathMapRequest(completedPathId)
             }
         } else if (locationService.locations) {
             CourseLocationMapResource.getMap({
                 locationId:  locationService.getLocationId()
             }, locationFeatureToMap );
         }
+    }
 
+    function makeHistoricalPathMapRequest(p) {
+        var pathId = localModel.completedPathIds[p];
+        console.log("Retrieving (historical) map for Path " + pathId);
+        localModel.pathMapResource.getMap({
+            pathId: pathId
+        }, featuresToMapHistory );
     }
 
     /**
@@ -110,9 +118,9 @@
     function perFeatureHistory(feature, layer) {
         if (feature.geometry.type === 'LineString') {
             layer.setStyle({
-                color: 'green',
-                opacity: 0.6,
-                weight: 9
+                color: 'blue',
+                opacity: 0.4,
+                weight: 6
             });
         }
     }
@@ -126,9 +134,9 @@
                 mapModel.featureBounds = layer.getBounds();
             }
             layer.setStyle({
-                color: 'blue',
-                opacity: 0.4,
-                weight: 6
+                color: 'green',
+                opacity: 0.6,
+                weight: 9
             });
             localModel.leafletData.getMap('gameMap').then(function (gameMap)
                 {
@@ -139,26 +147,46 @@
     }
 
     function featuresToMapHistory(pathFeatures) {
-        angular.extend(mapModel.geojson, {
-            path: {
+        var pathId;
+
+        // TODO: Brittle - order dependent
+        pathId = pathFeatures.features[2].properties.pathId;
+
+        // Define something if it isn't there already
+        if (!mapModel.geojson[pathId]) {
+            mapModel.geojson[pathId] = {};
+        }
+
+        angular.extend(mapModel.geojson[pathId],
+            {
                 data: pathFeatures,
                 pointToLayer: pointToLayer,
                 onEachFeature: perFeatureHistory
             }
-        });
+        );
     }
 
     function featuresToMapCurrent(pathFeatures) {
+        var pathId;
+
         /* Clear out previous dimensions of map. */
         mapModel.featureBounds = undefined;
 
-        angular.extend(mapModel.geojson, {
-            path: {
+        // TODO: Brittle - order dependent
+        pathId = pathFeatures.features[2].properties.pathId;
+
+        // Define something if it isn't there already
+        if (!mapModel.geojson[pathId]) {
+            mapModel.geojson[pathId] = {};
+        }
+
+        angular.extend(mapModel.geojson[pathId],
+            {
                 data: pathFeatures,
                 pointToLayer: pointToLayer,
                 onEachFeature: perFeatureCurrent
             }
-        });
+        );
     }
 
     /**
