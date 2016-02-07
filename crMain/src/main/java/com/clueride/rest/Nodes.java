@@ -31,6 +31,7 @@ import com.clueride.rest.dto.LatLonPair;
 import com.clueride.rest.dto.PointId;
 import com.clueride.rest.dto.RecId;
 import com.clueride.service.NodeService;
+import com.clueride.service.RecommendationService;
 
 /**
  * Maps between the locations end point and the LocationService which knows how
@@ -42,11 +43,13 @@ import com.clueride.service.NodeService;
 // TODO: Survey the endpoints to learn which ones are still in use -- or plan to be used.
 @Path("nodes")
 public class Nodes {
-    private NodeService nodeService;
+    private final NodeService nodeService;
+    private final RecommendationService recService;
 
     @Inject
-    public Nodes(NodeService nodeService) {
+    public Nodes(NodeService nodeService, RecommendationService recService) {
         this.nodeService = nodeService;
+        this.recService = recService;
     }
 
     /**
@@ -60,7 +63,7 @@ public class Nodes {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
     public String getRecGeometry(@QueryParam("recId") Integer recId) {
-        return nodeService.getRecGeometry(recId);
+        return recService.getRecGeometry(recId);
     }
 
     /**
@@ -91,7 +94,7 @@ public class Nodes {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
     public String confirmProposedSegment(RecId recId ) {
-        return nodeService.confirmRecommendation(recId.recId);
+        return recService.confirmRecommendation(recId.recId);
     }
 
     @GET

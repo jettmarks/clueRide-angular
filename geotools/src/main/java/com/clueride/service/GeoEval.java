@@ -206,4 +206,9 @@ public class GeoEval {
         }
         return networkEdge;
     }
+
+    public Edge getMatchingEdge(GeoNode newNode) {
+        Integer edgeId = matchesSegmentId(newNode);
+        return (EDGE_STORE.getEdgeById(edgeId));
+    }
 }

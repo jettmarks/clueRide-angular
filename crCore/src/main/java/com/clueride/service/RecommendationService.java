@@ -37,4 +37,16 @@ public interface RecommendationService {
     NetworkProposal buildProposalForNewNode(GeoNode newNode);
 
     String getRecGeometry(Integer recId);
+
+    /**
+     * Implementation of a request to confirm the latest proposal as the one we
+     * want to add to the network.
+     *
+     * The NetworkProposal instance we stashed away will hold the details needed
+     * to create the objects we add to the persisted network.
+     * @param recId - Integer representing the unique recommendation to be committed
+     *              to the network.
+     */
+    String confirmRecommendation(Integer recId);
+
 }

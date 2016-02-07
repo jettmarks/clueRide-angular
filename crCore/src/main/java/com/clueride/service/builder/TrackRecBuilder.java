@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright 2015 Jett Marks
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,20 +17,27 @@
  */
 package com.clueride.service.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.opengis.feature.simple.SimpleFeature;
+
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.dev.rec.*;
+import com.clueride.domain.dev.rec.DiagnosticRec;
+import com.clueride.domain.dev.rec.OnTrack;
+import com.clueride.domain.dev.rec.Rec;
+import com.clueride.domain.dev.rec.ToNodeImpl;
+import com.clueride.domain.dev.rec.ToSegmentAndNodeImpl;
+import com.clueride.domain.dev.rec.ToSegmentImpl;
+import com.clueride.domain.dev.rec.ToTwoNodesImpl;
+import com.clueride.domain.dev.rec.ToTwoSegmentsImpl;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
 import com.clueride.geo.SplitLineString;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.service.TrackEval;
-import org.apache.log4j.Logger;
-import org.opengis.feature.simple.SimpleFeature;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.clueride.geo.SplitLineString.END;
 import static com.clueride.geo.SplitLineString.START;
 

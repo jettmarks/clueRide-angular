@@ -18,8 +18,8 @@
 package com.clueride.domain.dev.rec;
 
 import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.feature.Edge;
-
 import static com.clueride.domain.dev.rec.NetworkRecType.ON_SEGMENT;
 
 /**
@@ -37,12 +37,17 @@ public class OnSegmentImpl extends RecImpl implements OnSegment {
     private final Edge onNetworkSegment;
 
     /**
-     * @param requestedNode
-     * @param onNetworkSegment
+     * @param requestedNode - GeoNode representation of the new Node.
+     * @param onNetworkSegment - Segment we've already found contains the new node.
      */
     public OnSegmentImpl(GeoNode requestedNode, Edge onNetworkSegment) {
         super(requestedNode);
         this.onNetworkSegment = onNetworkSegment;
+
+        requestedNode.setState(NodeNetworkState.ON_SEGMENT);
+        // Makes the highlight Green and the segment selectable
+        onNetworkSegment.setDisplayName("Proposed");
+        addFeature(onNetworkSegment.getFeature());
     }
 
     /**
@@ -71,9 +76,8 @@ public class OnSegmentImpl extends RecImpl implements OnSegment {
 
     @Override
     public int getFeatureCount() {
-        // Interesting since this recommends a split of one Segment into Two, but no features?
-        // TODO: Understanding this may help determine how I want to implement this Rec
-        return 0;
+        /* Existing segment (to be replaced by two new segments) plus the new node: 2, about to be 3 with a net of 2. */
+        return 2;
     }
 
     /**

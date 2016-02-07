@@ -53,15 +53,21 @@ public class NetworkEvalImpl implements NetworkEval {
 
         for (Integer edgeId : path.getEdgeIds()) {
             Edge edge = networkStore.getEdgeById(edgeId);
+            if (edge == null) {
+                String message = "Missing Edge (" + edgeId + ") in path (" + path.getId() + ")";
+                System.err.println(message);
+                throw new IllegalStateException(message);
+            }
             if (walkingNodeId.equals(edge.getStart().getId())) {
                 walkingNodeId = edge.getEnd().getId();
             } else if (walkingNodeId.equals(edge.getEnd().getId())) {
                 walkingNodeId = edge.getStart().getId();
             } else {
-                throw new IllegalStateException("Gap found in path " + path.getId()
-                        + ": Last matching Node: " + walkingNodeId
-                        + ": Edge ID " + edgeId + " not connected"
-                );
+                String message = "Gap found in path " + path.getId()
+                                + ": Last matching Node: " + walkingNodeId
+                                + ": Edge ID " + edgeId + " not connected";
+                System.err.println(message);
+                throw new IllegalStateException(message);
             }
         }
     }

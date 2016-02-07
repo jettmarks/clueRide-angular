@@ -122,6 +122,7 @@
         // Clear out previous set of choices
         viewModel.recs.splice(0);
         switch(networkProposal.type) {
+            case 'ON_SEGMENT':
             case 'ON_MULTI_TRACK':
             case 'ON_SINGLE_TRACK':
                 /* Send relevant rec list over to Rec Selection code. */
