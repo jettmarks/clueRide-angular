@@ -37,7 +37,7 @@
             getMap: {
                 method: 'GET',
                 /* Hardcoded until we have more than one course. */
-                params: {courseId: 2},
+                params: {courseId: 3},
                 isArray: false
             }
         });
@@ -48,7 +48,7 @@
             getData: {
                 method: 'GET',
                 /* Hardcoded until we have more than one course. */
-                params: {courseId: 2},
+                params: {courseId: 3},
                 isArray: false
             }
         });

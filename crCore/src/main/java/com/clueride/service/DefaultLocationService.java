@@ -116,7 +116,8 @@ public class DefaultLocationService implements LocationService {
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
-            if (++count == 5) break;
+            count++;
+//            if (++count == 5) break;
         }
         jsonBuilder.append(']');
         return jsonBuilder.toString();

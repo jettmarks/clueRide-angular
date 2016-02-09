@@ -1,6 +1,8 @@
 (function (angular) {
     'use strict';
 
+    var selectedCourse = 3;
+
     angular
         .module('common.CourseResource', ['ngResource'])
         .factory('CourseMapResource', CourseMapResource)
@@ -14,7 +16,7 @@
             getMap: {
                 method: 'GET',
                 /* Hardcoded until we have more than one course. */
-                params: {courseId: 2},
+                params: {courseId: selectedCourse},
                 isArray: false
             }
         });
@@ -25,7 +27,7 @@
             getData: {
                 method: 'GET',
                 /* Hardcoded until we have more than one course. */
-                params: {courseId: 2},
+                params: {courseId: selectedCourse},
                 isArray: false
             }
         });
@@ -36,7 +38,7 @@
             getData: {
                 method: 'GET',
                 /* Hardcoded until we have more than one course. */
-                params: {courseId: 2},
+                params: {courseId: selectedCourse},
                 isArray: true
             }
         });

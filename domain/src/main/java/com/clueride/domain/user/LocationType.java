@@ -25,7 +25,7 @@ public enum LocationType {
     RETAIL("Retail"),
     BEVERAGES_TO_GO("Beverages to Go"),
     ART_SCULPTURE("Art & Sculpture"),
-    LITTLE_DOOR("Little Door"),
+    TINY_DOOR("Tiny Door"),
     MUSEUM("Museum"),
     PICNIC("Picnic: Parks, Cemeteries, Squares"),
     SCENIC("Scenic"),
