@@ -89,8 +89,9 @@ public class DefaultNetwork implements Network {
 
     /**
      * Constructor that loads itself from stored location.
+     * Opened up for Guice to get to.
      */
-    private DefaultNetwork() {
+    public DefaultNetwork() {
         networkStore = DefaultNetworkStore.getInstance();
         allLineFeatures = networkStore.getLineFeatures();
 
@@ -183,6 +184,14 @@ public class DefaultNetwork implements Network {
     @Override
     public List<LineFeature> getLineFeaturesForNodeId(Integer pointId) {
         return new ArrayList<>(lineFeaturesPerNodeId.get(pointId));
+    }
+
+    @Override
+    public void refreshIndices() {
+        lineFeaturesPerNodeId = new HashMap<>();
+        for (LineFeature lineFeature : allLineFeatures) {
+            validateConnections(lineFeature);
+        }
     }
 
     /**

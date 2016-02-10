@@ -28,6 +28,7 @@
         'leafletMarkerEvents',
         'RawSegments',
         'LocDiagResource',
+        'NetworkResource',
         'NetworkRefresh',
         'newNodeService',
         'ShowNodesService',
@@ -39,6 +40,7 @@
                             leafletMarkerEvents,
                             RawSegments,
                             LocDiagResource,
+                            NetworkResource,
                             NetworkRefresh,
                             newNodeService,
                             ShowNodesService,
@@ -97,9 +99,9 @@
 
         // Bind the scope's segments with the service's segments
         MapService.setMapScope($scope);
-        NetworkRefresh.refresh();
         mapModel.gjNetwork.segments = NetworkRefresh.segments();
         mapModel.selectedSegment = NetworkRefresh.selectedSegment();
+        NetworkRefresh.load(NetworkResource);
 
         //mapModel.showNodes = ShowNodesService.showNodes();
 
