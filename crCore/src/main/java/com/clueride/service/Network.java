@@ -51,4 +51,10 @@ public interface Network {
     void storesReadyForPublishing();
 
     List<LineFeature> getLineFeaturesForNodeId(Integer pointId);
+
+    /**
+     * Rebuilds indices from the in-memory copy of the data.
+     */
+    void refreshIndices();
+
 }

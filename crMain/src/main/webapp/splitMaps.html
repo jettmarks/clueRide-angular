@@ -21,7 +21,6 @@
   <script src="js/node/NodeAddModule.js"></script>
   <script src="js/node/NodeEditModule.js"></script>
   <script src="js/network/NetworkModule.js"></script>
-  <script src="js/network/NetworkService.js"></script>
   <script src="js/lg/LocGroupModule.js"></script>
   <script src="js/lg/LocGroupService.js"></script>
   <script src="js/where/where.js"></script>
@@ -56,7 +55,9 @@
     <!--<cr-edit-mode></cr-edit-mode>-->
     <cr-rec-select network="mapModel.gjNetwork"></cr-rec-select>
     <p> Segment ID: <span ng-bind="mapModel.selectedSegment.properties.edgeId"></span>
-    <p> <span><button ng-click="NetworkRefresh.refresh()">Refresh</button></span>
+    <div ng-controller="NetworkController">
+      <p> <span><button ng-click="networkRefresh.refresh()">Refresh</button></span>
+    </div>
     <p> Network Segments: <span ng-bind="NetworkRefresh.segments()"></span><p>
     <p> Center: {{mapModel.center.lat | number:5}}, {{mapModel.center.lng | number:5}}
   </div>

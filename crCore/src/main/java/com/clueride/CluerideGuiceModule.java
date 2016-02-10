@@ -21,20 +21,7 @@ import com.google.inject.AbstractModule;
 
 import com.clueride.dao.FileImageStore;
 import com.clueride.dao.ImageStore;
-import com.clueride.service.CourseService;
-import com.clueride.service.CourseServiceImpl;
-import com.clueride.service.DefaultLocationService;
-import com.clueride.service.DefaultNodeService;
-import com.clueride.service.DefaultRecommendationService;
-import com.clueride.service.GameStateService;
-import com.clueride.service.GameStateServiceImpl;
-import com.clueride.service.LocationService;
-import com.clueride.service.NetworkEval;
-import com.clueride.service.NetworkEvalImpl;
-import com.clueride.service.NodeService;
-import com.clueride.service.PathService;
-import com.clueride.service.PathServiceImpl;
-import com.clueride.service.RecommendationService;
+import com.clueride.service.*;
 
 /**
  * Bindings for Guice in the Clueride Module.
@@ -46,8 +33,10 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(LocationService.class).to(DefaultLocationService.class);
         bind(CourseService.class).to(CourseServiceImpl.class);
         bind(PathService.class).to(PathServiceImpl.class);
+        bind(ControlService.class).to(DefaultControlService.class);
         bind(GameStateService.class).to(GameStateServiceImpl.class);
         bind(NodeService.class).to(DefaultNodeService.class);
+        bind(Network.class).to(DefaultNetwork.class);
         bind(ImageStore.class).to(FileImageStore.class);
         bind(NetworkEval.class).to(NetworkEvalImpl.class);
     }
