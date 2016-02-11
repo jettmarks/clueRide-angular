@@ -24,7 +24,7 @@ import java.util.Map;
 import com.jettmarks.gmaps.encoder.Track;
 import com.vividsolutions.jts.geom.LineString;
 
-import com.clueride.dao.DefaultTrackStore;
+import com.clueride.dao.JsonTrackStore;
 import com.clueride.dao.TrackStore;
 import com.clueride.domain.TrackFeatureImpl;
 import com.clueride.domain.dev.GpxBasedTrackImpl;
@@ -47,7 +47,7 @@ import com.clueride.io.JsonStoreType;
 public class GPXtoFeature {
 
     private static String tag = "inbox";
-    private static TrackStore trackStore = DefaultTrackStore.getInstance();
+    private static TrackStore trackStore = JsonTrackStore.getInstance();
 
     /**
      * Very useful utility, but I'll resurrect it when I need it.

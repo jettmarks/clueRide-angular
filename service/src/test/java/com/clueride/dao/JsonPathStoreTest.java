@@ -52,8 +52,8 @@ public class JsonPathStoreTest {
         injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
-                bind(NodeStore.class).to(DefaultNodeStore.class);
-                bind(NetworkStore.class).to(DefaultNetworkStore.class);
+                bind(NodeStore.class).to(JsonNodeStore.class);
+                bind(NetworkStore.class).to(JsonNetworkStore.class);
                 bind(NetworkEval.class).to(NetworkEvalImpl.class);
                 bind(PathStore.class).to(JsonPathStore.class);
             }

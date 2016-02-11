@@ -23,8 +23,8 @@ import com.google.inject.Injector;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.DefaultNodeStore;
+import com.clueride.dao.JsonNetworkStore;
+import com.clueride.dao.JsonNodeStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.service.IdProvider;
@@ -41,7 +41,7 @@ public class GamePathTest {
     private GamePath toTest;
     private IdProvider idProvider = new MemoryBasedPathIdProvider();
     private Injector injector;
-    private NetworkStore networkStore = DefaultNetworkStore.getInstance();
+    private NetworkStore networkStore = JsonNetworkStore.getInstance();
     private NetworkEval networkEval;
 
     private Integer startNodeId = 30;
@@ -54,7 +54,7 @@ public class GamePathTest {
         injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
-                bind(NodeStore.class).to(DefaultNodeStore.class);
+                bind(NodeStore.class).to(JsonNodeStore.class);
                 bind(NetworkStore.class).toInstance(networkStore);
                 bind(NetworkEval.class).to(NetworkEvalImpl.class);
             }

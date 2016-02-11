@@ -17,7 +17,9 @@
  */
 package com.clueride.apps;
 
-import com.clueride.dao.DefaultNetworkStore;
+import java.util.Set;
+
+import com.clueride.dao.JsonNetworkStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.feature.Edge;
@@ -25,8 +27,6 @@ import com.clueride.feature.FeatureType;
 import com.clueride.feature.LineFeature;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
-
-import java.util.Set;
 
 /**
  * Name of this class explains pretty well that we're taking a Feature
@@ -50,7 +50,7 @@ public class NetworkFeatureCollectionToIndividualFiles {
         // JsonStoreLocation.setTestMode();
 
         // Pick up the Edge instances from the default location for Edges.
-        NetworkStore networkStore = DefaultNetworkStore.getInstance();
+        NetworkStore networkStore = JsonNetworkStore.getInstance();
         // Set<Edge> edges = networkStore.getEdges();
         // if (edges == null) {
         // System.err.println("Not able to load the Edges from the Network");

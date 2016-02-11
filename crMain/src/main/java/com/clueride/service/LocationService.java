@@ -27,7 +27,7 @@ import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.clueride.dao.DefaultNodeStore;
+import com.clueride.dao.JsonNodeStore;
 import com.clueride.dao.NetworkProposalStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.domain.DefaultGeoNode;
@@ -67,7 +67,7 @@ public class LocationService {
     private Network network = DefaultNetwork.getInstance();
 
     private static int countBuildNewLocRequests;
-    private static NodeStore nodeStore = DefaultNodeStore
+    private static NodeStore nodeStore = JsonNodeStore
             .getInstance();
 
     /**

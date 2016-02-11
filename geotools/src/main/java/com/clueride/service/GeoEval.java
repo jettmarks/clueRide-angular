@@ -27,9 +27,9 @@ import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
 
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.DefaultNodeStore;
-import com.clueride.dao.DefaultTrackStore;
+import com.clueride.dao.JsonNetworkStore;
+import com.clueride.dao.JsonNodeStore;
+import com.clueride.dao.JsonTrackStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.dao.TrackStore;
@@ -53,11 +53,11 @@ public class GeoEval {
     private static final Logger LOGGER = Logger.getLogger(GeoEval.class);
 
     private static GeoEval instance;
-    private static final NodeStore LOCATION_STORE = DefaultNodeStore
+    private static final NodeStore LOCATION_STORE = JsonNodeStore
             .getInstance();
-    private static final NetworkStore EDGE_STORE = DefaultNetworkStore
+    private static final NetworkStore EDGE_STORE = JsonNetworkStore
             .getInstance();
-    private static final TrackStore TRACK_STORE = DefaultTrackStore
+    private static final TrackStore TRACK_STORE = JsonTrackStore
             .getInstance();
 
     /**

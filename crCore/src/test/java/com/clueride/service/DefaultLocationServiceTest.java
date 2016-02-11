@@ -28,9 +28,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.clueride.dao.CourseStore;
-import com.clueride.dao.DefaultNodeStore;
 import com.clueride.dao.ImageStore;
 import com.clueride.dao.JsonLocationStore;
+import com.clueride.dao.JsonNodeStore;
 import com.clueride.dao.LocationStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.dao.PathStore;
@@ -77,7 +77,7 @@ public class DefaultLocationServiceTest {
     @Test
     public void testGetLocation() throws Exception {
         // Actual instances for this test
-        NodeStore nodeStore = new DefaultNodeStore();
+        NodeStore nodeStore = new JsonNodeStore();
         locationStore = new JsonLocationStore(nodeStore);
         toTest = new DefaultLocationService(
                 locationStore,

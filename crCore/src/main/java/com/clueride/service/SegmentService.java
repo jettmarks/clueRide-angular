@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.clueride.dao.DefaultNetworkStore;
+import com.clueride.dao.JsonNetworkStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
@@ -39,7 +39,7 @@ import com.clueride.io.JsonStoreType;
  */
 public class SegmentService {
     private static final Logger LOGGER = Logger.getLogger(SegmentService.class);
-    private static NetworkStore networkStore = DefaultNetworkStore
+    private static NetworkStore networkStore = JsonNetworkStore
             .getInstance();
 
     /**

@@ -43,19 +43,19 @@ import com.clueride.service.TrackIdProvider;
  *
  * @author jett
  */
-public class DefaultTrackStore implements TrackStore {
+public class JsonTrackStore implements TrackStore {
 
     private static final Logger LOGGER = Logger
-            .getLogger(DefaultTrackStore.class);
+            .getLogger(JsonTrackStore.class);
 
-    private static DefaultTrackStore instance = null;
+    private static JsonTrackStore instance = null;
     private TrackIdProvider idProvider = new TrackIdProvider();
     private static Map<Integer, TrackFeature> trackPerId = new HashMap<>();
     private static GeoJsonUtil jsonUtilTracks = new GeoJsonUtil(JsonStoreType.RAW);
 
-    public static DefaultTrackStore getInstance() {
+    public static JsonTrackStore getInstance() {
         if (instance == null) {
-            instance = new DefaultTrackStore();
+            instance = new JsonTrackStore();
         }
         return instance;
     }
@@ -63,7 +63,7 @@ public class DefaultTrackStore implements TrackStore {
     /**
      * Use {@link:getInstance()}
      */
-    private DefaultTrackStore() {
+    private JsonTrackStore() {
         try {
             this.loadAllFeatures();
         } catch (IOException e) {
@@ -130,7 +130,7 @@ public class DefaultTrackStore implements TrackStore {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("DefaultTrackStore [getTrackFeatures()=").append(
+        builder.append("JsonTrackStore [getTrackFeatures()=").append(
                 getTrackFeatures()).append("]");
         return builder.toString();
     }

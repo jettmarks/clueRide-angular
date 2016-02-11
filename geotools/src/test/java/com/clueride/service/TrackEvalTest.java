@@ -22,7 +22,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.DefaultTrackStore;
+import com.clueride.dao.JsonTrackStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.factory.PointFactory;
@@ -47,7 +47,7 @@ public class TrackEvalTest {
     public void setUp() throws Exception {
         Point point = PointFactory.getJtsInstance(33.79682, -84.35004, 295.0);
         GeoNode newLoc = new DefaultGeoNode(point);
-        TrackFeature track = DefaultTrackStore.getInstance().getTrackById(25);
+        TrackFeature track = JsonTrackStore.getInstance().getTrackById(25);
         assertNotNull(track);
         SplitLineString splitLineString = new SplitLineString(track, newLoc);
         toTest = new TrackEval(splitLineString.getSubTrackFeature(END));
@@ -116,7 +116,7 @@ public class TrackEvalTest {
     public void testGetSplittingNodePiedmontPark() throws Exception {
         Point point = PointFactory.getJtsInstance(33.78639, -84.377575, 270.4);
         GeoNode newNode = new DefaultGeoNode(point);
-        TrackFeature track = DefaultTrackStore.getInstance().getTrackById(20);
+        TrackFeature track = JsonTrackStore.getInstance().getTrackById(20);
         assertNotNull(track);
         SplitLineString splitLineString = new SplitLineString(track, newNode);
         toTest = new TrackEval(splitLineString.getSubTrackFeature(START));

@@ -27,8 +27,8 @@ import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
 
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.DefaultNodeStore;
+import com.clueride.dao.JsonNetworkStore;
+import com.clueride.dao.JsonNodeStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.domain.DefaultGeoNode;
@@ -62,9 +62,9 @@ public class TrackEval {
 
     /** Our picture of the current network. */
     // TODO: CA-64 Switch to Guice Dependency Injection
-    private static final NodeStore NODE_STORE = DefaultNodeStore.getInstance();
+    private static final NodeStore NODE_STORE = JsonNodeStore.getInstance();
     // TODO: CA-64 Switch to Guice Dependency Injection
-    private static final NetworkStore EDGE_STORE = DefaultNetworkStore.getInstance();
+    private static final NetworkStore EDGE_STORE = JsonNetworkStore.getInstance();
 
     /** What we're evaluating. */
     private final TrackFeature sourceTrack;

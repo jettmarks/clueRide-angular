@@ -1,7 +1,14 @@
 package com.clueride.geo;
 
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.DefaultTrackStore;
+import com.jettmarks.gmaps.encoder.Track;
+import com.jettmarks.gmaps.encoder.Trackpoint;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.clueride.dao.JsonNetworkStore;
+import com.clueride.dao.JsonTrackStore;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.factory.PointFactory;
@@ -10,15 +17,10 @@ import com.clueride.feature.TrackFeature;
 import com.clueride.gpx.EasyTrack;
 import com.clueride.gpx.TrackUtil;
 import com.clueride.io.GeoJsonUtil;
-import com.jettmarks.gmaps.encoder.Track;
-import com.jettmarks.gmaps.encoder.Trackpoint;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import static com.clueride.geo.SplitLineString.END;
-import static org.testng.AssertJUnit.*;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class IntersectionUtilTest {
 
@@ -119,12 +121,12 @@ public class IntersectionUtilTest {
 
     @Test
     public void findFirstIntersectionSpecificPair() {
-        TrackFeature track = DefaultTrackStore.getInstance().getTrackById(75);
+        TrackFeature track = JsonTrackStore.getInstance().getTrackById(75);
         assertNotNull(track);
         Point pointOK = PointFactory.getJtsInstance(33.77481, -84.35870, 300.0);
         GeoNode splitPointOK = new DefaultGeoNode(pointOK);
         SplitLineString pair = new SplitLineString(track, splitPointOK);
-        Edge edge = DefaultNetworkStore.getInstance().getEdgeById(4);
+        Edge edge = JsonNetworkStore.getInstance().getEdgeById(4);
         assertNotNull(edge);
         Point point = IntersectionUtil.findFirstIntersection(
                 pair.getSubLineString(END), edge.getLineString());

@@ -22,7 +22,7 @@ import java.util.Set;
 import com.vividsolutions.jts.geom.Point;
 
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.DefaultNodeStore;
+import com.clueride.dao.JsonNodeStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.domain.DefaultNodeGroup;
 import com.clueride.domain.GeoNode;
@@ -36,7 +36,7 @@ import com.clueride.exception.UnmatchedPointException;
  */
 public class NodeEval {
 
-    private static final NodeStore NODE_STORE = DefaultNodeStore.getInstance();
+    private static final NodeStore NODE_STORE = JsonNodeStore.getInstance();
     private static final Double LOC_GROUP_RADIUS_DEG = (Double) GeoProperties
             .getInstance().get("group.radius.degrees");
 

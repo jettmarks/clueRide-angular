@@ -48,8 +48,8 @@ import com.clueride.io.JsonStoreType;
  * @author jett
  */
 @Singleton
-public class DefaultNodeStore implements NodeStore {
-    private static final Logger LOGGER = Logger.getLogger(DefaultNodeStore.class);
+public class JsonNodeStore implements NodeStore {
+    private static final Logger LOGGER = Logger.getLogger(JsonNodeStore.class);
 
     /** Storage for Nodes; typically the endpoints of Segments. */
     private static final String LOCATIONS_FILE_NAME = "locations.geojson";
@@ -62,7 +62,7 @@ public class DefaultNodeStore implements NodeStore {
     private static Set<NodeGroup> nodeGroups = new HashSet<>();
     private static Map<Integer, Node> nodeMap = new HashMap<>();
 
-    private static DefaultNodeStore instance;
+    private static JsonNodeStore instance;
 
     /**
      * Singleton used for supplying Locations from our Store.
@@ -71,7 +71,7 @@ public class DefaultNodeStore implements NodeStore {
      */
     public static NodeStore getInstance() {
         if (instance == null) {
-            instance = new DefaultNodeStore();
+            instance = new JsonNodeStore();
         }
         return instance;
     }
@@ -80,7 +80,7 @@ public class DefaultNodeStore implements NodeStore {
      * Use {@link #getInstance()}
      */
     @Inject
-    public DefaultNodeStore() {
+    public JsonNodeStore() {
         if (nodes == null) {
             loadLocationsFromDefault();
         }
