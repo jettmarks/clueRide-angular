@@ -1,7 +1,9 @@
 package com.clueride.io;
 
-import com.clueride.feature.Edge;
-import com.clueride.feature.SegmentFeature;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import com.vividsolutions.jts.geom.Geometry;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
@@ -10,11 +12,11 @@ import org.opengis.feature.type.FeatureType;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import static org.testng.AssertJUnit.*;
+import com.clueride.feature.Edge;
+import com.clueride.feature.SegmentFeature;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class GeoJsonUtilTest {
 
@@ -73,8 +75,8 @@ public class GeoJsonUtilTest {
 
 //    @Test
     public void readSegmentSchema() {
-        toTest = new GeoJsonUtil(JsonStoreType.NETWORK);
-        File file = new File("mainNetwork.geojson");
+        toTest = new GeoJsonUtil(JsonStoreType.LOCATION);
+        File file = new File("loc-00001/loc-00001.geojson");
         SimpleFeatureType featureType = toTest.readSchema(file);
         assertNotNull(featureType);
         System.out.println(featureType);
@@ -82,12 +84,11 @@ public class GeoJsonUtilTest {
 
 //    @Test
     public void setSegmentSchema() {
-        toTest = new GeoJsonUtil(JsonStoreType.NETWORK);
+        toTest = new GeoJsonUtil(JsonStoreType.LOCATION);
         toTest.setSchemaType();
         DefaultFeatureCollection features = null;
         try {
-            features = toTest
-                    .readFeatureCollection("mainNetwork.geojson");
+            features = toTest.readFeatureCollection("loc-00001/loc-00001.geojson");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

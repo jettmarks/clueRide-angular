@@ -51,7 +51,7 @@ public class JsonSchemaTypeMap {
         schemaMap.put(JsonStoreType.RAW, FeatureType.TRACK_FEATURE_TYPE);
         schemaMap.put(JsonStoreType.EDGE, FeatureType.EDGE_FEATURE_TYPE);
         schemaMap.put(JsonStoreType.NETWORK, FeatureType.SEGMENT_FEATURE_TYPE);
-        schemaMap.put(JsonStoreType.LOCATION, FeatureType.POINT_FEATURE_TYPE);
+        schemaMap.put(JsonStoreType.LOCATION, FeatureType.NODE_FEATURE_TYPE);
         schemaMap.put(JsonStoreType.LOCATION_GROUP,
                 FeatureType.NODE_GROUP_FEATURE_TYPE);
 

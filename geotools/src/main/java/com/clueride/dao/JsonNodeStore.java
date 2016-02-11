@@ -45,6 +45,8 @@ import com.clueride.io.JsonStoreType;
 /**
  * Implementation of NodeStore using file system.
  *
+ * Handles Nodes as well as Node Groups.
+ *
  * @author jett
  */
 @Singleton
