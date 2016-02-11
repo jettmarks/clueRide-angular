@@ -86,7 +86,6 @@ public class TranslateUtil {
     }
 
     /**
-     * @param segmentFeatureBuilder
      * @param segment
      * @return
      * @deprecated - Move toward LineFeature
@@ -107,7 +106,7 @@ public class TranslateUtil {
      */
     public static SimpleFeature geoNodeToFeature(GeoNode geoNode) {
         SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(
-                FeatureType.POINT_FEATURE_TYPE);
+                FeatureType.NODE_FEATURE_TYPE);
         featureBuilder.add(geoNode.getId());
         featureBuilder.add(geoNode.getName());
         featureBuilder.add(geoNode.getState());
@@ -205,35 +204,6 @@ public class TranslateUtil {
                 .getDefaultGeometry());
         return segmentFeatureBuilder.buildFeature(null);
     }
-
-    /**
-     * Takes a LineString into a Segment.
-     * 
-     * Note that this method doesn't know about the "Feature" aspects of this
-     * geometry and for that reason is unable to add it to the Segment.
-     * 
-     * @param lineString
-     * @return
-     * @deprecated public static Segment lineStringToSegment(LineString
-     *             lineString) { Segment segment =
-     *             SegmentFactory.getInstance(lineString); return segment; }
-     */
-
-    /**
-     * @param feature
-     * @return
-     * @deprecated - Replace with Constructor accepting Feature. public static
-     *             Segment featureToSegment(SimpleFeature feature) { LineString
-     *             lineString = (LineString) feature.getDefaultGeometry();
-     *             Segment segment = SegmentFactory.getInstance(lineString);
-     *             segment.setDisplayName((String)
-     *             feature.getAttribute("name")); segment.setUrl((String)
-     *             feature.getAttribute("url")); Object segIdObject =
-     *             feature.getAttribute("segId"); if (segIdObject instanceof
-     *             Integer) { segment.setId((Integer) segIdObject); } if
-     *             (segIdObject instanceof Long) { segment.setId(((Long)
-     *             segIdObject).intValue()); } return segment; }
-     */
 
     /**
      * @param feature
@@ -374,28 +344,10 @@ public class TranslateUtil {
         return (LineString) segmentToFeature(segment).getDefaultGeometry();
     }
 
-    /**
-     * Two hops from lineString to Segment, and then Segment to Feature.
-     * 
-     * @param intersectingTrackLineString
-     * @return public static SimpleFeature lineStringToFeature( LineString
-     *         lineString) { return
-     *         segmentToFeature(lineStringToSegment(lineString)); }
-     */
 
     /**
-     * @param allLineFeatures
-     * @return public static DefaultFeatureCollection
-     *         lineFeaturesToFeatureCollection( Set<LineFeature>
-     *         allLineFeatures) { DefaultFeatureCollection featureCollection =
-     *         new DefaultFeatureCollection(); for (LineFeature lineFeature :
-     *         allLineFeatures) { featureCollection.add(lineFeature.); } return
-     *         null; }
-     */
-
-    /**
-     * @param lineFeatures
-     * @return
+     * @param allLineFeatures - Line Features to be translated.
+     * @return Feature Collection populated from a list of LineFeatures.
      */
     public static DefaultFeatureCollection lineFeatureSetToFeatureCollection(
             Set<LineFeature> allLineFeatures) {

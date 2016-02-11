@@ -37,18 +37,15 @@ import com.clueride.domain.dev.NodeNetworkState;
 public class FeatureType {
     public static final SimpleFeatureType EDGE_FEATURE_TYPE = buildEdgeInstance();
     public static final SimpleFeatureType SEGMENT_FEATURE_TYPE = buildSegmentInstance();
-    public static final SimpleFeatureType POINT_FEATURE_TYPE = buildPointInstance();
+    public static final SimpleFeatureType NODE_FEATURE_TYPE = buildNodeInstance();
     public static final SimpleFeatureType NODE_GROUP_FEATURE_TYPE = buildNodeGroupInstance();
     public static final SimpleFeatureType TRACK_FEATURE_TYPE = buildTrackInstance();
     public static final SimpleFeatureType PATH_FEATURE_TYPE = buildPathInstance();
 
     public static SimpleFeatureType buildEdgeInstance() {
 
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("EdgeFeatureType");
-        builder.setNamespaceURI("http://clueride.com/");
-        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
-                                                       // reference system
+        String featureTypeName = "EdgeFeatureType";
+        SimpleFeatureTypeBuilder builder = prepareBuilder(featureTypeName);
 
         // add attributes in order
         builder.add("edgeId", Integer.class);
@@ -58,18 +55,12 @@ public class FeatureType {
         builder.add("the_geom", LineString.class);
 
         // build the type
-        final SimpleFeatureType featureType = builder.buildFeatureType();
-
-        return featureType;
+        return builder.buildFeatureType();
     }
 
     public static SimpleFeatureType buildSegmentInstance() {
 
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("SegmentFeatureType");
-        builder.setNamespaceURI("http://clueride.com/");
-        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
-                                                       // reference system
+        SimpleFeatureTypeBuilder builder = prepareBuilder("SegmentFeatureType");
 
         // add attributes in order
         builder.add("segId", Integer.class);
@@ -79,20 +70,11 @@ public class FeatureType {
         builder.add("the_geom", LineString.class);
 
         // build the type
-        final SimpleFeatureType featureType = builder.buildFeatureType();
-
-        return featureType;
+        return builder.buildFeatureType();
     }
 
-    /**
-     * @return
-     */
-    public static SimpleFeatureType buildPointInstance() {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("PointFeatureType");
-        builder.setNamespaceURI("http://clueride.com/");
-        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
-                                                       // reference system
+    public static SimpleFeatureType buildNodeInstance() {
+        SimpleFeatureTypeBuilder builder = prepareBuilder("PointFeatureType");
 
         // add attributes in order
         builder.add("pointId", Integer.class);
@@ -102,16 +84,11 @@ public class FeatureType {
         builder.add("the_geom", Point.class);
 
         // build the type
-        final SimpleFeatureType featureType = builder.buildFeatureType();
-
-        return featureType;
+        return builder.buildFeatureType();
     }
 
     private static SimpleFeatureType buildPathInstance() {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("PathFeatureType");
-        builder.setNamespaceURI("http://clueride.com/");
-        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate reference system
+        SimpleFeatureTypeBuilder builder = prepareBuilder("PathFeatureType");
 
         // add attributes in order
         builder.add("pathId", Integer.class);
@@ -122,20 +99,11 @@ public class FeatureType {
         builder.add("the_geom", Point.class);
 
         // build the type
-        final SimpleFeatureType featureType = builder.buildFeatureType();
-
-        return featureType;
+        return builder.buildFeatureType();
     }
 
-    /**
-     * @return
-     */
     public static SimpleFeatureType buildNodeGroupInstance() {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("NodeGroupFeatureType");
-        builder.setNamespaceURI("http://clueride.com/");
-        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
-                                                       // reference system
+        SimpleFeatureTypeBuilder builder = prepareBuilder("NodeGroupFeatureType");
 
         // add attributes in order
         builder.add("nodeGroupId", Integer.class);
@@ -146,20 +114,11 @@ public class FeatureType {
         builder.add("the_geom", Point.class);
 
         // build the type
-        final SimpleFeatureType featureType = builder.buildFeatureType();
-
-        return featureType;
+        return builder.buildFeatureType();
     }
 
-    /**
-     * @return
-     */
     public static SimpleFeatureType buildTrackInstance() {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("TrackFeatureType");
-        builder.setNamespaceURI("http://clueride.com/");
-        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate
-                                                       // reference system
+        SimpleFeatureTypeBuilder builder = prepareBuilder("TrackFeatureType");
 
         // add attributes in order
         builder.add("trackId", Integer.class);
@@ -168,8 +127,14 @@ public class FeatureType {
         builder.add("the_geom", LineString.class);
 
         // build the type
-        final SimpleFeatureType featureType = builder.buildFeatureType();
+        return builder.buildFeatureType();
+    }
 
-        return featureType;
+    public static SimpleFeatureTypeBuilder prepareBuilder(String featureTypeName) {
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName(featureTypeName);
+        builder.setNamespaceURI("http://clueride.com/");
+        builder.setCRS(DefaultGeographicCRS.WGS84_3D); // <- Coordinate reference system
+        return builder;
     }
 }

@@ -100,7 +100,7 @@ public class GeoJsonUtil {
      * TODO: This is more of a factory-type of thing that could be moved out to
      * a different class.
      * 
-     * @return
+     * @return List of the Edges found in the store's directory.
      * @throws IOException
      */
     public List<Edge> readLineFeatures()
@@ -200,7 +200,7 @@ public class GeoJsonUtil {
             if (haveSchema) {
                 featureJson.setFeatureType(FeatureType.SEGMENT_FEATURE_TYPE);
             } else {
-                featureJson.setFeatureType(FeatureType.POINT_FEATURE_TYPE);
+                featureJson.setFeatureType(FeatureType.NODE_FEATURE_TYPE);
             }
         }
         FeatureIterator<SimpleFeature> featureIterator = featureJson
