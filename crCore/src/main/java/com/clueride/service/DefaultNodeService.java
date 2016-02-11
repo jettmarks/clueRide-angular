@@ -109,9 +109,18 @@ public class DefaultNodeService implements NodeService {
     }
 
     @Override
+    // TODO: Copy/Pasted in without testing
     public String setNodeGroup(Integer id, Double lat, Double lon) {
-        // TODO: Put this back in
-        return null;
+        NodeGroup nodeGroup = (NodeGroup) nodeStore.getNodeById(id);
+        nodeGroup.setLat(lat);
+        nodeGroup.setLon(lon);
+        try {
+            nodeStore.persistAndReload();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "{status: failed}";
+        }
+        return "{status: ok}";
     }
 
     @Override
