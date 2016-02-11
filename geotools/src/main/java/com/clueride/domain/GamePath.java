@@ -25,8 +25,8 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableList;
 
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.DefaultNodeStore;
+import com.clueride.dao.JsonNetworkStore;
+import com.clueride.dao.JsonNodeStore;
 import com.clueride.domain.dev.Segment;
 import com.clueride.domain.user.Path;
 import com.clueride.feature.Edge;
@@ -115,8 +115,8 @@ public class GamePath implements Path {
 
         public Builder() {
             this(new NetworkEvalImpl(
-                    DefaultNodeStore.getInstance(),
-                    DefaultNetworkStore.getInstance()
+                    JsonNodeStore.getInstance(),
+                    JsonNetworkStore.getInstance()
             ));
         }
 

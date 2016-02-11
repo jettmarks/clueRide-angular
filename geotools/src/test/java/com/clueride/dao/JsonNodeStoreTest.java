@@ -35,9 +35,9 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
 /**
- * Exercises the DefaultNodeStoreTest class.
+ * Exercises the JsonNodeStoreTest class.
  */
-public class DefaultNodeStoreTest {
+public class JsonNodeStoreTest {
     private Injector injector;
 
     @BeforeMethod
@@ -45,7 +45,7 @@ public class DefaultNodeStoreTest {
        injector = Guice.createInjector(new AbstractModule() {
            @Override
            protected void configure() {
-              bind(NodeStore.class).to(DefaultNodeStore.class);
+              bind(NodeStore.class).to(JsonNodeStore.class);
            }
        });
     }

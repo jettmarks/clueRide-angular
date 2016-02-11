@@ -59,11 +59,11 @@ import com.clueride.service.MemoryBasedEdgeIDProvider;
  *
  * @author jett
  */
-public class DefaultNetworkStore implements NetworkStore, TestModeAware {
+public class JsonNetworkStore implements NetworkStore, TestModeAware {
     private static final Logger LOGGER = Logger
-            .getLogger(DefaultNetworkStore.class);
+            .getLogger(JsonNetworkStore.class);
 
-    private static DefaultNetworkStore instance = null;
+    private static JsonNetworkStore instance = null;
     private EdgeIDProvider idProvider = new DataBasedEdgeIDProvider();
 
     // TODO: EDGE for unrated segments, NETWORK for fully-formed SegmentFeature.
@@ -92,10 +92,10 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * 
      * @return lazily-initialized instance of this class.
      */
-    public static DefaultNetworkStore getInstance() {
-        synchronized (DefaultNetworkStore.class) {
+    public static JsonNetworkStore getInstance() {
+        synchronized (JsonNetworkStore.class) {
             if (instance == null) {
-                instance = new DefaultNetworkStore();
+                instance = new JsonNetworkStore();
             }
         }
         return instance;
@@ -105,7 +105,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
      * Use {@link this.getInstance()} if not using DI.
      */
     @Inject
-    public DefaultNetworkStore() {
+    public JsonNetworkStore() {
         loadAllFeatures();
     }
 
@@ -465,7 +465,7 @@ public class DefaultNetworkStore implements NetworkStore, TestModeAware {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("DefaultNetworkStore [lineFeatures.size()=").append(
+        builder.append("JsonNetworkStore [lineFeatures.size()=").append(
                 allLineFeatures.size())
                 .append(", idProvider=").append(idProvider).append(
                         ", testMode=").append(testMode)

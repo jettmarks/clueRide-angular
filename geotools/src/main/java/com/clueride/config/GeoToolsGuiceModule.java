@@ -19,8 +19,8 @@ package com.clueride.config;
 
 import com.google.inject.AbstractModule;
 
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.DefaultNodeStore;
+import com.clueride.dao.JsonNetworkStore;
+import com.clueride.dao.JsonNodeStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
 
@@ -30,7 +30,7 @@ import com.clueride.dao.NodeStore;
 public class GeoToolsGuiceModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(NodeStore.class).to(DefaultNodeStore.class);
-        bind(NetworkStore.class).to(DefaultNetworkStore.class);
+        bind(NodeStore.class).to(JsonNodeStore.class);
+        bind(NetworkStore.class).to(JsonNetworkStore.class);
     }
 }

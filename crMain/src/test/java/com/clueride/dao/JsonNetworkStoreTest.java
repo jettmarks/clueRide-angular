@@ -15,9 +15,9 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.assertEquals;
 
-public class DefaultNetworkStoreTest {
+public class JsonNetworkStoreTest {
     private NetworkStore toTest;
-    private DefaultNetworkStore toTestImpl;
+    private JsonNetworkStore toTestImpl;
 
     private TrackStore trackStore;
 
@@ -40,8 +40,8 @@ public class DefaultNetworkStoreTest {
     public void beforeMethod() throws IOException {
         initMocks(this);
         JsonStoreLocation.setTestMode();
-        toTest = DefaultNetworkStore.getInstance();
-        toTestImpl = DefaultNetworkStore.getInstance();
+        toTest = JsonNetworkStore.getInstance();
+        toTestImpl = JsonNetworkStore.getInstance();
         toTestImpl.setTestMode(false);
 
         when(edge.getDisplayName()).thenReturn("Test Edge");

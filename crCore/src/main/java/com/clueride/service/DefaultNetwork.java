@@ -35,8 +35,8 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.config.GeoProperties;
-import com.clueride.dao.DefaultNetworkStore;
-import com.clueride.dao.DefaultNodeStore;
+import com.clueride.dao.JsonNetworkStore;
+import com.clueride.dao.JsonNodeStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.domain.DefaultNodeGroup;
@@ -92,14 +92,14 @@ public class DefaultNetwork implements Network {
      * Opened up for Guice to get to.
      */
     public DefaultNetwork() {
-        networkStore = DefaultNetworkStore.getInstance();
+        networkStore = JsonNetworkStore.getInstance();
         allLineFeatures = networkStore.getLineFeatures();
 
         /* "Publish" the LineFeatures. */
         featureCollection = TranslateUtil
                 .lineFeatureSetToFeatureCollection(allLineFeatures);
 
-        nodeStore = DefaultNodeStore.getInstance();
+        nodeStore = JsonNodeStore.getInstance();
         init();
     }
 
@@ -140,7 +140,7 @@ public class DefaultNetwork implements Network {
      */
     DefaultNetwork(DefaultFeatureCollection defaultFeatureCollection) {
         featureCollection = defaultFeatureCollection;
-        nodeStore = DefaultNodeStore.getInstance();
+        nodeStore = JsonNodeStore.getInstance();
         init();
     }
 
@@ -293,7 +293,7 @@ public class DefaultNetwork implements Network {
      */
     private Integer withinLocationGroup(GeoNode geoNode) {
         Integer matchingId = -1;
-        Set<NodeGroup> locGroups = DefaultNodeStore.getInstance()
+        Set<NodeGroup> locGroups = JsonNodeStore.getInstance()
                 .getNodeGroups();
         for (NodeGroup nodeGroup : locGroups) {
             Point point = ((DefaultNodeGroup) nodeGroup).getPoint();

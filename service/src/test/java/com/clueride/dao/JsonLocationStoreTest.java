@@ -51,7 +51,7 @@ public class JsonLocationStoreTest {
         injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
-                bind(NodeStore.class).to(DefaultNodeStore.class);
+                bind(NodeStore.class).to(JsonNodeStore.class);
                 bind(LocationStore.class).to(JsonLocationStore.class);
             }
         });
