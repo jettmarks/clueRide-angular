@@ -5,14 +5,14 @@
         localModel = {};
 
     angular
-        .module('crPlayer.LoginModule', ['ngResource', 'crPlayer.BadgesModule'])
+        .module('crPlayer.LoginModule', ['ngResource', 'crPlayer.BadgesModule','crPlayer.GameState'])
         .controller('LoginController', LoginController)
         .factory('LoginResource', LoginResource)
     ;
 
-    LoginController.$inject = ['LoginResource','BadgesService'];
+    LoginController.$inject = ['LoginResource','BadgesService', 'gameStateService'];
 
-    function LoginController(LoginResource, BadgesService) {
+    function LoginController(LoginResource, BadgesService, gameStateService) {
         var vm = this;
 
         vm.loginName = "";
@@ -22,6 +22,7 @@
 
         localModel.loginResource = LoginResource;
         localModel.badgesService = BadgesService;
+        localModel.gameStateService = gameStateService;
 
         viewModel = vm;
     }
@@ -36,6 +37,7 @@
 
     function receiveBadges(data) {
         localModel.badgesService.saveBadges(data);
+        localModel.gameStateService.enableGpsBubble();
     }
 
     function LoginResource ($resource) {

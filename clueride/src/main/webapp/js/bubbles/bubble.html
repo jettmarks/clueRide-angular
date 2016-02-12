@@ -1,6 +1,8 @@
 <link rel="stylesheet" href="./js/bubbles/bubble.css">
-<div ng-click="bubbleClicked(bid);">
+<div ng-click="bubble.disabled || bubbleClicked(bid);">
   <div ng-class='{ bubble:true, {{bid}}: true}'>
-    {{bubble.title}}
+    <div ng-class='{disabled: bubble.disabled }'>
+      {{bubble.title}}
+    </div>
   </div>
 </div>
