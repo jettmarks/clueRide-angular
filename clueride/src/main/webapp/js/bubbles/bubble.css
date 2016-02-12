@@ -5,6 +5,10 @@
     align-content: center;
 }
 
+.disabled {
+    color: gray;
+}
+
 @media screen and (max-width: 360px) {
     .bubbles {
         background-image: url("logo_blank.png");

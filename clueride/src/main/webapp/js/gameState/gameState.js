@@ -109,6 +109,14 @@
         }
     }
 
+    function enableGpsBubble() {
+        state.currentGameState.bubble2.disabled = false;
+    }
+
+    function enablePlay() {
+        state.currentGameState.bubble3.disabled = false;
+    }
+
     /**
      * This is based on both the Path Index and walking the History Index as well as taking into account
      * that we'll want to show some details of the initial location prior to "arriving" at that location.
@@ -178,6 +186,9 @@
                 state.historyIndex = newIndex;
                 viewModel.locationState.location = viewModel.locations[newIndex];
             },
+
+            enableGpsBubble: enableGpsBubble,
+            enablePlay: enablePlay,
 
             /* Flags. */
             mostRecentClueSolved: function () {
@@ -261,13 +272,15 @@
                     title: 'GPS?',
                     dialog: 'setGpsMode',
                     nextView: '',
-                    nextState: 'beginPlay'
+                    nextState: 'beginPlay',
+                    disabled: true
                 },
                 bubble3: {
                     bid: 'bubble3',
                     title: 'Play',
                     nextView: '',
-                    nextState: 'atLocation'
+                    nextState: 'atLocation',
+                    disabled: true
                 }
             },
             riding: {
@@ -310,9 +323,9 @@
                 bubble3: {
                     bid: 'bubble3',
                     title: 'Where are we going?',
-//                nextView: 'chooseLocation',
                     dialog: 'clueNotSolved',
-                    nextState: 'riding'
+                    nextState: 'riding',
+                    disabled: true
                 }
             },
             history: {

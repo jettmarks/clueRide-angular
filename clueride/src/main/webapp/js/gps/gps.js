@@ -1,23 +1,37 @@
 (function (angular) {
     'use strict';
 
-    var module = angular.module('gps', []),
+    var localModel = {},
         gpsMode = {
             hasGps: false,
             agreeToTether: false,
             previousAgreeToTether: false
         };
 
-    module.controller('GpsController', ['$scope',
-        function ($scope) {
-            $scope.gpsMode = gpsMode;
-            gpsMode.previousAgreeToTether = gpsMode.agreeToTether;
-            gpsMode.hasGps = navigator.geolocation;
+    angular
+        .module('gps', ['crPlayer.GameState'])
+        .controller('GpsController', GpsController)
+        ;
 
-            $scope.tetherCancel = function () {
-                gpsMode.agreeToTether = gpsMode.previousAgreeToTether;
-            }
+    GpsController.$inject = ['$scope', 'gameStateService'];
+
+    function GpsController($scope, gameStateService) {
+        localModel.gameStateService = gameStateService;
+
+        $scope.gpsMode = gpsMode;
+        gpsMode.previousAgreeToTether = gpsMode.agreeToTether;
+        gpsMode.hasGps = navigator.geolocation;
+
+        $scope.tetherCancel = function () {
+            gpsMode.agreeToTether = gpsMode.previousAgreeToTether;
+            localModel.gameStateService.enablePlay();
         }
-    ]);
+
+        $scope.tetherOK = function () {
+            gpsMode.agreeToTether = gpsMode.previousAgreeToTether;
+            localModel.gameStateService.enablePlay();
+        }
+
+    }
 
 }(window.angular));
