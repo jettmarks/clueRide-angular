@@ -3,6 +3,8 @@
 // has dependency on mobile-angular-ui
 // 
 var app = angular.module('clueridePlayer', [
+  'ngCookies',
+  'ngResource',
   'ngRoute',
   'team',
   'gps',
@@ -15,7 +17,6 @@ var app = angular.module('clueridePlayer', [
   'crPlayer.Location',
   'crLocEdit',
   'camera',
-  'ngResource',
   'status',
   'clue',
   'crPlayer.CourseModule',
@@ -49,19 +50,6 @@ app.config(function($routeProvider) {
   $routeProvider.when('/locEdit',       {templateUrl: 'js/locEdit/locEdit.html', reloadOnSearch: false});
   $routeProvider.when('/status',        {templateUrl: 'js/status/status.html', reloadOnSearch: false});
   $routeProvider.when('/ice',           {templateUrl: 'ice.html', reloadOnSearch: false});
-
-  $routeProvider.when('/scroll',        {templateUrl: 'scroll.html', reloadOnSearch: false});
-  $routeProvider.when('/toggle',        {templateUrl: 'toggle.html', reloadOnSearch: false}); 
-  $routeProvider.when('/tabs',          {templateUrl: 'tabs.html', reloadOnSearch: false}); 
-  $routeProvider.when('/accordion',     {templateUrl: 'accordion.html', reloadOnSearch: false}); 
-  $routeProvider.when('/overlay',       {templateUrl: 'overlay.html', reloadOnSearch: false}); 
-  $routeProvider.when('/forms',         {templateUrl: 'forms.html', reloadOnSearch: false});
-  $routeProvider.when('/dropdown',      {templateUrl: 'dropdown.html', reloadOnSearch: false});
-  $routeProvider.when('/touch',         {templateUrl: 'touch.html', reloadOnSearch: false});
-  $routeProvider.when('/swipe',         {templateUrl: 'swipe.html', reloadOnSearch: false});
-  $routeProvider.when('/drag',          {templateUrl: 'drag.html', reloadOnSearch: false});
-  $routeProvider.when('/drag2',         {templateUrl: 'drag2.html', reloadOnSearch: false});
-  $routeProvider.when('/carousel',      {templateUrl: 'carousel.html', reloadOnSearch: false});
 });
 //
 // `$touch example`
@@ -277,12 +265,14 @@ app.controller('MainController', [
   'gameStateService',
   'locationService',
   'BadgesService',
+  'LoginService',
 function(
     $rootScope,
     $scope,
     gameStateService,
     locationService,
-    BadgesService
+    BadgesService,
+    LoginService
 ) {
 
   $scope.swiped = function(direction) {
@@ -313,5 +303,8 @@ function(
   /* Bind the Badges Service to the scope. */
   $scope.badges = {};
   BadgesService.setBadgeScope($scope);
+
+  /* Restore session state if player is already logged in. */
+  LoginService.checkLogin();
 
 }]);
