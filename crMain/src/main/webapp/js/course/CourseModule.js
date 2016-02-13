@@ -21,7 +21,12 @@
         var vm = this;
 
         vm.courseToMap = courseToMap;
-        vm.course = {};
+        vm.course = {
+            name: 'No course selected',
+            description: ''
+        };
+        vm.courses = [];
+        vm.select = select;
 
         viewModel = vm;
 
@@ -30,14 +35,22 @@
         // Local copies of resources
         courseMapResource = CourseMapResource;
         courseDataResource = CourseDataResource;
+
+        courseDataResource.getData({
+            /* At this time, we retrieve all courses until we have so many
+             * that we need to apply selection criteria. */
+        }, dataToModel);
+
+        function select(course) {
+            vm.course = course;
+        }
     }
 
     function CourseMapResource ($resource) {
         return $resource('/crMain/rest/course/map', {}, {
             getMap: {
                 method: 'GET',
-                /* Hardcoded until we have more than one course. */
-                params: {courseId: 3},
+                params: {},
                 isArray: false
             }
         });
@@ -47,9 +60,8 @@
         return $resource('/crMain/rest/course/data', {}, {
             getData: {
                 method: 'GET',
-                /* Hardcoded until we have more than one course. */
-                params: {courseId: 3},
-                isArray: false
+                params: {},
+                isArray: true
             }
         });
     }
@@ -59,11 +71,8 @@
      */
     function courseToMap () {
         courseMapResource.getMap({
-            /* Future: put the courseId here. */
+            courseId: viewModel.course.id
         }, featuresToMap);
-        courseDataResource.getData({
-            /* Future: put the courseId here. */
-        }, dataToModel);
     }
 
     function featuresToMap (courseFeatures) {
@@ -100,8 +109,8 @@
         }
     }
 
-    function dataToModel(course) {
-        viewModel.course = course;
+    function dataToModel(courses) {
+        viewModel.courses = courses;
     }
 
     //function Service() {

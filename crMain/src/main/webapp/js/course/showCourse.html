@@ -1,6 +1,18 @@
 <link rel="stylesheet" href="js/views/views.css">
 <div class="showCourse, dataview" ng-controller="CourseController as vm">
-  Course ID: {{vm.course.id}} Name: {{vm.course.name}} <br>
+  <div class="btn-group" uib-dropdown uib-keyboard-nav>
+    <button id="simple-btn-keyboard-nav"
+            type="button"
+            class="btn btn-primary" uib-dropdown-toggle>
+      {{vm.course.name}} ({{vm.course.id}}) <span class="caret"></span>
+    </button>
+    <ul class="uib-dropdown-menu" role="menu"
+        aria-labelledby="simple-btn-keyboard-nav">
+      <li ng-repeat="course in vm.courses">
+        <a href="#" ng-bind="course.name" ng-click="vm.select(course)"></a>
+      </li>
+    </ul>
+  </div>
   {{vm.course.description}}<br>
   <button ng-click="vm.courseToMap()">Show Course</button>
 </div>
