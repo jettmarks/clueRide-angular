@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="./js/locEdit/locEdit.css">
 <div class="locEdit" ng-controller="LocEditController">
+  <!--
   <div id="locationSelection" class="btn-group">
     <a ui-turn-on='myDropdown' class='btn btn-primary'>
       Location to Edit: {{locationSelected.name}}
@@ -16,9 +17,9 @@
         <a href ng-click="recordSelection(choice.id)">{{choice.name}}</a>
       </li>
     </ul>
-  </div>
+  </div> -->
   <div ng-show="!imageState.cameraImage">
-    <!-- https://github.com/bcabanes/ng-camera -->
+    <!-- Directive from https://github.com/bcabanes/ng-camera -->
     <ng-camera
             output-height="360"
             output-width="480"
@@ -45,5 +46,11 @@
         Cancel
       </button>
     </div>
+  </div>
+  <div class="camera-choice">
+    <li ng-repeat="camera in cameras">
+      {{camera.label}}
+    </li>
+
   </div>
 </div>
