@@ -2,6 +2,8 @@
 // Here is how to define your module 
 // has dependency on mobile-angular-ui
 // 
+
+
 var app = angular.module('clueridePlayer', [
   'ngCookies',
   'ngResource',
@@ -306,5 +308,4 @@ function(
 
   /* Restore session state if player is already logged in. */
   LoginService.checkLogin();
-
 }]);

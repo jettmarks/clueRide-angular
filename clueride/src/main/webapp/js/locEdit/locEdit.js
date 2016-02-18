@@ -181,10 +181,16 @@
                     label: option.text,
                     id: option.value
                 });
-                if (option.text.indexOf('back') > -1) {
+                //if (option.text.indexOf('back') > -1) {
                     console.log("Found back camera");
-                    //Webcam.params.constraints.video.optional.sourceId = option.value;
-                }
+                    Webcam.params.constraints = {
+                        video: {
+                            optional: [{
+                                sourceId: option.value
+                            }]
+                        }
+                    }
+                //}
             } else {
                 console.log('Some other kind of source: ', sourceInfo);
             }
