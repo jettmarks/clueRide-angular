@@ -61,6 +61,13 @@ public class Location {
         return locationService.getLocation(locationId);
     }
 
+    @GET
+    @Path("types")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getTypes() {
+        return locationService.getLocationTypes();
+    }
+
     /**
      * Handles GET requests for a location's Map.
      */
@@ -69,6 +76,14 @@ public class Location {
     @Produces(MediaType.APPLICATION_JSON)
     public String getLocationGeometry(@QueryParam("locationId") Integer locationId) {
         return locationService.getLocationGeometry(locationId);
+    }
+
+    @POST
+    @Path("update")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void updateLocation(com.clueride.rest.dto.Location location) {
+        locationService.updateLocation(location);
     }
 
     /**

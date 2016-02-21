@@ -1,0 +1,57 @@
+<link rel="stylesheet" href="./js/locEdit/locEdit.css">
+<div class="locEdit" ng-controller="LocEditController">
+
+  <uib-tabset type="pills">
+
+    <uib-tab heading="Location">
+      <div id="locationSelection" class="btn-group">
+        <a ui-turn-on='myDropdown' class='btn btn-primary'>
+          Location to Edit: {{locationSelected.name}}
+        </a>
+        <ul class="dropdown-menu"
+            role="menu"
+            ui-state="myDropdown"
+            ui-show="myDropdown"
+            ui-turn-off="myDropdown"
+            ui-outer-click="Ui.turnOff('myDropdown')"
+            ui-outer-click-if="Ui.active('myDropdown')"
+                >
+          <li ng-repeat="choice in locationMap" role="menuitem">
+            <a href ng-click="recordSelection(choice.id)">{{choice.name}}</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="entry-field">
+        Name:
+        <input ng-model="locationSelected.name">
+
+        </input>
+      </div>
+
+      <div class="entry-field">
+        Description:
+        <textarea ng-model="locationSelected.description">
+
+        </textarea>
+      </div>
+
+      <div class="entry-field">
+        <input type="submit" label="Save" ng-click="saveLocation()">
+        </input>
+      </div>
+
+
+    </uib-tab>
+
+    <uib-tab heading="Images">
+      Some Tab Content
+    </uib-tab>
+
+    <uib-tab heading="Clues">
+      More Tab Content
+    </uib-tab>
+
+  </uib-tabset>
+
+</div>

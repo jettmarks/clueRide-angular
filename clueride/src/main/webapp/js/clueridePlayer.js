@@ -44,12 +44,17 @@ app.run(function($transform) {
 // in order to avoid unwanted routing.
 // 
 app.config(function($routeProvider) {
-  $routeProvider.when('/',              {templateUrl: 'birdseye.html', reloadOnSearch: false});
-  $routeProvider.when('/map',           {templateUrl: 'js/map/map.html', reloadOnSearch: false});
-  $routeProvider.when('/location',      {templateUrl: 'js/loc/loc.html', reloadOnSearch: false});
-  $routeProvider.when('/locEdit',       {templateUrl: 'js/locEdit/locEdit.html', reloadOnSearch: false});
-  $routeProvider.when('/status',        {templateUrl: 'js/status/status.html', reloadOnSearch: false});
-  $routeProvider.when('/ice',           {templateUrl: 'ice.html', reloadOnSearch: false});
+  $routeProvider.when('/',                {templateUrl: 'birdseye.html', reloadOnSearch: false});
+  $routeProvider.when('/map',             {templateUrl: 'js/map/map.html', reloadOnSearch: false});
+  $routeProvider.when('/location',        {templateUrl: 'js/loc/loc.html', reloadOnSearch: false});
+  $routeProvider.when('/locEdit',         {templateUrl: 'js/locEdit/menu.html', reloadOnSearch: false});
+  $routeProvider.when('/locEdit/clues',   {templateUrl: 'js/locEdit/clueEdit.html', reloadOnSearch: false});
+  $routeProvider.when('/locEdit/edit',    {templateUrl: 'js/locEdit/locEdit.html', reloadOnSearch: false});
+  $routeProvider.when('/locEdit/images',  {templateUrl: 'js/locEdit/imageList.html', reloadOnSearch: false});
+  $routeProvider.when('/locEdit/newImage',{templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
+  $routeProvider.when('/locEdit/estab',   {templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
+  $routeProvider.when('/status',          {templateUrl: 'js/status/status.html', reloadOnSearch: false});
+  $routeProvider.when('/ice',             {templateUrl: 'ice.html', reloadOnSearch: false});
 });
 //
 // `$touch example`

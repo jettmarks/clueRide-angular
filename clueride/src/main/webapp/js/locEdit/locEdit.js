@@ -2,28 +2,36 @@
     'use strict';
 
     var deviceCoords = {lat: 0.0, lon: 0.0},
-        saveImageUrl = "",
-        locationToEdit = {},
         viewModel = {},
-        audioSelect = document.querySelector('select#audioSource'),
-        videoSelect = document.querySelector('select#videoSource');
+        localModel = {
+            locationResource: {},
+            locationToEdit: {}
+        };
 
     angular
-        .module('crLocEdit',['camera'])
+        .module('crLocEdit',[])
         .controller('LocEditController', LocationEditController)
-        .factory('LocationEditResource', LocationEditResource)
+        .factory('LocationNearestResource', LocationNearestResource)
+        .factory('LocationResource', LocationResource)
         .factory('LocationEditor', LocationEditor)
     ;
 
-    LocationEditController.$inject = ['$scope', '$location', '$window', 'FileUploader', 'LocationEditor'];
+    LocationEditController.$inject = [
+        '$scope',
+        '$window',
+        'LocationEditor',
+        'LocationResource'
+    ];
 
-    function LocationEditController($scope, $location, $window, FileUploader, LocationEditor) {
+    function LocationEditController(
+        $scope,
+        $window,
+        LocationEditor,
+        LocationResource
+    ) {
         viewModel = $scope;
 
-        $scope.imageState = {
-            cameraOpen: true,
-            cameraImage: false
-        };
+        localModel.locationResource = LocationResource;
 
         // Position is returned asynchronously, and requires some delay; kick it off now.
         requestGpsLocation();
@@ -31,8 +39,8 @@
         // List of Nearby Locations also requires some delay; kick it off too
         LocationEditor.getNearestLocations().$promise.then(function (locations) {
             $scope.locationSelected = locations[0];
-            locationToEdit = locations[0];
-            updateSaveUrl();
+            localModel.locationToEdit = locations[0];
+            updateSaveImageUrl();
         });
 
         $scope.locationSelected = "Loading Locations ...";
@@ -41,41 +49,37 @@
 
         $scope.locEdit = {};
 
-        /**
-         * Performs Save by converting the image data to Blob for the upload code
-         * and adding the Location ID and Coordinates via the URL which has already
-         * been constructed from reading the device's current location.
-         */
-        $scope.locEdit.save = function () {
-            var file = dataURItoBlob($scope.imageState.cameraImage),
-                uploader = new FileUploader({
-                    url: saveImageUrl,
-                    method: 'POST',
-                    autoUpload: true
-                });
-
-            uploader.addToQueue(file);
-
-            $location.path('location');
-        };
-
         $scope.locEdit.cancel = function () {
             $window.history.back();
         };
 
         $scope.recordSelection = function (selectedItem) {
             $scope.locationSelected = $scope.locationMap[selectedItem];
-            locationToEdit = $scope.locationSelected;
-            updateSaveUrl();
-        }
+            localModel.locationToEdit = $scope.locationSelected;
+            updateSaveImageUrl();
+        };
 
-        //$scope.cameras = [{label: 'front'}, {label: 'back'}];
-        $scope.cameras = [];
-        showCameraChoices();
+        $scope.saveLocation = saveLocation;
     }
 
+    function saveLocation() {
+        localModel.locationResource.save(localModel.locationToEdit);
+    }
 
-    function LocationEditResource($resource) {
+    function LocationResource($resource) {
+        return $resource('/rest/location/update',
+            /* Selected Location */
+            {},
+            {
+                save: {
+                    method: 'POST',
+                    isArray: false
+                }
+            }
+        );
+    }
+
+    function LocationNearestResource($resource) {
         return $resource('/rest/location/nearest',
             {lat: 34.0, lon: -81.0},
             {
@@ -87,8 +91,7 @@
         );
     }
 
-
-    function LocationEditor(LocationEditResource) {
+    function LocationEditor(LocationNearestResource) {
         var locationMap = {};
 
         return {
@@ -98,13 +101,10 @@
 
                 // Returns the result so the promise is available to the caller
                 // TODO: Tie this to a center on the map
-                return LocationEditResource.get( {lat: 33.7, lon: -84.4}, function (locations) {
+                return LocationNearestResource.get( {lat: 33.7, lon: -84.4}, function (locations) {
                     var loc;
                     for (var i= 0, len = locations.length; i<len; i++) {
-                        loc = {
-                            name: locations[i].name,
-                            id: locations[i].id
-                        };
+                        loc = locations[i];
                         locationMap[loc.id] = loc;
                     }
                 })
@@ -126,11 +126,11 @@
     function recordPosition (position) {
         deviceCoords.lat = position.coords.latitude;
         deviceCoords.lon = position.coords.longitude;
-        updateSaveUrl();
+        updateSaveImageUrl();
     }
 
-    function updateSaveUrl () {
-        saveImageUrl = "/rest/location/uploadImage?locId=" + locationToEdit.id +
+    function updateSaveImageUrl () {
+        viewModel.saveImageUrl = "/rest/location/uploadImage?locId=" + localModel.locationToEdit.id +
             "&lat=" + deviceCoords.lat + "&lon=" + deviceCoords.lon;
     }
 
@@ -148,55 +148,6 @@
             case error.UNKNOWN_ERROR:
                 x.innerHTML = "An unknown error occurred.";
                 break;
-        }
-    }
-
-    /*
-     * Conversion required to put this over the wire.
-     * See java720's response to
-     * http://stackoverflow.com/questions/4998908/convert-data-uri-to-file-then-append-to-formdata
-     */
-    function dataURItoBlob(dataURI) {
-        var binary = atob(dataURI.split(',')[1]);
-        var array = [];
-        for(var i = 0; i < binary.length; i++) {
-            array.push(binary.charCodeAt(i));
-        }
-        return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
-    }
-
-    function gotSources(sourceInfos) {
-        for (var i = 0; i !== sourceInfos.length; ++i) {
-            var sourceInfo = sourceInfos[i];
-            var option = document.createElement('option');
-            option.value = sourceInfo.id;
-            if (sourceInfo.kind === 'audio') {
-                //option.text = sourceInfo.label || 'microphone ' +
-                //    (audioSelect.length + 1);
-                //audioSelect.appendChild(option);
-            } else if (sourceInfo.kind === 'video') {
-                option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
-                //videoSelect.appendChild(option);
-                viewModel.cameras.push({
-                    label: option.text,
-                    id: option.value
-                });
-                if (option.text.indexOf('back') > -1) {
-                    console.log("Found back camera");
-                    //Webcam.params.constraints.video.optional.sourceId = option.value;
-                }
-            } else {
-                console.log('Some other kind of source: ', sourceInfo);
-            }
-        }
-    }
-
-    function showCameraChoices() {
-        if (typeof MediaStreamTrack === 'undefined' ||
-            typeof MediaStreamTrack.getSources === 'undefined') {
-            alert('This browser does not support MediaStreamTrack.\n\nTry Chrome.');
-        } else {
-            MediaStreamTrack.getSources(gotSources);
         }
     }
 

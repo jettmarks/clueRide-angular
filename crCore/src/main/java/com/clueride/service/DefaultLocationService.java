@@ -139,6 +139,16 @@ public class DefaultLocationService implements LocationService {
         return getJsonStringForLocationList(locations);
     }
 
+    @Override
+    public void updateLocation(com.clueride.rest.dto.Location location) {
+        LOGGER.info("Updating Location " + location.toString());
+    }
+
+    @Override
+    public String getLocationTypes() {
+        return null;
+    }
+
     private class LocationDistanceComparator implements Comparator<Location> {
         private final Double lat, lon;
 

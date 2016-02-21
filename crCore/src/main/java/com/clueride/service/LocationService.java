@@ -19,6 +19,8 @@ package com.clueride.service;
 
 import java.io.InputStream;
 
+import com.clueride.rest.dto.Location;
+
 /**
  * Provides business-layer services for User's Location instances.
  *
@@ -66,4 +68,13 @@ public interface LocationService {
      * @return Ordered array of Locations for the course.
      */
     String getCourseLocations(Integer courseId);
+
+    /**
+     * Accept Location instance from JSON and update the existing record with the
+     * matching ID.
+     * @param location - com.clueride.rest.dto.Location instance from JSON.
+     */
+    void updateLocation(Location location);
+
+    String getLocationTypes();
 }
