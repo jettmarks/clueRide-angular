@@ -2,6 +2,7 @@
     'use strict';
 
     var
+    /* TODO: Connect with the proper object within scope. */
         locationToEdit = {},
         viewModel = {
             /* Set in the crLocEdit Module's controller. */
@@ -14,13 +15,24 @@
     angular
         .module('crLocEditImage',['camera'])
         .controller('ImageEditController', ImageEditController)
-        .factory('LocationEditResource', LocationEditResource)
         .factory('LocationEditor', LocationEditor)
     ;
 
-    ImageEditController.$inject = ['$scope', '$location', '$window', 'FileUploader', 'LocationEditor'];
+    ImageEditController.$inject = [
+        '$scope',
+        '$location',
+        '$window',
+        'FileUploader',
+        'LocationEditor'
+    ];
 
-    function ImageEditController($scope, $location, $window, FileUploader, LocationEditor) {
+    function ImageEditController(
+        $scope,
+        $location,
+        $window,
+        FileUploader,
+        LocationEditor
+    ) {
         viewModel = $scope;
 
         $scope.imageState = {
@@ -56,30 +68,10 @@
             $window.history.back();
         };
 
-        $scope.recordSelection = function (selectedItem) {
-            $scope.locationSelected = $scope.locationMap[selectedItem];
-            locationToEdit = $scope.locationSelected;
-            updateSaveUrl();
-        }
-
         //$scope.cameras = [{label: 'front'}, {label: 'back'}];
         $scope.cameras = [];
         showCameraChoices();
     }
-
-
-    function LocationEditResource($resource) {
-        return $resource('/rest/location/nearest',
-            {lat: 34.0, lon: -81.0},
-            {
-                get: {
-                    method: 'GET',
-                    isArray: true
-                }
-            }
-        );
-    }
-
 
     function LocationEditor(LocationEditResource) {
         var locationMap = {};
