@@ -1,23 +1,8 @@
 <link rel="stylesheet" href="./js/locEdit/locEdit.css">
 <div class="locEdit" ng-controller="LocEditController">
-  <!--
-  <div id="locationSelection" class="btn-group">
-    <a ui-turn-on='myDropdown' class='btn btn-primary'>
-      Location to Edit: {{locationSelected.name}}
-    </a>
-    <ul class="dropdown-menu"
-        role="menu"
-        ui-state="myDropdown"
-        ui-show="myDropdown"
-        ui-turn-off="myDropdown"
-        ui-outer-click="Ui.turnOff('myDropdown')"
-        ui-outer-click-if="Ui.active('myDropdown')"
-            >
-      <li ng-repeat="choice in locationMap" role="menuitem">
-        <a href ng-click="recordSelection(choice.id)">{{choice.name}}</a>
-      </li>
-    </ul>
-  </div> -->
+
+  <!-- TODO: CA-172 New Image page -->
+
   <div ng-show="!imageState.cameraImage">
     <!-- Directive from https://github.com/bcabanes/ng-camera -->
     <ng-camera
