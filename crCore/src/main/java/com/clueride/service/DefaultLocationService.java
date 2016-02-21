@@ -38,6 +38,7 @@ import com.clueride.dao.LocationStore;
 import com.clueride.dao.PathStore;
 import com.clueride.domain.Course;
 import com.clueride.domain.user.Location;
+import com.clueride.domain.user.LocationType;
 import com.clueride.domain.user.Path;
 import com.clueride.io.PojoJsonUtil;
 import com.clueride.service.builder.LocationBuilder;
@@ -146,7 +147,18 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public String getLocationTypes() {
-        return null;
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("[");
+        boolean firstTimeThrough = true;
+        for (LocationType locationType : LocationType.values()) {
+            if (!firstTimeThrough) {
+                buffer.append(",");
+            }
+            buffer.append("\"").append(locationType).append("\"");
+            firstTimeThrough = false;
+        }
+        buffer.append("]");
+        return buffer.toString();
     }
 
     private class LocationDistanceComparator implements Comparator<Location> {

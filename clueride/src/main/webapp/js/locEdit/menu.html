@@ -5,16 +5,16 @@
 
     <uib-tab heading="Location">
       <div id="locationSelection" class="btn-group">
-        <a ui-turn-on='myDropdown' class='btn btn-primary'>
+        <a ui-turn-on='locDropdown' class='btn btn-primary'>
           Location to Edit: {{locationSelected.name}}
         </a>
         <ul class="dropdown-menu"
             role="menu"
-            ui-state="myDropdown"
-            ui-show="myDropdown"
-            ui-turn-off="myDropdown"
-            ui-outer-click="Ui.turnOff('myDropdown')"
-            ui-outer-click-if="Ui.active('myDropdown')"
+            ui-state="locDropdown"
+            ui-show="locDropdown"
+            ui-turn-off="locDropdown"
+            ui-outer-click="Ui.turnOff('locDropdown')"
+            ui-outer-click-if="Ui.active('locDropdown')"
                 >
           <li ng-repeat="choice in locationMap" role="menuitem">
             <a href ng-click="recordSelection(choice.id)">{{choice.name}}</a>
@@ -22,18 +22,32 @@
         </ul>
       </div>
 
-      <div class="entry-field">
-        Name:
-        <input ng-model="locationSelected.name">
-
-        </input>
+      <div id="locationName" class="entry-field">
+        Name: <input ng-model="locationSelected.name"> </input>
       </div>
 
-      <div class="entry-field">
-        Description:
-        <textarea ng-model="locationSelected.description">
+      <div id="locationTypeSelection" class="entry-field">
+        <div class="btn-group">
+          <a ui-turn-on='locTypeDropdown' class='btn btn-primary'>
+            Type of Location: {{locationSelected.locationType}}
+          </a>
+          <ul class="dropdown-menu"
+              role="menu"
+              ui-state="locTypeDropdown"
+              ui-show="locTypeDropdown"
+              ui-turn-off="locTypeDropdown"
+              ui-outer-click="Ui.turnOff('locTypeDropdown')"
+              ui-outer-click-if="Ui.active('locTypeDropdown')"
+                  >
+            <li ng-repeat="choice in typeMap" role="menuitem">
+              <a href ng-click="typeSelection(choice)">{{choice}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
 
-        </textarea>
+      <div id="locationDescription" class="entry-field">
+        Description: <textarea ng-model="locationSelected.description"></textarea>
       </div>
 
       <div class="entry-field">

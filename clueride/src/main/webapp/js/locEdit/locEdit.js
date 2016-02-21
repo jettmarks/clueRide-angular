@@ -13,6 +13,7 @@
         .controller('LocEditController', LocationEditController)
         .factory('LocationNearestResource', LocationNearestResource)
         .factory('LocationResource', LocationResource)
+        .factory('LocationTypeResource', LocationTypeResource)
         .factory('LocationEditor', LocationEditor)
     ;
 
@@ -20,18 +21,21 @@
         '$scope',
         '$window',
         'LocationEditor',
-        'LocationResource'
+        'LocationResource',
+        'LocationTypeResource'
     ];
 
     function LocationEditController(
         $scope,
         $window,
         LocationEditor,
-        LocationResource
+        LocationResource,
+        LocationTypeResource
     ) {
         viewModel = $scope;
 
         localModel.locationResource = LocationResource;
+        localModel.locationTypeResource = LocationTypeResource;
 
         // Position is returned asynchronously, and requires some delay; kick it off now.
         requestGpsLocation();
@@ -43,9 +47,13 @@
             updateSaveImageUrl();
         });
 
+        //LocationEditor.getLocationTypes().$promise.then(populateLocationTypes());
+        LocationEditor.getLocationTypes();
+
         $scope.locationSelected = "Loading Locations ...";
 
         $scope.locationMap = LocationEditor.locationMap();
+        $scope.typeMap = LocationEditor.typeMap();
 
         $scope.locEdit = {};
 
@@ -57,6 +65,10 @@
             $scope.locationSelected = $scope.locationMap[selectedItem];
             localModel.locationToEdit = $scope.locationSelected;
             updateSaveImageUrl();
+        };
+
+        $scope.typeSelection = function (selectedType) {
+            $scope.locationSelected.locationType = selectedType;
         };
 
         $scope.saveLocation = saveLocation;
@@ -79,6 +91,18 @@
         );
     }
 
+    function LocationTypeResource($resource) {
+        return $resource('/rest/location/types',
+            {},
+            {
+                get: {
+                    method: 'GET',
+                    isArray: true
+                }
+            }
+        );
+    }
+
     function LocationNearestResource($resource) {
         return $resource('/rest/location/nearest',
             {lat: 34.0, lon: -81.0},
@@ -91,8 +115,22 @@
         );
     }
 
-    function LocationEditor(LocationNearestResource) {
-        var locationMap = {};
+    function LocationEditor(LocationNearestResource, LocationTypeResource) {
+        var locationMap = {},
+            typeMap = {};
+
+        function getLocationTypes() {
+            typeMap = {};
+
+            return LocationTypeResource.get({}, function (locationTypes) {
+                var locType;
+                for (var i= 0, len = locationTypes.length; i<len; i++) {
+                    locType = locationTypes[i];
+                    /* ID is the same as the name at this time. */
+                    typeMap[locType] = locType;
+                }
+            });
+        }
 
         return {
             getNearestLocations: function () {
@@ -109,7 +147,9 @@
                     }
                 })
             },
-            locationMap: function () {return locationMap}
+            locationMap: function () {return locationMap},
+            getLocationTypes: getLocationTypes,
+            typeMap: function () {return typeMap}
         }
     }
 
