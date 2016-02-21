@@ -51,7 +51,7 @@
       </div>
 
       <div class="entry-field">
-        <input type="submit" label="Save" ng-click="saveLocation()">
+        <input type="submit" value="Save" ng-click="saveLocation()">
         </input>
       </div>
 
@@ -63,7 +63,6 @@
     <uib-tab heading="Images">
       <!-- TODO: CA-179 Future list of Images for this Location -->
 
-      <!-- TODO: CA-174 -->
       <div id="cameraSelection" class="entry-field">
       <p>Select Camera:</p>
         <div class="btn-group">
@@ -87,7 +86,8 @@
       </div>
 
       <!--/* TODO: Turn into pill. */-->
-      Go to Take picture
+      <input type="submit" value="Turn on Camera" ng-click="turnOnCamera()" type="pills">
+      </input>
 
     </uib-tab>
 

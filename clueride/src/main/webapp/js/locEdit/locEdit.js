@@ -1,4 +1,4 @@
-(function (angular) {
+(function (angular, Webcam) {
     'use strict';
 
     var deviceCoords = {lat: 0.0, lon: 0.0},
@@ -17,6 +17,8 @@
     LocationEditController.$inject = [
         '$scope',
         '$window',
+        '$rootScope',
+        '$location',
         'LocationEditor',
         'LocationResource',
         'LocationTypeResource'
@@ -25,6 +27,8 @@
     function LocationEditController(
         $scope,
         $window,
+        $rootScope,
+        $location,
         LocationEditor,
         LocationResource,
         LocationTypeResource
@@ -77,6 +81,25 @@
         $scope.cameraSelection = function (camera) {
             $scope.cameraSelected = camera;
         }
+
+        $scope.turnOnCamera = function () {
+            $rootScope.showHeaderFooter = false;
+            setCamera($scope.cameraSelected.value);
+            $location.path("locEdit/newImage");
+        }
+    }
+
+    function setCamera(cameraId) {
+        Webcam.params.sourceId = cameraId;
+
+        /* Constraints doesn't quite work this way with webcam. */
+        //Webcam.params.constraints = {
+        //    video: {
+        //        optional: [{
+        //            sourceId: cameraId
+        //        }]
+        //    }
+        //};
     }
 
     function saveLocation() {
@@ -169,24 +192,16 @@
             var sourceInfo = sources[i];
             var option = document.createElement('option');
             option.value = sourceInfo.id;
-            if (sourceInfo.kind === 'audio') {
-                //option.text = sourceInfo.label || 'microphone ' +
-                //    (audioSelect.length + 1);
-                //audioSelect.appendChild(option);
-            } else if (sourceInfo.kind === 'video') {
+            if (sourceInfo.kind === 'video') {
                 option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
-                //videoSelect.appendChild(option);
                 viewModel.cameras.push({
                     label: option.text,
                     id: option.value
                 });
                 if (option.text.indexOf('back') > -1) {
                     console.log("Found back camera");
-                    //Webcam.params.constraints.video.optional.sourceId = option.value;
                     viewModel.cameraSelected = option;
                 }
-            } else {
-                console.log('Some other kind of source: ', sourceInfo);
             }
             lastOption = option;
         }
@@ -205,4 +220,4 @@
         }
     }
 
-}(window.angular));
+}(window.angular, Webcam));
