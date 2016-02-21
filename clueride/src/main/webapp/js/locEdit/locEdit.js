@@ -21,7 +21,9 @@
         '$location',
         'LocationEditor',
         'LocationResource',
-        'LocationTypeResource'
+        'LocationTypeResource',
+        'LocationService',
+        'FileUploader'
     ];
 
     function LocationEditController(
@@ -31,32 +33,61 @@
         $location,
         LocationEditor,
         LocationResource,
-        LocationTypeResource
+        LocationTypeResource,
+        LocationService,
+        FileUploader
     ) {
         viewModel = $scope;
 
         localModel.locationResource = LocationResource;
         localModel.locationTypeResource = LocationTypeResource;
+        localModel.locationService = LocationService;
 
         // Position is returned asynchronously, and requires some delay; kick it off now.
         requestGpsLocation();
 
         // List of Nearby Locations also requires some delay; kick it off too
-        LocationEditor.getNearestLocations().$promise.then(function (locations) {
-            $scope.locationSelected = locations[0];
-            localModel.locationToEdit = locations[0];
+        if (localModel.locationService.getEditLocation().id) {
+            $scope.locationSelected = localModel.locationService.getEditLocation();
+            localModel.locationToEdit = $scope.locationSelected;
             updateSaveImageUrl();
-        });
+        } else {
+            $scope.locationSelected = "Loading Locations ...";
+            LocationEditor.getNearestLocations().$promise.then(function (locations) {
+                $scope.locationSelected = locations[0];
+                localModel.locationToEdit = locations[0];
+                localModel.locationService.setEditLocation(locations[0]);
+                updateSaveImageUrl();
+            });
+        }
 
         //LocationEditor.getLocationTypes().$promise.then(populateLocationTypes());
         LocationEditor.getLocationTypes();
-
-        $scope.locationSelected = "Loading Locations ...";
 
         $scope.locationMap = LocationEditor.locationMap();
         $scope.typeMap = LocationEditor.typeMap();
 
         $scope.locEdit = {};
+
+        /**
+         * Performs Save by converting the image data to Blob for the upload code
+         * and adding the Location ID and Coordinates via the URL which has already
+         * been constructed from reading the device's current location.
+         */
+        $scope.locEdit.save = function () {
+            var file = dataURItoBlob($scope.imageState.cameraImage),
+                uploader = new FileUploader({
+                    url: viewModel.saveImageUrl,
+                    method: 'POST',
+                    autoUpload: true
+                });
+
+            console.log("Save URL: " + viewModel.saveImageUrl);
+
+            uploader.addToQueue(file);
+
+            $location.path('location');
+        };
 
         $scope.locEdit.cancel = function () {
             $window.history.back();
@@ -65,6 +96,7 @@
         $scope.recordSelection = function (selectedItem) {
             $scope.locationSelected = $scope.locationMap[selectedItem];
             localModel.locationToEdit = $scope.locationSelected;
+            localModel.locationService.setEditLocation($scope.locationSelected);
             updateSaveImageUrl();
         };
 
@@ -74,13 +106,11 @@
 
         $scope.saveLocation = saveLocation;
 
-        //$scope.cameras = [{label: 'front'}, {label: 'back'}];
         $scope.cameras = [];
-        $scope.cameraSelected;
         showCameraChoices();
         $scope.cameraSelection = function (camera) {
             $scope.cameraSelected = camera;
-        }
+        };
 
         $scope.turnOnCamera = function () {
             $rootScope.showHeaderFooter = false;
@@ -218,6 +248,20 @@
         } else {
             MediaStreamTrack.getSources(gotSources);
         }
+    }
+
+    /*
+     * Conversion required to put this over the wire.
+     * See java720's response to
+     * http://stackoverflow.com/questions/4998908/convert-data-uri-to-file-then-append-to-formdata
+     */
+    function dataURItoBlob(dataURI) {
+        var binary = atob(dataURI.split(',')[1]);
+        var array = [];
+        for(var i = 0; i < binary.length; i++) {
+            array.push(binary.charCodeAt(i));
+        }
+        return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
     }
 
 }(window.angular, Webcam));
