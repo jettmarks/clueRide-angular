@@ -13,3 +13,7 @@
     border: 2px solid #0000FF;
     padding: 8px;
 }
+
+.entry-field p {
+    text-align: left;
+}

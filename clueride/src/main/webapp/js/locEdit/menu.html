@@ -47,7 +47,7 @@
       </div>
 
       <div id="locationDescription" class="entry-field">
-        Description: <textarea ng-model="locationSelected.description"></textarea>
+        <p>Description:</p> <textarea ng-model="locationSelected.description"></textarea>
       </div>
 
       <div class="entry-field">
@@ -64,7 +64,29 @@
       <!-- TODO: CA-179 Future list of Images for this Location -->
 
       <!-- TODO: CA-174 -->
-      Select Camera<br>
+      <div id="cameraSelection" class="entry-field">
+      <p>Select Camera:</p>
+        <div class="btn-group">
+          <a ui-turn-on='cameraDropdown' class='btn btn-primary'>
+            {{cameraSelected.label}}
+          </a>
+          <ul class="dropdown-menu"
+              role="menu"
+              ui-state="cameraDropdown"
+              ui-show="cameraDropdown"
+              ui-turn-off="cameraDropdown"
+              ui-outer-click="Ui.turnOff('cameraDropdown')"
+              ui-outer-click-if="Ui.active('cameraDropdown')"
+                  >
+            <!-- Populate the menu items. -->
+            <li ng-repeat="choice in cameras" role="menuitem">
+              <a href ng-click="cameraSelection(choice)">{{choice.label}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!--/* TODO: Turn into pill. */-->
       Go to Take picture
 
     </uib-tab>

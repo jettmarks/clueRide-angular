@@ -67,10 +67,6 @@
         $scope.locEdit.cancel = function () {
             $window.history.back();
         };
-
-        //$scope.cameras = [{label: 'front'}, {label: 'back'}];
-        $scope.cameras = [];
-        showCameraChoices();
     }
 
     function LocationEditor(LocationEditResource) {
@@ -126,39 +122,5 @@
         return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
     }
 
-    function gotSources(sourceInfos) {
-        for (var i = 0; i !== sourceInfos.length; ++i) {
-            var sourceInfo = sourceInfos[i];
-            var option = document.createElement('option');
-            option.value = sourceInfo.id;
-            if (sourceInfo.kind === 'audio') {
-                //option.text = sourceInfo.label || 'microphone ' +
-                //    (audioSelect.length + 1);
-                //audioSelect.appendChild(option);
-            } else if (sourceInfo.kind === 'video') {
-                option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
-                //videoSelect.appendChild(option);
-                viewModel.cameras.push({
-                    label: option.text,
-                    id: option.value
-                });
-                if (option.text.indexOf('back') > -1) {
-                    console.log("Found back camera");
-                    //Webcam.params.constraints.video.optional.sourceId = option.value;
-                }
-            } else {
-                console.log('Some other kind of source: ', sourceInfo);
-            }
-        }
-    }
-
-    function showCameraChoices() {
-        if (typeof MediaStreamTrack === 'undefined' ||
-            typeof MediaStreamTrack.getSources === 'undefined') {
-            alert('This browser does not support MediaStreamTrack.\n\nTry Chrome.');
-        } else {
-            MediaStreamTrack.getSources(gotSources);
-        }
-    }
 
 }(window.angular));

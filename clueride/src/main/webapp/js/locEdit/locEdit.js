@@ -69,6 +69,14 @@
         };
 
         $scope.saveLocation = saveLocation;
+
+        //$scope.cameras = [{label: 'front'}, {label: 'back'}];
+        $scope.cameras = [];
+        $scope.cameraSelected;
+        showCameraChoices();
+        $scope.cameraSelection = function (camera) {
+            $scope.cameraSelected = camera;
+        }
     }
 
     function saveLocation() {
@@ -148,6 +156,52 @@
             case error.UNKNOWN_ERROR:
                 x.innerHTML = "An unknown error occurred.";
                 break;
+        }
+    }
+
+    /**
+     * Construct "constraints" that tell Webcam which camera to use.
+     * @param sources
+     */
+    function gotSources(sources) {
+        var lastOption;
+        for (var i = 0; i !== sources.length; ++i) {
+            var sourceInfo = sources[i];
+            var option = document.createElement('option');
+            option.value = sourceInfo.id;
+            if (sourceInfo.kind === 'audio') {
+                //option.text = sourceInfo.label || 'microphone ' +
+                //    (audioSelect.length + 1);
+                //audioSelect.appendChild(option);
+            } else if (sourceInfo.kind === 'video') {
+                option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
+                //videoSelect.appendChild(option);
+                viewModel.cameras.push({
+                    label: option.text,
+                    id: option.value
+                });
+                if (option.text.indexOf('back') > -1) {
+                    console.log("Found back camera");
+                    //Webcam.params.constraints.video.optional.sourceId = option.value;
+                    viewModel.cameraSelected = option;
+                }
+            } else {
+                console.log('Some other kind of source: ', sourceInfo);
+            }
+            lastOption = option;
+        }
+        /* Bring in at least some camera if 'back' not found. */
+        if (!viewModel.cameraSelected) {
+            viewModel.cameraSelected = lastOption;
+        }
+    }
+
+    function showCameraChoices() {
+        if (typeof MediaStreamTrack === 'undefined' ||
+            typeof MediaStreamTrack.getSources === 'undefined') {
+            alert('This browser does not support MediaStreamTrack.\n\nTry Chrome.');
+        } else {
+            MediaStreamTrack.getSources(gotSources);
         }
     }
 
