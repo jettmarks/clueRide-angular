@@ -314,4 +314,8 @@ function(
 
   /* Restore session state if player is already logged in. */
   LoginService.checkLogin();
+
+  /* Whether or not the Header/Footer nav bars are shown. */
+  $rootScope.showHeaderFooter = true;
+
 }]);
