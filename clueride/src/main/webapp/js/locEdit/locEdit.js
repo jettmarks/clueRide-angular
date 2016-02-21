@@ -159,7 +159,7 @@
                 locationMap = {};
 
                 // Returns the result so the promise is available to the caller
-                // TODO: Tie this to a center on the map
+                // TODO: CA-158 Tie this to a center on the map
                 return LocationNearestResource.get( {lat: 33.7, lon: -84.4}, function (locations) {
                     var loc;
                     for (var i= 0, len = locations.length; i<len; i++) {

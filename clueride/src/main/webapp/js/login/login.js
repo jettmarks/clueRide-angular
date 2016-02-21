@@ -53,7 +53,7 @@
 
     /**
      * Using the credentials stored in a cookie, retrieve the badges.
-     * TODO: Turn this into using an authentication token instead of plain text.
+     * TODO: CA-186 Make this use an authentication token instead of plain text.
      */
     function checkLogin() {
         var loginName, password;
@@ -71,11 +71,11 @@
 
     /**
      * After authenticating the user, save the credentials as cookies.
-     * TODO: Turn this into a token that is used to record an authenticated session.
+     * TODO: CA-186 Turn this into a token that is used to record an authenticated session.
      * @param login - object containing credentials.
      */
     function saveLogin(login) {
-        // TODO: Add options for expiring the cookies after 24 hours
+        // TODO: CA-187 Add options for expiring the cookies after 24 hours
         localModel.cookieService.put('loginName', login.loginName);
         localModel.cookieService.put('password', login.password)
     }
