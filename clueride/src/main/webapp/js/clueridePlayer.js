@@ -17,6 +17,7 @@ var app = angular.module('clueridePlayer', [
   'crPlayer.GameState',
   'crMap',
   'crPlayer.Location',
+  'common.LocationResource',
   'crLocEdit',
   'camera',
   'status',
