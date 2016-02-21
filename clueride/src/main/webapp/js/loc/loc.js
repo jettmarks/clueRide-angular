@@ -15,8 +15,8 @@
     angular
         .module('crPlayer.Location', ['crPlayer.GameState'])
         .controller('LocationController', LocationController)
+        .service('LocationService', LocationService)
         .directive('backImg', backImg)
-        .service('locationService', locationService)
     ;
 
     LocationController.$inject = ['gameStateService'];
@@ -50,6 +50,9 @@
     function setLocationScope(locationScope) {
         viewModel = locationScope;
         viewModel.locationState = locState;
+        viewModel.editLocation = {
+            name: 'No Edit Location Selected'
+        };
     }
 
     function getLocationCount() {
@@ -60,11 +63,23 @@
         return viewModel.locations[localModel.gsSvc.getLocationIndex()].id;
     }
 
-    function locationService() {
+    function setEditLocation(location) {
+        viewModel.editLocation = location;
+    }
+
+    function getEditLocation() {
+        return viewModel.editLocation;
+    }
+
+    function LocationService() {
         return {
             setLocationScope: setLocationScope,
             getLocationCount: getLocationCount,
             getLocationId: getLocationId,
+
+            setEditLocation: setEditLocation,
+            getEditLocation: getEditLocation,
+
             locations: function () {return viewModel.locations;},
             init: init
         }

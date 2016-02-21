@@ -201,6 +201,7 @@ public class DefaultLocationService implements LocationService {
      */
     @Override
     public void saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData) {
+        LOGGER.info("Requesting Save of image for Location ID " + locationId);
         Integer newSeqId = null;
         try {
             newSeqId = imageStore.addNew(locationId, fileData);
@@ -209,7 +210,7 @@ public class DefaultLocationService implements LocationService {
         }
         URL imageUrl = null;
         try {
-            imageUrl = new URL("http://img.clueride.com/img/" + locationId + "/" + newSeqId + ".jpg");
+            imageUrl = new URL("https://images.clueride.com/img/" + locationId + "/" + newSeqId + ".jpg");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

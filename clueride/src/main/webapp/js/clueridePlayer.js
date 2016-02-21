@@ -271,14 +271,14 @@ app.controller('MainController', [
   '$rootScope',
   '$scope',
   'gameStateService',
-  'locationService',
+  'LocationService',
   'BadgesService',
   'LoginService',
 function(
     $rootScope,
     $scope,
     gameStateService,
-    locationService,
+    LocationService,
     BadgesService,
     LoginService
 ) {
@@ -305,8 +305,8 @@ function(
 
   /* Bind the Location Service to the Scope. */
   $scope.locations = {};
-  locationService.setLocationScope($scope);
-  locationService.init(gameStateService);
+  LocationService.setLocationScope($scope);
+  LocationService.init(gameStateService);
 
   /* Bind the Badges Service to the scope. */
   $scope.badges = {};
