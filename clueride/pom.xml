@@ -43,6 +43,7 @@
                     <sourceIncludes>
                         <include>gameState/*.js</include>
                         <include>course/*.js</include>
+                        <include>loc/*.js</include>
                         <include>badges/*.js</include>
                     </sourceIncludes>
                 </configuration>
