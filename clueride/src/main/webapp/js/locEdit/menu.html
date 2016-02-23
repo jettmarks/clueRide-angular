@@ -22,6 +22,11 @@
         </ul>
       </div>
 
+      <div id="mapDeviceToggle" class="entry-field">
+        <div id="mapDeviceToggleTitle">Locate using Map? (Device is default)</div>
+        <div id="mapDeviceToggleSwitch" ui-switch ng-model="locationState.mapOverrideDevice"></div>
+      </div>
+
       <div id="locationName" class="entry-field">
         Name: <input ng-model="locationSelected.name"> </input>
       </div>

@@ -94,7 +94,7 @@ public class DefaultLocationService implements LocationService {
     @Override
     public String getNearestLocations(Double lat, Double lon) {
         LOGGER.info("Retrieving Nearest Locations for (" + lat + ", " + lon + ")");
-        // Brute force approach of running through all locations and keeping the top five
+        // Brute force approach of running through all locations and keeping the top few
         List<Location> locationList = new ArrayList<>();
         for (Location location : locationStore.getLocations()) {
             locationList.add(location);
@@ -118,7 +118,7 @@ public class DefaultLocationService implements LocationService {
                 e.printStackTrace();
             }
             count++;
-//            if (++count == 5) break;
+            if (++count == 7) break;
         }
         jsonBuilder.append(']');
         return jsonBuilder.toString();
