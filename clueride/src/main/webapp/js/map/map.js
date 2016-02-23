@@ -17,15 +17,17 @@
     ;
 
     MapController.$inject = [
+        '$scope',
         'gameStateService',
-        'locationService',
+        'LocationService',
         'PathMapResource',
         'CourseLocationMapResource',
         'leafletData'];
 
     function MapController(
+        $scope,
         gameStateService,
-        locationService,
+        LocationService,
         PathMapResource,
         CourseLocationMapResource,
         leafletData
@@ -60,14 +62,27 @@
         };
 
         angular.extend(mapModel, {
+            /* Center the map at last zoom level for editing. */
             center: {
-                lat: 33.7627,
-                lng: -84.3527,
-                zoom: 12,
+                //lat: 33.7627,
+                //lng: -84.3527,
+                //zoom: 12,
+                lat: LocationService.getMapCoords().lat,
+                lng: LocationService.getMapCoords().lng,
+                zoom: LocationService.getMapZoom(),
                 autoDiscover: true
             },
             geojson: {},
             markers: {}
+        });
+
+        /* Record our last positions prior to closing the map. */
+        $scope.$on("$destroy", function() {
+            LocationService.setMapZoom(mapModel.center.zoom);
+            LocationService.setMapCoords({
+                lat: mapModel.center.lat,
+                lng: mapModel.center.lng
+            });
         });
 
         /* Put the current path on the map (unless we don't have one). */
@@ -79,9 +94,9 @@
             for (var completedPathId in localModel.completedPathIds) {
                 makeHistoricalPathMapRequest(completedPathId)
             }
-        } else if (locationService.locations) {
+        } else if (LocationService.locations) {
             CourseLocationMapResource.getMap({
-                locationId:  locationService.getLocationId()
+                locationId:  LocationService.getLocationId()
             }, locationFeatureToMap );
         }
     }

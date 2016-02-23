@@ -10,16 +10,16 @@
         .controller('StatusController', StatusController)
     ;
 
-    StatusController.$inject = ['$scope','gameStateService','locationService'];
+    StatusController.$inject = ['$scope','gameStateService','LocationService'];
 
-    function StatusController($scope, gameStateService, locationService) {
+    function StatusController($scope, gameStateService, LocationService) {
         vm = this;
 
         gsSvc = gameStateService;
         currentPage = gsSvc.getLocationIndex();
         $scope.onPageChange = onPageChange;
         $scope.onPathChange = onPathChange;
-        $scope.getLocationCount = locationService.getLocationCount;
+        $scope.getLocationCount = LocationService.getLocationCount;
 
         /* Ask service to "arrive" the team. */
         $scope.arrived = gameStateService.arrived;
