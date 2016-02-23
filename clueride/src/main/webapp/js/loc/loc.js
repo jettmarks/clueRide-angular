@@ -9,11 +9,14 @@
             currentPage: 1,
             pageChanged: pageChanged,
             lastLocationIndex: lastLocationIndex,
+
             /* From the map. */
             mapCoords: {
                 lat: 33.7,
                 lon: -84.1
             },
+            zoom: 12,
+
             /* When tethered, this is used as the "device's" location. */
             tetherCoords: {
                 lat: 33.7,
@@ -98,6 +101,14 @@
         viewModel.locationState.mapCoords = mapCoords;
     }
 
+    function getMapZoom() {
+        return viewModel.locationState.zoom;
+    }
+
+    function setMapZoom(zoom) {
+        viewModel.locationState.zoom = zoom;
+    }
+
     function getTetherCoords() {
         return viewModel.locationState.tetherCoords;
     }
@@ -146,6 +157,8 @@
             /* Where the center of the map resides or has recently resided. */
             getMapCoords: getMapCoords,
             setMapCoords: setMapCoords,
+            getMapZoom: getMapZoom,
+            setMapZoom: setMapZoom,
 
             /* When tracking a tether, the location is updated here. */
             getTetherCoords: getTetherCoords,
