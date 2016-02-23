@@ -78,10 +78,12 @@
 
         /* Record our last positions prior to closing the map. */
         $scope.$on("$destroy", function() {
+            /* Clear out previous edit location. */
+            LocationService.setEditLocation({});
             LocationService.setMapZoom(mapModel.center.zoom);
             LocationService.setMapCoords({
                 lat: mapModel.center.lat,
-                lng: mapModel.center.lng
+                lon: mapModel.center.lng
             });
         });
 
@@ -125,7 +127,7 @@
             )
         });
 
-        /* Put responses to marker events here. */
+        /* TODO: Put responses to marker events here. */
 
         return marker;
     }

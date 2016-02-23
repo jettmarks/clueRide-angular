@@ -46,12 +46,12 @@
         // Position is returned asynchronously, and requires some delay; kick it off now.
         requestGpsLocation();
 
-        // List of Nearby Locations also requires some delay; kick it off too
         if (localModel.locationService.getEditLocation().id) {
             $scope.locationSelected = localModel.locationService.getEditLocation();
             localModel.locationToEdit = $scope.locationSelected;
             updateSaveImageUrl();
         } else {
+            // List of Nearby Locations also requires some delay; kick it off too
             $scope.locationSelected = "Loading Locations ...";
             LocationEditor.getNearestLocations().$promise.then(function (locations) {
                 $scope.locationSelected = locations[0];
@@ -117,19 +117,12 @@
             setCamera($scope.cameraSelected.value);
             $location.path("locEdit/newImage");
         }
+
     }
 
     function setCamera(cameraId) {
+        /* Records the camera selection. */
         Webcam.params.sourceId = cameraId;
-
-        /* Constraints doesn't quite work this way with webcam. */
-        //Webcam.params.constraints = {
-        //    video: {
-        //        optional: [{
-        //            sourceId: cameraId
-        //        }]
-        //    }
-        //};
     }
 
     function saveLocation() {
@@ -159,14 +152,18 @@
                 locationMap = {};
 
                 // Returns the result so the promise is available to the caller
-                // TODO: CA-158 Tie this to a center on the map
-                return LocationNearestResource.get( {lat: 33.7, lon: -84.4}, function (locations) {
-                    var loc;
-                    for (var i= 0, len = locations.length; i<len; i++) {
-                        loc = locations[i];
-                        locationMap[loc.id] = loc;
+                return LocationNearestResource.get( {
+                        lat: localModel.locationService.getCloseToMeCoords().lat,
+                        lon: localModel.locationService.getCloseToMeCoords().lon
+                    },
+                    function (locations) {
+                        var loc;
+                        for (var i= 0, len = locations.length; i<len; i++) {
+                            loc = locations[i];
+                            locationMap[loc.id] = loc;
+                        }
                     }
-                })
+                )
             },
             locationMap: function () {return locationMap},
             getLocationTypes: getLocationTypes,

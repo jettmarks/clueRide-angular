@@ -27,8 +27,9 @@
                 lat: 33.7,
                 lon: -84.1
             },
-            /* Either set to 'device' or 'map' depending on editor's choice. */
-            masterCoordSet: 'device',
+            /* True if we use the map as "Close To Me" instead of device. */
+            mapOverrideDevice: false,
+
             /* If GPS not enabled, will need to use tethered or map. */
             gpsEnabled: false,
             location: {}
@@ -132,10 +133,10 @@
      * picking up a GPS signal we want to use.
      */
     function getCloseToMeCoords() {
-        if (viewModel.locationState.masterCoordSet === 'device') {
-            return getDeviceCoords();
-        } else {
+        if (viewModel.locationState.mapOverrideDevice) {
             return viewModel.locationState.mapCoords;
+        } else {
+            return getDeviceCoords();
         }
     }
 
@@ -180,8 +181,8 @@
                 viewModel.locationState.gpsEnabled = true;
             },
 
-            trackMap: function () {viewModel.locationState.masterCoordSet = 'map';},
-            trackDevice: function () {viewModel.locationState.masterCoordSet = 'device';},
+            trackMap: function () {viewModel.locationState.mapOverrideDevice = true;},
+            trackDevice: function () {viewModel.locationState.mapOverrideDevice = false;},
 
             locations: function () {return viewModel.locations;},
             init: init
