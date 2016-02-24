@@ -160,7 +160,7 @@
                         var loc;
                         for (var i= 0, len = locations.length; i<len; i++) {
                             loc = locations[i];
-                            locationMap[loc.id] = loc;
+                            locationMap[i] = loc;
                         }
                     }
                 )
