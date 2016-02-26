@@ -121,6 +121,12 @@
             $location.path("locEdit/newImage");
         }
 
+        viewModel.selectedClue = 0;
+        viewModel.setClue = function (clueId) {
+            viewModel.selectedClue = clueId;
+            $rootScope.Ui.turnOn('clueEdit');
+        }
+
         $scope.loadClueTab = function () {
             var clueIds = viewModel.locationSelected.clueIds;
             /* Clear any previous values. */

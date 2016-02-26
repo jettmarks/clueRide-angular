@@ -1,0 +1,25 @@
+<div id="cameraSelection" class="entry-field">
+  <!-- TODO: CA-179 Future list of Images for this Location -->
+  <p>Select Camera:</p>
+  <div class="btn-group">
+    <a ui-turn-on='cameraDropdown' class='btn btn-primary'>
+      {{cameraSelected.label}}
+    </a>
+    <ul class="dropdown-menu"
+        role="menu"
+        ui-state="cameraDropdown"
+        ui-show="cameraDropdown"
+        ui-turn-off="cameraDropdown"
+        ui-outer-click="Ui.turnOff('cameraDropdown')"
+        ui-outer-click-if="Ui.active('cameraDropdown')"
+            >
+      <!-- Populate the menu items. -->
+      <li ng-repeat="choice in cameras" role="menuitem">
+        <a href ng-click="cameraSelection(choice)">{{choice.label}}</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<input type="submit" value="Turn on Camera" ng-click="turnOnCamera()">
+</input>
