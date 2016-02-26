@@ -1,0 +1,59 @@
+<div id="locationSelection" class="btn-group">
+  <a ui-turn-on='locDropdown' class='btn btn-primary'>
+    Location to Edit: {{locationSelected.name}}
+  </a>
+  <ul class="dropdown-menu"
+      role="menu"
+      ui-state="locDropdown"
+      ui-show="locDropdown"
+      ui-turn-off="locDropdown"
+      ui-outer-click="Ui.turnOff('locDropdown')"
+      ui-outer-click-if="Ui.active('locDropdown')"
+          >
+    <li ng-repeat="choice in locationMap" role="menuitem">
+      <a href ng-click="recordSelection(choice.id)">{{choice.name}}</a>
+    </li>
+  </ul>
+</div>
+
+<div id="mapDeviceToggle" class="entry-field">
+  <div id="mapDeviceToggleTitle">Locate using Map? (Device is default)</div>
+  <div id="mapDeviceToggleSwitch" ui-switch ng-model="locationState.mapOverrideDevice"></div>
+</div>
+
+<div id="locationName" class="entry-field">
+  Name: <input ng-model="locationSelected.name"> </input>
+</div>
+
+<div id="locationTypeSelection" class="entry-field">
+  <div class="btn-group">
+    <a ui-turn-on='locTypeDropdown' class='btn btn-primary'>
+      Type of Location: {{locationSelected.locationType}}
+    </a>
+    <ul class="dropdown-menu"
+        role="menu"
+        ui-state="locTypeDropdown"
+        ui-show="locTypeDropdown"
+        ui-turn-off="locTypeDropdown"
+        ui-outer-click="Ui.turnOff('locTypeDropdown')"
+        ui-outer-click-if="Ui.active('locTypeDropdown')"
+            >
+      <li ng-repeat="choice in typeMap" role="menuitem">
+        <a href ng-click="typeSelection(choice)">{{choice}}</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div id="locationDescription" class="entry-field">
+  <p>Description:</p> <textarea ng-model="locationSelected.description"></textarea>
+</div>
+
+<div class="entry-field">
+  <input type="submit" value="Save" ng-click="saveLocation()">
+  </input>
+</div>
+
+
+<!-- TODO: CA-158 Add toggle for Coordinate Source. -->
+
