@@ -23,6 +23,7 @@ import java.util.List;
 
 public class Clue {
     private Integer id;
+    private String name;
     private String question;
     private List<Answer> answers = new ArrayList<>();
     private AnswerKey correctAnswer;
@@ -31,6 +32,7 @@ public class Clue {
 
     private Clue(Builder builder) {
         this.id = builder.getId();
+        this.name = builder.getName();
         this.question = builder.getQuestion();
         this.answers = builder.getAnswers();
         this.correctAnswer = builder.getCorrectAnswer();
@@ -40,6 +42,10 @@ public class Clue {
 
     public Integer getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getQuestion() {
@@ -65,6 +71,7 @@ public class Clue {
 
     public static final class Builder {
         private Integer id;
+        private String name;
         private String question;
         private List<Answer> answers = new ArrayList<>();
         private AnswerKey correctAnswer;
@@ -126,6 +133,15 @@ public class Clue {
 
         public Builder withId(Integer id) {
             this.id = id;
+            return this;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
             return this;
         }
 
