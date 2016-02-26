@@ -24,6 +24,7 @@ var app = angular.module('clueridePlayer', [
   'clue',
   'crPlayer.CourseModule',
   'common.CourseResource',
+  'common.ClueResource',
   'ui.bootstrap',
   'mobile-angular-ui',
   'angularFileUpload',

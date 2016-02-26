@@ -23,6 +23,7 @@
         'LocationResource',
         'LocationTypeResource',
         'LocationService',
+        'ClueResource',
         'FileUploader'
     ];
 
@@ -35,6 +36,7 @@
         LocationResource,
         LocationTypeResource,
         LocationService,
+        ClueResource,
         FileUploader
     ) {
         viewModel = $scope;
@@ -42,6 +44,7 @@
         localModel.locationResource = LocationResource;
         localModel.locationTypeResource = LocationTypeResource;
         localModel.locationService = LocationService;
+        localModel.clueResource = ClueResource;
 
         // Position is returned asynchronously, and requires some delay; kick it off now.
         requestGpsLocation();
@@ -116,6 +119,19 @@
             $rootScope.showHeaderFooter = false;
             setCamera($scope.cameraSelected.value);
             $location.path("locEdit/newImage");
+        }
+
+        $scope.loadClueTab = function () {
+            var clueIds = viewModel.locationSelected.clueIds;
+            /* Clear any previous values. */
+            viewModel.clues = [];
+
+            for (var clueId in clueIds) {
+                localModel.clueResource.get({clueId: clueId},
+                function (clue) {
+                    viewModel.clues.push(clue);
+                });
+            }
         }
 
     }
