@@ -16,9 +16,9 @@
         .factory('LoginService', LoginService)
     ;
 
-    LoginController.$inject = ['$cookies', 'LoginResource','BadgesService', 'gameStateService'];
+    LoginController.$inject = ['$cookies', 'LoginResource','BadgesService', 'GameStateService'];
 
-    function LoginController($cookies, LoginResource, BadgesService, gameStateService) {
+    function LoginController($cookies, LoginResource, BadgesService, GameStateService) {
         var vm = this;
 
         vm.loginName = "";
@@ -29,7 +29,7 @@
         localModel.cookieService = $cookies;
         localModel.loginResource = LoginResource;
         localModel.badgesService = BadgesService;
-        localModel.gameStateService = gameStateService;
+        localModel.gameStateService = GameStateService;
 
         viewModel = vm;
     }
@@ -90,10 +90,10 @@
     }
 
     // TODO: May be able to refactor setting up of the dependencies into a single spot
-    function LoginService($cookies, LoginResource, gameStateService, BadgesService) {
+    function LoginService($cookies, LoginResource, GameStateService, BadgesService) {
         localModel.cookieService = $cookies;
         localModel.loginResource = LoginResource;
-        localModel.gameStateService = gameStateService;
+        localModel.gameStateService = GameStateService;
         localModel.badgesService = BadgesService;
 
         return {

@@ -9,14 +9,14 @@
         };
 
     angular
-        .module('gps', ['crPlayer.GameState'])
+        .module('crPlayer.Gps', ['crPlayer.GameState'])
         .controller('GpsController', GpsController)
         ;
 
-    GpsController.$inject = ['$scope', 'gameStateService'];
+    GpsController.$inject = ['$scope', 'GameStateService'];
 
-    function GpsController($scope, gameStateService) {
-        localModel.gameStateService = gameStateService;
+    function GpsController($scope, GameStateService) {
+        localModel.gameStateService = GameStateService;
 
         $scope.gpsMode = gpsMode;
         gpsMode.previousAgreeToTether = gpsMode.agreeToTether;

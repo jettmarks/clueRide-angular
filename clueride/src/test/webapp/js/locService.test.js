@@ -14,7 +14,7 @@
 
         beforeEach(function () {
             inject(function ($injector) {
-                self.gameStateService = $injector.get('gameStateService');
+                self.gameStateService = $injector.get('GameStateService');
                 self.locationService = $injector.get('LocationService');
                 toTest = self.locationService;
                 toTest.setLocationScope(self.testScope);

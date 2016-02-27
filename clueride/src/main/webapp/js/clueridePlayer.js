@@ -8,8 +8,8 @@ var app = angular.module('clueridePlayer', [
   'ngCookies',
   'ngResource',
   'ngRoute',
-  'team',
-  'gps',
+  'crPlayer.Team',
+  'crPlayer.Gps',
   'crPlayer.LoginModule',
   'crPlayer.BadgesModule',
   'crPlayer.MenuModule',
@@ -20,8 +20,8 @@ var app = angular.module('clueridePlayer', [
   'common.LocationResource',
   'crLocEdit',
   'camera',
-  'status',
-  'clue',
+  'crPlayer.Status',
+  'crPlayer.ClueModule',
   'crPlayer.CourseModule',
   'common.CourseResource',
   'common.ClueResource',
@@ -271,14 +271,14 @@ app.directive('dragMe', ['$drag', function($drag){
 app.controller('MainController', [
   '$rootScope',
   '$scope',
-  'gameStateService',
+  'GameStateService',
   'LocationService',
   'BadgesService',
   'LoginService',
 function(
     $rootScope,
     $scope,
-    gameStateService,
+    GameStateService,
     LocationService,
     BadgesService,
     LoginService
@@ -302,12 +302,12 @@ function(
 
   /* Bind the Course to the scope. */
   $scope.course = {};
-  gameStateService.setCourseScope($scope);
+  GameStateService.setCourseScope($scope);
 
   /* Bind the Location Service to the Scope. */
   $scope.locations = {};
   LocationService.setLocationScope($scope);
-  LocationService.init(gameStateService);
+  LocationService.init(GameStateService);
 
   /* Bind the Badges Service to the scope. */
   $scope.badges = {};

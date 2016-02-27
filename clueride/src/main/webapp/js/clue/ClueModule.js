@@ -4,12 +4,12 @@
     var self = {};
 
     angular
-        .module('clue', ['ui.bootstrap', 'crPlayer.GameState'])
+        .module('crPlayer.ClueModule', ['ui.bootstrap', 'crPlayer.GameState'])
         .controller('ClueController', ClueController);
 
-    ClueController.$inject = ['$scope', 'gameStateService'];
+    ClueController.$inject = ['$scope', 'GameStateService'];
 
-    function ClueController($scope, gameStateService) {
+    function ClueController($scope, GameStateService) {
         $scope.clue = {
             question: "What is the answer to 'Life, the Universe and Everything'?",
             answers: [
@@ -24,7 +24,7 @@
 
         $scope.submit = checkAnswer;
 
-        self.gameStateService = gameStateService;
+        self.gameStateService = GameStateService;
     }
 
     /* Right now we're accepting everything as a correct answer. */
