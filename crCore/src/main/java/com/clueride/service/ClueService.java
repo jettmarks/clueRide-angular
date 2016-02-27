@@ -33,6 +33,8 @@ public interface ClueService {
      */
     String getClue(Integer clueId);
 
+    String addClue(Clue clue);
+
     /* TODO: CA-199 - persist clues. */
     void update(Clue clue);
 }

@@ -17,6 +17,7 @@
  */
 package com.clueride.dao;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
 import com.clueride.domain.user.Clue;
@@ -39,16 +41,20 @@ public class JsonClueStore implements ClueStore {
     private static final Logger LOGGER = Logger.getLogger(JsonClueStore.class);
 
     /** In-memory references to the full set of Clues indexed by Location. */
-    private Map<Integer,List<Clue>> cluesPerLocation = new HashMap<>();
+    private static Map<Integer,List<Clue>> cluesPerLocation = new HashMap<>();
     /** In-memory references to the full set of Clues indexed by their ID. */
-    private Map<Integer,Clue> clueById = new HashMap<>();
+    private static Map<Integer,Clue> clueById = new HashMap<>();
+
+    private static boolean needsReload = true;
 
     private final LocationStore locationStore;
 
     @Inject
     public JsonClueStore(LocationStore locationStore) {
         this.locationStore = locationStore;
-        loadAll();
+        if (needsReload) {
+            loadAll();
+        }
     }
 
     /**
@@ -83,11 +89,27 @@ public class JsonClueStore implements ClueStore {
                 }
             }
         }
+        needsReload = false;
     }
 
     @Override
     public Integer addNew(Clue clue) throws IOException {
-        return null;
+        validateClue(clue);
+        File outFile = PojoJsonUtil.getFileForClueId(clue.getId());
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            objectMapper
+                    .writer()
+                    .withDefaultPrettyPrinter()
+                    .writeValue(outFile, clue);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return clue.getId();
+    }
+
+    private void validateClue(Clue clue) {
+
     }
 
     @Override

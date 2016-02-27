@@ -17,6 +17,9 @@
  */
 package com.clueride.service;
 
+import java.io.IOException;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,7 +43,32 @@ public class ClueServiceImpl implements ClueService {
 
     @Override
     public String getCluesPerLocation(Integer locationId) {
-        return null;
+        List<Clue> clues = clueStore.getCluesByLocation(locationId);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("[");
+        boolean firstTimeThrough = true;
+        for (Clue clue : clues) {
+            if (!firstTimeThrough) {
+                buffer.append(",");
+            } else {
+                firstTimeThrough = false;
+            }
+            try {
+                buffer.append(
+                        objectMapper
+                                .writer()
+                                .withDefaultPrettyPrinter()
+                                .writeValueAsString(clue)
+                );
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+        buffer.append("]");
+
+        return buffer.toString();
     }
 
     @Override
@@ -58,6 +86,17 @@ public class ClueServiceImpl implements ClueService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public String addClue(Clue clue) {
+        LOGGER.info("Adding Clue " + clue.getName() + " with ID " + clue.getId());
+        try {
+            clueStore.addNew(clue);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "{\"Status\": \"OK\"}";
     }
 
     @Override

@@ -28,7 +28,7 @@ public class Answer {
         this.answer = answer;
     }
 
-    public Answer setAnswerKey(AnswerKey answerKey) {
+    public Answer setKey(AnswerKey answerKey) {
         this.answerKey = answerKey;
         return this;
     }

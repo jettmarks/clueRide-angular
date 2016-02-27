@@ -18,7 +18,9 @@
 package com.clueride.rest;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -43,6 +45,20 @@ public class Clue {
     @Produces(MediaType.APPLICATION_JSON)
     public String getClue(@PathParam("clueId") Integer clueId) {
         return clueService.getClue(clueId);
+    }
+
+    @GET
+    @Path("location/{locId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getClues(@PathParam("locId") Integer locId) {
+        return clueService.getCluesPerLocation(locId);
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String addClue(com.clueride.domain.user.Clue.Builder clueBuilder) {
+        return clueService.addClue(clueBuilder.build());
     }
 
 }
