@@ -5,7 +5,9 @@
 
     angular
         .module('crPlayer.ClueModule', ['ui.bootstrap', 'crPlayer.GameState'])
-        .controller('ClueController', ClueController);
+        .controller('ClueController', ClueController)
+        .directive('crAnswerEdit', AnswerEditDirective)
+    ;
 
     ClueController.$inject = ['$scope', 'GameStateService'];
 
@@ -30,6 +32,15 @@
     /* Right now we're accepting everything as a correct answer. */
     function checkAnswer() {
         self.gameStateService.clueSolved();
+    }
+
+    function AnswerEditDirective() {
+        return {
+            scope: {
+                answer: '='
+            },
+            templateUrl: 'js/clue/answer.html'
+        }
     }
 
 }(window.angular));
