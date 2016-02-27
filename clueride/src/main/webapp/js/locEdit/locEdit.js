@@ -97,7 +97,7 @@
         };
 
         $scope.recordSelection = function (selectedItem) {
-            $scope.locationSelected = $scope.locationMap[selectedItem];
+            $scope.locationSelected = selectedItem;
             localModel.locationToEdit = $scope.locationSelected;
             localModel.locationService.setEditLocation($scope.locationSelected);
             updateSaveImageUrl();
