@@ -11,7 +11,7 @@
       ui-outer-click-if="Ui.active('locDropdown')"
           >
     <li ng-repeat="choice in locationMap" role="menuitem">
-      <a href ng-click="recordSelection(choice.id)">{{choice.name}}</a>
+      <a href ng-click="recordSelection(choice)">{{choice.name}}</a>
     </li>
   </ul>
 </div>
