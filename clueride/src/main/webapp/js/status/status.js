@@ -6,23 +6,23 @@
         vm;
 
     angular
-        .module('status', ['crPlayer.GameState','crPlayer.Location'])
+        .module('crPlayer.Status', ['crPlayer.GameState','crPlayer.Location'])
         .controller('StatusController', StatusController)
     ;
 
-    StatusController.$inject = ['$scope','gameStateService','LocationService'];
+    StatusController.$inject = ['$scope','GameStateService','LocationService'];
 
-    function StatusController($scope, gameStateService, LocationService) {
+    function StatusController($scope, GameStateService, LocationService) {
         vm = this;
 
-        gsSvc = gameStateService;
+        gsSvc = GameStateService;
         currentPage = gsSvc.getLocationIndex();
         $scope.onPageChange = onPageChange;
         $scope.onPathChange = onPathChange;
         $scope.getLocationCount = LocationService.getLocationCount;
 
         /* Ask service to "arrive" the team. */
-        $scope.arrived = gameStateService.arrived;
+        $scope.arrived = GameStateService.arrived;
 
         /* pathIndex -1 <=> pageIndex 1 */
         vm.pageForPath = gsSvc.getPathIndex() + 2;

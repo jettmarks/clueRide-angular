@@ -26,7 +26,7 @@
     angular
         .module('crPlayer.GameState', ['common.CourseResource'])
         .controller('GameStateController', GameStateController)
-        .service('gameStateService', gameStateService)
+        .service('GameStateService', GameStateService)
         .factory('GameStateResource', GameStateResource)
         .run(gameStateInit)
     ;
@@ -168,7 +168,7 @@
         return result;
     }
 
-    function gameStateService () {
+    function GameStateService () {
         return {
             // TODO: Find better way to set the scope; link in Controller
             setCourseScope: setCourseScope,

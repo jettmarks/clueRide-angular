@@ -3,7 +3,7 @@
 
     var module;
 
-    module = angular.module('team', ['ngResource']);
+    module = angular.module('crPlayer.Team', ['ngResource']);
 
     module.factory('TeamResource', function ($resource) {
         return $resource('/rest/team', {}, {
@@ -18,7 +18,7 @@
     module.controller('TeamController', ['$scope','TeamResource',
         function ($scope, TeamResource) {
             TeamResource.get({}, function (team) {
-                $scope.team = team;
+                $scope.crPlayerTeam = team;
             });
         }
     ]);

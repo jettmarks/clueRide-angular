@@ -9,10 +9,10 @@
         .controller('BubbleController', BubbleController)
         .directive('crBubble', BubbleDirective);
 
-    BubbleController.$inject = ['$scope', 'gameStateService'];
+    BubbleController.$inject = ['$scope', 'GameStateService'];
 
-    function BubbleController($scope, gameStateService) {
-        local.gsSvc = gameStateService;
+    function BubbleController($scope, GameStateService) {
+        local.gsSvc = GameStateService;
 
         counter++;
         window.console.log("Scope:" + $scope.$id + " Pass:" + counter );

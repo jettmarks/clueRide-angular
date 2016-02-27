@@ -18,7 +18,7 @@
 
     MapController.$inject = [
         '$scope',
-        'gameStateService',
+        'GameStateService',
         'LocationService',
         'PathMapResource',
         'CourseLocationMapResource',
@@ -26,17 +26,17 @@
 
     function MapController(
         $scope,
-        gameStateService,
+        GameStateService,
         LocationService,
         PathMapResource,
         CourseLocationMapResource,
         leafletData
     ) {
-        var pathId = gameStateService.getPathId();
+        var pathId = GameStateService.getPathId();
 
         localModel.leafletData = leafletData;
         localModel.pathMapResource = PathMapResource;
-        localModel.completedPathIds = gameStateService.getCompletedPathIds();
+        localModel.completedPathIds = GameStateService.getCompletedPathIds();
 
         /* Sets up the Marker prefix so we get the ionic Icons. */
         L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';

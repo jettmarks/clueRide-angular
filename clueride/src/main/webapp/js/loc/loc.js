@@ -42,16 +42,16 @@
         .directive('backImg', backImg)
     ;
 
-    LocationController.$inject = ['gameStateService'];
+    LocationController.$inject = ['GameStateService'];
 
-    function LocationController(gameStateService) {
-        init(gameStateService);
+    function LocationController(GameStateService) {
+        init(GameStateService);
     }
 
-    function init(gameStateService) {
-        var locIndex = gameStateService.getLocationIndex();
+    function init(GameStateService) {
+        var locIndex = GameStateService.getLocationIndex();
 
-        localModel.gsSvc = gameStateService;
+        localModel.gsSvc = GameStateService;
 
         locState.location = viewModel.locations[locIndex];
 
