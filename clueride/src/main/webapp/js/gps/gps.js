@@ -23,6 +23,7 @@
         gpsMode.hasGps = navigator.geolocation;
 
         $scope.tetherCancel = function () {
+            // TODO: The cancel and the OK are the same and meaningless
             gpsMode.agreeToTether = gpsMode.previousAgreeToTether;
             localModel.gameStateService.enablePlay();
         }

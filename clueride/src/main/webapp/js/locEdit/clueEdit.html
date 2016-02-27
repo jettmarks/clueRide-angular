@@ -1,18 +1,20 @@
-<div class="modal modal-overlay" ui-if='clueEdit' ui-state='clueEdit'>
-  <div class="modal-dialog">
-  <div class="modal-header">
-    Selected Clue: {{clues[selectedClue].name}}
-  </div>
-    <div class="modal-body">
-      Question: <textarea ng-model="clues[selectedClue].question"></textarea>
-      <!--<uib-tabset vertical="true" type="pills">-->
-        <div class="button-grp">
-        <div ng-repeat="answer in clues[selectedClue].answers">
-            <cr-answer-edit answer="answer"></cr-answer-edit>
-        </div>
-        </div>
-      <!--</uib-tabset>-->
+<div id="clueEdit">
+  <div>
+    Clue Name: <input ng-model="clue.name"/>
     </div>
-    Correct Answer: {{correctAnswer}}
-</div>
+  <div>
+    Question: <textarea ng-model="clue.question"></textarea>
+  </div>
+    <div class="btn-group">
+      <div id="answer" ng-repeat="answer in clue.answers">
+          <label class="btn btn-primary"
+                 ng-model="clue.correctAnswer"
+                 uib-btn-radio="'{{answer.key}}'">
+            {{answer.key}}
+          </label>: <textarea ng-model="answer.answer"></textarea>
+      </div>
+    </div>
+  <div>
+    Correct Answer: {{clue.correctAnswer}}
+  </div>
 </div>

@@ -9,7 +9,7 @@
         };
 
     angular
-        .module('crLocEdit',[])
+        .module('crLocEdit',['common.ClueEditDirective'])
         .controller('LocEditController', LocationEditController)
         .factory('LocationEditor', LocationEditor)
     ;
@@ -119,13 +119,31 @@
             $rootScope.showHeaderFooter = false;
             setCamera($scope.cameraSelected.value);
             $location.path("locEdit/newImage");
-        }
+        };
 
-        viewModel.selectedClue = 0;
-        viewModel.setClue = function (clueId) {
-            viewModel.selectedClue = clueId;
+        viewModel.selectedClueIndex = 0;
+        viewModel.setClue = function (clueIndex) {
+            viewModel.selectedClueIndex = clueIndex;
+            viewModel.selectedClue = viewModel.clues[clueIndex];
             $rootScope.Ui.turnOn('clueEdit');
-        }
+        };
+
+        viewModel.addClue = function () {
+            viewModel.selectedClue = {
+                name: 'New Clue',
+                question: ' ',
+                answers: [
+                    { key: 'A', answer: ' '},
+                    { key: 'B', answer: ' '},
+                    { key: 'C', answer: ' '},
+                    { key: 'D', answer: ' '}
+                ],
+                correctAnswer: 'A'
+            };
+            viewModel.clues.push(viewModel.selectedClue);
+            viewModel.selectedClueIndex = viewModel.clues.length;
+            $rootScope.Ui.turnOn('clueEdit');
+        };
 
         $scope.loadClueTab = function () {
             var clueIds = viewModel.locationSelected.clueIds;

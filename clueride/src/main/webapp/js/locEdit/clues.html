@@ -2,26 +2,34 @@
 
 <!--<div class="scrollable">-->
 
-<!-- This scrollable-header does provide space, but not access to the tab buttons. -->
-<!--<div style="margin: 20px" class="scrollable-header">-->
-<!--</div>-->
+  <!-- This scrollable-header does provide space, but not access to the tab buttons. -->
+  <!--<div style="margin: 20px" class="scrollable-header">-->
+  <!--</div>-->
 
-<!--<div class="scrollable-content">-->
+  <!--<div class="scrollable-content">-->
 
-<div class="list-group">
-  <div class="list-group-item media" ng-repeat="clue in clues">
-    <div class="pull-right">
-      <a href="" ng-click="setClue(clue.id)" class="btn btn-navbar"><i class="fa fa-2x fa-edit"></i></a>
+    <div class="list-group">
+      <div class="list-group-item media">
+        <div class="pull-right">
+          <a href="" ng-click="addClue()" class="btn btn-navbar"><i class="fa fa-2x fa-plus-square-o"></i></a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">Add New Clue</h4>
+        </div>
+      </div>
+      <div class="list-group-item media" ng-repeat="clue in clues">
+        <div class="pull-right">
+          <a href="" ng-click="setClue(clue.id)" class="btn btn-navbar"><i class="fa fa-2x fa-edit"></i></a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">{{clue.name}}</h4>
+        </div>
+      </div>
     </div>
-    <div class="media-body">
-      <h4 class="media-heading">{{clue.name}}</h4>
-    </div>
-  </div>
-</div>
 
-<!--</div>-->
+  <!--</div>-->
 <!--</div>-->
 
 <div ui-content-for="modals">
-  <div ng-include="'./js/locEdit/clueEdit.html'"></div>
+  <div ng-include="'./js/locEdit/clueEditModal.html'"></div>
 </div>
