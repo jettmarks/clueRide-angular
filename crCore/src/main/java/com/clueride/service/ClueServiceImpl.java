@@ -17,15 +17,13 @@
  */
 package com.clueride.service;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.inject.Inject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.user.Answer;
-import com.clueride.domain.user.AnswerKey;
+import com.clueride.dao.ClueStore;
 import com.clueride.domain.user.Clue;
 
 /**
@@ -33,6 +31,12 @@ import com.clueride.domain.user.Clue;
  */
 public class ClueServiceImpl implements ClueService {
     private static final Logger LOGGER = Logger.getLogger(ClueServiceImpl.class);
+    private final ClueStore clueStore;
+
+    @Inject
+    public ClueServiceImpl(ClueStore clueStore) {
+        this.clueStore = clueStore;
+    }
 
     @Override
     public String getCluesPerLocation(Integer locationId) {
@@ -42,19 +46,8 @@ public class ClueServiceImpl implements ClueService {
     @Override
     public String getClue(Integer clueId) {
         LOGGER.info("Requesting Clue " + clueId);
-        // First cut in this ticket is to return an in memory object differentiated by ID
-        List<Answer> answers = new ArrayList<>();
-        answers.add(new Answer(AnswerKey.A, "Do unto others as you would have them do unto you"));
-        answers.add(new Answer(AnswerKey.B, "Same as the air speed of an African Swallow"));
-        answers.add(new Answer(AnswerKey.C, "42"));
-        answers.add(new Answer(AnswerKey.D, "Crunchy Frog"));
-        Clue clue = Clue.Builder.builder()
-                .withId(clueId)
-                .withName("Dummy " + clueId)
-                .withQuestion("What is the answer to Life, the Universe and Everything?")
-                .withAnswers(answers)
-                .withCorrectAnswer(AnswerKey.C)
-                .build();
+        Clue clue = clueStore.getClueById(clueId);
+
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper

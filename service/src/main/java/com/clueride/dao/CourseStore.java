@@ -23,7 +23,7 @@ import java.util.List;
 import com.clueride.domain.Course;
 
 /**
- * Persistance interface for {@link Course} instances.
+ * Persistence interface for {@link Course} instances.
  */
 public interface CourseStore {
     /**
