@@ -17,15 +17,21 @@
  */
 package com.clueride.dao;
 
-import com.clueride.domain.user.Location;
-import com.clueride.io.PojoJsonUtil;
-import org.codehaus.jackson.map.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
+
+import org.codehaus.jackson.map.ObjectMapper;
+
+import com.clueride.domain.user.Location;
+import com.clueride.io.PojoJsonUtil;
 
 @Singleton
 public class JsonLocationStore implements LocationStore {
@@ -33,7 +39,8 @@ public class JsonLocationStore implements LocationStore {
     /** Reference to the Nodes which support the Locations. */
     private final NodeStore nodeStore;
 
-    private Map<Integer,Location> locationMap = new HashMap<>();
+    private static Map<Integer,Location> locationMap = new HashMap<>();
+    private static List<Location> locations;
 
     @Inject
     public JsonLocationStore(NodeStore nodeStore) {
@@ -42,7 +49,11 @@ public class JsonLocationStore implements LocationStore {
     }
 
     private void loadAll() {
-        List<Location> locations = PojoJsonUtil.loadLocations();
+        locations = PojoJsonUtil.loadLocations();
+        reIndex(locations);
+    }
+
+    private void reIndex(List<Location> locations) {
         List<String> problemList = new ArrayList<>();
         for (Location location : locations)  {
             try {
@@ -93,6 +104,9 @@ public class JsonLocationStore implements LocationStore {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        locations.add(location);
+        reIndex(locations);
         return location.getId();
     }
 
