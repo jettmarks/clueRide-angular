@@ -17,3 +17,8 @@
 .entry-field p {
     text-align: left;
 }
+
+#clueEdit textarea {
+    width: 200px;
+    height: 65px;
+}

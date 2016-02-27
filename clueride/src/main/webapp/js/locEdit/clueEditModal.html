@@ -1,0 +1,16 @@
+<div class="modal modal-overlay" ui-if='clueEdit' ui-state='clueEdit'>
+  <div class="modal-dialog">
+    <!--<div class="modal-header">-->
+      <!--{{selectedClue.name}}-->
+    <!--</div>-->
+
+    <div class="modal-body">
+      <cr-clue-edit clue="selectedClue"></cr-clue-edit>
+    </div>
+
+    <div class="modal-footer">
+      <button ui-turn-off="clueEdit" ng-click="clueEditCancel()" class="btn btn-default">Cancel</button>
+      <button ui-turn-off="clueEdit" ng-click="clueEditOK()" class="btn btn-primary">Save changes</button>
+    </div>
+  </div>
+</div>
