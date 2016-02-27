@@ -4,13 +4,15 @@
     Selected Clue: {{clues[selectedClue].name}}
   </div>
     <div class="modal-body">
-      <uib-tabset vertical="true" type="pills">
+      Question: <textarea ng-model="clues[selectedClue].question"></textarea>
+      <!--<uib-tabset vertical="true" type="pills">-->
+        <div class="button-grp">
         <div ng-repeat="answer in clues[selectedClue].answers">
-          <div ng-repeat="(key,value) in answer">
-            <uib-tab heading="{{key}}: {{value}}">Selected: {{key}}</uib-tab>
-          </div>
+            <cr-answer-edit answer="answer"></cr-answer-edit>
         </div>
-      </uib-tabset>
+        </div>
+      <!--</uib-tabset>-->
     </div>
+    Correct Answer: {{correctAnswer}}
 </div>
 </div>
