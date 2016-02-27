@@ -21,6 +21,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.clueride.service.IdProvider;
+import com.clueride.service.MemoryBasedClueIdProvider;
+
 public class Clue {
     private Integer id;
     private String name;
@@ -77,6 +80,13 @@ public class Clue {
         private AnswerKey correctAnswer;
         private List<URL> hintUrls = new ArrayList<>();
         private Integer points;
+
+        private static IdProvider clueIdProvider = new MemoryBasedClueIdProvider();
+
+        /* Public so Jackson can construct one of these. */
+        public Builder() {
+            id = clueIdProvider.getId();
+        }
 
         public static Builder builder() {
             return new Builder();
@@ -145,12 +155,43 @@ public class Clue {
             return this;
         }
 
-        public Builder() {
-
-        }
-
         public Clue build() {
             return new Clue(this);
+        }
+
+        public Builder setId(Integer id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setQuestion(String question) {
+            this.question = question;
+            return this;
+        }
+
+        public Builder setAnswers(List<Answer> answers) {
+            this.answers = answers;
+            return this;
+        }
+
+        public Builder setCorrectAnswer(AnswerKey correctAnswer) {
+            this.correctAnswer = correctAnswer;
+            return this;
+        }
+
+        public Builder setHintUrls(List<URL> hintUrls) {
+            this.hintUrls = hintUrls;
+            return this;
+        }
+
+        public Builder setPoints(Integer points) {
+            this.points = points;
+            return this;
         }
     }
 }

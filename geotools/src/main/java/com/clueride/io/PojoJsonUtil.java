@@ -69,7 +69,7 @@ public class PojoJsonUtil {
      * is expected to reside.
      * A little more genericized version.
      * @param id - Integer representing the object being persisted.
-     * @param storeType - Provides persistance details particular to the Type of object.
+     * @param storeType - Provides persistence details particular to the Type of object.
      * @return File instance ready to read/write.
      * @throws IOException
      */
@@ -81,6 +81,7 @@ public class PojoJsonUtil {
                 //noinspection ResultOfMethodCallIgnored
                 candidateFile.getParentFile().mkdir();
             }
+            //noinspection ResultOfMethodCallIgnored
             candidateFile.createNewFile();
         }
         return candidateFile;
@@ -91,6 +92,15 @@ public class PojoJsonUtil {
         return new File(JsonStoreLocation.toString(storeType)
                 + File.separator
                 + specificName
+                + File.separator
+                + specificName
+                + ".json");
+    }
+
+    public static File getFileForClueId(Integer id) {
+        JsonStoreType storeType = JsonStoreType.CLUE;
+        String specificName = JsonPrefixMap.toString(storeType) + "-" + String.format("%06d", id);
+        return new File(JsonStoreLocation.toString(storeType)
                 + File.separator
                 + specificName
                 + ".json");
