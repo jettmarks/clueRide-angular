@@ -22,6 +22,7 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.Location;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -54,5 +55,12 @@ public class PojoJsonUtilTest {
         Location location = PojoJsonUtil.loadLocationId(1);
         assertNotNull(location);
         assertEquals(location.getId(), new Integer(1));
+    }
+
+    @Test
+    public void testLoadClueId() throws Exception {
+        Clue clue = PojoJsonUtil.loadClue(1);
+        assertNotNull(clue);
+        assertEquals(clue.getId(), new Integer(1));
     }
 }

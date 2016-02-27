@@ -18,12 +18,24 @@ package com.clueride.domain.user;
  * Created by jett on 11/23/15.
  */
 public class Answer {
-    private final AnswerKey answerKey;
-    private final String answer;
+    private AnswerKey answerKey;
+    private String answer;
+
+    public Answer() {};
 
     public Answer(AnswerKey answerKey, String answer) {
         this.answerKey = answerKey;
         this.answer = answer;
+    }
+
+    public Answer setAnswerKey(AnswerKey answerKey) {
+        this.answerKey = answerKey;
+        return this;
+    }
+
+    public Answer setAnswer(String answer) {
+        this.answer = answer;
+        return this;
     }
 
     public AnswerKey getKey() {
@@ -33,5 +45,4 @@ public class Answer {
     public String getAnswer() {
         return answer;
     }
-
 }

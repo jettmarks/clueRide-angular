@@ -19,7 +19,9 @@ package com.clueride.infrastructure;
 
 import com.google.inject.AbstractModule;
 
+import com.clueride.dao.ClueStore;
 import com.clueride.dao.CourseStore;
+import com.clueride.dao.JsonClueStore;
 import com.clueride.dao.JsonCourseStore;
 import com.clueride.dao.JsonLocationStore;
 import com.clueride.dao.JsonPathStore;
@@ -32,6 +34,7 @@ import com.clueride.dao.PathStore;
 public class ServiceGuiceModule extends AbstractModule {
     @Override
     protected void configure() {
+        bind(ClueStore.class).to(JsonClueStore.class);
         bind(CourseStore.class).to(JsonCourseStore.class);
         bind(PathStore.class).to(JsonPathStore.class);
         bind(LocationStore.class).to(JsonLocationStore.class);

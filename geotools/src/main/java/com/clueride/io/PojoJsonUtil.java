@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,10 +32,12 @@ import org.apache.log4j.Logger;
 import com.clueride.domain.Course;
 import com.clueride.domain.GameCourse;
 import com.clueride.domain.GamePath;
+import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.Path;
 import com.clueride.rest.dto.ClueRideState;
 import com.clueride.service.IdProvider;
+import com.clueride.service.MemoryBasedClueIdProvider;
 import com.clueride.service.MemoryBasedLocationIdProvider;
 import com.clueride.service.MemoryBasedPathIdProvider;
 
@@ -44,9 +47,10 @@ import com.clueride.service.MemoryBasedPathIdProvider;
  */
 public class PojoJsonUtil {
     private static final Logger LOGGER = Logger.getLogger(PojoJsonUtil.class);
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private static IdProvider locationIdProvider = new MemoryBasedLocationIdProvider();
     private static IdProvider pathIdProvider = new MemoryBasedPathIdProvider();
+    private static IdProvider clueIdProvider = new MemoryBasedClueIdProvider();
 
     /**
      * From the values in the location instance, create a File appropriate for storing
@@ -84,14 +88,12 @@ public class PojoJsonUtil {
 
     private static File getFileForId(Integer id, JsonStoreType storeType) {
         String specificName = JsonPrefixMap.toString(storeType) + "-" + String.format("%05d", id);
-        StringBuilder newFileNameBuffer = new StringBuilder()
-                .append(JsonStoreLocation.toString(storeType))
-                .append(File.separator)
-                .append(specificName)
-                .append(File.separator)
-                .append(specificName)
-                .append(".json");
-        return new File(newFileNameBuffer.toString());
+        return new File(JsonStoreLocation.toString(storeType)
+                + File.separator
+                + specificName
+                + File.separator
+                + specificName
+                + ".json");
     }
 
     public static List<Location> loadLocations() {
@@ -118,7 +120,7 @@ public class PojoJsonUtil {
     }
 
     public static Location loadLocation(File locationFile) {
-        Location location = null;
+        Location location;
         try {
             synchronized (objectMapper) {
                 Location.Builder locationBuilder = objectMapper.readValue(locationFile, Location.Builder.class);
@@ -158,7 +160,9 @@ public class PojoJsonUtil {
         List<Path> paths = new ArrayList<>();
         File directory = new File(JsonStoreLocation.toString(storeType));
         if (!directory.canWrite()) {
-            directory.mkdir();
+            if (!directory.mkdir()) {
+                throw new RuntimeException("Unable to create directory " + directory.getName());
+            }
         } else {
             for (File child : directory.listFiles(new FilenameFilter() {
                 @Override
@@ -200,7 +204,9 @@ public class PojoJsonUtil {
         List<Course> courses = new ArrayList<>();
         File directory = new File(JsonStoreLocation.toString(storeType));
         if (!directory.canWrite()) {
-            directory.mkdir();
+            if (!directory.mkdir()) {
+                throw new RuntimeException("Unable to create directory " + directory.getName());
+            }
         } else {
             for (File child : directory.listFiles(new FilenameFilter() {
                 @Override
@@ -232,8 +238,69 @@ public class PojoJsonUtil {
                 pathIdProvider.registerId(course.getId());
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unexpected I/O error", e);
+            throw new RuntimeException("Unexpected I/O error while reading Course:", e);
         }
         return course;
+    }
+
+    public static Clue loadClue(Integer clueId) {
+        final JsonStoreType storeType = JsonStoreType.CLUE;
+        File directory = new File(JsonStoreLocation.toString(storeType));
+        if (!directory.canWrite()) {
+            if (!directory.mkdir()) {
+                throw new RuntimeException("Unable to create directory " + directory.getName());
+            }
+        } else {
+            for (File file : directory.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String s) {
+                    return s.startsWith(JsonPrefixMap.toString(storeType))
+                            && s.endsWith(".json");
+                }
+            })) {
+                LOGGER.debug("Checking for clue " + clueId + " in file " + file.getName());
+                Clue clue = loadClue(file);
+                if (clue.getId().equals(clueId)) {
+                    return clue;
+                }
+            }
+        }
+            return null;
+    }
+
+    private static Clue loadClue(File file) {
+        Clue clue;
+        try {
+            synchronized (objectMapper) {
+                Clue.Builder builder = objectMapper.readValue(file, Clue.Builder.class);
+                clue = builder.build();
+                clueIdProvider.registerId(clue.getId());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected I/O error while reading Clue: ", e);
+        }
+        return clue;
+    }
+
+    public static Collection<Clue> loadClues() {
+        Collection<Clue> clues = new ArrayList<>();
+        final JsonStoreType storeType = JsonStoreType.CLUE;
+        File directory = new File(JsonStoreLocation.toString(storeType));
+        if (!directory.canWrite()) {
+            if (!directory.mkdir()) {
+                throw new RuntimeException("Unable to create directory " + directory.getName());
+            }
+        } else {
+            for (File file : directory.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String s) {
+                    return s.startsWith(JsonPrefixMap.toString(storeType))
+                            && s.endsWith(".json");
+                }
+            })) {
+                clues.add(loadClue(file));
+            }
+        }
+        return clues;
     }
 }
