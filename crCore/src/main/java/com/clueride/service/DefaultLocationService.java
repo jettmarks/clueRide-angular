@@ -143,6 +143,10 @@ public class DefaultLocationService implements LocationService {
     @Override
     public void updateLocation(com.clueride.rest.dto.Location location) {
         LOGGER.info("Updating Location " + location.toString());
+        Location existingLocation = locationStore.getLocationById(location.id);
+        LOGGER.info("Found matching Location " + existingLocation.toString());
+        Location.Builder locationBuilder = Location.Builder.builder(location);
+        locationStore.update(locationBuilder.build());
     }
 
     @Override

@@ -18,6 +18,7 @@
 package com.clueride.domain.user;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,18 +114,20 @@ public class Location implements Step {
         return nodeId;
     }
 
-    /**
-     * List of Strings that in addition to LocationType, each categorize the location.
-     * Perhaps a placeholder at this time until I think through further what sorts of tags might be applied.
-     * @return Set of Strings, one for each tag added to this location.
-    public Set<String> getTags() {
-        return tagScores.keySet();
-    }
-     */
-
-    // TODO: not settled on this API
-    public Optional<Double> getScorePerTag(String tag) {
-        return tagScores.get(tag);
+    @Override
+    public String toString() {
+        return "Location{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", locationType=" + locationType +
+                ", nodeId=" + nodeId +
+                ", clueIds=" + clueIds +
+                ", imageUrls=" + imageUrls +
+                ", locationGroupId=" + locationGroupId +
+                ", establishment=" + establishment +
+                ", tagScores=" + tagScores +
+                '}';
     }
 
     public Map<String, Optional<Double>> getTagScores() {
@@ -147,6 +150,20 @@ public class Location implements Step {
         return imageUrls;
     }
 
+    /**
+     * List of Strings that in addition to LocationType, each categorize the location.
+     * Perhaps a placeholder at this time until I think through further what sorts of tags might be applied.
+     * @return Set of Strings, one for each tag added to this location.
+    public Set<String> getTags() {
+    return tagScores.keySet();
+    }
+     */
+
+    // TODO: not settled on this API
+    public Optional<Double> getScorePerTag(String tag) {
+        return tagScores.get(tag);
+    }
+
     public static final class Builder {
         private Integer id;
         private String name;
@@ -164,6 +181,10 @@ public class Location implements Step {
 
         public Builder() {
             idProvider = new MemoryBasedLocationIdProvider();
+        }
+
+        public static Builder builder() {
+            return new Builder();
         }
 
         public Builder setId(Integer id) {
@@ -262,12 +283,27 @@ public class Location implements Step {
             return this;
         }
 
-        public static Builder builder() {
-            return new Builder();
-        }
-
         public Location build() {
             return new Location(this);
+        }
+
+        /**
+         * For creating a copy from a DTO instance.
+         * @param locationDto - inbound from the Web REST API.
+         * @return populated Builder.
+         */
+        public static Builder builder(com.clueride.rest.dto.Location locationDto) {
+            return builder()
+                    .setName(locationDto.name)
+                    .setId(locationDto.id)
+                    .setDescription(locationDto.description)
+                    .setNodeId(locationDto.nodeId)
+                    .setLocationType(locationDto.locationType)
+                    .setLocationGroupId(Optional.fromNullable(locationDto.locationGroupId))
+                    .setClueIds(Arrays.asList(locationDto.clueIds))
+                    .setImageUrls(locationDto.imageUrls)
+//                    .setEstablishment(Optional.<Establishment>fromNullable(locationDto.establishment))
+            ;
         }
     }
 }

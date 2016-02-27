@@ -17,6 +17,10 @@
  */
 package com.clueride.rest.dto;
 
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -30,13 +34,16 @@ public class Location {
     public Integer id;
     public String name;
     public String description;
+    public Integer nodeId;
     public LocationType locationType;
+    public Integer[] clueIds;
 
     @XmlElement(nillable=true)
     public Establishment establishment;
 
     @XmlElement(nillable=true)
     public Integer locationGroupId;
+    public List<URL> imageUrls;
 
     @Override
     public String toString() {
@@ -45,6 +52,7 @@ public class Location {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", locationType=" + locationType +
+                ", clueIds=" + Arrays.toString(clueIds) +
                 ", establishment=" + establishment +
                 ", locationGroupId=" + locationGroupId +
                 '}';
