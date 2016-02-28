@@ -47,6 +47,7 @@
         localModel.clueResource = ClueResource;
         localModel.FileUploader = FileUploader;
         localModel.$location = $location;
+        localModel.root = $rootScope;
 
         // Position is returned asynchronously, and requires some delay; kick it off now.
         requestGpsLocation();
@@ -100,6 +101,7 @@
         viewModel.selectedClueIndex = 0;
         viewModel.setClue = setClue;
         viewModel.addClue = addClue;
+        viewModel.removeClue = removeClue;
         viewModel.loadClueTab = loadClueTab;
     }
 
@@ -113,7 +115,9 @@
         for (var clueId in clueIds) {
             localModel.clueResource.get({clueId: clueId},
                 function (clue) {
-                    viewModel.clues.push(clue);
+                    if (clue && clue.id) {
+                        viewModel.clues.push(clue);
+                    }
                 });
         }
     }
@@ -125,7 +129,7 @@
     function setClue(clueIndex) {
         viewModel.selectedClueIndex = clueIndex;
         viewModel.selectedClue = viewModel.clues[clueIndex];
-        $rootScope.Ui.turnOn('clueEdit');
+        localModel.root.Ui.turnOn('clueEdit');
     }
 
     /**
@@ -145,15 +149,28 @@
         };
         viewModel.clues.push(viewModel.selectedClue);
         viewModel.selectedClueIndex = viewModel.clues.length;
-        $rootScope.Ui.turnOn('clueEdit');
+        localModel.root.Ui.turnOn('clueEdit');
+    }
+
+    function removeClue(clueIndex) {
+        if (clueIndex) {
+            var listIndex;
+            for (var i in viewModel.clues) {
+                if (viewModel.clues[i].id = clueIndex) {
+                    listIndex = i;
+                }
+            }
+            viewModel.clues.splice(listIndex, 1);
+            viewModel.locationSelected.clueIds.splice(listIndex, 1);
+        }
     }
 
     /* Location Edit functions. */
 
     function selectLocation (selectedItem) {
-        $scope.locationSelected = selectedItem;
-        localModel.locationToEdit = $scope.locationSelected;
-        localModel.locationService.setEditLocation($scope.locationSelected);
+        viewModel.locationSelected = selectedItem;
+        localModel.locationToEdit = viewModel.locationSelected;
+        localModel.locationService.setEditLocation(viewModel.locationSelected);
         updateSaveImageUrl();
     }
 
