@@ -17,12 +17,12 @@
           <h4 class="media-heading">Add New Clue</h4>
         </div>
       </div>
-      <div class="list-group-item media" ng-repeat="clue in clues">
+      <div class="list-group-item media" ng-repeat="clue in clues track by $index">
         <div class="pull-right">
-          <a href="" ng-click="setClue(clue.id)" class="btn btn-navbar"><i class="fa fa-2x fa-edit"></i></a>
+          <a href="" ng-click="setClue($index)" class="btn btn-navbar"><i class="fa fa-2x fa-edit"></i></a>
         </div>
         <div class="media-body">
-          <h4 class="media-heading">{{clue.name}}</h4>
+          <h4 class="media-heading">{{clue.name}} : ({{$index}})</h4>
         </div>
       </div>
     </div>
