@@ -51,7 +51,7 @@ app.config(function($routeProvider) {
   $routeProvider.when('/',                {templateUrl: 'birdseye.html', reloadOnSearch: false});
   $routeProvider.when('/map',             {templateUrl: 'js/map/map.html', reloadOnSearch: false});
   $routeProvider.when('/location',        {templateUrl: 'js/loc/loc.html', reloadOnSearch: false});
-  $routeProvider.when('/locEdit',         {templateUrl: 'js/locEdit/menu.html', reloadOnSearch: false});
+  $routeProvider.when('/locEdit',         {templateUrl: 'js/locEdit/locEditMain.html', reloadOnSearch: false});
   $routeProvider.when('/locEdit/clues',   {templateUrl: 'js/locEdit/clueEdit.html', reloadOnSearch: false});
   $routeProvider.when('/locEdit/edit',    {templateUrl: 'js/locEdit/locEdit.html', reloadOnSearch: false});
   $routeProvider.when('/locEdit/images',  {templateUrl: 'js/locEdit/imageList.html', reloadOnSearch: false});

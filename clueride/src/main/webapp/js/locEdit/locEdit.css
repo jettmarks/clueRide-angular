@@ -14,11 +14,12 @@
     padding: 8px;
 }
 
-.entry-field p {
+.entry-field * {
     text-align: left;
+    vertical-align: text-top;
 }
 
-#clueEdit textarea {
+textarea {
     width: 200px;
     height: 65px;
 }
