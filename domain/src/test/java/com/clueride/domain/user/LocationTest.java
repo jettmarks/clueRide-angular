@@ -148,7 +148,7 @@ public class LocationTest {
         toTest = builder.build();
         assertNotNull(toTest);
 
-        Integer actual = toTest.getLocationGroupId().orNull();
+        Integer actual = toTest.getLocationGroupId();
         assertEquals(actual, expectedLocationId);
     }
 

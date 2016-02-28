@@ -134,8 +134,12 @@ public class Location implements Step {
         return tagScores;
     }
 
-    public Optional<Integer> getLocationGroupId() {
-        return locationGroupId;
+    public Integer getLocationGroupId() {
+        if(locationGroupId != null && locationGroupId.isPresent()) {
+            return locationGroupId.get();
+        } else {
+            return null;
+        }
     }
 
     public List<Integer> getClueIds() {
