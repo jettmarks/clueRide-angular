@@ -1,3 +1,10 @@
+<!-- Selection of which Position Source to use for nearest locations. -->
+<div id="mapDeviceToggle" class="entry-field">
+  <div id="mapDeviceToggleTitle">Locate using Map? (Device is default)</div>
+  <div id="mapDeviceToggleSwitch" ui-switch ng-model="locationState.mapOverrideDevice"></div>
+</div>
+
+<!-- List of Nearest Locations -->
 <div id="locationSelection" class="btn-group">
   <a ui-turn-on='locDropdown' class='btn btn-primary'>
     Location to Edit: {{locationSelected.name}}
@@ -16,13 +23,12 @@
   </ul>
 </div>
 
-<div id="mapDeviceToggle" class="entry-field">
-  <div id="mapDeviceToggleTitle">Locate using Map? (Device is default)</div>
-  <div id="mapDeviceToggleSwitch" ui-switch ng-model="locationState.mapOverrideDevice"></div>
+<div id="locationName" class="entry-field">
+  <label>Name: <input ng-model="locationSelected.name"/></label>
 </div>
 
-<div id="locationName" class="entry-field">
-  Name: <input ng-model="locationSelected.name"> </input>
+<div id="locationDescription" class="entry-field">
+  <label>Description: <textarea ng-model="locationSelected.description"></textarea></label>
 </div>
 
 <div id="locationTypeSelection" class="entry-field">
@@ -45,15 +51,7 @@
   </div>
 </div>
 
-<div id="locationDescription" class="entry-field">
-  <p>Description:</p> <textarea ng-model="locationSelected.description"></textarea>
-</div>
-
 <div class="entry-field">
-  <input type="submit" value="Save" ng-click="saveLocation()">
-  </input>
+  <input type="submit" value="Save" ng-click="saveLocation()"/>
 </div>
-
-
-<!-- TODO: CA-158 Add toggle for Coordinate Source. -->
 

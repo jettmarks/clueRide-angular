@@ -1,20 +1,19 @@
 <div id="clueEdit">
-  <div>
-    Clue Name: <input ng-model="clue.name"/>
+  <div class="entry-field">
+    <label>Clue Name: <input ng-model="clue.name"/></label>
     </div>
-  <div>
-    Question: <textarea ng-model="clue.question"></textarea>
+  <div class="entry-field">
+    <label>Question: <textarea ng-model="clue.question"></textarea></label>
   </div>
-    <div class="btn-group">
-      <div id="answer" ng-repeat="answer in clue.answers">
-          <label class="btn btn-primary"
-                 ng-model="clue.correctAnswer"
-                 uib-btn-radio="'{{answer.key}}'">
-            {{answer.key}}
-          </label>: <textarea ng-model="answer.answer"></textarea>
-      </div>
-    </div>
-  <div>
-    Correct Answer: {{clue.correctAnswer}}
+  <div class="btn-group entry-field">
+    <div id="answer" ng-repeat="answer in clue.answers">
+    <label class="btn btn-primary"
+           ng-model="clue.correctAnswer"
+           uib-btn-radio="'{{answer.key}}'">
+      {{answer.key}}</label>
+    : <textarea ng-model="answer.answer"></textarea>
   </div>
+</div>
+<div>
+  <label>Correct Answer: {{clue.correctAnswer}}</label>
 </div>

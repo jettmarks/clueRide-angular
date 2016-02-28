@@ -45,6 +45,8 @@
         localModel.locationTypeResource = LocationTypeResource;
         localModel.locationService = LocationService;
         localModel.clueResource = ClueResource;
+        localModel.FileUploader = FileUploader;
+        localModel.$location = $location;
 
         // Position is returned asynchronously, and requires some delay; kick it off now.
         requestGpsLocation();
@@ -64,7 +66,6 @@
             });
         }
 
-        //LocationEditor.getLocationTypes().$promise.then(populateLocationTypes());
         LocationEditor.getLocationTypes();
 
         $scope.locationMap = LocationEditor.locationMap();
@@ -72,106 +73,123 @@
 
         $scope.locEdit = {};
 
-        /**
-         * Performs Save by converting the image data to Blob for the upload code
-         * and adding the Location ID and Coordinates via the URL which has already
-         * been constructed from reading the device's current location.
-         */
-        $scope.locEdit.save = function () {
-            var file = dataURItoBlob($scope.imageState.cameraImage),
-                uploader = new FileUploader({
-                    url: viewModel.saveImageUrl,
-                    method: 'POST',
-                    autoUpload: true
-                });
-
-            console.log("Save URL: " + viewModel.saveImageUrl);
-
-            uploader.addToQueue(file);
-
-            $location.path('location');
-        };
-
-        $scope.locEdit.cancel = function () {
-            $window.history.back();
-        };
-
-        $scope.recordSelection = function (selectedItem) {
-            $scope.locationSelected = selectedItem;
-            localModel.locationToEdit = $scope.locationSelected;
-            localModel.locationService.setEditLocation($scope.locationSelected);
-            updateSaveImageUrl();
-        };
-
+        /* Location. */
+        $scope.recordSelection = selectLocation;
         $scope.typeSelection = function (selectedType) {
             $scope.locationSelected.locationType = selectedType;
         };
 
         $scope.saveLocation = saveLocation;
 
-        $scope.cameras = [];
+        /* Cameras & Images. */
+        viewModel.cameras = [];
+        viewModel.imageState = {};
+        viewModel.locEdit.save = imageSave;
+        viewModel.locEdit.cancel = function () {
+            $window.history.back();
+        };
         showCameraChoices();
-        $scope.cameraSelection = function (camera) {
-            $scope.cameraSelected = camera;
+        viewModel.cameraSelection = function (camera) {
+            viewModel.cameraSelected = camera;
         };
 
-        $scope.turnOnCamera = function () {
-            $rootScope.showHeaderFooter = false;
-            setCamera($scope.cameraSelected.value);
-            $location.path("locEdit/newImage");
-        };
+        viewModel.showHeaderFooter = $rootScope.showHeaderFooter;
+        viewModel.turnOnCamera = turnOnCamera;
 
+        /* Clues */
         viewModel.selectedClueIndex = 0;
-        viewModel.setClue = function (clueIndex) {
-            viewModel.selectedClueIndex = clueIndex;
-            viewModel.selectedClue = viewModel.clues[clueIndex];
-            $rootScope.Ui.turnOn('clueEdit');
-        };
+        viewModel.setClue = setClue;
+        viewModel.addClue = addClue;
+        viewModel.loadClueTab = loadClueTab;
+    }
 
-        viewModel.addClue = function () {
-            viewModel.selectedClue = {
-                name: 'New Clue',
-                question: ' ',
-                answers: [
-                    { key: 'A', answer: ' '},
-                    { key: 'B', answer: ' '},
-                    { key: 'C', answer: ' '},
-                    { key: 'D', answer: ' '}
-                ],
-                correctAnswer: 'A'
-            };
-            viewModel.clues.push(viewModel.selectedClue);
-            viewModel.selectedClueIndex = viewModel.clues.length;
-            $rootScope.Ui.turnOn('clueEdit');
-        };
+    /* Clue Functions. */
 
-        $scope.loadClueTab = function () {
-            var clueIds = viewModel.locationSelected.clueIds;
-            /* Clear any previous values. */
-            viewModel.clues = [];
+    function loadClueTab() {
+        var clueIds = viewModel.locationSelected.clueIds;
+        /* Clear any previous values. */
+        viewModel.clues = [];
 
-            for (var clueId in clueIds) {
-                localModel.clueResource.get({clueId: clueId},
+        for (var clueId in clueIds) {
+            localModel.clueResource.get({clueId: clueId},
                 function (clue) {
                     viewModel.clues.push(clue);
                 });
-            }
         }
-
     }
 
-    function setCamera(cameraId) {
-        /* Records the camera selection. */
-        Webcam.params.sourceId = cameraId;
+    /**
+     * Selects a given clue for editing and then presents that clue for editing.
+     * @param clueIndex
+     */
+    function setClue(clueIndex) {
+        viewModel.selectedClueIndex = clueIndex;
+        viewModel.selectedClue = viewModel.clues[clueIndex];
+        $rootScope.Ui.turnOn('clueEdit');
+    }
+
+    /**
+     * Creates a 'blank' clue for entering a new clue and then presents for editing.
+     */
+    function addClue () {
+        viewModel.selectedClue = {
+            name: 'New Clue',
+            question: ' ',
+            answers: [
+                { key: 'A', answer: ' '},
+                { key: 'B', answer: ' '},
+                { key: 'C', answer: ' '},
+                { key: 'D', answer: ' '}
+            ],
+            correctAnswer: 'A'
+        };
+        viewModel.clues.push(viewModel.selectedClue);
+        viewModel.selectedClueIndex = viewModel.clues.length;
+        $rootScope.Ui.turnOn('clueEdit');
+    }
+
+    /* Location Edit functions. */
+
+    function selectLocation (selectedItem) {
+        $scope.locationSelected = selectedItem;
+        localModel.locationToEdit = $scope.locationSelected;
+        localModel.locationService.setEditLocation($scope.locationSelected);
+        updateSaveImageUrl();
     }
 
     function saveLocation() {
         localModel.locationResource.save(localModel.locationToEdit);
     }
 
+    /**
+     * Service that populates the Nearest Location and Location Type dropdowns.
+     * @param LocationNearestResource
+     * @param LocationTypeResource
+     * @returns {{getNearestLocations: getNearestLocations, locationMap: Function, getLocationTypes: getLocationTypes, typeMap: Function}}
+     * @constructor
+     */
     function LocationEditor(LocationNearestResource, LocationTypeResource) {
         var locationMap = {},
             typeMap = {};
+
+        function getNearestLocations () {
+            // Clear out previous values
+            locationMap = {};
+
+            // Returns the result so the promise is available to the caller
+            return LocationNearestResource.get( {
+                    lat: localModel.locationService.getCloseToMeCoords().lat,
+                    lon: localModel.locationService.getCloseToMeCoords().lon
+                },
+                function (locations) {
+                    var loc;
+                    for (var i= 0, len = locations.length; i<len; i++) {
+                        loc = locations[i];
+                        locationMap[i] = loc;
+                    }
+                }
+            )
+        }
 
         function getLocationTypes() {
             typeMap = {};
@@ -187,24 +205,7 @@
         }
 
         return {
-            getNearestLocations: function () {
-                // Clear out previous values
-                locationMap = {};
-
-                // Returns the result so the promise is available to the caller
-                return LocationNearestResource.get( {
-                        lat: localModel.locationService.getCloseToMeCoords().lat,
-                        lon: localModel.locationService.getCloseToMeCoords().lon
-                    },
-                    function (locations) {
-                        var loc;
-                        for (var i= 0, len = locations.length; i<len; i++) {
-                            loc = locations[i];
-                            locationMap[i] = loc;
-                        }
-                    }
-                )
-            },
+            getNearestLocations: getNearestLocations,
             locationMap: function () {return locationMap},
             getLocationTypes: getLocationTypes,
             typeMap: function () {return typeMap}
@@ -219,6 +220,39 @@
                 showError
             );
         }
+    }
+
+    /* Camera functions. */
+
+    /**
+     * Performs Save by converting the image data to Blob for the upload code
+     * and adding the Location ID and Coordinates via the URL which has already
+     * been constructed from reading the device's current location.
+     */
+    function imageSave () {
+        var file = dataURItoBlob(viewModel.imageState.cameraImage),
+            uploader = new localModel.FileUploader({
+                url: viewModel.saveImageUrl,
+                method: 'POST',
+                autoUpload: true
+            });
+
+        console.log("Save URL: " + viewModel.saveImageUrl);
+
+        uploader.addToQueue(file);
+
+        localModel.$location.path('location');
+    }
+
+    function turnOnCamera () {
+        viewModel.showHeaderFooter = false;
+        setCamera(viewModel.cameraSelected.value);
+        localModel.$location.path("locEdit/newImage");
+    }
+
+    function setCamera(cameraId) {
+        /* Records the camera selection. */
+        Webcam.params.sourceId = cameraId;
     }
 
     function recordPosition (position) {
@@ -292,9 +326,10 @@
      * See java720's response to
      * http://stackoverflow.com/questions/4998908/convert-data-uri-to-file-then-append-to-formdata
      */
-    function dataURItoBlob(dataURI) {
-        var binary = atob(dataURI.split(',')[1]);
-        var array = [];
+    function dataURItoBlob(dataUri) {
+        var binary, array = [];
+
+        binary = atob(dataUri.split(',')[1]);
         for(var i = 0; i < binary.length; i++) {
             array.push(binary.charCodeAt(i));
         }
