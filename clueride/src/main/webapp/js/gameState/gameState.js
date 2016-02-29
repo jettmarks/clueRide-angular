@@ -173,6 +173,8 @@
             // TODO: Find better way to set the scope; link in Controller
             setCourseScope: setCourseScope,
 
+            refreshLocationData: refreshLocationData,
+
             currentGameState: function () {return state.currentGameState},
             currentGameStateKey: function () {return state.currentGameStateKey},
             updateGameState: updateGameState,
@@ -245,14 +247,20 @@
         }
     }
 
+    function refreshLocationData() {
+        courseLocationDataResource.getData({
+            /* Future: put the course ID here too. */
+        }, courseLocationsToModel);
+    }
+
     function gameStateInit (CourseDataResource, GameStateResource, CourseLocationDataResource) {
+        courseLocationDataResource = CourseLocationDataResource;
+
         CourseDataResource.getData({
             /* Future: put the course ID here. */
         }, dataToModel);
 
-        CourseLocationDataResource.getData({
-            /* Future: put the course ID here too. */
-        }, courseLocationsToModel);
+        refreshLocationData();
 
         gameStateResource = GameStateResource;
         gameStateResource.get({}, stateToModel);

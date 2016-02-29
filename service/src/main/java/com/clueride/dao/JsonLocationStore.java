@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -83,10 +84,9 @@ public class JsonLocationStore implements LocationStore {
      */
     private boolean validateLocation(Location location) {
         if (null == nodeStore.getNodeById(location.getNodeId()) ) {
-            StringBuilder stringBuilder = new StringBuilder()
-                    .append(location.getName()).append('(').append(location.getId())
-                    .append(") NodeId:").append(location.getNodeId()).append("\n");
-            throw new IllegalStateException(stringBuilder.toString());
+            throw new IllegalStateException(
+                    location.getName() + '(' + location.getId()
+                            + ") NodeId:" + location.getNodeId() + "\n");
         }
         return true;
     }
@@ -121,15 +121,32 @@ public class JsonLocationStore implements LocationStore {
     }
 
     /**
-     * At this time, the implementation is no different from adding a new location.
+     * Checks to see if the location exists in memory, and if so, removes from the old one from the list
+     * before replacing with the new item.  The new item is then added as if it were a new location which also
+     * triggers re-indexing the list.
      * @param location to be updated.
      */
     @Override
     public void update(Location location) {
+        removeFromList(location.getId());
         try {
             addNew(location);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Pulls the reference to an outdated copy of the Location using the ID of the new instance passed in.
+     * @param locId - Integer ID of the location being removed from the list.
+     */
+    private void removeFromList(Integer locId) {
+        if (locationMap.containsKey(locId)) {
+            for (Iterator<Location> iter = locations.iterator(); iter.hasNext(); ) {
+                if ( iter.next().getId().equals(locId)) {
+                    iter.remove();
+                }
+            }
         }
     }
 }
