@@ -49,9 +49,15 @@ public interface ClueStore {
     void update(Clue clue);
 
     /**
+     * When changes are made to the locations, it may be necessary to re-index the clue store.
+     */
+    void reIndex();
+
+    /**
      * Returns a list of fully-populated Clues for the given Location.
      * @param locationId - Unique ID of a Location which may or may not have clues associated.
      * @return - List of Clues or an empty list if the Location has no clues.
      */
     List<Clue> getCluesByLocation(Integer locationId);
+
 }

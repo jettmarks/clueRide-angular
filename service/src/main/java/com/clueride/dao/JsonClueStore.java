@@ -45,6 +45,9 @@ public class JsonClueStore implements ClueStore {
     /** In-memory references to the full set of Clues indexed by their ID. */
     private static Map<Integer,Clue> clueById = new HashMap<>();
 
+    /** Working reference to the Clues as a list. */
+    private static Collection<Clue> clues;
+
     private static boolean needsReload = true;
 
     private final LocationStore locationStore;
@@ -68,8 +71,12 @@ public class JsonClueStore implements ClueStore {
      */
     private void loadAll() {
         /* Bring in all the clues available. */
-        Collection<Clue> clues = PojoJsonUtil.loadClues();
+        clues = PojoJsonUtil.loadClues();
+        reIndex();
+        needsReload = false;
+    }
 
+    public void reIndex() {
         /* Index the clues by ID. */
         for (Clue clue : clues) {
             clueById.put(clue.getId(), clue);
@@ -89,7 +96,6 @@ public class JsonClueStore implements ClueStore {
                 }
             }
         }
-        needsReload = false;
     }
 
     @Override

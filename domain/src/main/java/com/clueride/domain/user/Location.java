@@ -20,6 +20,7 @@ package com.clueride.domain.user;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -166,6 +167,14 @@ public class Location implements Step {
     // TODO: not settled on this API
     public Optional<Double> getScorePerTag(String tag) {
         return tagScores.get(tag);
+    }
+
+    public void removeClue(Integer clueId) {
+        for (Iterator iter=clueIds.iterator(); iter.hasNext(); ) {
+            if (iter.next().equals(clueId)) {
+                iter.remove();
+            }
+        }
     }
 
     public static final class Builder {

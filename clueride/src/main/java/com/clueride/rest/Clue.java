@@ -19,6 +19,7 @@ package com.clueride.rest;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -59,6 +60,13 @@ public class Clue {
     @Consumes(MediaType.APPLICATION_JSON)
     public String addClue(com.clueride.domain.user.Clue.Builder clueBuilder) {
         return clueService.addClue(clueBuilder.build());
+    }
+
+    @DELETE
+    @Path("{locId}/{clueId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void removeClueFromLocation(@PathParam("locId") Integer locId, @PathParam("clueId") Integer clueId) {
+        clueService.removeClueFromLocation(locId, clueId);
     }
 
 }

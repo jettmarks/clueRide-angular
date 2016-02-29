@@ -27,7 +27,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
 import com.clueride.dao.ClueStore;
+import com.clueride.dao.LocationStore;
 import com.clueride.domain.user.Clue;
+import com.clueride.domain.user.Location;
 
 /**
  * Implementation of the Clue Service.
@@ -35,10 +37,12 @@ import com.clueride.domain.user.Clue;
 public class ClueServiceImpl implements ClueService {
     private static final Logger LOGGER = Logger.getLogger(ClueServiceImpl.class);
     private final ClueStore clueStore;
+    private final LocationStore locationStore;
 
     @Inject
-    public ClueServiceImpl(ClueStore clueStore) {
+    public ClueServiceImpl(ClueStore clueStore, LocationStore locationStore) {
         this.clueStore = clueStore;
+        this.locationStore = locationStore;
     }
 
     @Override
@@ -86,6 +90,15 @@ public class ClueServiceImpl implements ClueService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void removeClueFromLocation(Integer locId, Integer clueId) {
+        LOGGER.info("Removing Clue ID " + clueId + " from Location " + locId);
+
+        Location location = locationStore.getLocationById(locId);
+        location.removeClue(clueId);
+        locationStore.update(location);
     }
 
     @Override

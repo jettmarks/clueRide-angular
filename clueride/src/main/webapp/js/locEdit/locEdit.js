@@ -150,8 +150,16 @@
 
     function removeClue(clueIndex) {
         if (clueIndex) {
+            var clueId = viewModel.locationSelected.clueIds[clueIndex],
+                locId = viewModel.locationSelected.id;
+
+            /* Update client. */
             viewModel.clues.splice(clueIndex, 1);
             viewModel.locationSelected.clueIds.splice(clueIndex, 1);
+            /* Update server. */
+            localModel.clueResource.remove({locId: locId, clueId: clueId},
+                function (dontcare) {}
+            );
         }
     }
 

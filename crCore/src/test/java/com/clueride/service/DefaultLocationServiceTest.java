@@ -21,12 +21,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Provider;
+
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.dao.ClueStore;
 import com.clueride.dao.CourseStore;
 import com.clueride.dao.ImageStore;
 import com.clueride.dao.JsonLocationStore;
@@ -62,6 +65,9 @@ public class DefaultLocationServiceTest {
     private LocationBuilder locationBuilder;
 
     @Inject
+    private Provider<ClueStore> clueStoreProvider;
+
+    @Inject
     private CourseStore courseStore;
 
     @Inject
@@ -78,7 +84,7 @@ public class DefaultLocationServiceTest {
     public void testGetLocation() throws Exception {
         // Actual instances for this test
         NodeStore nodeStore = new JsonNodeStore();
-        locationStore = new JsonLocationStore(nodeStore);
+        locationStore = new JsonLocationStore(nodeStore, clueStoreProvider);
         toTest = new DefaultLocationService(
                 locationStore,
                 imageStore,

@@ -33,8 +33,16 @@ public interface ClueService {
      */
     String getClue(Integer clueId);
 
-    String addClue(Clue clue);
+    /**
+     * Given a Location and a Clue ID, remove that clue from the Location's list and persist the
+     * updated Location; the clue remains otherwise unchanged.
+     * @param locId - ID of the Location to be modified with the removal of a Clue Reference.
+     * @param clueId - The Clue Reference to be removed.
+     */
+    void removeClueFromLocation(Integer locId, Integer clueId);
 
     /* TODO: CA-199 - persist clues. */
     void update(Clue clue);
+
+    String addClue(Clue clue);
 }

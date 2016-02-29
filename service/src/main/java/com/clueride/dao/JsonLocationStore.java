@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -39,13 +40,16 @@ public class JsonLocationStore implements LocationStore {
 
     /** Reference to the Nodes which support the Locations. */
     private final NodeStore nodeStore;
+    private final Provider<ClueStore> clueStoreProvider;
 
     private static Map<Integer,Location> locationMap = new HashMap<>();
     private static List<Location> locations;
+    private static boolean firstTimeThrough = true;
 
     @Inject
-    public JsonLocationStore(NodeStore nodeStore) {
+    public JsonLocationStore(NodeStore nodeStore, Provider<ClueStore> clueStoreProvider) {
         this.nodeStore = nodeStore;
+        this.clueStoreProvider = clueStoreProvider;
         loadAll();
     }
 
@@ -74,6 +78,12 @@ public class JsonLocationStore implements LocationStore {
             }
             throw new IllegalStateException(stringBuilder.toString());
         }
+
+        // Prevent Circular Dependency by waiting until all classes are constructed
+        if (!firstTimeThrough) {
+            clueStoreProvider.get().reIndex();
+        }
+        firstTimeThrough = false;
     }
 
     /**
