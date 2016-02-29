@@ -11,6 +11,12 @@
             get: {
                 method: 'GET',
                 isArray: false
+            },
+            query: {
+                method: 'GET',
+                url: '/rest/clue/location/:locId',
+                params: {locId: '@locId'},
+                isArray: true
             }
         });
     }

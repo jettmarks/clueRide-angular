@@ -111,18 +111,11 @@
     /* Clue Functions. */
 
     function loadClueTab() {
-        var clueIds = viewModel.locationSelected.clueIds;
-        /* Clear any previous values. */
-        viewModel.clues = [];
-
-        for (var clueId in clueIds) {
-            localModel.clueResource.get({clueId: clueId},
-                function (clue) {
-                    if (clue && clue.id) {
-                        viewModel.clues.push(clue);
-                    }
-                });
-        }
+        localModel.clueResource.query({locId: viewModel.locationSelected.id},
+            function (clues) {
+                viewModel.clues = clues;
+            }
+        );
     }
 
     /**
