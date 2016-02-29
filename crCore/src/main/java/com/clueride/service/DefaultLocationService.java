@@ -118,7 +118,6 @@ public class DefaultLocationService implements LocationService {
                 e.printStackTrace();
             }
             count++;
-            if (++count == 7) break;
         }
         jsonBuilder.append(']');
         return jsonBuilder.toString();
@@ -151,18 +150,18 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public String getLocationTypes() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("[");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
         boolean firstTimeThrough = true;
         for (LocationType locationType : LocationType.values()) {
             if (!firstTimeThrough) {
-                buffer.append(",");
+                stringBuilder.append(",");
             }
-            buffer.append("\"").append(locationType).append("\"");
+            stringBuilder.append("\"").append(locationType).append("\"");
             firstTimeThrough = false;
         }
-        buffer.append("]");
-        return buffer.toString();
+        stringBuilder.append("]");
+        return stringBuilder.toString();
     }
 
     private class LocationDistanceComparator implements Comparator<Location> {

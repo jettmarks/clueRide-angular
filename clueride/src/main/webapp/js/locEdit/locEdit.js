@@ -9,7 +9,7 @@
         };
 
     angular
-        .module('crLocEdit',['common.ClueEditDirective'])
+        .module('crLocEdit',['common.ClueEditDirective', 'crPlayer.GameState'])
         .controller('LocEditController', LocationEditController)
         .factory('LocationEditor', LocationEditor)
     ;
@@ -23,6 +23,7 @@
         'LocationResource',
         'LocationTypeResource',
         'LocationService',
+        'GameStateService',
         'ClueResource',
         'FileUploader'
     ];
@@ -36,6 +37,7 @@
         LocationResource,
         LocationTypeResource,
         LocationService,
+        GameStateService,
         ClueResource,
         FileUploader
     ) {
@@ -44,6 +46,7 @@
         localModel.locationResource = LocationResource;
         localModel.locationTypeResource = LocationTypeResource;
         localModel.locationService = LocationService;
+        localModel.gameStateService = GameStateService;
         localModel.clueResource = ClueResource;
         localModel.FileUploader = FileUploader;
         localModel.$location = $location;
@@ -257,6 +260,8 @@
         console.log("Save URL: " + viewModel.saveImageUrl);
 
         uploader.addToQueue(file);
+
+        localModel.gameStateService.refreshLocationData();
 
         localModel.$location.path('location');
     }

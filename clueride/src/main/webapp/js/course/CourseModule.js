@@ -80,13 +80,6 @@
         viewModel.course = course;
     }
 
-    //function Service() {
-    //    return {
-    //        request: requestFunction,
-    //        confirm: confirmFunction
-    //    };
-    //}
-
     function crShowCourse() {
         return {
             templateUrl: 'js/course/showCourse.html'
