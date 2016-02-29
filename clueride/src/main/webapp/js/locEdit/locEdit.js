@@ -157,14 +157,8 @@
 
     function removeClue(clueIndex) {
         if (clueIndex) {
-            var listIndex;
-            for (var i in viewModel.clues) {
-                if (viewModel.clues[i].id = clueIndex) {
-                    listIndex = i;
-                }
-            }
-            viewModel.clues.splice(listIndex, 1);
-            viewModel.locationSelected.clueIds.splice(listIndex, 1);
+            viewModel.clues.splice(clueIndex, 1);
+            viewModel.locationSelected.clueIds.splice(clueIndex, 1);
         }
     }
 
