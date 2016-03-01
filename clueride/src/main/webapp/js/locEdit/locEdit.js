@@ -153,6 +153,8 @@
             var clueId = viewModel.locationSelected.clueIds[clueIndex],
                 locId = viewModel.locationSelected.id;
 
+            window.console.log("Clue Index: " + clueIndex);
+            window.console.log("Clue ID: " + clueId);
             /* Update client. */
             viewModel.clues.splice(clueIndex, 1);
             viewModel.locationSelected.clueIds.splice(clueIndex, 1);
