@@ -7,9 +7,11 @@
     ;
 
     function ClueResource($resource) {
-        return $resource('/rest/clue/:clueId', {clueId: '@clueId'}, {
+        return $resource('/rest/clue', {}, {
             get: {
                 method: 'GET',
+                url: '/rest/clue/:clueId',
+                params: {clueId: '@clueId'},
                 isArray: false
             },
             query: {
@@ -17,6 +19,10 @@
                 url: '/rest/clue/location/:locId',
                 params: {locId: '@locId'},
                 isArray: true
+            },
+            create: {
+                method: 'POST',
+                isArray: false
             },
             remove: {
                 method: 'DELETE',

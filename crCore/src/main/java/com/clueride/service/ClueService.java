@@ -44,5 +44,10 @@ public interface ClueService {
     /* TODO: CA-199 - persist clues. */
     void update(Clue clue);
 
+    /**
+     * Persists the clue, not yet added to any location.
+     * @param clue - fully-populated instance of Clue.
+     * @return - String JSON for the resulting fully-populated instance.
+     */
     String addClue(Clue clue);
 }

@@ -50,17 +50,17 @@ public class ClueServiceImpl implements ClueService {
         List<Clue> clues = clueStore.getCluesByLocation(locationId);
         ObjectMapper objectMapper = new ObjectMapper();
 
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("[");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
         boolean firstTimeThrough = true;
         for (Clue clue : clues) {
             if (!firstTimeThrough) {
-                buffer.append(",");
+                stringBuilder.append(",");
             } else {
                 firstTimeThrough = false;
             }
             try {
-                buffer.append(
+                stringBuilder.append(
                         objectMapper
                                 .writer()
                                 .withDefaultPrettyPrinter()
@@ -70,9 +70,9 @@ public class ClueServiceImpl implements ClueService {
                 e.printStackTrace();
             }
         }
-        buffer.append("]");
+        stringBuilder.append("]");
 
-        return buffer.toString();
+        return stringBuilder.toString();
     }
 
     @Override
@@ -103,13 +103,15 @@ public class ClueServiceImpl implements ClueService {
 
     @Override
     public String addClue(Clue clue) {
-        LOGGER.info("Adding Clue " + clue.getName() + " with ID " + clue.getId());
+        Integer clueId = clue.getId();
+        LOGGER.info("Adding Clue " + clue.getName() + " with ID " + clueId);
         try {
             clueStore.addNew(clue);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "{\"Status\": \"OK\"}";
+        /* Build the result the same as we would for a get. */
+        return getClue(clueId);
     }
 
     @Override
