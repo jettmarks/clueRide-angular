@@ -106,6 +106,8 @@
         viewModel.addClue = addClue;
         viewModel.removeClue = removeClue;
         viewModel.loadClueTab = loadClueTab;
+        viewModel.clueEditOK = clueEditOK;
+        viewModel.clueEditCancel = clueEditCancel;
     }
 
     /* Clue Functions. */
@@ -163,6 +165,22 @@
                 function (dontcare) {}
             );
         }
+    }
+
+    function clueEditOK() {
+        /* Persist the new clue and add the new ID to the location's list. */
+        localModel.clueResource.create(viewModel.selectedClue,
+            function (newClue) {
+                viewModel.selectedClue = newClue;
+                viewModel.locationSelected.clueIds.push(newClue.id);
+                // TODO: Persist the Location
+                loadClueTab();
+            }
+        );
+    }
+
+    function clueEditCancel() {
+
     }
 
     /* Location Edit functions. */
