@@ -50,6 +50,11 @@ public class LocationTest {
     public void setUp() throws Exception {
         expectedClues.add(1);
         expectedClues.add(2);
+        expectedClues.add(3);
+        expectedClues.add(4);
+        expectedClues.add(5);
+        expectedClues.add(6);
+        expectedClues.add(7);
         expectedImageUrls.add(new URL("https://clueride.com/"));
         builder = Location.Builder.builder()
                 .setName(expectedName)
@@ -127,8 +132,9 @@ public class LocationTest {
         assertNotNull(toTest);
 
         Map<String,Optional<Double>> moreTags = new HashMap<>();
-        Optional<Double> expected = Optional.of(1.234);
-        moreTags.put("T1", expected);
+        Double expected = 1.234;
+//        Optional<Double> expected = Optional.of(1.234);
+        moreTags.put("T1", Optional.of(expected));
 
         builder.setTagScores(moreTags);
         toTest = builder.build();
@@ -143,8 +149,9 @@ public class LocationTest {
         toTest = builder.build();
         assertNotNull(toTest);
 
-        Optional<Integer> expectedLocationId = Optional.of(1234);
-        builder.setLocationGroupId(expectedLocationId);
+        Integer expectedLocationId = 1234;
+//        Optional<Integer> expectedLocationId = Optional.of(1234);
+        builder.setLocationGroupId(Optional.of(expectedLocationId));
         toTest = builder.build();
         assertNotNull(toTest);
 
@@ -177,6 +184,22 @@ public class LocationTest {
 
         builder.setClueIds(Collections.<Integer>emptyList());
         toTest = builder.build();
+    }
+
+    @Test
+    public void testAddDeleteClues() throws Exception {
+        toTest = builder.build();
+        List<Integer> expectedCluesAfterDelete = toTest.getClueIds();
+        List<Integer> expectedCluesAfterAdd = new ArrayList<>(expectedCluesAfterDelete);
+        expectedCluesAfterAdd.add(10);
+
+        toTest = builder.setClueIds(expectedCluesAfterAdd).build();
+        List<Integer> actualAfterAdd = toTest.getClueIds();
+        assertEquals(actualAfterAdd, expectedCluesAfterAdd);
+
+        toTest.removeClue(10);
+        List<Integer> actualAfterDelete = toTest.getClueIds();
+        assertEquals(actualAfterDelete, expectedCluesAfterDelete);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)

@@ -172,8 +172,9 @@
         localModel.clueResource.create(viewModel.selectedClue,
             function (newClue) {
                 viewModel.selectedClue = newClue;
+                /* Don't have the new Clue ID until after it has been sent to the server. */
                 viewModel.locationSelected.clueIds.push(newClue.id);
-                // TODO: Persist the Location
+                localModel.locationResource.save(viewModel.locationSelected);
                 loadClueTab();
             }
         );

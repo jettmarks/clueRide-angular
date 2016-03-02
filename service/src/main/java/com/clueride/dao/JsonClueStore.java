@@ -98,9 +98,20 @@ public class JsonClueStore implements ClueStore {
         }
     }
 
+    /**
+     * New Clue for the pool, added to both in-memory cache and persisted to the
+     * file system as JSON.
+     * ReIndexing could happen here, but more likely, the Location will be updated
+     * with the new Clue and when that object is updated, it will kick off a reIndex.
+     * @param clue - instance to be added to the memory-based copy (which may be persisted).
+     * @return Integer ID of the new Clue.
+     * @throws IOException
+     */
     @Override
     public Integer addNew(Clue clue) throws IOException {
         validateClue(clue);
+        clues.add(clue);
+
         File outFile = PojoJsonUtil.getFileForClueId(clue.getId());
         ObjectMapper objectMapper = new ObjectMapper();
         try {

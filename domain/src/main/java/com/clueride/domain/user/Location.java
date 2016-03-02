@@ -51,6 +51,8 @@ public class Location implements Step {
     private final Optional<Establishment> establishment;
     private final Map<String,Optional<Double>> tagScores;
 
+    private final static Integer SYNCH_LOCK = -1;
+
     public Location(Builder builder) {
         // Required values
         id = requireNonNull(builder.getId(), "Location ID missing");
@@ -135,6 +137,12 @@ public class Location implements Step {
         return tagScores;
     }
 
+    /**
+     * This method returns null for an empty Location Group to
+     * accommodate the JSON writer, but not sure this is what
+     * we'll continue to want.
+     * @return Integer or null if not present.
+     */
     public Integer getLocationGroupId() {
         if(locationGroupId != null && locationGroupId.isPresent()) {
             return locationGroupId.get();
@@ -170,9 +178,11 @@ public class Location implements Step {
     }
 
     public void removeClue(Integer clueId) {
-        for (Iterator iter=clueIds.iterator(); iter.hasNext(); ) {
-            if (iter.next().equals(clueId)) {
-                iter.remove();
+        synchronized(SYNCH_LOCK) {
+            for (Iterator iter=clueIds.iterator(); iter.hasNext(); ) {
+                if (iter.next().equals(clueId)) {
+                    iter.remove();
+                }
             }
         }
     }
