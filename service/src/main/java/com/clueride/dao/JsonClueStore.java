@@ -111,6 +111,7 @@ public class JsonClueStore implements ClueStore {
     public Integer addNew(Clue clue) throws IOException {
         validateClue(clue);
         clues.add(clue);
+        reIndex();
 
         File outFile = PojoJsonUtil.getFileForClueId(clue.getId());
         ObjectMapper objectMapper = new ObjectMapper();

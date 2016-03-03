@@ -12,6 +12,7 @@
         .module('crLocEdit',['common.ClueEditDirective', 'crPlayer.GameState'])
         .controller('LocEditController', LocationEditController)
         .factory('LocationEditor', LocationEditor)
+        .directive('autoFocus', autoFocus)
     ;
 
     LocationEditController.$inject = [
@@ -169,15 +170,22 @@
 
     function clueEditOK() {
         /* Persist the new clue and add the new ID to the location's list. */
-        localModel.clueResource.create(viewModel.selectedClue,
-            function (newClue) {
+        localModel.clueResource.create(viewModel.selectedClue)
+            .$promise
+            .then( function (newClue) {
                 viewModel.selectedClue = newClue;
                 /* Don't have the new Clue ID until after it has been sent to the server. */
+                window.console.log("New Clue's ID is " + newClue.id);
                 viewModel.locationSelected.clueIds.push(newClue.id);
-                localModel.locationResource.save(viewModel.locationSelected);
+                return localModel.locationResource.save(viewModel.locationSelected).$promise;
+            })
+            .catch (function(errorMsg) {
+                window.console.log("Something went wrong : " + errorMsg);
+            })
+            // will always be executed
+            .finally(function() {
                 loadClueTab();
-            }
-        );
+            });
     }
 
     function clueEditCancel() {
@@ -372,6 +380,16 @@
             array.push(binary.charCodeAt(i));
         }
         return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+    }
+
+    function autoFocus() {
+        return {
+            link: {
+                post: function postLink(scope, element, attr) {
+                    element[0].focus();
+                }
+            }
+        }
     }
 
 }(window.angular, Webcam));
