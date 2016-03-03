@@ -153,7 +153,7 @@
 
     function removeClue(clueIndex) {
         if (clueIndex) {
-            var clueId = viewModel.locationSelected.clueIds[clueIndex],
+            var clueId = viewModel.clues[clueIndex].id,
                 locId = viewModel.locationSelected.id;
 
             window.console.log("Clue Index: " + clueIndex);
