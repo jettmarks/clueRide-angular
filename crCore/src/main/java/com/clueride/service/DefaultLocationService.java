@@ -29,9 +29,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableList;
 import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
 
+import com.clueride.dao.ClueStore;
 import com.clueride.dao.CourseStore;
 import com.clueride.dao.ImageStore;
 import com.clueride.dao.LocationStore;
@@ -54,6 +56,7 @@ public class DefaultLocationService implements LocationService {
     private final ImageStore imageStore;
     private final CourseStore courseStore;
     private final PathStore pathStore;
+    private final ClueStore clueStore;
     private final LocationBuilder locationBuilder;
 
     @Inject
@@ -63,13 +66,14 @@ public class DefaultLocationService implements LocationService {
             NodeService nodeService,
             CourseStore courseStore,
             PathStore pathStore,
-            LocationBuilder locationBuilder
+            ClueStore clueStore, LocationBuilder locationBuilder
     ) {
         this.locationStore = locationStore;
         this.imageStore = imageStore;
         this.nodeService = nodeService;
         this.courseStore = courseStore;
         this.pathStore = pathStore;
+        this.clueStore = clueStore;
         this.locationBuilder = locationBuilder;
     }
 
@@ -145,7 +149,22 @@ public class DefaultLocationService implements LocationService {
         Location existingLocation = locationStore.getLocationById(location.id);
         LOGGER.info("Found matching Location " + existingLocation.toString());
         Location.Builder locationBuilder = Location.Builder.builder(location);
+        validateUpdatedLocationBuilder(locationBuilder);
         locationStore.update(locationBuilder.build());
+    }
+
+    private void validateUpdatedLocationBuilder(Location.Builder locationBuilder) {
+        List<Integer> validatedClueIds = new ArrayList<>();
+        for (Integer clueId : locationBuilder.getClueIds()) {
+            if (clueStore.hasValidClue(clueId)) {
+                if (!validatedClueIds.contains(clueId)) {
+                    validatedClueIds.add(clueId);
+                }
+            } else {
+                LOGGER.warn("Unable to find valid Clue with ID " + clueId);
+            }
+        }
+        locationBuilder.setClueIds(ImmutableList.copyOf(validatedClueIds));
     }
 
     @Override

@@ -60,4 +60,10 @@ public interface ClueStore {
      */
     List<Clue> getCluesByLocation(Integer locationId);
 
+    /**
+     * Return true if the Clue ID provided is both within our store and is valid.
+     * @param clueId - Unique Integer identifier for the Clue.
+     * @return true if the Clue is valid.
+     */
+    boolean hasValidClue(Integer clueId);
 }

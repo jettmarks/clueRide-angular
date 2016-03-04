@@ -144,4 +144,10 @@ public class JsonClueStore implements ClueStore {
     public List<Clue> getCluesByLocation(Integer locationId) {
         return cluesPerLocation.get(locationId);
     }
+
+    @Override
+    public boolean hasValidClue(Integer clueId) {
+        /* At this time, there are no clues kept in the store which are not valid. */
+        return (clueById.containsKey(clueId));
+    }
 }

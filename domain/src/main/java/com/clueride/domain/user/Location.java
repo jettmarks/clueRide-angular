@@ -18,15 +18,16 @@
 package com.clueride.domain.user;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.concurrent.Immutable;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 
 import com.clueride.domain.Step;
 import com.clueride.service.IdProvider;
@@ -45,7 +46,7 @@ public class Location implements Step {
     private final String description;
     private final LocationType locationType;
     private final Integer nodeId;
-    private final List<Integer> clueIds;
+    private List<Integer> clueIds;
     private final List<URL> imageUrls;
     private final Optional<Integer> locationGroupId;
     private final Optional<Establishment> establishment;
@@ -179,11 +180,13 @@ public class Location implements Step {
 
     public void removeClue(Integer clueId) {
         synchronized(SYNCH_LOCK) {
-            for (Iterator iter=clueIds.iterator(); iter.hasNext(); ) {
-                if (iter.next().equals(clueId)) {
-                    iter.remove();
+            List<Integer> remainingClueIds = new ArrayList<>();
+            for (Integer clueToCheck : clueIds) {
+                if (!clueId.equals(clueToCheck) && clueToCheck != null) {
+                    remainingClueIds.add(clueToCheck);
                 }
             }
+            this.clueIds = ImmutableList.copyOf(remainingClueIds);
         }
     }
 
@@ -284,8 +287,13 @@ public class Location implements Step {
         }
 
         public Builder setClueIds(List<Integer> clueIds) {
+            validateClueIds(clueIds);
             this.clueIds = clueIds;
             return this;
+        }
+
+        private void validateClueIds(List<Integer> clueIds) {
+
         }
 
         public Optional<Establishment> getEstablishment() {

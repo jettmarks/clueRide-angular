@@ -68,6 +68,9 @@ public class DefaultLocationServiceTest {
     private Provider<ClueStore> clueStoreProvider;
 
     @Inject
+    private ClueStore clueStore;
+
+    @Inject
     private CourseStore courseStore;
 
     @Inject
@@ -91,6 +94,7 @@ public class DefaultLocationServiceTest {
                 nodeService,
                 courseStore,
                 pathStore,
+                clueStore,
                 locationBuilder);
         assertNotNull(toTest);
 
@@ -143,6 +147,7 @@ public class DefaultLocationServiceTest {
                 nodeService,
                 courseStore,
                 pathStore,
+                clueStore,
                 locationBuilder);
         assertNotNull(toTest);
 
