@@ -72,3 +72,40 @@ TODO: Document this more completely.
 
 This is viewed through the Balloons.
 
+Game State Propagation
+----
+There are a few aspects of Game State that are interesting:
+
+* Events that need to be propagated (what functions)
+* How does state get pushed out to the devices (what implementation)
+* How do we verify/test the functionality (QA/diagnostics)
+* Part of the State is a push/pull of the tethered location
+
+## Events
+
+* Start of game (could be first arrival)
+* Clue Solved
+* Team Arrival at next location (opening the next clue)
+
+Not clear if the first event will be the course selection or not.  It is possible that courses would be changed mid-stream.
+
+## Push implementation
+Risk is in choosing an appropriate solution for devices with intermittent connections such as mobile.
+
+Polled solution isn't unreasonable for the following reasons:
+
+* Viewing a page generally involves a trip to the server anyway.  If a timestamp of the last state change is part of
+the response, this can be checked for a difference and serve as a trigger to refresh the state.  The Home Page makes a
+good target for viewing updated state.  The Team Leaders Status page is another.
+
+
+## QA
+
+## Tethered Location
+The timing and refresh rate of a tethered location is different from the timing for pushing/pulling the game state.
+Two different channels are setup, but it makes sense to expand the response to many REST calls to include both
+a position timestamp as well as a game state timestamp.
+
+* Pushing the updated position on an interval per team.
+* Pull occurs on an interval, but only when the position matters to the display (a map).
+
