@@ -1,9 +1,10 @@
 package com.clueride.service;
 
-import com.clueride.domain.Player;
-import com.clueride.domain.Team;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.clueride.domain.Player;
+import com.clueride.domain.Team;
 
 /**
  * Copyright 2015 Jett Marks
@@ -29,8 +30,7 @@ public class TeamService {
 
     static
     {
-        team = new Team();
-        team.setName("Spokes Folks");
+        team = new Team("Spokes Folks");
         team.add(new Player("Team Leader (Uncle Albert)"));
         for (int i=1; i<=3; i++) {
             team.add(new Player("Member "+i));
