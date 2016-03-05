@@ -19,6 +19,7 @@ package com.clueride.service;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Provider;
@@ -41,6 +42,7 @@ import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.LocationType;
 import com.clueride.service.builder.LocationBuilder;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.assertNotNull;
@@ -57,6 +59,9 @@ public class DefaultLocationServiceTest {
 
     @Mock
     private LocationStore locationStore;
+
+    @Mock
+    private ClueStore mockedClueStore;
 
     @Inject
     private ImageStore imageStore;
@@ -153,5 +158,24 @@ public class DefaultLocationServiceTest {
 
         String actual = toTest.getNearestLocations(-10.0, 12.7);
         LOGGER.debug(actual);
+    }
+
+    @Test
+    public void testValidateLocationBuilder() {
+        Location.Builder builder = Location.Builder.builder();
+        builder.setClueIds(Arrays.asList(1, 2, 3, 4, 5, 6, 4, null, 5, 6, null, 3));
+        when(mockedClueStore.hasValidClue(anyInt())).thenReturn(true);
+        when(mockedClueStore.hasValidClue(1)).thenReturn(false);
+        DefaultLocationService implToTest = new DefaultLocationService(
+                locationStore,
+                imageStore,
+                nodeService,
+                courseStore,
+                pathStore,
+                mockedClueStore,
+                locationBuilder
+        );
+        implToTest.validateUpdatedLocationBuilder(builder);
+        assertTrue(builder.getClueIds().size() == 5);
     }
 }

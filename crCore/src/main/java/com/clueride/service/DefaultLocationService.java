@@ -153,7 +153,7 @@ public class DefaultLocationService implements LocationService {
         locationStore.update(locationBuilder.build());
     }
 
-    private void validateUpdatedLocationBuilder(Location.Builder locationBuilder) {
+    void validateUpdatedLocationBuilder(Location.Builder locationBuilder) {
         List<Integer> validatedClueIds = new ArrayList<>();
         for (Integer clueId : locationBuilder.getClueIds()) {
             if (clueStore.hasValidClue(clueId)) {
