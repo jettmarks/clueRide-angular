@@ -1,0 +1,44 @@
+<div id="outing" ng-controller="OutingController as vm">
+
+  <div id="teamSelection" class="entry-field btn-group">
+    <a ui-turn-on="teamDropdown" class="btn btn-primary">
+      Selected Team: {{vm.selectedTeam.name}}
+    </a>
+    <ul class="dropdown-menu"
+        role="menu"
+        ui-state="teamDropdown"
+        ui-show="teamDropdown"
+        ui-turn-off="teamDropdown"
+        ui-outer-click="Ui.turnOff('teamDropdown')"
+        ui-outer-click-if="Ui.active('teamDropdown')"
+            >
+      <li ng-repeat="team in vm.teams" role="menuitem">
+        <a href ng-click="vm.selectTeam(team)">{{team.name}}</a>
+      </li>
+    </ul>
+  </div>
+
+  <div id="courseSelection" class="entry-field btn-group">
+    <a ui-turn-on="courseDropdown" class="btn btn-primary">
+      Selected Course: {{vm.selectedCourse.name}}
+    </a>
+    <ul class="dropdown-menu"
+        role="menu"
+        ui-state="courseDropdown"
+        ui-show="courseDropdown"
+        ui-turn-off="courseDropdown"
+        ui-outer-click="Ui.turnOff('courseDropdown')"
+        ui-outer-click-if="Ui.active('courseDropdown')"
+            >
+      <li ng-repeat="course in vm.courses" role="menuitem">
+        <a href ng-click="vm.selectCourse(course)">{{course.name}}</a>
+      </li>
+    </ul>
+
+  </div>
+
+  <div id="dispatch" class="entry-field">
+    <button ng-click="vm.cancelCreateOuting()" class="btn btn-default">Cancel</button>
+    <button ng-click="vm.createOuting()" class="btn btn-primary">Create Outing</button>
+  </div>
+</div>
