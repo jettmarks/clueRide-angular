@@ -26,7 +26,8 @@
             reloadBadges: reloadBadges,
             saveBadges: saveBadges,
             getBadges: getBadges,
-            hasBadge: hasBadge
+            hasBadge: hasBadge,
+            clearBadges: clearBadges
         };
     }
 
@@ -46,6 +47,11 @@
         // TODO: placeholder for refreshing badges for a given user
     }
 
+    /** Performed when we logout a user. */
+    function clearBadges() {
+        viewModel.badges = {};
+    }
+
     /**
      * Brute force loop through all badge entries; may make sense to put these in a hash.
      * @param badgeToCheck - Valid list defined in the Java Badge enum.
@@ -54,7 +60,7 @@
     function hasBadge(badgeToCheck) {
         for (var b in viewModel.badges) {
             var badge = viewModel.badges[b];
-            if (badge.value === badgeToCheck) {
+            if (badge === badgeToCheck) {
                 return true;
             }
         }

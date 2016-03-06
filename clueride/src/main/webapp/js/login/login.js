@@ -8,6 +8,7 @@
         .module('crPlayer.LoginModule', [
             'ngResource',
             'ngCookies',
+            'ngRoute',
             'crPlayer.BadgesModule',
             'crPlayer.GameState'
         ])
@@ -16,38 +17,64 @@
         .factory('LoginService', LoginService)
     ;
 
-    LoginController.$inject = ['$cookies', 'LoginResource','BadgesService', 'GameStateService'];
+    LoginController.$inject = [
+        '$cookies',
+        '$location',
+        'LoginResource',
+        'BadgesService',
+        'GameStateService'
+    ];
 
-    function LoginController($cookies, LoginResource, BadgesService, GameStateService) {
+    function LoginController(
+        $cookies,
+        $location,
+        LoginResource,
+        BadgesService,
+        GameStateService
+    ) {
         var vm = this;
 
         vm.loginName = "";
         vm.password = "";
         vm.submit = login;
+        vm.logout = logout;
         vm.badges = {};
 
+        // TODO: Won't need cookies anymore for authentication
         localModel.cookieService = $cookies;
         localModel.loginResource = LoginResource;
         localModel.badgesService = BadgesService;
         localModel.gameStateService = GameStateService;
+        localModel.locationService = $location;
 
         viewModel = vm;
     }
 
     function login() {
-        localModel.loginResource.login({
+        localModel.loginResource.login(
+            {
                 name: viewModel.loginName,
                 password: viewModel.password
-            },
-        receiveBadges);
+            }
+        )
+        /* Promise is used to allow retrieving the badge and determine if we can open next bubble. */
+            .$promise
+            .then(function (data) {
+                receiveBadges(data)
+            }
+        );
+    }
+
+    function logout() {
+        localModel.badgesService.clearBadges();
+        localModel.loginResource.logout();
+        localModel.locationService.path("/");
     }
 
     function receiveBadges(data) {
         localModel.badgesService.saveBadges(data);
-        localModel.gameStateService.enableGpsBubble();
-        /* The viewModel exists when we are logging in, but not when we refresh the page. */
-        if (viewModel) {
-            saveLogin(viewModel);
+        if (localModel.badgesService.hasBadge('TEAM_MEMBER')) {
+            localModel.gameStateService.enableGpsBubble();
         }
     }
 
@@ -81,10 +108,17 @@
     }
 
     function LoginResource ($resource) {
+        /* Submit credentials and receive badges. */
         return $resource('/rest/login', {}, {
+            /* Open session with the server. */
             login: {
                 method: 'POST',
                 isArray: true
+            },
+            /* Close out the session with the server. */
+            logout: {
+                method: 'DELETE',
+                isArray: false
             }
         });
     }
