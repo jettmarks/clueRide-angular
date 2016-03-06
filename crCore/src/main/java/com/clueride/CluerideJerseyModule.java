@@ -17,7 +17,11 @@
  */
 package com.clueride;
 
-import com.clueride.infrastructure.CoreGuiceSetup;
+import java.util.Map;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.Context;
+
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.inject.Binding;
 import com.google.inject.Inject;
@@ -25,14 +29,13 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import org.apache.log4j.Logger;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
-import java.util.Map;
+import com.clueride.infrastructure.CoreGuiceSetup;
 
 /**
  * Gets Jersey 2 (HK2) and Guice to play together.
@@ -43,8 +46,15 @@ public class CluerideJerseyModule extends ResourceConfig {
     private static final Logger LOGGER = Logger.getLogger(CluerideJerseyModule.class);
 
     @Inject
-    public CluerideJerseyModule(@Context ServletContext servletContext, ServiceLocator serviceLocator) {
-        super(MultiPartFeature.class);
+    public CluerideJerseyModule(
+            @Context ServletContext servletContext,
+            ServiceLocator serviceLocator
+    ) {
+        super(
+                MultiPartFeature.class,
+                CluerideObjectMapperProvider.class,
+                JacksonFeature.class
+        );
 
         LOGGER.info("Creating Clueride Module");
 
