@@ -17,22 +17,14 @@
  */
 package com.clueride.rest.dto;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * Represents one of the Game State bubbles.
  */
-@XmlRootElement
 public class Bubble {
-    @XmlElement
     public String bid;
-    @XmlElement
     public String title;
-    @XmlElement
     public String dialog;
-    @XmlElement
     public String nextView;
-    @XmlElement
     public String nextState;
+    public Boolean disabled;
 }

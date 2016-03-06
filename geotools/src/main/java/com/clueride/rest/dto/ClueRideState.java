@@ -17,25 +17,18 @@
  */
 package com.clueride.rest.dto;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * Represents the state of a client as the game proceeds.
  *
  * This is pushed by the client when game state changes and pulled by the client
  * when it refreshes so game state is preserved.
  */
-@XmlRootElement
 public class ClueRideState {
-    @XmlElement
     public Integer teamId;
-    @XmlElement
     public Integer pathIndex = -1;
-    @XmlElement
     public Boolean mostRecentClueSolvedFlag = false;
-    @XmlElement
     public GameState currentGameState;
-    @XmlElement
     public String currentGameStateKey;
+    public String historyIndex;
+    public String maxVisibleLocationIndex;
 }

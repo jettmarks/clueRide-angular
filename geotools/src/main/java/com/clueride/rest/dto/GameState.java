@@ -17,20 +17,13 @@
  */
 package com.clueride.rest.dto;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * DTO for the Game State portion of the Clue Ride State for a team.
  */
-@XmlRootElement
 public class GameState {
-    @XmlElement
     public String title;
-    @XmlElement
     public Bubble bubble1;
-    @XmlElement
     public Bubble bubble2;
-    @XmlElement
     public Bubble bubble3;
+    public Integer locationIndex;
 }
