@@ -15,6 +15,7 @@ var app = angular.module('clueridePlayer', [
   'crPlayer.MenuModule',
   'crPlayer.Bubble',
   'crPlayer.GameState',
+  'crPlayer.OutingModule',
   'crMap',
   'crPlayer.Location',
   'common.LocationResource',
@@ -50,6 +51,7 @@ app.run(function($transform) {
 app.config(function($routeProvider) {
   $routeProvider.when('/',                {templateUrl: 'birdseye.html', reloadOnSearch: false});
   $routeProvider.when('/map',             {templateUrl: 'js/map/map.html', reloadOnSearch: false});
+  $routeProvider.when('/logout',          {templateUrl: 'js/login/logout.html', reloadOnSearch: false});
   $routeProvider.when('/location',        {templateUrl: 'js/loc/loc.html', reloadOnSearch: false});
   $routeProvider.when('/locEdit',         {templateUrl: 'js/locEdit/locEditMain.html', reloadOnSearch: false});
   $routeProvider.when('/locEdit/clues',   {templateUrl: 'js/locEdit/clueEdit.html', reloadOnSearch: false});
@@ -57,8 +59,8 @@ app.config(function($routeProvider) {
   $routeProvider.when('/locEdit/images',  {templateUrl: 'js/locEdit/imageList.html', reloadOnSearch: false});
   $routeProvider.when('/locEdit/newImage',{templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
   $routeProvider.when('/locEdit/estab',   {templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
-  $routeProvider.when('/logout',          {templateUrl: 'js/login/logout.html', reloadOnSearch: false});
   $routeProvider.when('/status',          {templateUrl: 'js/status/status.html', reloadOnSearch: false});
+  $routeProvider.when('/outing',          {templateUrl: 'js/outing/outingEdit.html', reloadOnSearch: false});
   $routeProvider.when('/ice',             {templateUrl: 'ice.html', reloadOnSearch: false});
 });
 //
