@@ -57,6 +57,7 @@ app.config(function($routeProvider) {
   $routeProvider.when('/locEdit/images',  {templateUrl: 'js/locEdit/imageList.html', reloadOnSearch: false});
   $routeProvider.when('/locEdit/newImage',{templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
   $routeProvider.when('/locEdit/estab',   {templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
+  $routeProvider.when('/logout',          {templateUrl: 'js/login/logout.html', reloadOnSearch: false});
   $routeProvider.when('/status',          {templateUrl: 'js/status/status.html', reloadOnSearch: false});
   $routeProvider.when('/ice',             {templateUrl: 'ice.html', reloadOnSearch: false});
 });
@@ -274,14 +275,12 @@ app.controller('MainController', [
   'GameStateService',
   'LocationService',
   'BadgesService',
-  'LoginService',
 function(
     $rootScope,
     $scope,
     GameStateService,
     LocationService,
-    BadgesService,
-    LoginService
+    BadgesService
 ) {
 
   $scope.swiped = function(direction) {
@@ -312,9 +311,6 @@ function(
   /* Bind the Badges Service to the scope. */
   $scope.badges = {};
   BadgesService.setBadgeScope($scope);
-
-  /* Restore session state if player is already logged in. */
-  LoginService.checkLogin();
 
   /* Whether or not the Header/Footer nav bars are shown. */
   $rootScope.showHeaderFooter = true;

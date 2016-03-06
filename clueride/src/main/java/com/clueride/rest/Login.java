@@ -20,10 +20,13 @@ package com.clueride.rest;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import com.clueride.domain.user.Badge;
@@ -34,6 +37,8 @@ import com.clueride.rest.dto.CRCredentials;
  */
 @Path("login")
 public class Login {
+    @Context
+    private HttpServletRequest request;
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -44,7 +49,13 @@ public class Login {
             result.add(Badge.TEAM_LEAD);
         }
         result.add(Badge.TEAM_MEMBER);
+        request.getSession(true);
+        request.getSession().setMaxInactiveInterval(12 * 60 * 60);
         return result;
     }
 
+    @DELETE
+    public void logout() {
+        request.getSession().invalidate();
+    }
 }
