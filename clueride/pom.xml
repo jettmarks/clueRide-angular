@@ -41,10 +41,10 @@
                     <jsSrcDir>src/main/webapp/js</jsSrcDir>
                     <jsTestSrcDir>src/test/webapp/js</jsTestSrcDir>
                     <sourceIncludes>
-                        <include>gameState/*.js</include>
+                        <include>badges/*.js</include>
                         <include>course/*.js</include>
                         <include>loc/*.js</include>
-                        <include>badges/*.js</include>
+                        <include>gameState/*.js</include>
                     </sourceIncludes>
                 </configuration>
             </plugin>

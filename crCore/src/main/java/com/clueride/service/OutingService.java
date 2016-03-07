@@ -20,6 +20,7 @@ package com.clueride.service;
 import com.clueride.domain.Course;
 import com.clueride.domain.Outing;
 import com.clueride.domain.Team;
+import com.clueride.rest.dto.OutingState;
 
 /**
  * Service supporting the Outing Model which ties together a particular {@link Team}
@@ -84,4 +85,18 @@ public interface OutingService {
      * @param outingId - Unique identifier of the Outing.
      */
     void updatePosition(Integer outingId);
+
+    /**
+     * Given the Outing ID, return the state of that Outing.
+     * @param outingId - Unique identifier of the Outing.
+     * @return - Current instance of Outing State.
+     */
+    OutingState getState(Integer outingId);
+
+    /**
+     * Given the Outing ID, return the state of that Outing.
+     * @param outingState - Updated instance of the state, typically a result of an event coming in.
+     * @return - Long timestamp of the updated state.
+     */
+    Long updateOutingState(OutingState outingState);
 }

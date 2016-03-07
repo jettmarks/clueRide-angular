@@ -10,7 +10,7 @@
             locations: []
         };
 
-        beforeEach(module('crPlayer.Location', 'crPlayer.GameState'));
+        beforeEach(module('crPlayer.Location', 'crPlayer.GameState','crPlayer.BadgesModule'));
 
         beforeEach(function () {
             inject(function ($injector) {

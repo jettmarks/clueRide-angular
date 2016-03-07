@@ -23,8 +23,8 @@
             it('should have entries after storing some', function () {
                 toTest.saveBadges(
                     [
-                        {value: 'TEAM_LEAD'},
-                        {value: 'TEAM_MEMBER'}
+                        'TEAM_LEAD',
+                        'TEAM_MEMBER'
                     ]
                 );
                 expect(toTest.getBadges().length > 0).toBeTruthy();

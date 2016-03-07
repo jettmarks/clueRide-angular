@@ -27,6 +27,7 @@ import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
 import com.clueride.domain.Outing;
+import com.clueride.rest.dto.OutingState;
 
 /**
  * Implementation of the Outing Service.
@@ -39,6 +40,7 @@ public class OutingServiceImpl implements OutingService {
     private static Map<Integer,Outing> outingPerTeam;
     private static Map<Integer,Long> lastModifiedStatePerOuting;
     private static Map<Integer,Long> lastModifiedPositionPerOuting;
+    private static Map<Integer,OutingState> statePerOuting;
 
     @Inject
     public OutingServiceImpl() {
@@ -54,6 +56,7 @@ public class OutingServiceImpl implements OutingService {
         outingPerTeam = new HashMap<>();
         lastModifiedStatePerOuting = new HashMap<>();
         lastModifiedPositionPerOuting = new HashMap<>();
+        statePerOuting = new HashMap<>();
     }
 
     private void reIndex() {
@@ -119,5 +122,19 @@ public class OutingServiceImpl implements OutingService {
     @Override
     public void updatePosition(Integer outingId) {
         lastModifiedPositionPerOuting.put(outingId, (new Date()).getTime());
+    }
+
+    @Override
+    public OutingState getState(Integer outingId) {
+        return statePerOuting.get(outingId);
+    }
+
+    @Override
+    public Long updateOutingState(OutingState outingState) {
+        LOGGER.info("New Outing State for Outing ID " + outingState.outingId);
+        statePerOuting.put(outingState.outingId, outingState);
+        Long now = new Date().getTime();
+        lastModifiedStatePerOuting.put(outingState.outingId, now);
+        return now;
     }
 }
