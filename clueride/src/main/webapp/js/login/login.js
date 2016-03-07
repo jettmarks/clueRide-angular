@@ -14,6 +14,7 @@
         .controller('LoginController', LoginController)
         .factory('LoginResource', LoginResource)
         .factory('LoginService', LoginService)
+        .run(init)
     ;
 
     LoginController.$inject = [
@@ -23,11 +24,20 @@
         'GameStateService'
     ];
 
-    function LoginController(
+    /** Records dependencies used in this scope. */
+    function init(
         $location,
         LoginResource,
         BadgesService,
         GameStateService
+    ) {
+        localModel.loginResource = LoginResource;
+        localModel.badgesService = BadgesService;
+        localModel.gameStateService = GameStateService;
+        localModel.locationService = $location;
+    }
+
+    function LoginController(
     ) {
         var vm = this;
 
@@ -36,11 +46,6 @@
         vm.submit = login;
         vm.logout = logout;
         vm.badges = {};
-
-        localModel.loginResource = LoginResource;
-        localModel.badgesService = BadgesService;
-        localModel.gameStateService = GameStateService;
-        localModel.locationService = $location;
 
         viewModel = vm;
     }
@@ -63,6 +68,8 @@
     function logout() {
         localModel.badgesService.clearBadges();
         localModel.loginResource.logout();
+        localModel.gameStateService.updateGameState('beginPlay');
+        localModel.gameStateService.disableGpsBubble();
         localModel.locationService.path("/");
     }
 
