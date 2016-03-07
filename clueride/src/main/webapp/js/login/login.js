@@ -68,9 +68,7 @@
 
     function receiveBadges(data) {
         localModel.badgesService.saveBadges(data);
-        if (localModel.badgesService.hasBadge('TEAM_MEMBER')) {
-            localModel.gameStateService.enableGpsBubble();
-        }
+        localModel.gameStateService.updateLoginState();
     }
 
     function LoginResource ($resource) {

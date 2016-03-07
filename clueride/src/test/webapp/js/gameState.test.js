@@ -7,16 +7,19 @@
     describe("Game State", function () {
         self = this;
 
-        beforeEach(module('crPlayer.GameState','common.CourseResource'));
+        beforeEach(module('crPlayer.GameState','common.CourseResource', 'crPlayer.BadgesModule'));
 
         beforeEach(function () {
             // Simulate beforeAll
             if (!toTest) {
                 /* Inject our instance of the service under test. */
                 inject(function($injector) {
+                    self.badgesService = $injector.get('BadgesService');
                     self.gameStateService = $injector.get('GameStateService');
                     // Alias for the service
                     toTest = self.gameStateService;
+                    self.badgesService.addBadge('TEAM_MEMBER');
+                    self.badgesService.addBadge('TEAM_LEADER');
                 });
             }
         });
@@ -28,9 +31,14 @@
             });
             it('should allow choosing Team', function () {
                 expect(toTest.currentGameState().bubble1.dialog).toEqual('joinTeam');
+                expect(toTest.currentGameState().bubble1.disabled).toBeFalsy();
             });
-            it('should allow setting GPS options', function () {
+            it('should not yet allow setting GPS options', function () {
                 expect(toTest.currentGameState().bubble2.dialog).toEqual('setGpsMode');
+                expect(toTest.currentGameState().bubble2.disabled).toBeTruthy();
+            });
+            it('should not yet allow beginning Play', function () {
+                expect(toTest.currentGameState().bubble3.disabled).toBeTruthy();
             });
             it('should have no Path visible', function () {
                 expect(toTest.getPathIndex()).toEqual(-1);
@@ -42,7 +50,30 @@
             //});
         });
 
-        describe("after Team Leader has Started Play", function () {
+        describe("after player has logged in", function () {
+            it('should allow choosing GPS options', function () {
+                toTest.updateLoginState();
+                expect(toTest.currentGameState().bubble2.disabled).toBeFalsy();
+            });
+            it('should still not yet allow beginning Play', function () {
+                expect(toTest.currentGameState().bubble3.disabled).toBeTruthy();
+            });
+            it('should still have no Path visible', function () {
+                expect(toTest.getPathIndex()).toEqual(-1);
+            });
+        });
+
+        describe("after player has selected GPS Options", function () {
+            it('should still not yet allow beginning Play', function () {
+                toTest.updateGpsState();
+                expect(toTest.currentGameState().bubble3.disabled).toBeTruthy();
+            });
+            it('should still have no Path visible', function () {
+                expect(toTest.getPathIndex()).toEqual(-1);
+            });
+        });
+
+        describe("after Team Leader has Confirmed Team", function () {
             it('Clues should be visible', function () {
                 toTest.updateGameState('atLocation');
                 expect(toTest.currentGameState().bubble2.dialog).toEqual('solveClue');

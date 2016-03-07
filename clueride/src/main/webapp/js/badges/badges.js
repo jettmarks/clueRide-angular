@@ -24,6 +24,7 @@
         return {
             setBadgeScope: setBadgeScope,
             reloadBadges: reloadBadges,
+            addBadge: addBadge,
             saveBadges: saveBadges,
             getBadges: getBadges,
             hasBadge: hasBadge,
@@ -41,6 +42,11 @@
 
     function getBadges() {
         return viewModel.badges;
+    }
+
+    /** Primarily for testing since most badges will arrive from the REST API. */
+    function addBadge(badge) {
+        viewModel.badges.push(badge);
     }
 
     function reloadBadges(loginName) {

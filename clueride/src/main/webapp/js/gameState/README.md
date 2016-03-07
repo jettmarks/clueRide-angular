@@ -83,11 +83,17 @@ There are a few aspects of Game State that are interesting:
 
 ## Events
 
-* Start of game (could be first arrival)
-* Clue Solved
+* Start of game (Team Confirmed)
+* Clue Solved (next path revealed)
 * Team Arrival at next location (opening the next clue)
+* Change of Course Selection after the Team is confirmed (will require merging of state and probably a new course made
+up on the fly to account for the history from one course and the plan from another course).
 
-Not clear if the first event will be the course selection or not.  It is possible that courses would be changed mid-stream.
+### Supporting State Variables
+* pathIndex (Integer starting at -1 for game not yet started)
+* mostRecentClueSolvedFlag (true if we're riding and not yet arrived)
+
+Team Confirmation opens play and Path Index is knocked off of -1.  It is possible that courses would be changed mid-stream.
 
 ## Push implementation
 Risk is in choosing an appropriate solution for devices with intermittent connections such as mobile.

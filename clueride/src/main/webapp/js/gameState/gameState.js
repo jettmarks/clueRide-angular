@@ -2,23 +2,29 @@
     'use strict';
 
     var viewModel,
+        localModel = {
+            badgesService: function () {},
+            courseDataResource: {},
+            courseLocationDataResource: {}
+        },
         gameStates = {},
-        courseDataResource = {},
-        courseLocationDataResource = function () {},
         gameStateResource = {},
-    /* Consider user state versus overall game/team state. */
-        locationState = {},
-        state = {
+    /* Overall Game State which is shared across an Outing (Team/Course combo). */
+        outingState = {
             /* Incremented as clues are solved and destinations reached. */
             pathIndex: -1,
+            mostRecentClueSolvedFlag: false
+        },
+
+        locationState = {},
+        state = {
             /* Reviews history of opened Paths -- capped by pathIndex. */
             historyIndex: 0,
 
-            /* Crutch. */
+            /* TODO: CA-149 */
             teamId: 42,
 
             currentGameState: {},
-            mostRecentClueSolvedFlag: false,
             maxVisibleLocationIndex: 0,
             currentGameStateKey: 'beginPlay'
         };
@@ -28,16 +34,24 @@
         .controller('GameStateController', GameStateController)
         .service('GameStateService', GameStateService)
         .factory('GameStateResource', GameStateResource)
+        .factory('OutingStateResource', OutingStateResource)
         .run(gameStateInit)
     ;
 
-    GameStateController.$inject = ['$scope', 'CourseDataResource', 'CourseLocationDataResource'];
+    GameStateController.$inject = ['$scope',
+        'CourseDataResource',
+        'CourseLocationDataResource'
+    ];
 
-    function GameStateController($scope, CourseDataResource, CourseLocationDataResource) {
+    function GameStateController(
+        $scope,
+        CourseDataResource,
+        CourseLocationDataResource
+    ) {
         $scope.vm = this;
 
-        courseDataResource = CourseDataResource;
-        courseLocationDataResource = CourseLocationDataResource;
+        localModel.courseDataResource = CourseDataResource;
+        localModel.courseLocationDataResource = CourseLocationDataResource;
     }
 
     function dataToModel(course) {
@@ -50,23 +64,44 @@
 
     function setCourseScope(courseScope) {
         viewModel = courseScope;
-        /* We 'publish' this state. */
+
+        /* We publish these two states; first one to the server and second one on the client. */
+        viewModel.outingState = outingState;
         viewModel.state = state;
+
         /* We 'subscribe' to this state. */
         locationState = viewModel.locationState;
     }
 
     /* Events changing Game State: */
     function clueSolve() {
-        state.mostRecentClueSolvedFlag = true;
-        state.pathIndex++;
-        updateGameState('riding');
+        if (localModel.badgesService.hasBadge('TEAM_LEADER')) {
+            outingState.mostRecentClueSolvedFlag = true;
+            outingState.pathIndex++;
+            updateGameState('riding');
+        } else {
+            // TODO: Post your result to the server
+        }
+    }
+
+    /** Called when user logs in and badges have been received. */
+    function updateLoginState() {
+        if (localModel.badgesService.hasBadge('TEAM_MEMBER')) {
+            enableGpsBubble();
+        }
+    }
+
+    /** Called when user logs in and badges have been received. */
+    function updateGpsState() {
+        if (localModel.badgesService.hasBadge('TEAM_LEADER')) {
+            enablePlay();
+        }
     }
 
     function arrived() {
         gameStates['atLocation'].locationIndex++;
         updateGameState('atLocation');
-        state.mostRecentClueSolvedFlag = false;
+        outingState.mostRecentClueSolvedFlag = false;
     }
 
     /* Making the change of state. */
@@ -94,10 +129,10 @@
         if (state.historyIndex < 0) {
             state.historyIndex = 0;
         }
-        if (state.historyIndex > state.pathIndex) {
+        if (state.historyIndex > outingState.pathIndex) {
             /* Cap the history Index to avoid walking over the edge. */
-            state.historyIndex = state.pathIndex;
-            if (state.mostRecentClueSolvedFlag) {
+            state.historyIndex = outingState.pathIndex;
+            if (outingState.mostRecentClueSolvedFlag) {
                 updateGameState('riding');
             } else {
                 updateGameState('atLocation');
@@ -123,18 +158,18 @@
      */
     function getLocationIndex() {
         // Let's see if this works
-        if (state.pathIndex < 0) {
+        if (outingState.pathIndex < 0) {
             return 0;
         }
         return state.historyIndex;
     }
 
     function getPathIndex() {
-        return state.pathIndex;
+        return outingState.pathIndex;
     }
 
     function setPathIndex(newPathIndex) {
-        state.pathIndex = newPathIndex;
+        outingState.pathIndex = newPathIndex;
         state.pathId = getPathId();
         if (newPathIndex === -1) {
             updateGameState('beginPlay');
@@ -143,11 +178,11 @@
 
     function getPathId() {
         /* We don't show a path if the first clue hasn't been solved. */
-        if (state.pathIndex < 0) {
+        if (outingState.pathIndex < 0) {
             return undefined;
         } else {
             if (viewModel.course.pathIds) {
-                return viewModel.course.pathIds[state.pathIndex];
+                return viewModel.course.pathIds[outingState.pathIndex];
             } else {
                 return undefined;
             }
@@ -160,7 +195,7 @@
      */
     function getCompletedPathIds() {
         var result = [];
-        for (var i = state.pathIndex-1; i>=0; i--) {
+        for (var i = outingState.pathIndex-1; i>=0; i--) {
             if (viewModel.course.pathIds) {
                 result.push(viewModel.course.pathIds[i]);
             }
@@ -181,6 +216,8 @@
 
             /* Events triggering change of state. */
             /* May not be the best trigger event. */
+            updateLoginState: updateLoginState,
+            updateGpsState: updateGpsState,
             clueSolved: clueSolve,
             arrived: arrived,
 
@@ -194,7 +231,7 @@
 
             /* Flags. */
             mostRecentClueSolved: function () {
-                return state.mostRecentClueSolvedFlag;
+                return outingState.mostRecentClueSolvedFlag;
             },
 
             /* Indices. */
@@ -205,10 +242,10 @@
             getCompletedPathIds: getCompletedPathIds,
 
             maxVisibleLocationIndex: function () {
-                var candidateIndex = state.pathIndex;
+                var candidateIndex = outingState.pathIndex;
                 if (candidateIndex < 0) {
                     return 0;
-                } else if (state.mostRecentClueSolvedFlag) {
+                } else if (outingState.mostRecentClueSolvedFlag) {
                     return candidateIndex + 1;
                 } else {
                     return candidateIndex;
@@ -237,9 +274,15 @@
         });
     }
 
+    function OutingStateResource($resource) {
+        return $resource('/rest/gameState', {}, {
+
+        });
+    }
+
     function stateToModel(data) {
-        viewModel.state.pathIndex = data.pathIndex;
-        viewModel.state.mostRecentClueSolvedFlag = data.mostRecentClueSolvedFlag;
+        viewModel.outingState.pathIndex = data.pathIndex;
+        viewModel.outingState.mostRecentClueSolvedFlag = data.mostRecentClueSolvedFlag;
         if (data.currentGameStateKey) {
             updateGameState(data.currentGameStateKey);
         } else {
@@ -248,13 +291,14 @@
     }
 
     function refreshLocationData() {
-        courseLocationDataResource.getData({
+        localModel.courseLocationDataResource.getData({
             /* Future: put the course ID here too. */
         }, courseLocationsToModel);
     }
 
-    function gameStateInit (CourseDataResource, GameStateResource, CourseLocationDataResource) {
-        courseLocationDataResource = CourseLocationDataResource;
+    function gameStateInit (CourseDataResource, GameStateResource, CourseLocationDataResource, BadgesService) {
+        localModel.courseLocationDataResource = CourseLocationDataResource;
+        localModel.badgesService = BadgesService;
 
         CourseDataResource.getData({
             /* Future: put the course ID here. */

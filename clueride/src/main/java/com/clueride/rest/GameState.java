@@ -17,17 +17,23 @@
  */
 package com.clueride.rest;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.clueride.rest.dto.ClueRideState;
+import com.clueride.rest.dto.OutingState;
 import com.clueride.service.GameStateService;
+import com.clueride.service.OutingService;
+import static java.util.Objects.requireNonNull;
 
 /**
  * API for working with Game State both for User Session and per Team.
@@ -36,10 +42,15 @@ import com.clueride.service.GameStateService;
 @Path("gameState")
 public class GameState {
     private GameStateService gameStateService;
+    private OutingService outingService;
 
     @Inject
-    public GameState(GameStateService gameStateService) {
-        this.gameStateService = gameStateService;
+    public GameState(
+            @Nonnull GameStateService gameStateService,
+            @Nonnull OutingService outingService
+    ) {
+        this.gameStateService = requireNonNull(gameStateService);
+        this.outingService = requireNonNull(outingService);
     }
 
     @GET
@@ -59,5 +70,19 @@ public class GameState {
         return gameStateService.updateGameStateByTeam(clueRideState);
     }
 
+    /* Outing API uses bare path and the Outing ID to identify which Outing State is requested. */
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{outingId}")
+    public OutingState getOutingState(@PathParam("outingId") Integer outingId) {
+        return outingService.getState(outingId);
+    }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long updateOutingState(OutingState outingState) {
+        return outingService.updateOutingState(outingState);
+    }
 }
