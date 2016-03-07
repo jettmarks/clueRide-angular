@@ -148,6 +148,10 @@
         state.currentGameState.bubble2.disabled = false;
     }
 
+    function disableGpsBubble() {
+        state.currentGameState.bubble2.disabled = true;
+    }
+
     function enablePlay() {
         state.currentGameState.bubble3.disabled = false;
     }
@@ -227,6 +231,7 @@
             },
 
             enableGpsBubble: enableGpsBubble,
+            disableGpsBubble: disableGpsBubble,
             enablePlay: enablePlay,
 
             /* Flags. */
