@@ -75,7 +75,8 @@
 
         describe("after Team Leader has Confirmed Team", function () {
             it('Clues should be visible', function () {
-                toTest.updateGameState('atLocation');
+                toTest.confirmTeam();
+                //toTest.updateGameState('atLocation');
                 expect(toTest.currentGameState().bubble2.dialog).toEqual('solveClue');
             });
             it('Clue questions should not yet be solved', function () {
