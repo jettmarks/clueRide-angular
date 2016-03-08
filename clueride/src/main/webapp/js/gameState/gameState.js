@@ -11,6 +11,9 @@
         gameStateResource = {},
     /* Overall Game State which is shared across an Outing (Team/Course combo). */
         outingState = {
+            // TODO: hardcoded selection for the outing
+            outingId: 2,
+            teamConfirmed: false,
             /* Incremented as clues are solved and destinations reached. */
             pathIndex: -1,
             mostRecentClueSolvedFlag: false
@@ -102,6 +105,13 @@
         gameStates['atLocation'].locationIndex++;
         updateGameState('atLocation');
         outingState.mostRecentClueSolvedFlag = false;
+    }
+
+    /* Upon all members having arrived and setting up to play, Team Leader gives signal play can begin. */
+    function confirmTeam() {
+        outingState.teamConfirmed = true;
+        localModel.outingStateResource.save(outingState);
+        //arrived();
     }
 
     /* Making the change of state. */
@@ -220,6 +230,7 @@
             updateGpsState: updateGpsState,
             clueSolved: clueSolve,
             arrived: arrived,
+            confirmTeam: confirmTeam,
 
             setHistoryLocation: function (newIndex) {
                 state.historyIndex = newIndex;
@@ -296,9 +307,16 @@
         }, courseLocationsToModel);
     }
 
-    function gameStateInit (CourseDataResource, GameStateResource, CourseLocationDataResource, BadgesService) {
+    function gameStateInit (
+        CourseDataResource,
+        GameStateResource,
+        CourseLocationDataResource,
+        BadgesService,
+        OutingStateResource
+    ) {
         localModel.courseLocationDataResource = CourseLocationDataResource;
         localModel.badgesService = BadgesService;
+        localModel.outingStateResource = OutingStateResource;
 
         CourseDataResource.getData({
             /* Future: put the course ID here. */

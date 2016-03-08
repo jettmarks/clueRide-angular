@@ -24,6 +24,9 @@
         /* Ask service to "arrive" the team. */
         $scope.arrived = GameStateService.arrived;
 
+        /* Ask GS Service to confirm the team. */
+        $scope.confirmTeam = GameStateService.confirmTeam;
+
         /* pathIndex -1 <=> pageIndex 1 */
         vm.pageForPath = gsSvc.getPathIndex() + 2;
         vm.pathChange = onPathChange

@@ -22,6 +22,7 @@ package com.clueride.rest.dto;
  */
 public class OutingState {
     public Integer outingId;
+    public Boolean teamConfirmed;
     public Integer pathIndex;
     public Boolean mostRecentClueSolvedFlag;
 }
