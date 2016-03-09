@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -40,17 +42,25 @@ public class Login {
     @Context
     private HttpServletRequest request;
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Badge> getBadgesForSession() {
+        return (List<Badge>) request.getSession().getAttribute("badges");
+    }
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Badge> authenticate(CRCredentials crCredentials) {
         List<Badge> result = new ArrayList<>();
+        request.getSession(true);
+        HttpSession session = request.getSession();
         if ("Jett".equals(crCredentials.name) && "adfhg".equals(crCredentials.password)) {
             result.add(Badge.TEAM_LEAD);
         }
         result.add(Badge.TEAM_MEMBER);
-        request.getSession(true);
-        request.getSession().setMaxInactiveInterval(12 * 60 * 60);
+        session.setMaxInactiveInterval(12 * 60 * 60);
+        session.setAttribute("badges", result);
         return result;
     }
 
