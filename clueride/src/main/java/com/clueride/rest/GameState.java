@@ -19,6 +19,8 @@ package com.clueride.rest;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -27,6 +29,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import com.clueride.rest.dto.ClueRideState;
@@ -41,6 +44,9 @@ import static java.util.Objects.requireNonNull;
  */
 @Path("gameState")
 public class GameState {
+    @Context
+    private HttpServletRequest request;
+
     private GameStateService gameStateService;
     private OutingService outingService;
 
@@ -76,6 +82,15 @@ public class GameState {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{outingId}")
     public OutingState getOutingState(@PathParam("outingId") Integer outingId) {
+        return outingService.getState(outingId);
+    }
+
+    /** This could be confusing: this returns Outing State for the outing stuffed into the session. */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public OutingState getOutingState() {
+        HttpSession session = request.getSession();
+        Integer outingId = (Integer) session.getAttribute("outingId");
         return outingService.getState(outingId);
     }
 

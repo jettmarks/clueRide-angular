@@ -48,6 +48,7 @@ public class Login {
         return (List<Badge>) request.getSession().getAttribute("badges");
     }
 
+    // TODO: Eventually, this will also hold the selected Team/Outing
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -61,6 +62,8 @@ public class Login {
         result.add(Badge.TEAM_MEMBER);
         session.setMaxInactiveInterval(12 * 60 * 60);
         session.setAttribute("badges", result);
+        // TODO: This is a temporary hardcoding of the Outing ID for anyone logging in
+        session.setAttribute("outingId", 2);
         return result;
     }
 
