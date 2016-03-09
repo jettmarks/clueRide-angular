@@ -49,8 +49,10 @@
         viewModel.badges.push(badge);
     }
 
-    function reloadBadges(loginName) {
+    /** Uses the session to tell which user this is. */
+    function reloadBadges() {
         // TODO: placeholder for refreshing badges for a given user
+        // in the meanwhile, the LoginService handles this using the LoginResource.
     }
 
     /** Performed when we logout a user. */

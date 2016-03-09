@@ -277,12 +277,14 @@ app.controller('MainController', [
   'GameStateService',
   'LocationService',
   'BadgesService',
+  'LoginService',
 function(
     $rootScope,
     $scope,
     GameStateService,
     LocationService,
-    BadgesService
+    BadgesService,
+    LoginService
 ) {
 
   $scope.swiped = function(direction) {
@@ -313,6 +315,7 @@ function(
   /* Bind the Badges Service to the scope. */
   $scope.badges = {};
   BadgesService.setBadgeScope($scope);
+  LoginService.getBadges();
 
   /* Whether or not the Header/Footer nav bars are shown. */
   $rootScope.showHeaderFooter = true;

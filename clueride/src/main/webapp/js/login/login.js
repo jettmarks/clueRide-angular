@@ -73,6 +73,10 @@
         localModel.locationService.path("/");
     }
 
+    function getBadges() {
+        localModel.loginResource.get({}, receiveBadges);
+    }
+
     function receiveBadges(data) {
         localModel.badgesService.saveBadges(data);
         localModel.gameStateService.updateLoginState();
@@ -90,13 +94,17 @@
             logout: {
                 method: 'DELETE',
                 isArray: false
+            },
+            get: {
+                method: 'GET',
+                isArray: true
             }
         });
     }
 
     function LoginService() {
         return {
-            // Currently unused
+            getBadges: getBadges
         }
     }
 
