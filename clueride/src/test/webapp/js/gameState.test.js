@@ -65,12 +65,24 @@
 
         describe("after player has selected GPS Options", function () {
             it('should still not yet allow beginning Play', function () {
-                toTest.updateGpsState();
+                var isTethered = false;
+                toTest.updateGpsState(isTethered);
                 expect(toTest.currentGameState().bubble3.disabled).toBeTruthy();
             });
             it('should still have no Path visible', function () {
                 expect(toTest.getPathIndex()).toEqual(-1);
             });
+            it('should show GPS State as turned on when selected ON', function () {
+                var isTethered = false;
+                toTest.updateGpsState(isTethered);
+                expect(toTest.currentGameState().bubble2.title).toEqual('GPS On');
+            });
+            // TODO: CA-225 - get Tethered Mode flag working
+            //it('should show GPS State as tethered when selected OFF', function () {
+            //    var isTethered = true;
+            //    toTest.updateGpsState(isTethered);
+            //    expect(toTest.currentGameState().bubble2.title).toEqual('GPS tethered');
+            //});
         });
 
         describe("after Team Leader has Confirmed Team", function () {

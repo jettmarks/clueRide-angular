@@ -25,12 +25,12 @@
         $scope.tetherCancel = function () {
             // TODO: The cancel and the OK are the same and meaningless
             gpsMode.agreeToTether = gpsMode.previousAgreeToTether;
-            localModel.gameStateService.updateGpsState();
+            localModel.gameStateService.updateGpsState(gpsMode.agreeToTether);
         }
 
         $scope.tetherOK = function () {
             gpsMode.agreeToTether = gpsMode.previousAgreeToTether;
-            localModel.gameStateService.updateGpsState();
+            localModel.gameStateService.updateGpsState(gpsMode.agreeToTether);
         }
 
     }
