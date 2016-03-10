@@ -95,9 +95,12 @@
     }
 
     /** Called when user logs in and badges have been received. */
-    function updateGpsState() {
-        if (localModel.badgesService.hasBadge('TEAM_LEADER')) {
-            enablePlay();
+    function updateGpsState(isTethered) {
+        // TODO: CA-225 Store the tethered state in our scope/session
+        if (isTethered) {
+            state.currentGameState.bubble2.title = 'GPS Tethered';
+        } else {
+            state.currentGameState.bubble2.title = 'GPS On';
         }
     }
 
