@@ -154,6 +154,21 @@
         }
     }
 
+    function getOutingState() {
+        localModel.outingStateResource.get().$promise.then(
+            function (data) {
+                if (data) {
+                    if (data.teamConfirmed) {
+                        enablePlay();
+                    }
+                    viewModel.outingState = data;
+                } else {
+                    console.log("State not yet set for the session");
+                }
+            }
+        );
+    }
+
     function enableGpsBubble() {
         state.currentGameState.bubble2.disabled = false;
     }
@@ -244,6 +259,9 @@
             enableGpsBubble: enableGpsBubble,
             disableGpsBubble: disableGpsBubble,
             enablePlay: enablePlay,
+
+            /* Queries */
+            getOutingState: getOutingState,
 
             /* Flags. */
             mostRecentClueSolved: function () {

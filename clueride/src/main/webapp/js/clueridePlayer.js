@@ -272,52 +272,54 @@ app.directive('dragMe', ['$drag', function($drag){
 
 /* Main entry point for the application. */
 app.controller('MainController', [
-  '$rootScope',
-  '$scope',
-  'GameStateService',
-  'LocationService',
-  'BadgesService',
-  'LoginService',
-function(
-    $rootScope,
-    $scope,
-    GameStateService,
-    LocationService,
-    BadgesService,
-    LoginService
-) {
+    '$rootScope',
+    '$scope',
+    'GameStateService',
+    'LocationService',
+    'BadgesService',
+    'LoginService',
+    function(
+        $rootScope,
+        $scope,
+        GameStateService,
+        LocationService,
+        BadgesService,
+        LoginService
+    ) {
 
-  $scope.swiped = function(direction) {
-    alert('Swiped ' + direction);
-  };
+        $scope.swiped = function(direction) {
+            alert('Swiped ' + direction);
+        };
 
-  // User agent displayed in home page
-  $scope.userAgent = navigator.userAgent;
+        // User agent displayed in home page
+        $scope.userAgent = navigator.userAgent;
   
-  // Needed for the loading screen
-  $rootScope.$on('$routeChangeStart', function(){
-    $rootScope.loading = true;
-  });
+        // Needed for the loading screen
+        $rootScope.$on('$routeChangeStart', function(){
+            $rootScope.loading = true;
+        });
 
-  $rootScope.$on('$routeChangeSuccess', function(){
-    $rootScope.loading = false;
-  });
+        $rootScope.$on('$routeChangeSuccess', function(){
+            $rootScope.loading = false;
+        });
 
-  /* Bind the Course to the scope. */
-  $scope.course = {};
-  GameStateService.setCourseScope($scope);
+        /* Bind the Course to the scope. */
+        $scope.course = {};
+        GameStateService.setCourseScope($scope);
 
-  /* Bind the Location Service to the Scope. */
-  $scope.locations = {};
-  LocationService.setLocationScope($scope);
-  LocationService.init(GameStateService);
+        /* Bind the Location Service to the Scope. */
+        $scope.locations = {};
+        LocationService.setLocationScope($scope);
+        LocationService.init(GameStateService);
 
-  /* Bind the Badges Service to the scope. */
-  $scope.badges = {};
-  BadgesService.setBadgeScope($scope);
-  LoginService.getBadges();
+        /* Bind the Badges Service to the scope. */
+        $scope.badges = {};
+        BadgesService.setBadgeScope($scope);
+        LoginService.getBadges();
+        GameStateService.getOutingState();
 
-  /* Whether or not the Header/Footer nav bars are shown. */
-  $rootScope.showHeaderFooter = true;
+        /* Whether or not the Header/Footer nav bars are shown. */
+        $rootScope.showHeaderFooter = true;
 
-}]);
+    }]
+);
