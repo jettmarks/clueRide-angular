@@ -176,6 +176,13 @@
             digestState);
     }
 
+    function getCurrentClueId() {
+        var locIndex = viewModel.state.maxVisibleLocationIndex,
+            clueId = viewModel.locations[locIndex].clueIds[0];
+
+        return clueId;
+    }
+
     function enableGpsBubble() {
         state.currentGameState.bubble2.disabled = false;
     }
@@ -249,6 +256,7 @@
             currentGameState: function () {return state.currentGameState},
             currentGameStateKey: function () {return state.currentGameStateKey},
             updateGameState: updateGameState,
+            getCurrentClueId: getCurrentClueId,
 
             /* Events triggering change of state. */
             /* May not be the best trigger event. */
