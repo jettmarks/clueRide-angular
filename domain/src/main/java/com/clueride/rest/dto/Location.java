@@ -45,6 +45,9 @@ public class Location {
     public Integer locationGroupId;
     public List<URL> imageUrls;
 
+    @XmlElement(nillable=true)
+    public TagScore tagScores;
+
     @Override
     public String toString() {
         return "Location{" +
