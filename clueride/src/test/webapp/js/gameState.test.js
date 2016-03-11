@@ -86,9 +86,19 @@
         });
 
         describe("after Team Leader has Confirmed Team", function () {
-            it('Clues should be visible', function () {
+            it('Play button should be enabled', function () {
                 toTest.confirmTeam();
-                //toTest.updateGameState('atLocation');
+                toTest.digestState({
+                    outingId: 2,
+                    teamConfirmed: true
+                });
+                expect(toTest.currentGameState().bubble3.disabled).toBeFalsy();
+            });
+        });
+
+        describe("after Play button has been clicked", function () {
+            it('Clues should be visible', function () {
+                toTest.updateGameState('atLocation');
                 expect(toTest.currentGameState().bubble2.dialog).toEqual('solveClue');
             });
             it('Clue questions should not yet be solved', function () {

@@ -81,10 +81,11 @@
         if (localModel.badgesService.hasBadge('TEAM_LEADER')) {
             outingState.mostRecentClueSolvedFlag = true;
             outingState.pathIndex++;
-            updateGameState('riding');
+            // TODO: Post outing State to server
         } else {
             // TODO: Post your result to the server
         }
+        updateGameState('riding');
     }
 
     /** Called when user logs in and badges have been received. */
@@ -157,19 +158,22 @@
         }
     }
 
+    function digestState(data) {
+        if (data) {
+            if (data.teamConfirmed) {
+                enablePlay();
+            }
+            if (viewModel) {
+                viewModel.outingState = data;
+            }
+        } else {
+            console.log("State not yet set for the session");
+        }
+    }
+
     function getOutingState() {
         localModel.outingStateResource.get().$promise.then(
-            function (data) {
-                if (data) {
-                    if (data.teamConfirmed) {
-                        enablePlay();
-                    }
-                    viewModel.outingState = data;
-                } else {
-                    console.log("State not yet set for the session");
-                }
-            }
-        );
+            digestState);
     }
 
     function enableGpsBubble() {
@@ -253,6 +257,9 @@
             clueSolved: clueSolve,
             arrived: arrived,
             confirmTeam: confirmTeam,
+
+            /* For testing. */
+            digestState: digestState,
 
             setHistoryLocation: function (newIndex) {
                 state.historyIndex = newIndex;
