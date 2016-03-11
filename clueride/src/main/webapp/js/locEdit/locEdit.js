@@ -152,7 +152,7 @@
     }
 
     function removeClue(clueIndex) {
-        if (clueIndex) {
+        //if (clueIndex) {
             var clueId = viewModel.clues[clueIndex].id,
                 locId = viewModel.locationSelected.id;
 
@@ -165,7 +165,7 @@
             localModel.clueResource.remove({locId: locId, clueId: clueId},
                 function (dontcare) {}
             );
-        }
+        //}
     }
 
     function clueEditOK() {
