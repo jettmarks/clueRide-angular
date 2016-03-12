@@ -162,10 +162,18 @@
             if (data.teamConfirmed) {
                 enablePlay();
             }
-            if (data.pathIndex) {
+            if (data.pathIndex >= -1) {
                 if (viewModel) {
                     if (viewModel.outingState) {
                         viewModel.outingState = data;
+                        if (data.pathIndex >= 0) {
+                            state.historyIndex = data.pathIndex;
+                            if (data.mostRecentClueSolvedFlag) {
+                                updateGameState('riding');
+                            } else {
+                                updateGameState('atLocation');
+                            }
+                        }
                     } else {
                         viewModel.outingState = outingState;
                     }
@@ -377,7 +385,8 @@
         refreshLocationData();
 
         gameStateResource = GameStateResource;
-        gameStateResource.get({}, stateToModel);
+        // TODO: Hardcoded team ID
+        //gameStateResource.get({teamId: 42}, stateToModel);
 
         gameStates = {
             beginPlay: {
