@@ -11,13 +11,13 @@
       </div>
       <div class="modal-body">
         <uib-tabset vertical="true" type="pills">
-          <div ng-repeat="answer in clue.answers">
-            <uib-tab heading="{{answer.key}}: {{answer.answer}}">Selected: {{answer.key}}</uib-tab>
+          <div ng-repeat="answer in clue.answers track by answer.key">
+            <uib-tab ng-click="clue.selected = answer.key" heading="{{answer.key}}: {{answer.answer}}">Selected: {{answer.key}}</uib-tab>
           </div>
         </uib-tabset>
       </div>
       <div class="modal-footer">
-        <button ui-turn-off="solveClue" ng-click="submit()" class="btn btn-default">Not sure just yet</button>
+        <button ui-turn-off="solveClue" ng-click="cancel()" class="btn btn-default">Not sure just yet</button>
         <button ui-turn-off="solveClue" ng-click="submit()" class="btn btn-primary">Check my Answer</button>
       </div>
       </form>
