@@ -184,7 +184,7 @@
     }
 
     function getCurrentClueId() {
-        var locIndex = viewModel.state.maxVisibleLocationIndex,
+        var locIndex = viewModel.outingState.pathIndex+1,
             clueId = viewModel.locations[locIndex].clueIds[0];
 
         return clueId;
@@ -215,7 +215,11 @@
     }
 
     function getPathIndex() {
-        return viewModel.outingState.pathIndex;
+        if (viewModel) {
+            return viewModel.outingState.pathIndex;
+        } else {
+            return outingState.pathIndex;
+        }
     }
 
     function setPathIndex(newPathIndex) {
