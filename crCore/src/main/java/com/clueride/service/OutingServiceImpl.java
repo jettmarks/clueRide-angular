@@ -126,7 +126,32 @@ public class OutingServiceImpl implements OutingService {
 
     @Override
     public OutingState getState(Integer outingId) {
-        return statePerOuting.get(outingId);
+        // TODO: Temporarily hardcoding the outing if the session doesn't hold an ID.
+        if (outingId == null) {
+            LOGGER.warn("Session doesn't hold an outingId -- default to outingId 2");
+            outingId = 2;
+        }
+
+        if (statePerOuting.containsKey(outingId)) {
+            return statePerOuting.get(outingId);
+        }
+
+        // TODO: Making up an outing for now - empty list was clearing the maps upon "load"
+        outings.add(Outing.Builder.builder()
+                .setCourseId(3)
+                .setTeamId(42)
+                .build()
+        );
+        OutingState outingState = new OutingState();
+        outingState.outingId = 2;
+        outingState.pathIndex = -1;
+        outingState.mostRecentClueSolvedFlag = false;
+        outingState.teamConfirmed = false;
+        statePerOuting.put(2, outingState);
+
+        /* If an outingState isn't found at this ID, complain. */
+        LOGGER.error("No Outing ID initialized (making up one)");
+        return outingState;
     }
 
     @Override
