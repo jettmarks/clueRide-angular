@@ -29,6 +29,7 @@ import com.clueride.service.*;
 public class CluerideGuiceModule extends AbstractModule {
     @Override
     protected void configure() {
+        bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(RecommendationService.class).to(DefaultRecommendationService.class);
         bind(LocationService.class).to(DefaultLocationService.class);
         bind(CourseService.class).to(CourseServiceImpl.class);

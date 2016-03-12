@@ -17,11 +17,10 @@
  */
 package com.clueride.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -33,14 +32,23 @@ import javax.ws.rs.core.MediaType;
 
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
+import com.clueride.service.AuthenticationService;
 
 /**
  * Rest API for Authentication and Authorization functionality.
  */
 @Path("login")
 public class Login {
+
     @Context
     private HttpServletRequest request;
+
+    private final AuthenticationService authenticationService;
+
+    @Inject
+    public Login(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -48,23 +56,13 @@ public class Login {
         return (List<Badge>) request.getSession().getAttribute("badges");
     }
 
-    // TODO: Eventually, this will also hold the selected Team/Outing
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Badge> authenticate(CRCredentials crCredentials) {
-        List<Badge> result = new ArrayList<>();
-        request.getSession(true);
-        HttpSession session = request.getSession();
-        if ("Jett".equals(crCredentials.name) && "adfhg".equals(crCredentials.password)) {
-            result.add(Badge.TEAM_LEAD);
-        }
-        result.add(Badge.TEAM_MEMBER);
-        session.setMaxInactiveInterval(12 * 60 * 60);
-        session.setAttribute("badges", result);
-        // TODO: This is a temporary hardcoding of the Outing ID for anyone logging in
-        session.setAttribute("outingId", 2);
-        return result;
+        List<Badge> badges = authenticationService.loginReturningBadges(crCredentials);
+        authenticationService.establishSession(badges, request);
+        return badges;
     }
 
     @DELETE
