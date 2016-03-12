@@ -24,18 +24,28 @@
         //};
 
         var clueId = GameStateService.getCurrentClueId();
+
+        self = $scope;
+
         ClueResource.get({clueId: clueId}, function (data) {
             $scope.clue = data;
+            $scope.clue.selected = 'A';
         });
 
         $scope.submit = checkAnswer;
+        $scope.cancel = cancel;
 
         self.gameStateService = GameStateService;
     }
 
-    /* Right now we're accepting everything as a correct answer. */
     function checkAnswer() {
-        self.gameStateService.clueSolved();
+        if (self.clue.selected === self.clue.correctAnswer) {
+            self.gameStateService.clueSolved();
+        } else {
+            console.log("Incorrect answer: " + self.clue.selected);
+        }
     }
+
+    function cancel() {}
 
 }(window.angular));
