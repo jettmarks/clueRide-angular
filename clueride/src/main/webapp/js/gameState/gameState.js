@@ -78,10 +78,10 @@
 
     /* Events changing Game State: */
     function clueSolve() {
-        if (localModel.badgesService.hasBadge('TEAM_LEADER')) {
-            outingState.mostRecentClueSolvedFlag = true;
-            outingState.pathIndex++;
-            // TODO: Post outing State to server
+        if (localModel.badgesService.hasBadge('TEAM_LEAD')) {
+            viewModel.outingState.mostRecentClueSolvedFlag = true;
+            viewModel.outingState.pathIndex++;
+            localModel.outingStateResource.save(viewModel.outingState);
         } else {
             // TODO: Post your result to the server
         }
@@ -108,13 +108,14 @@
     function arrived() {
         gameStates['atLocation'].locationIndex++;
         updateGameState('atLocation');
-        outingState.mostRecentClueSolvedFlag = false;
+        viewModel.outingState.mostRecentClueSolvedFlag = false;
+        localModel.outingStateResource.save(viewModel.outingState);
     }
 
     /* Upon all members having arrived and setting up to play, Team Leader gives signal play can begin. */
     function confirmTeam() {
-        outingState.teamConfirmed = true;
-        localModel.outingStateResource.save(outingState);
+        viewModel.outingState.teamConfirmed = true;
+        localModel.outingStateResource.save(viewModel.outingState);
         //arrived();
     }
 
@@ -125,8 +126,6 @@
         } else {
             state.currentGameStateKey = newState;
             state.currentGameState = gameStates[newState];
-            /* Only update state on server if we're not browsing history. */
-            gameStateResource.updateState(state);
         }
     }
 
@@ -143,10 +142,10 @@
         if (state.historyIndex < 0) {
             state.historyIndex = 0;
         }
-        if (state.historyIndex > outingState.pathIndex) {
+        if (state.historyIndex > viewModel.outingState.pathIndex) {
             /* Cap the history Index to avoid walking over the edge. */
-            state.historyIndex = outingState.pathIndex;
-            if (outingState.mostRecentClueSolvedFlag) {
+            state.historyIndex = viewModel.outingState.pathIndex;
+            if (viewModel.outingState.mostRecentClueSolvedFlag) {
                 updateGameState('riding');
             } else {
                 updateGameState('atLocation');
@@ -163,11 +162,19 @@
             if (data.teamConfirmed) {
                 enablePlay();
             }
-            if (viewModel) {
-                viewModel.outingState = data;
+            if (data.pathIndex) {
+                if (viewModel) {
+                    if (viewModel.outingState) {
+                        viewModel.outingState = data;
+                    } else {
+                        viewModel.outingState = outingState;
+                    }
+                }
+            } else {
+                console.log("State not yet set for the session");
             }
         } else {
-            console.log("State not yet set for the session");
+            console.log("State not yet set for the session - empty outing state");
         }
     }
 
@@ -201,18 +208,18 @@
      */
     function getLocationIndex() {
         // Let's see if this works
-        if (outingState.pathIndex < 0) {
+        if (viewModel.outingState.pathIndex < 0) {
             return 0;
         }
         return state.historyIndex;
     }
 
     function getPathIndex() {
-        return outingState.pathIndex;
+        return viewModel.outingState.pathIndex;
     }
 
     function setPathIndex(newPathIndex) {
-        outingState.pathIndex = newPathIndex;
+        viewModel.outingState.pathIndex = newPathIndex;
         state.pathId = getPathId();
         if (newPathIndex === -1) {
             updateGameState('beginPlay');
@@ -221,11 +228,11 @@
 
     function getPathId() {
         /* We don't show a path if the first clue hasn't been solved. */
-        if (outingState.pathIndex < 0) {
+        if (viewModel.outingState.pathIndex < 0) {
             return undefined;
         } else {
             if (viewModel.course.pathIds) {
-                return viewModel.course.pathIds[outingState.pathIndex];
+                return viewModel.course.pathIds[viewModel.outingState.pathIndex];
             } else {
                 return undefined;
             }
@@ -238,7 +245,7 @@
      */
     function getCompletedPathIds() {
         var result = [];
-        for (var i = outingState.pathIndex-1; i>=0; i--) {
+        for (var i = viewModel.outingState.pathIndex-1; i>=0; i--) {
             if (viewModel.course.pathIds) {
                 result.push(viewModel.course.pathIds[i]);
             }
@@ -283,7 +290,7 @@
 
             /* Flags. */
             mostRecentClueSolved: function () {
-                return outingState.mostRecentClueSolvedFlag;
+                return viewModel.outingState.mostRecentClueSolvedFlag;
             },
 
             /* Indices. */
@@ -294,10 +301,10 @@
             getCompletedPathIds: getCompletedPathIds,
 
             maxVisibleLocationIndex: function () {
-                var candidateIndex = outingState.pathIndex;
+                var candidateIndex = viewModel.outingState.pathIndex;
                 if (candidateIndex < 0) {
                     return 0;
-                } else if (outingState.mostRecentClueSolvedFlag) {
+                } else if (viewModel.outingState.mostRecentClueSolvedFlag) {
                     return candidateIndex + 1;
                 } else {
                     return candidateIndex;
