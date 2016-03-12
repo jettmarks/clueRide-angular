@@ -2,7 +2,8 @@
     "use strict";
 
     var self = {},
-        toTest;
+        toTest,
+        dummyScope = {};
 
     describe("Game State", function () {
         self = this;
@@ -19,7 +20,8 @@
                     // Alias for the service
                     toTest = self.gameStateService;
                     self.badgesService.addBadge('TEAM_MEMBER');
-                    self.badgesService.addBadge('TEAM_LEADER');
+                    self.badgesService.addBadge('TEAM_LEAD');
+                    toTest.setCourseScope(dummyScope);
                 });
             }
         });
@@ -104,6 +106,9 @@
             it('Clue questions should not yet be solved', function () {
                 expect(toTest.mostRecentClueSolved()).toEqual(false);
             });
+            it('Max Location visible is the first location', function() {
+                expect(toTest.maxVisibleLocationIndex()).toEqual(0);
+            });
             it('should have no Path visible', function () {
                 expect(toTest.getPathIndex()).toEqual(-1);
             });
@@ -144,6 +149,10 @@
                 expect(toTest.getPathIndex()).toEqual(0);
                 expect(toTest.currentGameState().locationIndex).toEqual(1);
             });
+            // TODO: Not sure if I want to use this method or not
+            //it('Max Location visible is the first location', function() {
+            //    expect(toTest.maxVisibleLocationIndex()).toEqual(1);
+            //});
             it('should have Clue questions visible', function () {
                 expect(toTest.currentGameState().bubble2.dialog).toEqual('solveClue');
             });
