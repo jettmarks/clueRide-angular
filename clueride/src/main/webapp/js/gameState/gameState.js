@@ -210,6 +210,10 @@
         state.currentGameState.bubble3.disabled = false;
     }
 
+    function disablePlay() {
+        state.currentGameState.bubble3.disabled = true;
+    }
+
     /**
      * This is based on both the Path Index and walking the History Index as well as taking into account
      * that we'll want to show some details of the initial location prior to "arriving" at that location.
@@ -296,6 +300,7 @@
             enableGpsBubble: enableGpsBubble,
             disableGpsBubble: disableGpsBubble,
             enablePlay: enablePlay,
+            disablePlay: disablePlay,
 
             /* Queries */
             getOutingState: getOutingState,

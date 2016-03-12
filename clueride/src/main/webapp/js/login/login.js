@@ -70,6 +70,7 @@
         localModel.loginResource.logout();
         localModel.gameStateService.updateGameState('beginPlay');
         localModel.gameStateService.disableGpsBubble();
+        localModel.gameStateService.disablePlay();
         localModel.locationService.path("/");
     }
 
