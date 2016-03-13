@@ -1,0 +1,15 @@
+<link rel="stylesheet" href="./js/bubbles/bubble.css">
+<div class="home" ng-controller="LoginBubbleController">
+  <div class="bubbleContainer">
+    <div class="bubbles">
+      <cr-bubble bubble="loginBubbles.bubble1" bid="bubble1"></cr-bubble>
+      <cr-bubble bubble="loginBubbles.bubble2" bid="bubble2"></cr-bubble>
+      <cr-bubble bubble="loginBubbles.bubble3" bid="bubble3"></cr-bubble>
+    </div>
+  </div>
+</div>
+
+<div ui-content-for="modals">
+  <div ng-include="'js/joinTeam/joinTeam.html'"></div>
+</div>
+

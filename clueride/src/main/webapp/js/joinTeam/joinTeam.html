@@ -1,11 +1,14 @@
+<!-- Modal Dialog for Logging In, which is presented as Join Team -->
 <div class="modal" ui-if='joinTeam' ui-state='joinTeam'>
   <div class="modal-backdrop in"></div>
   <div class="modal-dialog">
-    <div class="modal-content" ng-controller="LoginController as vm">
+    <div class="modal-content" ng-controller="JoinTeamController as vm">
+
       <div class="modal-header">
         <button class="close" ui-turn-off="joinTeam">&times;</button>
         <h4 class="modal-title">Join Team</h4>
       </div>
+
       <div class="modal-body">
         <label>Team:</label> Spokes Folks<br>
         <label>Login Name:</label>
@@ -13,10 +16,12 @@
         <label>Password:</label>
         <input type="password" ng-model="vm.password" class="form-control"/>
       </div>
+
       <div class="modal-footer">
         <button ui-turn-off="joinTeam" class="btn btn-default">Close</button>
-        <button ui-turn-off="joinTeam" ng-click="vm.submit()" class="btn btn-primary">Save changes</button>
+        <button ui-turn-off="joinTeam" ng-click="vm.login()" class="btn btn-primary">Save changes</button>
       </div>
+
     </div>
   </div>
 </div>

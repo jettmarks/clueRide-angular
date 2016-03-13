@@ -183,6 +183,7 @@
             }
         } else {
             console.log("State not yet set for the session - empty outing state");
+            updateGameState('beginPlay');
         }
     }
 
