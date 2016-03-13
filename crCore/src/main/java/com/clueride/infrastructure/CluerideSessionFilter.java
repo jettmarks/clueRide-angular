@@ -57,12 +57,20 @@ public class CluerideSessionFilter implements Filter {
         HttpSession session = req.getSession(false);
 
 //        if(session == null && !(uri.endsWith("html") || uri.endsWith("LoginServlet"))){
-        if (session == null && (
-                uri.contains("/gameState/team")
-                        || uri.contains("/rest/team")
+        if (session == null && !(uri.contains("/login.html")
+                || uri.endsWith("/rest/login")
+                || uri.contains("loginBubbles.html")
+                || uri.contains("bubble.html")
+                || uri.contains("joinTeam.html")
+                || uri.contains("favicon.ico")
+                || uri.endsWith(".css")
+                || uri.endsWith(".png")
+                || uri.endsWith(".js")
+                || uri.contains("fontawesome")
+                || uri.endsWith("js.map")
         )) {
             this.servletContext.log("Unauthorized access request");
-//            res.sendRedirect("/#");
+            res.sendRedirect("/login.html");
         } else {
             // pass the request along the filter chain
             chain.doFilter(request, response);

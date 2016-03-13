@@ -18,6 +18,7 @@
     ;
 
     LoginController.$inject = [
+        // TODO: Do I need this given the init function?
         '$location',
         'LoginResource',
         'BadgesService',
@@ -104,6 +105,7 @@
     }
 
     function LoginService() {
+        // TODO: Move this into the Badges Module
         return {
             getBadges: getBadges
         }
