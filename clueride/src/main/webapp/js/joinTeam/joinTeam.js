@@ -12,11 +12,11 @@
 
     /** Records dependencies used in this scope. */
     function init(
-        $location,
+        $window,
         CredentialResource
     ) {
         localModel = {
-            locationService: $location,
+            windowLocation: $window.location,
             credentialResource: CredentialResource
         };
     }
@@ -42,7 +42,7 @@
             .$promise
             .then(function (data) {
                 console.log("Received " + data);
-                //receiveBadges(data)
+                localModel.windowLocation.href = '/index.html';
             }
         );
     }

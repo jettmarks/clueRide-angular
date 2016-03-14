@@ -17,25 +17,17 @@
         .run(init)
     ;
 
-    LoginController.$inject = [
-        // TODO: Do I need this given the init function?
-        '$location',
-        'LoginResource',
-        'BadgesService',
-        'GameStateService'
-    ];
-
     /** Records dependencies used in this scope. */
     function init(
-        $location,
+        $window,
         LoginResource,
         BadgesService,
         GameStateService
     ) {
+        localModel.window = $window;
         localModel.loginResource = LoginResource;
         localModel.badgesService = BadgesService;
         localModel.gameStateService = GameStateService;
-        localModel.locationService = $location;
     }
 
     function LoginController(
@@ -72,7 +64,7 @@
         localModel.gameStateService.updateGameState('beginPlay');
         localModel.gameStateService.disableGpsBubble();
         localModel.gameStateService.disablePlay();
-        localModel.locationService.path("/");
+        localModel.window.location.href = '/login.html';
     }
 
     function getBadges() {
@@ -84,6 +76,7 @@
         localModel.gameStateService.updateLoginState();
     }
 
+    // TODO: Move over to the Credential Service
     function LoginResource ($resource) {
         /* Submit credentials and receive badges. */
         return $resource('/rest/login', {}, {
