@@ -33,7 +33,7 @@
         };
 
     angular
-        .module('crPlayer.GameState', ['common.CourseResource'])
+        .module('crPlayer.GameState', ['common.CourseResource','crPlayer.OutingModule'])
         .controller('GameStateController', GameStateController)
         .service('GameStateService', GameStateService)
         .factory('GameStateResource', GameStateResource)
@@ -74,6 +74,9 @@
 
         /* We 'subscribe' to this state. */
         locationState = viewModel.locationState;
+
+        /* Update Bubbles based on team selection. */
+        setTeam();
     }
 
     /* Events changing Game State: */
@@ -215,6 +218,10 @@
         state.currentGameState.bubble3.disabled = true;
     }
 
+    function setTeam() {
+        state.currentGameState.bubble1.title = localModel.outingService.getTeamName();
+    }
+
     /**
      * This is based on both the Path Index and walking the History Index as well as taking into account
      * that we'll want to show some details of the initial location prior to "arriving" at that location.
@@ -298,10 +305,12 @@
                 viewModel.locationState.location = viewModel.locations[newIndex];
             },
 
+            /* Various State Changes. */
             enableGpsBubble: enableGpsBubble,
             disableGpsBubble: disableGpsBubble,
             enablePlay: enablePlay,
             disablePlay: disablePlay,
+            setTeam: setTeam,
 
             /* Queries */
             getOutingState: getOutingState,
@@ -378,11 +387,13 @@
         GameStateResource,
         CourseLocationDataResource,
         BadgesService,
-        OutingStateResource
+        OutingStateResource,
+        OutingService
     ) {
         localModel.courseLocationDataResource = CourseLocationDataResource;
         localModel.badgesService = BadgesService;
         localModel.outingStateResource = OutingStateResource;
+        localModel.outingService = OutingService;
 
         CourseDataResource.getData({
             /* Future: put the course ID here. */

@@ -10,6 +10,7 @@
         .service('OutingService', OutingService)
         .factory('OutingResource', OutingResource)
         .directive('outing', OutingDirective)
+        .run(initConfig)
     ;
 
     OutingController.$inject = ['OutingResource'];
@@ -32,13 +33,7 @@
         };
         vm.selectTeam = selectTeam;
 
-        // TODO: Currently hardcoded; will pull from Team Service eventually.
-        vm.teams = [
-            {
-                id: 42,
-                name: 'Spokes Folks'
-            }
-        ];
+        vm.teams = localModel.teams;
 
         vm.selectedCourse = {
             name: 'tap to choose'
@@ -60,8 +55,28 @@
         vm.createOuting = createOuting;
     }
 
+    function initConfig() {
+        localModel = {
+            // TODO: Currently hardcoded; will pull from Team Service eventually.
+            teams: [
+                {
+                    id: 42,
+                    name: 'Spokes Folks'
+                }
+            ]
+        }
+    }
+
     function selectTeam(team) {
         viewModel.selectedTeam = team;
+    }
+
+    function getTeamName() {
+        if (viewModel) {
+        return viewModel.selectedTeam.name;
+        } else {
+            return localModel.teams[0].name;
+        }
     }
 
     function selectCourse(course) {
@@ -77,7 +92,7 @@
 
     function OutingService() {
         return {
-            //request: requestFunction,
+            getTeamName: getTeamName
             //confirm: confirmFunction
         };
     }
