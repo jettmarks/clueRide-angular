@@ -2,28 +2,27 @@
     'use strict';
 
     angular
-        .module('cluerideLogin', [
+        .module('crPlayer.CredentialsModule', [
             'ngRoute',
-            'login.Bubble',
-            'crPlayer.joinTeam',
-            'mobile-angular-ui'
+            'mobile-angular-ui',
+            'crPlayer.CredentialsDialogModule',
+            'login.Bubble'
         ])
-        .controller('CredentialController', CredentialController)
+        /* Display a limited Bubble Screen with a single action. */
         .config(function($routeProvider) {
             $routeProvider.when('/',
                 {
                     templateUrl: 'js/login/loginBubbles.html',
                     reloadOnSearch: false
                 }
-            );
+            )
         })
+        .controller('CredentialController', CredentialController)
     ;
 
     CredentialController.$inject = ['$rootScope'];
 
     function CredentialController($rootScope) {
-        var vm = this;
-
         $rootScope.loading = false;
         $rootScope.showHeaderFooter = false;
 
@@ -52,9 +51,6 @@
                 disabled: true
             }
         };
-
-        vm.exposedObject = {};
-        //vm.exposedFunction = exposedFunction;
     }
 
 }(window.angular));

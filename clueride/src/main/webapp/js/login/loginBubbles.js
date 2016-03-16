@@ -18,7 +18,7 @@
     function BubbleDirective($rootScope) {
 
         function bubbleClicked(bid) {
-            $rootScope.Ui.turnOn('joinTeam');
+            $rootScope.Ui.turnOn('creds');
         }
 
         return {
