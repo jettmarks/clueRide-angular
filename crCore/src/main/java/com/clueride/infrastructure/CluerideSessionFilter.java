@@ -60,6 +60,7 @@ public class CluerideSessionFilter implements Filter {
         if (session == null && !(uri.contains("/login.html")
                 || uri.endsWith("/rest/login")
                 || uri.contains("loginBubbles.html")
+                || uri.endsWith("credentials.html")
                 || uri.contains("bubble.html")
                 || uri.contains("joinTeam.html")
                 || uri.contains("favicon.ico")
