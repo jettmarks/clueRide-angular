@@ -1,7 +1,13 @@
 (function (angular) {
     'use strict';
 
-    var viewModel,
+    var viewModel = {
+            state: {
+                bubble1: {},
+                bubble2: {},
+                bubble3: {}
+            }
+        },
         localModel,
         stateArray = [],
         outingState = {
@@ -57,6 +63,7 @@
                 disabled: true
             }
         ];
+        bubblesPerStep(1);
     }
 
     Controller.$inject = ['dependencies'];
@@ -68,33 +75,48 @@
         vm.exposecFunction = exposedFunction;
     }
 
+    function bubblesPerStep(index) {
+        var limitedIndex = index < 2 ? 2 : (index > 6 ? 6 : index);
+        viewModel.state.bubble1 = stateArray[limitedIndex-1];
+        viewModel.state.bubble2 = stateArray[limitedIndex];
+        viewModel.state.bubble3 = stateArray[limitedIndex+1]
+    }
+
     function getReverseTitle() {
-        return stateArray[stepIndex].title;
+        return viewModel.state.bubble1.title;
     }
 
     function getReverseDisabled() {
-        return stateArray[stepIndex].disabled;
+        return viewModel.state.bubble1.disabled;
     }
 
     function getNeutralTitle() {
-        return stateArray[stepIndex+1].title;
+        return viewModel.state.bubble2.title;
     }
 
     function getNeutralDisabled() {
-        return stateArray[stepIndex+1].disabled;
+        return viewModel.state.bubble2.disabled;
     }
 
     function getForwardTitle() {
-        return stateArray[stepIndex+2].title;
+        return viewModel.state.bubble3.title;
     }
 
     function getForwardDisabled() {
-        return stateArray[stepIndex+2].disabled;
+        return viewModel.state.bubble3.disabled;
+    }
+
+    function login() {
+        if (stepIndex === 1) {
+            stepIndex = 2;
+        }
+        bubblesPerStep(stepIndex);
     }
 
     function OutingStateService() {
         return {
             getStepIndex: function () { return stepIndex },
+
             getReverseTitle: getReverseTitle,
             getReverseDisabled: getReverseDisabled,
             getNeutralTitle: getNeutralTitle,
@@ -102,7 +124,10 @@
             getForwardTitle: getForwardTitle,
             getForwardDisabled: getForwardDisabled,
 
-            getPathIndex: function () {return outingState.pathIndex}
+            getPathIndex: function () {return outingState.pathIndex},
+
+            /* Events. */
+            login: login
         };
     }
 
