@@ -1,9 +1,22 @@
 (function (angular) {
     'use strict';
 
-    var viewModel,
+    var viewModel = {
+            state: {
+                bubble1: {},
+                bubble2: {},
+                bubble3: {}
+            }
+        },
         localModel,
-        state = [],
+        stateArray = [],
+        outingState = {
+            id: 2,
+            pathIndex: -1,
+            teamConfirmed: false,
+            mostRecentClueSolved: false,
+            selectedClueId: -1
+        },
         stepIndex = 1;
 
     angular
@@ -15,7 +28,7 @@
 
     /** Records dependencies used in this scope. */
     function init($location) {
-        state = [
+        stateArray = [
             {
                 /* Helpful to use this as our zero-index. */
                 title: 'Undefined',
@@ -50,6 +63,7 @@
                 disabled: true
             }
         ];
+        bubblesPerStep(1);
     }
 
     Controller.$inject = ['dependencies'];
@@ -61,39 +75,59 @@
         vm.exposecFunction = exposedFunction;
     }
 
+    function bubblesPerStep(index) {
+        var limitedIndex = index < 2 ? 2 : (index > 6 ? 6 : index);
+        viewModel.state.bubble1 = stateArray[limitedIndex-1];
+        viewModel.state.bubble2 = stateArray[limitedIndex];
+        viewModel.state.bubble3 = stateArray[limitedIndex+1]
+    }
+
     function getReverseTitle() {
-        return state[stepIndex].title;
+        return viewModel.state.bubble1.title;
     }
 
     function getReverseDisabled() {
-        return state[stepIndex].disabled;
+        return viewModel.state.bubble1.disabled;
     }
 
     function getNeutralTitle() {
-        return state[stepIndex+1].title;
+        return viewModel.state.bubble2.title;
     }
 
     function getNeutralDisabled() {
-        return state[stepIndex+1].disabled;
+        return viewModel.state.bubble2.disabled;
     }
 
     function getForwardTitle() {
-        return state[stepIndex+2].title;
+        return viewModel.state.bubble3.title;
     }
 
     function getForwardDisabled() {
-        return state[stepIndex+2].disabled;
+        return viewModel.state.bubble3.disabled;
+    }
+
+    function login() {
+        if (stepIndex === 1) {
+            stepIndex = 2;
+        }
+        bubblesPerStep(stepIndex);
     }
 
     function OutingStateService() {
         return {
             getStepIndex: function () { return stepIndex },
+
             getReverseTitle: getReverseTitle,
             getReverseDisabled: getReverseDisabled,
             getNeutralTitle: getNeutralTitle,
             getNeutralDisabled: getNeutralDisabled,
             getForwardTitle: getForwardTitle,
             getForwardDisabled: getForwardDisabled,
+
+            getPathIndex: function () {return outingState.pathIndex},
+
+            /* Events. */
+            login: login
         };
     }
 
