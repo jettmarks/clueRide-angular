@@ -1,7 +1,29 @@
 Game State Module
 ====
-There is the State of the _**Game**_ and the State of the _**Course**_.  Together, these determine
+There is the State of the _**Game**_ , the state of the _**Outing**_, and the State of the _**Course**_.  Together, these determine
 what the user sees as they progress.
+
+Outing State Tracking
+----
+This keeps track of the following for the Outing.
+
+1. Outing ID (unique record of a mapping between a Team ID and a Course ID)
+2. Path Index
+3. Team Confirmed flag
+4. Most recent clue Solved Flag
+5. Specific clue to be presented to the team (when there is more than one clue at a given location)
+
+Some of this may be replaced by the Outing Step (index):
+
+Index | Forward | Reverse
+------|---------|--------
+1  | Login | Logout
+2  | Join Team | [Selected Team's Name]
+3  | GPS? | "GPS On" or "Tethered"
+4  | Play | Back to Options
+5  | [Current Location] | [Previous Location]
+6  | Solve Clue | Collapses to nothing (Location)
+7  | Where Am I | Collapses to nothing (Location)
 
 Course State Tracking
 ----
