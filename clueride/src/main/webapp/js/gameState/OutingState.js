@@ -3,7 +3,14 @@
 
     var viewModel,
         localModel,
-        state = [],
+        stateArray = [],
+        outingState = {
+            id: 2,
+            pathIndex: -1,
+            teamConfirmed: false,
+            mostRecentClueSolved: false,
+            selectedClueId: -1
+        },
         stepIndex = 1;
 
     angular
@@ -15,7 +22,7 @@
 
     /** Records dependencies used in this scope. */
     function init($location) {
-        state = [
+        stateArray = [
             {
                 /* Helpful to use this as our zero-index. */
                 title: 'Undefined',
@@ -62,27 +69,27 @@
     }
 
     function getReverseTitle() {
-        return state[stepIndex].title;
+        return stateArray[stepIndex].title;
     }
 
     function getReverseDisabled() {
-        return state[stepIndex].disabled;
+        return stateArray[stepIndex].disabled;
     }
 
     function getNeutralTitle() {
-        return state[stepIndex+1].title;
+        return stateArray[stepIndex+1].title;
     }
 
     function getNeutralDisabled() {
-        return state[stepIndex+1].disabled;
+        return stateArray[stepIndex+1].disabled;
     }
 
     function getForwardTitle() {
-        return state[stepIndex+2].title;
+        return stateArray[stepIndex+2].title;
     }
 
     function getForwardDisabled() {
-        return state[stepIndex+2].disabled;
+        return stateArray[stepIndex+2].disabled;
     }
 
     function OutingStateService() {
@@ -94,6 +101,8 @@
             getNeutralDisabled: getNeutralDisabled,
             getForwardTitle: getForwardTitle,
             getForwardDisabled: getForwardDisabled,
+
+            getPathIndex: function () {return outingState.pathIndex}
         };
     }
 
