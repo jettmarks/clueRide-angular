@@ -52,7 +52,6 @@ public class CluerideSessionFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
 
         String uri = req.getRequestURI();
-        this.servletContext.log("Requested Resource::"+uri);
 
         HttpSession session = req.getSession(false);
 
@@ -70,8 +69,10 @@ public class CluerideSessionFilter implements Filter {
                 || uri.contains("fontawesome")
                 || uri.endsWith("js.map")
         )) {
+            this.servletContext.log("Requested Resource::"+uri);
             this.servletContext.log("Unauthorized access request");
-            res.sendRedirect("/login.html");
+            this.servletContext.log("Host: "+req.getRequestURL());
+            res.sendRedirect(req.getContextPath() + "/login.html");
         } else {
             // pass the request along the filter chain
             chain.doFilter(request, response);
