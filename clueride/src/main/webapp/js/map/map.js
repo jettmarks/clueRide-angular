@@ -144,7 +144,7 @@
 
     function perFeatureCurrent(feature, layer) {
         if (feature.geometry.type === 'LineString') {
-            console.log("Feature ID: " + feature.properties.edgeId);
+            // console.log("Feature ID: " + feature.properties.edgeId);
             if (mapModel.featureBounds) {
                 mapModel.featureBounds.extend(layer.getBounds());
             } else {
@@ -157,7 +157,7 @@
             });
             localModel.leafletData.getMap('gameMap').then(function (gameMap)
                 {
-                    gameMap.fitBounds(mapModel.featureBounds);
+                    gameMap.fitBounds(mapModel.featureBounds, {padding: [35,35]});
                 }
             );
         }
