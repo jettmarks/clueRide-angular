@@ -222,6 +222,21 @@
         state.currentGameState.bubble1.title = localModel.outingService.getTeamName();
     }
 
+    function setHistoryLocation(newIndex) {
+            state.historyIndex = newIndex;
+            viewModel.locationState.location = viewModel.locations[newIndex];
+    }
+
+    function setLocationByNodeId(nodeId) {
+        for (var locIndex=0; locIndex<viewModel.locations.length; locIndex++) {
+            if (nodeId === viewModel.locations[locIndex].nodeId) {
+                console.log("Matched nodeId " + nodeId + " to Loc Index " + locIndex);
+                setHistoryLocation(locIndex);
+                return;
+            }
+        }
+    }
+
     /**
      * This is based on both the Path Index and walking the History Index as well as taking into account
      * that we'll want to show some details of the initial location prior to "arriving" at that location.
@@ -300,10 +315,6 @@
             /* For testing. */
             digestState: digestState,
 
-            setHistoryLocation: function (newIndex) {
-                state.historyIndex = newIndex;
-                viewModel.locationState.location = viewModel.locations[newIndex];
-            },
 
             /* Various State Changes. */
             enableGpsBubble: enableGpsBubble,
@@ -311,6 +322,8 @@
             enablePlay: enablePlay,
             disablePlay: disablePlay,
             setTeam: setTeam,
+            setHistoryLocation: setHistoryLocation,
+            setLocationByNodeId: setLocationByNodeId,
 
             /* Queries */
             getOutingState: getOutingState,
