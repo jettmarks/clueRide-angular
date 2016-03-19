@@ -11,6 +11,7 @@ var app = angular.module('clueridePlayer', [
   'crPlayer.Bubble',
   'crPlayer.GameState',
   'crPlayer.OutingModule',
+  'crPlayer.loading',
   'crMap',
   'crPlayer.Location',
   'common.LocationResource',
@@ -288,15 +289,11 @@ app.controller('MainController', [
 
         // User agent displayed in home page
         $scope.userAgent = navigator.userAgent;
-  
-        // Needed for the loading screen
-        $rootScope.$on('$routeChangeStart', function(){
-            $rootScope.loading = true;
-        });
 
-        $rootScope.$on('$routeChangeSuccess', function(){
-            $rootScope.loading = false;
-        });
+      $rootScope.loading = {
+        title: 'buckling my helmet',
+        flag: true
+      }
 
         /* Bind the Course to the scope. */
         $scope.course = {};
