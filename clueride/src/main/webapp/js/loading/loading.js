@@ -6,28 +6,30 @@
     function LoadingController($rootScope) {
         var loadingOverlay = this;
 
-        console.log("'loadingOverlay' is " + loadingOverlay.loading.title + " & " + loadingOverlay.loading.flag);
+        //console.log("'loadingOverlay' is " + loadingOverlay.loading.title + " & " + loadingOverlay.loading.flag);
 
         /**
          * Start-up logic for initializing the controller.
          */
-        function activate() {
+        function activate(self) {
             console.log("activating loading directive");
-            loadingOverlay.loading.title = 'buckling my helmet';
-            loadingOverlay.loading.flag = false;
+            loadingOverlay.loading = (self.loading || {
+                title: 'buckling my helmet',
+                flag: false
+            });
 
             //Needed for the loading screen
             $rootScope.$on('$routeChangeStart', function(){
-                $rootScope.loading.flag = true;
+                loadingOverlay.loading.flag = true;
             });
 
             $rootScope.$on('$routeChangeSuccess', function(){
-                $rootScope.loading.flag = false;
+                loadingOverlay.loading.flag = false;
             });
         }
 
         /* Initialize the controller. */
-        activate();
+        activate(this);
     }
 
     function loadingOverlay() {
