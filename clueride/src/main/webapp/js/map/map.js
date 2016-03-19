@@ -18,7 +18,7 @@
 
     MapController.$inject = [
         '$scope',
-        '$rootScope',
+        '$location',
         'GameStateService',
         'LocationService',
         'PathMapResource',
@@ -27,7 +27,7 @@
 
     function MapController(
         $scope,
-        $rootScope,
+        $location,
         GameStateService,
         LocationService,
         PathMapResource,
@@ -39,6 +39,8 @@
         localModel.leafletData = leafletData;
         localModel.pathMapResource = PathMapResource;
         localModel.completedPathIds = GameStateService.getCompletedPathIds();
+        localModel.setLocationByNodeId = GameStateService.setLocationByNodeId;
+        localModel.dollarLocation = $location;
 
         /* Sets up the Marker prefix so we get the ionic Icons. */
         L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
@@ -126,7 +128,14 @@
             )
         });
 
-        /* TODO: Put responses to marker events here. */
+        marker.on({
+            click: function (e) {
+                var nodeId = e.target.feature.properties.pointId;
+                console.log(e.target.feature.properties);
+                localModel.setLocationByNodeId(nodeId);
+                localModel.dollarLocation.path("/location");
+            }
+        });
 
         return marker;
     }
