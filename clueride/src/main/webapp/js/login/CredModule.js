@@ -2,6 +2,7 @@
     'use strict';
 
     angular
+        /** This module loads when we are requesting the credentials for a user's session. */
         .module('crPlayer.CredentialsModule', [
             'ngRoute',
             'mobile-angular-ui',
