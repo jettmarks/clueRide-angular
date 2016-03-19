@@ -290,11 +290,6 @@ app.controller('MainController', [
         // User agent displayed in home page
         $scope.userAgent = navigator.userAgent;
 
-      $rootScope.loading = {
-        title: 'buckling my helmet',
-        flag: true
-      }
-
         /* Bind the Course to the scope. */
         $scope.course = {};
         GameStateService.setCourseScope($scope);

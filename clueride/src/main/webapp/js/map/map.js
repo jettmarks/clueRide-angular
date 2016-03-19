@@ -18,6 +18,7 @@
 
     MapController.$inject = [
         '$scope',
+        '$rootScope',
         'GameStateService',
         'LocationService',
         'PathMapResource',
@@ -26,6 +27,7 @@
 
     function MapController(
         $scope,
+        $rootScope,
         GameStateService,
         LocationService,
         PathMapResource,
@@ -45,11 +47,11 @@
 
         mapModel.layers = {
             baselayers: {
-            osm: {
-                name: 'OpenStreetMap',
-                url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                type: 'xyz'
-            },
+                osm: {
+                    name: 'OpenStreetMap',
+                    url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    type: 'xyz'
+                },
                 ocm: {
                     name: 'OpenCycleMap',
                     type: 'xyz',
@@ -64,9 +66,6 @@
         angular.extend(mapModel, {
             /* Center the map at last zoom level for editing. */
             center: {
-                //lat: 33.7627,
-                //lng: -84.3527,
-                //zoom: 12,
                 lat: LocationService.getMapCoords().lat,
                 lng: LocationService.getMapCoords().lng,
                 zoom: LocationService.getMapZoom(),
