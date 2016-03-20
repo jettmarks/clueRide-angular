@@ -1,11 +1,3 @@
-package com.clueride.service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.clueride.domain.Player;
-import com.clueride.domain.Team;
-
 /**
  * Copyright 2015 Jett Marks
  * <p/>
@@ -23,6 +15,14 @@ import com.clueride.domain.Team;
  * <p/>
  * Created 11/17/15.
  */
+package com.clueride.service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.clueride.domain.Player;
+import com.clueride.domain.Team;
+
 public class TeamService {
 
     private static TeamService instance = new TeamService();
@@ -30,6 +30,7 @@ public class TeamService {
 
     static
     {
+        // TODO: Move this over to using a Store to hold onto the Teams and their members.
         team = new Team("Spokes Folks");
         team.add(new Player("Team Leader (Uncle Albert)"));
         for (int i=1; i<=3; i++) {
@@ -41,6 +42,7 @@ public class TeamService {
         return instance;
     }
 
+    // TODO: Move this over to letting Jersey/Jackson perform the serialization to JSON.
     public String getTeamAsJson() {
         ObjectMapper mapper = new ObjectMapper();
         String result = null;
