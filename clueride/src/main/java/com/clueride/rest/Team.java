@@ -1,17 +1,17 @@
 package com.clueride.rest;
 
-import com.clueride.service.TeamService;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.clueride.service.TeamService;
+
 /**
  * Team resource (exposed at "team" path).
  *
  * PUT - Creates a New Team with the payload representing the full object.
- * GET - Retrieves the entire Team object as represented on server.
+ * GET - Retrieves the entire Team object as represented on server or a list of teams when no team ID is provided.
  * POST - Adds member to the team (request to join, or from team leader, confirmation of having joined).
  * DELETE - Removes member from the team when individual is supplied; otherwise, the entire team is closed.
  */
@@ -29,4 +29,5 @@ public class Team {
     public String getIt() {
         return TeamService.getInstance().getTeamAsJson();
     }
+
 }

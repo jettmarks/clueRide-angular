@@ -1,5 +1,3 @@
-package com.clueride.domain;
-
 /**
  * Copyright 2015 Jett Marks
  * <p/>
@@ -17,6 +15,8 @@ package com.clueride.domain;
  * <p/>
  * Created 11/17/15.
  */
+package com.clueride.domain;
+
 public class Player {
     private Integer id;
     private String name;

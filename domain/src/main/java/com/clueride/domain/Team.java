@@ -1,11 +1,3 @@
-package com.clueride.domain;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.clueride.service.IdProvider;
-import com.clueride.service.MemoryBasedTeamIdProvider;
-
 /**
  * Copyright 2015 Jett Marks
  * <p/>
@@ -23,11 +15,19 @@ import com.clueride.service.MemoryBasedTeamIdProvider;
  * <p/>
  * Created 11/17/15.
  */
+package com.clueride.domain;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.clueride.service.IdProvider;
+import com.clueride.service.MemoryBasedTeamIdProvider;
+
 public class Team {
     private final Integer id;
 
     private final String name;
-    private final IdProvider memoryBasedTeamIdProvider = new MemoryBasedTeamIdProvider();
+    private final static IdProvider memoryBasedTeamIdProvider = new MemoryBasedTeamIdProvider();
     private List<Player> players = new ArrayList<>();
 
     public Team(String name) {
