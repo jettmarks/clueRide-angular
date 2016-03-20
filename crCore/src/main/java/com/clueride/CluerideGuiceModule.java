@@ -38,6 +38,7 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(PathService.class).to(PathServiceImpl.class);
         bind(ControlService.class).to(DefaultControlService.class);
         bind(GameStateService.class).to(GameStateServiceImpl.class);
+        bind(TeamService.class).to(TeamServiceImpl.class);
         bind(NodeService.class).to(DefaultNodeService.class);
         bind(DiagnosticService.class).to(DiagnosticServiceImpl.class);
         bind(Network.class).to(DefaultNetwork.class);

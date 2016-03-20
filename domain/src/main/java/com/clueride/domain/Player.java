@@ -21,6 +21,9 @@ public class Player {
     private Integer id;
     private String name;
 
+    /** Supporting Jackson. */
+    public Player() {}
+
     public Player(String name) {
         this.name = name;
     }
