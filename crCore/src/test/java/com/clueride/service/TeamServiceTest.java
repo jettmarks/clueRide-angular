@@ -1,7 +1,5 @@
 package com.clueride.service;
 
-import static org.testng.Assert.assertNotNull;
-
 /**
  * Copyright 2015 Jett Marks
  * <p/>
@@ -23,12 +21,9 @@ public class TeamServiceTest {
 
     @org.testng.annotations.Test
     public void testGetTeamAsJson() throws Exception {
-
     }
 
     @org.testng.annotations.Test
     public void testGetInstance() throws Exception {
-        TeamService teamService = TeamService.getInstance();
-        assertNotNull(teamService);
     }
 }

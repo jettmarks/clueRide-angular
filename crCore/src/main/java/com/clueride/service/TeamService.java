@@ -17,40 +17,34 @@
  */
 package com.clueride.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 
 import com.clueride.domain.Player;
 import com.clueride.domain.Team;
 
-public class TeamService {
+public interface TeamService {
 
-    private static TeamService instance = new TeamService();
-    private static Team team;
+    /**
+     * At this time, there is only a single team, but eventually, we'll have a number
+     * of teams managed by the store.
+     * @return
+     */
+    List<Team> getTeams();
 
-    static
-    {
-        // TODO: Move this over to using a Store to hold onto the Teams and their members.
-        team = new Team("Spokes Folks");
-        team.add(new Player("Team Leader (Uncle Albert)"));
-        for (int i=1; i<=3; i++) {
-            team.add(new Player("Member "+i));
-        }
-    }
+    /**
+     *
+     * @param teamId
+     * @return
+     */
+    Team getTeam(Integer teamId);
 
-    public static TeamService getInstance() {
-        return instance;
-    }
+    /**
+     * Given the Team ID and a new Player instance, add the player to the team and
+     * return the updated team.
+     * @param teamId - Unique ID of the Team.
+     * @param newPlayer - New fully-populated instance of a Player object.
+     * @return the updated Team.
+     */
+    Team addMember(Integer teamId, Player newPlayer);
 
-    // TODO: Move this over to letting Jersey/Jackson perform the serialization to JSON.
-    public String getTeamAsJson() {
-        ObjectMapper mapper = new ObjectMapper();
-        String result = null;
-        try {
-            result = mapper.writeValueAsString(team);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
 }
