@@ -4,35 +4,19 @@
     /** Handles the Team Members directive for sharing the list of Team Member. */
     var module;
 
-    function TeamDisplayController() {
+    function TeamDisplayController(TeamResource) {
         var teamDisplay = this;
 
         /**
          * Start-up logic for initializing the controller.
          */
         function activate() {
-            teamDisplay.team = {
-                "id": 2,
-                "name": "Spokes Folks",
-                "members": [
-                    {
-                        "id": null,
-                        "name": "Jett"
-                    },
-                    {
-                        "id": null,
-                        "name": "Member 1"
-                    },
-                    {
-                        "id": null,
-                        "name": "Member 2"
-                    },
-                    {
-                        "id": null,
-                        "name": "Member 3"
-                    }
-                ]
-            }
+
+            // TODO: replace hard-coded teamId
+            TeamResource.get({teamId: 2}, function (data) {
+                teamDisplay.team = data;
+            });
+
         }
 
         /* Initialize the controller. */
@@ -53,9 +37,7 @@
     }
 
     module = angular.module(
-        'crPlayer.Team',
-        [
-        ]
+        'crPlayer.Team'
     );
 
     module.directive('teamDisplay', teamDisplay);

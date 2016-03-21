@@ -28,7 +28,7 @@ public class Team {
 
     private final String name;
     private final static IdProvider memoryBasedTeamIdProvider = new MemoryBasedTeamIdProvider();
-    private List<Player> players = new ArrayList<>();
+    private List<Member> members = new ArrayList<>();
 
     public Team(String name) {
         this.id = memoryBasedTeamIdProvider.getId();
@@ -43,11 +43,11 @@ public class Team {
         return name;
     }
 
-    public List<Player> getPlayers() {
-        return players;
+    public List<Member> getMembers() {
+        return members;
     }
 
-    public void add(Player player) {
-        players.add(player);
+    public void add(Member member) {
+        members.add(member);
     }
 }

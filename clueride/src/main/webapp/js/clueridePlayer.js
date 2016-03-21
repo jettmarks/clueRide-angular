@@ -268,12 +268,12 @@ app.directive('dragMe', ['$drag', function($drag){
 
 /* Main entry point for the application. */
 app.controller('MainController', [
-    '$rootScope',
-    '$scope',
-    'GameStateService',
-    'LocationService',
-    'BadgesService',
-    'LoginService',
+        '$rootScope',
+        '$scope',
+        'GameStateService',
+        'LocationService',
+        'BadgesService',
+        'LoginService',
     function(
         $rootScope,
         $scope,
