@@ -19,7 +19,7 @@ package com.clueride.service;
 
 import java.util.List;
 
-import com.clueride.domain.Player;
+import com.clueride.domain.Member;
 import com.clueride.domain.Team;
 
 public interface TeamService {
@@ -39,12 +39,12 @@ public interface TeamService {
     Team getTeam(Integer teamId);
 
     /**
-     * Given the Team ID and a new Player instance, add the player to the team and
+     * Given the Team ID and a new Member instance, add the player to the team and
      * return the updated team.
      * @param teamId - Unique ID of the Team.
-     * @param newPlayer - New fully-populated instance of a Player object.
+     * @param newMember - New fully-populated instance of a Member object.
      * @return the updated Team.
      */
-    Team addMember(Integer teamId, Player newPlayer);
+    Team addMember(Integer teamId, Member newMember);
 
 }

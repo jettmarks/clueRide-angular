@@ -20,11 +20,13 @@ package com.clueride.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import com.clueride.domain.Member;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
 
@@ -33,6 +35,12 @@ import com.clueride.rest.dto.CRCredentials;
  */
 public class AuthenticationServiceImpl implements AuthenticationService {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationServiceImpl.class);
+    private final TeamService teamService;
+
+    @Inject
+    public AuthenticationServiceImpl(TeamService teamService) {
+        this.teamService = teamService;
+    }
 
     // TODO: Eventually, this will also hold the selected Team/Outing
 
@@ -44,6 +52,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             result.add(Badge.TEAM_LEAD);
         }
         result.add(Badge.TEAM_MEMBER);
+        Member member = new Member(crCredentials.name);
+        // TODO: Hardcoded the team here; probably should go with establishing the outing
+        teamService.addMember(2, member);
         return result;
     }
 

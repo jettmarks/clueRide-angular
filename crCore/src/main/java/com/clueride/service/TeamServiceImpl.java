@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.Player;
+import com.clueride.domain.Member;
 import com.clueride.domain.Team;
 
 /**
@@ -37,9 +37,9 @@ public class TeamServiceImpl implements TeamService {
     {
         // TODO: Move this over to using a Store to hold onto the Teams and their members.
         team = new Team("Spokes Folks");
-        team.add(new Player("Jett"));
+        team.add(new Member("Jett"));
 //        for (int i=1; i<=3; i++) {
-//            team.add(new Player("Member "+i));
+//            team.add(new Member("Member "+i));
 //        }
     }
 
@@ -55,9 +55,9 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team addMember(Integer teamId, Player newPlayer) {
-        LOGGER.info("Adding Player " + newPlayer.getName() + " to team " + teamId);
-        team.add(newPlayer);
+    public Team addMember(Integer teamId, Member newMember) {
+        LOGGER.info("Adding Member " + newMember.getName() + " to team " + teamId);
+        team.add(newMember);
         return team;
     }
 }

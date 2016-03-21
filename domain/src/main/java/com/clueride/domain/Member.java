@@ -17,14 +17,14 @@
  */
 package com.clueride.domain;
 
-public class Player {
+public class Member {
     private Integer id;
     private String name;
 
     /** Supporting Jackson. */
-    public Player() {}
+    public Member() {}
 
-    public Player(String name) {
+    public Member(String name) {
         this.name = name;
     }
 

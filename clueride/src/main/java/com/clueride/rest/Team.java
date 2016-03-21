@@ -9,7 +9,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.clueride.domain.Player;
+import com.clueride.domain.Member;
 import com.clueride.service.TeamService;
 
 /**
@@ -46,7 +46,7 @@ public class Team {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("{teamId}")
-    public com.clueride.domain.Team addMember(@PathParam("teamId") Integer teamId, Player newPlayer) {
-        return teamService.addMember(teamId, newPlayer);
+    public com.clueride.domain.Team addMember(@PathParam("teamId") Integer teamId, Member newMember) {
+        return teamService.addMember(teamId, newMember);
     }
 }

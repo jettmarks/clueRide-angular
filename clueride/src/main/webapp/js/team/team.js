@@ -9,18 +9,17 @@
         return $resource('/rest/team', {}, {
             get: {
                 method: 'GET',
-                params: {},
+                url: '/rest/team/:teamId',
+                params: {teamId: '@teamId'},
+                isArray: false
+            },
+            create: {
+                method: 'POST',
+                url: '/rest/team/:teamId',
+                params: {teamId: '@teamId'},
                 isArray: false
             }
         })
     });
-
-    module.controller('TeamController', ['$scope','TeamResource',
-        function ($scope, TeamResource) {
-            TeamResource.get({}, function (team) {
-                $scope.crPlayerTeam = team;
-            });
-        }
-    ]);
 
 }(window.angular));
