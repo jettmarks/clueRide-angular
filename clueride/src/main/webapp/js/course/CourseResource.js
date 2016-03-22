@@ -1,6 +1,7 @@
 (function (angular) {
     'use strict';
 
+    /* Hardcoded until we have more than one course. */
     var selectedCourse = 3;
 
     angular
@@ -15,7 +16,6 @@
         return $resource('/rest/course/map', {}, {
             getMap: {
                 method: 'GET',
-                /* Hardcoded until we have more than one course. */
                 params: {courseId: selectedCourse},
                 isArray: false
             }
@@ -26,7 +26,6 @@
         return $resource('/rest/course/data', {}, {
             getData: {
                 method: 'GET',
-                /* Hardcoded until we have more than one course. */
                 params: {courseId: selectedCourse},
                 isArray: false
             }
@@ -37,7 +36,6 @@
         return $resource('/rest/location/course', {}, {
             getData: {
                 method: 'GET',
-                /* Hardcoded until we have more than one course. */
                 params: {courseId: selectedCourse},
                 isArray: true
             }

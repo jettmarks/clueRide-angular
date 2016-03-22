@@ -14,10 +14,6 @@
     BadgesController.$inject = [];
 
     function BadgesController() {
-        //var vm = this;
-
-        //vm.exposedObject = {};
-        //vm.exposecFunction = exposedFunction;
     }
 
     function BadgesService() {

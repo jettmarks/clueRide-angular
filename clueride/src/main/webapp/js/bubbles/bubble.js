@@ -1,8 +1,7 @@
 (function (angular) {
     'use strict';
 
-    var counter = 0,
-        local = {};
+    var local = {};
 
     angular
         .module('crPlayer.Bubble', ['crPlayer.GameState'])
@@ -11,11 +10,8 @@
 
     BubbleController.$inject = ['$scope', 'GameStateService'];
 
-    function BubbleController($scope, GameStateService) {
+    function BubbleController(GameStateService) {
         local.gsSvc = GameStateService;
-
-        counter++;
-        window.console.log("Scope:" + $scope.$id + " Pass:" + counter );
     }
 
     function BubbleDirective($rootScope, $location) {
@@ -41,6 +37,7 @@
         }
 
         return {
+            // TODO: Consider moving this over to BindAsController
             scope: {
                 bid: '@',
                 // Have to use this for the two way binding?
