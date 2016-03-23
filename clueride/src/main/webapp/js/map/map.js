@@ -102,6 +102,20 @@
                 locationId:  LocationService.getLocationId()
             }, locationFeatureToMap );
         }
+
+        /* Add our current location to the map with a marker. */
+        // TODO: Bring in the tethered values
+        mapModel.markers = {
+            me: new L.marker(
+                {
+                    lat: mapModel.center.lat,
+                    lon: mapModel.center.lng || -84.1
+                },
+                {
+                    icon: getMarkerIcon(0, 'BOOGER', false)
+                }
+            )
+        }
     }
 
     function makeHistoricalPathMapRequest(p) {
