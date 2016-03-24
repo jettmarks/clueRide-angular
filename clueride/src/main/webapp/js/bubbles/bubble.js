@@ -5,12 +5,11 @@
 
     angular
         .module('crPlayer.Bubble', ['crPlayer.GameState'])
-        .controller('BubbleController', BubbleController)
-        .directive('crBubble', BubbleDirective);
+        .directive('crBubble', BubbleDirective)
+        .run(init)
+    ;
 
-    BubbleController.$inject = ['$scope', 'GameStateService'];
-
-    function BubbleController(GameStateService) {
+    function init(GameStateService) {
         local.gsSvc = GameStateService;
     }
 
