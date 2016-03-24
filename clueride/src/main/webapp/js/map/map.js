@@ -106,15 +106,16 @@
         /* Add our current location to the map with a marker. */
         // TODO: Bring in the tethered values
         mapModel.markers = {
-            me: new L.marker(
+            me:
                 {
-                    lat: mapModel.center.lat,
-                    lon: mapModel.center.lng || -84.1
-                },
-                {
-                    icon: getMarkerIcon(0, 'BOOGER', false)
+                    lat: LocationService.getDeviceCoords().lat,
+                    lng: LocationService.getDeviceCoords().lon,
+                    icon: {
+                        type: 'awesomeMarker',
+                        icon: 'android-bicycle',
+                        markerColor: '#00cccc'
+                    }
                 }
-            )
         }
     }
 

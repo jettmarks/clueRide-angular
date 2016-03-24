@@ -50,6 +50,11 @@ var iconMarkerPathEnd = L.AwesomeMarkers.icon({
     markerColor: 'red'
 });
 
+var iconMarkerBike = L.AwesomeMarkers.icon({
+    icon: 'android-bicycle',
+    markerColor: '#0cc'
+});
+
 var iconMarkerEditable = L.AwesomeMarkers.icon({
     //icon: 'arrow-move',
     icon: 'arrow-expand',
@@ -61,6 +66,9 @@ function getMarkerIcon(id, state, selected) {
     switch(state) {
     case 'UNDEFINED': 
         return selected ? selectedMarkerIcon : defaultMarkerIcon;
+        break;
+    case 'CURRENT':
+        return iconMarkerBike;
         break;
     case 'ON_SINGLE_TRACK': 
         return iconMarkerSingleTrack;
