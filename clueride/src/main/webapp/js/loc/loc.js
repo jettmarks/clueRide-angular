@@ -24,14 +24,14 @@
             },
             /* From the device. */
             gpsCoords: {
-                lat: 33.7,
-                lon: -84.1
+                lat: 33.8,
+                lon: -84.4
             },
             /* True if we use the map as "Close To Me" instead of device. */
             mapOverrideDevice: false,
 
             /* If GPS not enabled, will need to use tethered or map. */
-            gpsEnabled: false,
+            gpsEnabled: navigator.geolocation,
             location: {}
         };
 
@@ -40,6 +40,7 @@
         .controller('LocationController', LocationController)
         .service('LocationService', LocationService)
         .directive('backImg', backImg)
+        .run(getGpsPosition())
     ;
 
     LocationController.$inject = ['GameStateService'];
@@ -57,6 +58,15 @@
 
         // Zero-based index vs. one-based page number
         locState.currentPage = locIndex+1;
+    }
+
+    function getGpsPosition() {
+        if (locState.gpsEnabled) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                locState.gpsCoords.lat = position.coords.latitude;
+                locState.gpsCoords.lon = position.coords.longitude;
+            });
+        }
     }
 
     function lastLocationIndex() {
