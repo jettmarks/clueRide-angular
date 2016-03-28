@@ -42,27 +42,20 @@
     ;
 
     GameStateController.$inject = ['$scope',
-        'CourseDataResource',
-        'CourseLocationDataResource'
+        'CourseDataResource'
     ];
 
     function GameStateController(
         $scope,
-        CourseDataResource,
-        CourseLocationDataResource
+        CourseDataResource
     ) {
         $scope.vm = this;
 
         localModel.courseDataResource = CourseDataResource;
-        localModel.courseLocationDataResource = CourseLocationDataResource;
     }
 
     function dataToModel(course) {
         viewModel.course = course;
-    }
-
-    function courseLocationsToModel(locations) {
-        viewModel.locations = locations;
     }
 
     function setCourseScope(courseScope) {
@@ -297,8 +290,6 @@
             // TODO: Find better way to set the scope; link in Controller
             setCourseScope: setCourseScope,
 
-            refreshLocationData: refreshLocationData,
-
             currentGameState: function () {return state.currentGameState},
             currentGameStateKey: function () {return state.currentGameStateKey},
             updateGameState: updateGameState,
@@ -373,12 +364,14 @@
         });
     }
 
+    // TODO: Move into separate Resource for OutingState
     function OutingStateResource($resource) {
         return $resource('/rest/gameState', {}, {
 
         });
     }
 
+    // TODO: Why is this no longer used?
     function stateToModel(data) {
         viewModel.outingState.pathIndex = data.pathIndex;
         viewModel.outingState.mostRecentClueSolvedFlag = data.mostRecentClueSolvedFlag;
@@ -389,11 +382,6 @@
         }
     }
 
-    function refreshLocationData() {
-        localModel.courseLocationDataResource.getData({
-            /* Future: put the course ID here too. */
-        }, courseLocationsToModel);
-    }
 
     function gameStateInit (
         CourseDataResource,
@@ -411,8 +399,6 @@
         CourseDataResource.getData({
             /* Future: put the course ID here. */
         }, dataToModel);
-
-        refreshLocationData();
 
         gameStateResource = GameStateResource;
         // TODO: Hardcoded team ID
