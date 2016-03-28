@@ -1,6 +1,7 @@
 (function (angular) {
     'use strict';
 
+    // TODO: Handle an actual selection instead of hardcoding this.
     /* Hardcoded until we have more than one course. */
     var selectedCourse = 3;
 
@@ -12,6 +13,7 @@
         .factory('CourseLocationDataResource', CourseLocationDataResource)
     ;
 
+    // TODO: Make these calls closer to standard REST calls
     function CourseMapResource ($resource) {
         return $resource('/rest/course/map', {}, {
             getMap: {
@@ -34,7 +36,7 @@
 
     function CourseLocationDataResource ($resource) {
         return $resource('/rest/location/course', {}, {
-            getData: {
+            get: {
                 method: 'GET',
                 params: {courseId: selectedCourse},
                 isArray: true

@@ -3,7 +3,8 @@
 
     var viewModel,
         localModel = {
-            gsSvc: {}
+            gsSvc: {},
+            lsSvc: {}
         },
         locState = {
             currentPage: 1,
@@ -36,23 +37,23 @@
         };
 
     angular
-        .module('crPlayer.Location', ['crPlayer.GameState'])
-        .controller('LocationController', LocationController)
+        .module('crPlayer.Location', ['crPlayer.GameState', 'common.CourseResource'])
         .service('LocationService', LocationService)
         .directive('backImg', backImg)
         .run(getGpsPosition())
+        .run(['GameStateService', 'CourseLocationDataResource',
+            function (GameStateService, CourseLocationDataResource) {
+                localModel.gsSvc = GameStateService;
+                localModel.lsSvc = CourseLocationDataResource;
+            }])
     ;
 
-    LocationController.$inject = ['GameStateService'];
+    function init() {
+        var locIndex = localModel.gsSvc.getLocationIndex();
 
-    function LocationController(GameStateService) {
-        init(GameStateService);
-    }
-
-    function init(GameStateService) {
-        var locIndex = GameStateService.getLocationIndex();
-
-        localModel.gsSvc = GameStateService;
+        localModel.lsSvc.get({
+            /* Future: put Course ID here. */
+        }, courseLocationsToModel);
 
         locState.location = viewModel.locations[locIndex];
 
@@ -74,12 +75,17 @@
         return localModel.gsSvc.maxVisibleLocationIndex() + 1;
     }
 
+    function courseLocationsToModel(locations) {
+        viewModel.locations = locations;
+    }
+
     function pageChanged() {
         var locIndex = locState.currentPage-1;
         locState.location = viewModel.locations[locIndex];
         localModel.gsSvc.setHistoryLocation(locIndex);
     }
 
+    /** One of a few places where the Scope is set manually in the app.js. */
     function setLocationScope(locationScope) {
         viewModel = locationScope;
         viewModel.locationState = locState;

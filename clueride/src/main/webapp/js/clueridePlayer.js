@@ -297,7 +297,7 @@ app.controller('MainController', [
         /* Bind the Location Service to the Scope. */
         $scope.locations = {};
         LocationService.setLocationScope($scope);
-        LocationService.init(GameStateService);
+        LocationService.init();
 
         /* Bind the Badges Service to the scope. */
         $scope.badges = {};
