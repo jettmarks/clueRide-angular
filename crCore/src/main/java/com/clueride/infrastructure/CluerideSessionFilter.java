@@ -55,7 +55,11 @@ public class CluerideSessionFilter implements Filter {
 
         HttpSession session = req.getSession(false);
 
-        if (session == null && !(uri.contains("/login.html")
+        if (session == null && (uri.equals("/"))) {
+            res.sendRedirect(req.getContextPath() + "/login.html");
+        }
+
+        if (session == null && !(uri.contains("login.html")
                 || uri.endsWith("/rest/login")
                 || uri.contains("loginBubbles.html")
                 || uri.endsWith("credentials.html")
@@ -71,7 +75,7 @@ public class CluerideSessionFilter implements Filter {
             this.servletContext.log("Requested Resource::"+uri);
             this.servletContext.log("Unauthorized access request");
             this.servletContext.log("Host: "+req.getRequestURL());
-            res.sendRedirect(req.getContextPath() + "/login.html/#/");
+            res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             // pass the request along the filter chain
             chain.doFilter(request, response);

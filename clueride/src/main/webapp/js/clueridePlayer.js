@@ -44,20 +44,38 @@ app.run(function($transform) {
 // feature (i.e. close sidebar on backbutton) you should setup 'reloadOnSearch: false' 
 // in order to avoid unwanted routing.
 // 
-app.config(function($routeProvider) {
-  $routeProvider.when('/',                {templateUrl: 'birdseye.html', reloadOnSearch: false});
-  $routeProvider.when('/map',             {templateUrl: 'js/map/map.html', reloadOnSearch: false});
-  $routeProvider.when('/logout',          {templateUrl: 'js/login/logout.html', reloadOnSearch: false});
-  $routeProvider.when('/location',        {templateUrl: 'js/loc/loc.html', reloadOnSearch: false});
-  $routeProvider.when('/locEdit',         {templateUrl: 'js/locEdit/locEditMain.html', reloadOnSearch: false});
-  $routeProvider.when('/locEdit/clues',   {templateUrl: 'js/locEdit/clueEdit.html', reloadOnSearch: false});
-  $routeProvider.when('/locEdit/edit',    {templateUrl: 'js/locEdit/locEdit.html', reloadOnSearch: false});
-  $routeProvider.when('/locEdit/images',  {templateUrl: 'js/locEdit/imageList.html', reloadOnSearch: false});
-  $routeProvider.when('/locEdit/newImage',{templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
-  $routeProvider.when('/locEdit/estab',   {templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
-  $routeProvider.when('/status',          {templateUrl: 'js/status/status.html', reloadOnSearch: false});
-  $routeProvider.when('/outing',          {templateUrl: 'js/outing/outingEdit.html', reloadOnSearch: false});
-  $routeProvider.when('/ice',             {templateUrl: 'ice.html', reloadOnSearch: false});
+app.config(function($routeProvider, $httpProvider) {
+    $routeProvider.when('/',                {templateUrl: 'birdseye.html', reloadOnSearch: false});
+    $routeProvider.when('/map',             {templateUrl: 'js/map/map.html', reloadOnSearch: false});
+    $routeProvider.when('/logout',          {templateUrl: 'js/login/logout.html', reloadOnSearch: false});
+    $routeProvider.when('/location',        {templateUrl: 'js/loc/loc.html', reloadOnSearch: false});
+    $routeProvider.when('/locEdit',         {templateUrl: 'js/locEdit/locEditMain.html', reloadOnSearch: false});
+    $routeProvider.when('/locEdit/clues',   {templateUrl: 'js/locEdit/clueEdit.html', reloadOnSearch: false});
+    $routeProvider.when('/locEdit/edit',    {templateUrl: 'js/locEdit/locEdit.html', reloadOnSearch: false});
+    $routeProvider.when('/locEdit/images',  {templateUrl: 'js/locEdit/imageList.html', reloadOnSearch: false});
+    $routeProvider.when('/locEdit/newImage',{templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
+    $routeProvider.when('/locEdit/estab',   {templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
+    $routeProvider.when('/status',          {templateUrl: 'js/status/status.html', reloadOnSearch: false});
+    $routeProvider.when('/outing',          {templateUrl: 'js/outing/outingEdit.html', reloadOnSearch: false});
+    $routeProvider.when('/ice',             {templateUrl: 'ice.html', reloadOnSearch: false});
+
+    /* Setup interceptor for redirects and other exceptions. */
+    $httpProvider.interceptors.push(function() {
+        return {
+            'response': function(response) {
+                "use strict";
+                console.log("Caught response: " + response.status + " URL: " + response.config.url);
+                return response;
+            },
+            'responseError': function(response) {
+                "use strict";
+                console.log("Caught Response Error: " + response.status);
+                window.location = "login.html";
+                return response;
+            }
+        };
+    });
+
 });
 //
 // `$touch example`

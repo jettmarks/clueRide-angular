@@ -6,6 +6,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
          http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <display-name>ClueRide Player</display-name>
+
     <servlet>
         <servlet-name>Jersey Web Application</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
@@ -15,6 +16,12 @@
             <param-name>javax.ws.rs.Application</param-name>
             <param-value>com.clueride.CluerideJerseyModule</param-value>
         </init-param>
+        <!-- Configuration of Trace Logging on Jersey calls. -->
+        <init-param>
+            <param-name>jersey.config.server.tracing.type</param-name>
+            <param-value>ALL</param-value>
+        </init-param>
+
         <load-on-startup>1</load-on-startup>
     </servlet>
 
