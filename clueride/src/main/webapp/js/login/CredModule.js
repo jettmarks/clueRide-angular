@@ -11,7 +11,7 @@
         ])
         /* Display a limited Bubble Screen with a single action. */
         .config(function($routeProvider) {
-            $routeProvider.when('/',
+            $routeProvider.otherwise(
                 {
                     templateUrl: 'js/login/loginBubbles.html',
                     reloadOnSearch: false
