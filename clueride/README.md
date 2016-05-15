@@ -6,7 +6,7 @@ There are multiple modes this supports depending on
 - The capabilities of the player (Profile)
 - The capabilities of the device (mobile / GPS)
 - Whether the player is at home, joining a team or riding solo.
-- Badges earned (particularly significant for team leaders and course developers)
+- Badges earned -- significant for Guides and Course Developers (Conjurors), but also for anyone contributing to their local community.
 - The choice of Course to play.
 
 This document covers many of these choices and how they affect the play.
@@ -35,13 +35,12 @@ Arm-chair
 ----
 _This is also called "demo" mode._
 
-If you're unable to ride because of weather, or no bike, or can't find anyone to join you -- whatever the reason,
-you can still enjoy Clue Ride. 
+If you're unable to ride because of weather, or no bike, or can't find anyone to join you -- whatever the reason, you can still enjoy Clue Ride. 
 
 Team
 ----
-Most people participating in Clue Ride will join a team with an experienced Team Leader. 
-_How to become a Team Leader_ is something we'll come to later.
+Most people participating in Clue Ride will join a team with an experienced Guide. 
+_How to become a Guide_ is something we'll come to later.
 
 Solo
 ----
@@ -61,12 +60,12 @@ GPS phone     | -         | -    | Y (for full experience)
 
 A few points to make: 
 
-- Although Team Members don't require a phone, some one on the team (preferably the Team Leader) will have
+- Although Team Members don't require a phone, some one on the team (preferably the Guide) will have
 a connection to the game over the internet to view the course maps, read the clues, view the locations, and answer the
 questions that allows the team to progress.
 - Again, although Team Members don't require a phone with data and GPS, they can follow along
-easier and answer the clues themselves instead of depending on the Team Leader.
-- Solo is essentially practicing to be a Team Leader.
+easier and answer the clues themselves instead of depending on the Guide.
+- Solo is essentially practicing to be a Guide.
 
 Player Profile
 ====
