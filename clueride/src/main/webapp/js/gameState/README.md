@@ -1,6 +1,6 @@
 Game State Module
 ====
-There multiple States being tracked:
+There are multiple States being tracked:
 
 1. Preparation State - Before play begins, different players take different paths to begin playing; this state occurs prior to the game's start; multiple actors involved.
 2. Outing State - tracks server-side the team's progress on a course as it is run on a given date.
@@ -18,6 +18,8 @@ Index | Forward | Reverse
 2  | Join Team | [Selected Team's Name]
 3  | GPS? | "GPS On" or "Tethered"
 4  | Play | Back to Options
+
+_TODO: Flesh this out from the_ [Begin Play Narratives](http://bikehighways.wikidot.com/begin-play-narratives)
 
 Outing State Tracking
 ----
@@ -140,39 +142,4 @@ up on the fly to account for the history from one course and the plan from anoth
 * mostRecentClueSolvedFlag (true if we're riding and not yet arrived)
 
 Team Confirmation opens play and Path Index is knocked off of -1.  It is possible that courses would be changed mid-stream.
-
-## Push implementation
-Risk is in choosing an appropriate solution for devices with intermittent connections such as mobile.
-
-Polled solution isn't unreasonable for the following reasons:
-
-* Viewing a page generally involves a trip to the server anyway.  If a timestamp of the last state change is part of
-the response, this can be checked for a difference and serve as a trigger to refresh the state.  The Home Page makes a
-good target for viewing updated state.  The Team Leaders Status page is another.
-
-## Two Polling Intervals
-
-1. The Outing State itself
-2. GPS position when tethered
-
-### Outing State Interval
-* 20-second or so automated pull
-* Auto-pull can be turned off
-* Can be manually requested by clicking/pressing "Home"
-
-### GPS position
-* Only turned on when a) Map is open, b) Riding state and c) tethered.
-* short interval for Armchair tether.
-* longer interval for field-based tether.
-* Manually requested at any time ??
-
-## QA
-
-## Tethered Location
-The timing and refresh rate of a tethered location is different from the timing for pushing/pulling the game state.
-Two different channels are setup, but it makes sense to expand the response to many REST calls to include both
-a position timestamp as well as a game state timestamp.
-
-* Pushing the updated position on an interval per team.
-* Pull occurs on an interval, but only when the position matters to the display (a map).
 
