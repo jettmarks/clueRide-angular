@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.Member;
 import com.clueride.domain.Team;
+import com.clueride.domain.account.Member;
 
 /**
  * Implementation of the Team Interface for maintaining the list of Teams and their members.

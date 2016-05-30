@@ -19,8 +19,8 @@ package com.clueride.service;
 
 import java.util.List;
 
-import com.clueride.domain.Member;
 import com.clueride.domain.Team;
+import com.clueride.domain.account.Member;
 
 public interface TeamService {
 

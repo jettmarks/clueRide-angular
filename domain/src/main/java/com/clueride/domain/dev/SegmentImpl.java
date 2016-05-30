@@ -22,8 +22,8 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.clueride.domain.Profile;
 import com.clueride.domain.Rating;
+import com.clueride.domain.account.Profile;
 
 /**
  * Portion of a Leg with identical characteristics (and thus rating) over the
@@ -125,7 +125,7 @@ public class SegmentImpl extends UnratedSegmentImpl implements Segment {
     }
 
     /**
-     * @see com.clueride.domain.dev.Arc#getRating(com.clueride.domain.Profile)
+     * @see com.clueride.domain.dev.Arc#getRating(Profile)
      */
     public Rating getRating(Profile profile) {
         // TODO Auto-generated method stub
