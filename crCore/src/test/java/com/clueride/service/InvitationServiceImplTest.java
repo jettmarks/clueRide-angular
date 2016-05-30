@@ -17,12 +17,15 @@
  */
 package com.clueride.service;
 
+import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.dao.InvitationStore;
 import com.clueride.domain.Invitation;
 import com.clueride.domain.Outing;
 import com.clueride.domain.account.Member;
+import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.assertNotNull;
 
 /**
@@ -38,6 +41,9 @@ public class InvitationServiceImplTest {
 
     private InvitationService toTest;
 
+    @Mock
+    private InvitationStore invitationStore;
+
     private Outing outing;
     private Member member;
 
@@ -47,9 +53,10 @@ public class InvitationServiceImplTest {
 
     @BeforeMethod
     public void setUp() {
+        initMocks(this);
         outing = createTestOuting();
         member = createTestMember();
-        toTest = new InvitationServiceImpl();
+        toTest = new InvitationServiceImpl(invitationStore);
     }
 
     private Outing createTestOuting() {

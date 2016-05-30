@@ -17,10 +17,14 @@
  */
 package com.clueride.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.google.common.base.Strings;
+import com.google.inject.Inject;
+import org.apache.log4j.Logger;
 
+import com.clueride.dao.InvitationStore;
 import com.clueride.domain.Invitation;
 import com.clueride.domain.Outing;
 import com.clueride.domain.account.Member;
@@ -29,22 +33,41 @@ import com.clueride.domain.account.Member;
  * Default implementation of InvitationService.
  */
 public class InvitationServiceImpl implements InvitationService {
+    private static final Logger LOGGER = Logger.getLogger(InvitationServiceImpl.class);
+
+    private final InvitationStore invitationStore;
+
+    /**
+     * Injectable constructor.
+     * @param invitationStore - Persistence layer for Invitations.
+     */
+    @Inject
+    public InvitationServiceImpl(InvitationStore invitationStore) {
+        this.invitationStore = invitationStore;
+    }
+
     @Override
     public Invitation getInvitationByToken(String token) {
-        return null;
+        return invitationStore.getInvitationByToken(token);
     }
 
     @Override
     public List<Invitation> getInvitationsForOuting(Integer outingId) {
-        return null;
+        return invitationStore.getInvitationsByOuting(outingId);
     }
 
     @Override
-    public Invitation createNew(Outing outing, Member member) {
+    public Invitation createNew(Outing outing, Member member) throws IOException {
+        LOGGER.info("Creating new instance");
         validateMember(member);
         validateOuting(outing);
 
-        Invitation invitation = new Invitation(outing, member);
+        Invitation invitation = Invitation.Builder.builder()
+                .setMember(member)
+                .setBuiltOuting(outing)
+                .build();
+
+        invitationStore.addNew(invitation);
         return invitation;
     }
 
