@@ -17,6 +17,7 @@
  */
 package com.clueride.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.clueride.domain.Invitation;
@@ -51,6 +52,6 @@ public interface InvitationService {
      * @param member The person who we invite.
      * @return Fully-populated Invitation instance.
      */
-    Invitation createNew(Outing outing, Member member);
+    Invitation createNew(Outing outing, Member member) throws IOException;
 
 }

@@ -39,13 +39,12 @@ public class Invitation {
     private InvitationState state;
 
     /**
-     * Instantiates an Invitation based on the Outing and Member.
-     * @param outing - Where we're riding and at what time.
-     * @param member - The Guest being invited.
+     * Builds immutable instance of Invitation from Builder instance.
+     * @param builder - Builder with all the data needed to construct Invitation instance.
      */
-    public Invitation(Outing outing, Member member) {
-        this.outing = outing;
-        this.member = member;
+    public Invitation(Builder builder) {
+        this.outing = builder.getOuting();
+        this.member = builder.getMember();
         this.state = InvitationState.INITIAL;
         evaluateToken();
     }
@@ -73,5 +72,46 @@ public class Invitation {
 
     public Outing getOuting() {
         return outing;
+    }
+
+    public static final class Builder {
+        private Outing outing;
+        private Member member;
+
+        /** Suppress no-arg constructor. */
+        private Builder() {
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public Invitation build() {
+            return new Invitation(this);
+        }
+
+        public Outing getOuting() {
+            return outing;
+        }
+
+        public Builder setBuiltOuting(Outing outing) {
+            this.outing = outing;
+            return this;
+        }
+
+        /* Assists Jackson in creating instances. */
+        public Builder setOuting(Outing.Builder outingBuilder) {
+            this.outing = outingBuilder.build();
+            return this;
+        }
+
+        public Member getMember() {
+            return member;
+        }
+
+        public Builder setMember(Member member) {
+            this.member = member;
+            return this;
+        }
     }
 }

@@ -85,9 +85,15 @@ public class Outing {
 
         private static IdProvider idProvider = new MemoryBasedOutingIdProvider();
 
-        /* For Jackson. */
+        /* For Jackson when creating a new Outing. */
         public Builder() {
             id = idProvider.getId();
+        }
+
+        /* Also for Jackson when accepting a fully-populated Outing (ID already assigned). */
+        public Builder setId(Integer id) {
+            this.id = id;
+            return this;
         }
 
         /* For other users of an Outing. */

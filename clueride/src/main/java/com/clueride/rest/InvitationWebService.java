@@ -17,10 +17,19 @@
  */
 package com.clueride.rest;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import com.google.inject.Inject;
-
+import com.clueride.domain.Invitation;
 import com.clueride.service.InvitationService;
 
 /**
@@ -34,4 +43,31 @@ public class InvitationWebService {
     public InvitationWebService(InvitationService invitationService) {
         this.invitationService = invitationService;
     }
+
+    @GET
+    @Path("/outing/{outingId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Invitation> getActiveInvitations(@PathParam("outingId") Integer outingId) {
+        return invitationService.getInvitationsForOuting(outingId);
+    }
+
+    @GET
+    @Path("{token}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Invitation getInvitation(@PathParam("token") String token) {
+        return invitationService.getInvitationByToken(token);
+    }
+
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Invitation createInvitation(Invitation.Builder invitationBuilder)
+            throws IOException {
+        return invitationService.createNew(
+                invitationBuilder.getOuting(),
+                invitationBuilder.getMember()
+        );
+    }
+
 }
