@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.opengis.feature.simple.SimpleFeature;
 
+import com.clueride.domain.account.Profile;
 import com.clueride.domain.dev.Segment;
 import com.clueride.feature.LineFeature;
 import com.clueride.feature.SegmentFeature;
@@ -133,7 +134,7 @@ public class SegmentFeatureImpl extends EdgeImpl implements
     }
 
     /**
-     * @see com.clueride.domain.dev.Arc#getRating(com.clueride.domain.Profile)
+     * @see com.clueride.domain.dev.Arc#getRating(Profile)
      */
     @Override
     public Rating getRating(Profile profile) {

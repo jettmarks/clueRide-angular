@@ -15,11 +15,17 @@
  * <p/>
  * Created 11/17/15.
  */
-package com.clueride.domain;
+package com.clueride.domain.account;
 
 public class Member {
     private Integer id;
     private String name;
+    // TODO: CA-259 bring in support for Email Addresses
+//    private InternetAddress emailAddress;
+    private String emailAddress;
+    // TODO: Bring in support for Phone Numbers
+//    private Phonenumber.PhoneNumber phone;
+    private String phoneNumber;
 
     /** Supporting Jackson. */
     public Member() {}
@@ -42,5 +48,21 @@ public class Member {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

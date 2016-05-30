@@ -9,7 +9,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.clueride.domain.Member;
+import com.clueride.domain.account.Member;
 import com.clueride.service.TeamService;
 
 /**

@@ -19,8 +19,8 @@ package com.clueride.domain.dev;
 
 import java.util.List;
 
-import com.clueride.domain.Profile;
 import com.clueride.domain.Rating;
+import com.clueride.domain.account.Profile;
 
 /**
  * Generalization of a specific route / path / segment between two points.

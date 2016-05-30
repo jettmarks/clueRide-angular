@@ -26,7 +26,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.Member;
+import com.clueride.domain.account.Member;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
 

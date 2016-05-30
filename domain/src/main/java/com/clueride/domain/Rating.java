@@ -17,6 +17,8 @@
  */
 package com.clueride.domain;
 
+import com.clueride.domain.account.Profile;
+
 /**
  * Provides a value for ranking different segments, legs, and routes.
  * 

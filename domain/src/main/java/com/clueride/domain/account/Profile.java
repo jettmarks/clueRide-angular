@@ -15,7 +15,7 @@
  *
  * Created Jul 28, 2015
  */
-package com.clueride.domain;
+package com.clueride.domain.account;
 
 /**
  * Ratings are based on a standard method of scoring various factors such as

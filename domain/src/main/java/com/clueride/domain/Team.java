@@ -20,6 +20,7 @@ package com.clueride.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.clueride.domain.account.Member;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedTeamIdProvider;
 
