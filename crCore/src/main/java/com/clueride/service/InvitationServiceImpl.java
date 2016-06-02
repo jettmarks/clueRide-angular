@@ -20,6 +20,16 @@ package com.clueride.service;
 import java.io.IOException;
 import java.util.List;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
@@ -69,6 +79,43 @@ public class InvitationServiceImpl implements InvitationService {
 
         invitationStore.addNew(invitation);
         return invitation;
+    }
+
+    @Override
+    public List<Invitation> send(Integer outingId) {
+        List<Invitation> invitations = invitationStore.getInvitationsByOuting(outingId);
+        for (Invitation invitation : invitations) {
+            sendEmail(createEmail(invitation));
+        }
+        return invitations;
+    }
+
+    private void sendEmail(Message email) {
+    }
+
+    private Message createEmail(Invitation invitation) {
+        Session session = null;
+        try {
+            Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");
+            session = (Session) envCtx.lookup("mail/Session");
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+        Message message = new MimeMessage(session);
+        try {
+            message.setFrom(new InternetAddress("clueride@gmail.com"));
+            message.setRecipients(
+                    Message.RecipientType.TO,
+                    new InternetAddress[]{new InternetAddress("jettmarks@bellsouth.net")}
+            );
+            message.setContent("This is the message", "text/plain");
+            Transport.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+        return message;
     }
 
     private void validateOuting(Outing outing) {
