@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<Configure id='wac' class="org.eclipse.jetty.webapp.WebAppContext">
+  <New id="mail" class="org.eclipse.jetty.plus.jndi.Resource">
+     <Arg>mail/Session</Arg>
+     <Arg>
+       <New class="org.eclipse.jetty.jndi.factories.MailSessionReference">
+         <Set name="user"></Set>
+         <Set name="password"></Set>
+         <Set name="properties">
+           <New class="java.util.Properties">
+             <Put name="mail.smtp.host">localhost</Put>
+             <Put name="mail.from"></Put>
+             <Put name="mail.debug">true</Put>
+           </New>
+          </Set>
+       </New>
+     </Arg>
+  </New>
+</Configure>

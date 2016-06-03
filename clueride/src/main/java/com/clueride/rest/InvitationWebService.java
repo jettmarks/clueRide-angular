@@ -70,4 +70,11 @@ public class InvitationWebService {
         );
     }
 
+    @POST
+    @Path("/send/{outingId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<Invitation> sendInvitations(Integer outingId) {
+        return invitationService.send(outingId);
+    }
 }

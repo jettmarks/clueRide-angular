@@ -54,4 +54,12 @@ public interface InvitationService {
      */
     Invitation createNew(Outing outing, Member member) throws IOException;
 
+    /**
+     * Given an Outing's unique ID, generate and send emails for each of the Guests for the Outing.
+     * If the caller doesn't have the Guide badge and isn't the creator of this Outing, the
+     * invitations will not be sent.
+     * @param outingId Unique identifier for the Outing.
+     * @return List of Invitations for the Outing with appropriate state for each Invitation.
+     */
+    List<Invitation> send(Integer outingId);
 }
