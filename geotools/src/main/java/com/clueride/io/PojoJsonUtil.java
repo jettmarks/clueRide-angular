@@ -32,12 +32,14 @@ import org.apache.log4j.Logger;
 import com.clueride.domain.Course;
 import com.clueride.domain.GameCourse;
 import com.clueride.domain.GamePath;
+import com.clueride.domain.Invitation;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.Path;
 import com.clueride.rest.dto.ClueRideState;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedClueIdProvider;
+import com.clueride.service.MemoryBasedInvitationIdProvider;
 import com.clueride.service.MemoryBasedLocationIdProvider;
 import com.clueride.service.MemoryBasedPathIdProvider;
 
@@ -51,6 +53,7 @@ public class PojoJsonUtil {
     private static IdProvider locationIdProvider = new MemoryBasedLocationIdProvider();
     private static IdProvider pathIdProvider = new MemoryBasedPathIdProvider();
     private static IdProvider clueIdProvider = new MemoryBasedClueIdProvider();
+    private static IdProvider invitationIdProvider = new MemoryBasedInvitationIdProvider();
 
     /**
      * From the values in the location instance, create a File appropriate for storing
@@ -312,5 +315,42 @@ public class PojoJsonUtil {
             }
         }
         return clues;
+    }
+
+    private static Invitation loadInvitation(File file) {
+        Invitation invitation;
+        try {
+            synchronized (objectMapper) {
+                Invitation.Builder builder = objectMapper.readValue(file, Invitation.Builder.class);
+                invitation = builder.build();
+                invitationIdProvider.registerId(invitation.getId());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected I/O error while reading Clue: ", e);
+        }
+        return invitation;
+    }
+
+    public static List<Invitation> loadInvitations() {
+        List<Invitation> invitations = new ArrayList<>();
+        final JsonStoreType storeType = JsonStoreType.INVITATION;
+        File directory = new File(JsonStoreLocation.toString(storeType));
+        if (!directory.canWrite()) {
+            if (!directory.mkdir()) {
+                throw new RuntimeException("Unable to create directory " + directory.getName());
+            }
+        } else {
+            for (File file : directory.listFiles(new FilenameFilter() {
+
+                @Override
+                public boolean accept(File file, String s) {
+                    return s.startsWith(JsonPrefixMap.toString(storeType))
+                            && s.endsWith(".json");
+                }
+            })) {
+                invitations.add(loadInvitation(file));
+            }
+        }
+        return invitations;
     }
 }

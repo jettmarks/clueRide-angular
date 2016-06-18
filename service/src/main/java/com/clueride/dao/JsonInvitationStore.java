@@ -17,25 +17,50 @@
  */
 package com.clueride.dao;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.Inject;
+
 import com.clueride.domain.Invitation;
+import com.clueride.io.JsonStoreType;
+import com.clueride.io.PojoJsonUtil;
 
 /**
  * Implementation of InvitationStore.
  *
- * TODO: Need to actually persist this instead of letting it hang around in memory.
+ * TODO: CA-264 Need to actually persist this instead of letting it hang around in memory.
  */
-public class InvitationStoreImpl implements InvitationStore {
+public class JsonInvitationStore implements InvitationStore {
     private static List<Invitation> invitations = new ArrayList<>();
+
+    @Inject
+    public JsonInvitationStore() {
+        loadAll();
+    }
+
+    private void loadAll() {
+        invitations = PojoJsonUtil.loadInvitations();
+
+    }
 
     @Override
     public Integer addNew(Invitation invitation) throws IOException {
         invitations.add(invitation);
-        // TODO: Hook this up with an ID provider
-        return null;
+        File outFile = PojoJsonUtil.getFile(invitation.getId(), JsonStoreType.INVITATION);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            objectMapper
+                    .writer()
+                    .withDefaultPrettyPrinter()
+                    .writeValue(outFile, invitation);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return invitation.getId();
     }
 
     @Override
@@ -45,7 +70,7 @@ public class InvitationStoreImpl implements InvitationStore {
 
     @Override
     public Invitation getInvitationByToken(String token) {
-        // TODO: Brute force method until we build indices
+        // TODO: CA-264 Brute force method until we build indices
         for (Invitation invitation : invitations) {
             if (invitation.getToken().endsWith(token)) {
                 return invitation;

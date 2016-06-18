@@ -41,6 +41,7 @@ public class JsonStoreLocation implements TestModeAware {
         map.put(JsonStoreType.EDGE, "/home/jett/jsonFeatures/segments/edge");
         map.put(JsonStoreType.PATH, "/home/jett/jsonFeatures/paths");
         map.put(JsonStoreType.COURSE, "/home/jett/jsonFeatures/courses");
+        map.put(JsonStoreType.INVITATION, "/home/jett/jsonFeatures/invitations");
         map.put(JsonStoreType.NETWORK,
                 "/home/jett/jsonFeatures/segments/network");
         map.put(JsonStoreType.LOCATION, "/home/jett/jsonFeatures/locations");
@@ -57,6 +58,7 @@ public class JsonStoreLocation implements TestModeAware {
                 "/home/jett/jsonFeatures-test/segments/edge");
         testMap.put(JsonStoreType.PATH, "/home/jett/jsonFeatures-test/paths");
         testMap.put(JsonStoreType.COURSE, "/home/jett/jsonFeatures-test/courses");
+        map.put(JsonStoreType.INVITATION, "/home/jett/jsonFeatures-test/invitations");
         testMap.put(JsonStoreType.NETWORK,
                 "/home/jett/jsonFeatures-test/segments/network");
         testMap.put(JsonStoreType.LOCATION,

@@ -22,9 +22,9 @@ import com.google.inject.AbstractModule;
 import com.clueride.dao.ClueStore;
 import com.clueride.dao.CourseStore;
 import com.clueride.dao.InvitationStore;
-import com.clueride.dao.InvitationStoreImpl;
 import com.clueride.dao.JsonClueStore;
 import com.clueride.dao.JsonCourseStore;
+import com.clueride.dao.JsonInvitationStore;
 import com.clueride.dao.JsonLocationStore;
 import com.clueride.dao.JsonPathStore;
 import com.clueride.dao.LocationStore;
@@ -40,6 +40,6 @@ public class ServiceGuiceModule extends AbstractModule {
         bind(CourseStore.class).to(JsonCourseStore.class);
         bind(PathStore.class).to(JsonPathStore.class);
         bind(LocationStore.class).to(JsonLocationStore.class);
-        bind(InvitationStore.class).to(InvitationStoreImpl.class);
+        bind(InvitationStore.class).to(JsonInvitationStore.class);
     }
 }

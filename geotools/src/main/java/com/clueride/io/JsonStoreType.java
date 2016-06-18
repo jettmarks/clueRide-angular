@@ -41,5 +41,6 @@ public enum JsonStoreType {
     LOCATION_GROUP,
     PATH,
     CLUE,
-    COURSE;
+    COURSE,
+    INVITATION;
 }
