@@ -18,6 +18,8 @@
 package com.clueride.domain;
 
 import com.clueride.domain.account.Member;
+import com.clueride.service.IdProvider;
+import com.clueride.service.MemoryBasedInvitationIdProvider;
 
 /**
  * Maps a given Member to a given Outing along with a unique token that serves as the first step
@@ -27,6 +29,7 @@ public class Invitation {
     private String token;
     private Member member;
     private Outing outing;
+    private Integer id = null;
 
     public InvitationState getState() {
         return state;
@@ -40,12 +43,14 @@ public class Invitation {
 
     /**
      * Builds immutable instance of Invitation from Builder instance.
+     *
      * @param builder - Builder with all the data needed to construct Invitation instance.
      */
     public Invitation(Builder builder) {
         this.outing = builder.getOuting();
         this.member = builder.getMember();
         this.state = InvitationState.INITIAL;
+        this.id = builder.getId();
         evaluateToken();
     }
 
@@ -74,12 +79,23 @@ public class Invitation {
         return outing;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public static final class Builder {
         private Outing outing;
         private Member member;
+        private Integer id;
 
-        /** Suppress no-arg constructor. */
+        /** No-arg constructor for our use only. */
         private Builder() {
+            IdProvider idProvider = new MemoryBasedInvitationIdProvider();
+            id = idProvider.getId();
         }
 
         public static Builder builder() {
@@ -112,6 +128,14 @@ public class Invitation {
         public Builder setMember(Member member) {
             this.member = member;
             return this;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
         }
     }
 }
