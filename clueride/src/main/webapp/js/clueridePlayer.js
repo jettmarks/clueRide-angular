@@ -1,4 +1,3 @@
-
 var app = angular.module('clueridePlayer', [
   'ngCookies',
   'ngResource',
@@ -25,7 +24,7 @@ var app = angular.module('clueridePlayer', [
   'ui.bootstrap',
   'mobile-angular-ui',
   'angularFileUpload',
-  
+
   // touch/drag feature: this is from 'mobile-angular-ui.gestures.js'
   // it is at a very beginning stage, so please be careful if you like to use
   // in production. This is intended to provide a flexible, integrated and and 
@@ -57,6 +56,7 @@ app.config(function($routeProvider, $httpProvider) {
     $routeProvider.when('/locEdit/estab',   {templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
     $routeProvider.when('/status',          {templateUrl: 'js/status/status.html', reloadOnSearch: false});
     $routeProvider.when('/outing',          {templateUrl: 'js/outing/outingEdit.html', reloadOnSearch: false});
+    $routeProvider.when('/invitation',      {templateUrl: 'js/invitation/landing.html', reloadOnSearch: false});
     $routeProvider.when('/ice',             {templateUrl: 'ice.html', reloadOnSearch: false});
 
     /* Setup interceptor for redirects and other exceptions. */

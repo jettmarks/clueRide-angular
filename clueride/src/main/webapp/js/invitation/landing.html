@@ -1,0 +1,15 @@
+<div id="invitationLanding" ng-controller="InvitationLandingController as vm">
+  <div id="courseDescription" class="entry-field">
+  Course Name: {{vm.course.name}}
+  {{vm.outing.course.type.description}}
+  </div>
+  Meeting Time:
+  <button ng-click="vm.addToCalendar()" class="btn btn=-primary">Add to Calendar</button>
+
+  <div id="outingNav" class="entry-field">
+    <a href="#/location" class="btn btn=-primary">Attraction</a>
+    <a href="#/badges" class="btn btn=-primary">Badges</a>
+    <a href="#/profile" class="btn btn=-primary">Profile</a>
+    <a href="#/play" class="btn btn=-primary">Play</a>
+  </div>
+</div>
