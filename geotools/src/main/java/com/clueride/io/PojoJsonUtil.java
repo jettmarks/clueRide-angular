@@ -71,13 +71,16 @@ public class PojoJsonUtil {
      * Given an object ID to write to disk, determine the file name where that object
      * is expected to reside.
      * A little more genericized version.
+     * TODO: CA-266 Refactoring to make this more friendly to the various types of file/object organization.
      * @param id - Integer representing the object being persisted.
      * @param storeType - Provides persistence details particular to the Type of object.
      * @return File instance ready to read/write.
      * @throws IOException
      */
     public static File getFile(Integer id, JsonStoreType storeType) throws IOException {
-        File candidateFile = getFileForId(id, storeType);
+        File candidateFile = (storeType == JsonStoreType.INVITATION)
+                ? getFileForId(id, storeType)
+                : getFileWithDirectoryForId(id, storeType);
         if (!candidateFile.canWrite()) {
             // Possible that the directory doesn't exist either
             if (!candidateFile.getParentFile().canWrite()) {
@@ -90,7 +93,15 @@ public class PojoJsonUtil {
         return candidateFile;
     }
 
-    private static File getFileForId(Integer id, JsonStoreType storeType) {
+    /**
+     * Creates a File spec with the pattern "<type>/</type>-<id>/<type>-<id>.json" where the 'id' field is 5 digits.
+     * This is suitable for most objects being persisted, but for invitations, we don't require the directory
+     * of the same name.
+     * @param id
+     * @param storeType
+     * @return
+     */
+    private static File getFileWithDirectoryForId(Integer id, JsonStoreType storeType) {
         String specificName = JsonPrefixMap.toString(storeType) + "-" + String.format("%05d", id);
         return new File(JsonStoreLocation.toString(storeType)
                 + File.separator
@@ -99,6 +110,22 @@ public class PojoJsonUtil {
                 + specificName
                 + ".json");
     }
+
+    /**
+     * Creates a File spec with the pattern "<type>/<type>-<id>.json" where the 'id' field is 5 digits.
+     * This is suitable for objects which all reside in a single directory for the given storeType.
+     * @param id - Integer uniquely identifying the object of the given type.
+     * @param storeType - Type of object being persisted.
+     * @return File which may or may not exist; this only specifies the path and name of the file.
+     */
+    private static File getFileForId(Integer id, JsonStoreType storeType) {
+        String specificName = JsonPrefixMap.toString(storeType) + "-" + String.format("%05d", id);
+        return new File(JsonStoreLocation.toString(storeType)
+                + File.separator
+                + specificName
+                + ".json");
+    }
+
 
     public static File getFileForClueId(Integer id) {
         JsonStoreType storeType = JsonStoreType.CLUE;
@@ -147,7 +174,7 @@ public class PojoJsonUtil {
     }
 
     public static Location loadLocationId(int id) throws FileNotFoundException {
-        File locationFile = getFileForId(id, JsonStoreType.LOCATION );
+        File locationFile = getFileWithDirectoryForId(id, JsonStoreType.LOCATION);
         if (!locationFile.exists()) {
             throw new FileNotFoundException(locationFile.getName());
         }

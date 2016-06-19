@@ -154,12 +154,13 @@ public class Invitation {
          * the token will become "public", and is expected to match up through the life-cycle
          * of the invitation.
          */
-        public void evaluateToken() {
+        public Builder evaluateToken() {
             // Unable to handle left-shift until we put this into a long
             long longToken = outing.hashCode();
             longToken <<= 32;
             longToken += this.hashCode();
             token = Long.toHexString(longToken);
+            return this;
         }
     }
 }
