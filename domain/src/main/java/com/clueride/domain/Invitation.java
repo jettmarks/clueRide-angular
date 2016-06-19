@@ -30,15 +30,6 @@ public class Invitation {
     private Member member;
     private Outing outing;
     private Integer id = null;
-
-    public InvitationState getState() {
-        return state;
-    }
-
-    public void setState(InvitationState state) {
-        this.state = state;
-    }
-
     private InvitationState state;
 
     /**
@@ -47,24 +38,11 @@ public class Invitation {
      * @param builder - Builder with all the data needed to construct Invitation instance.
      */
     public Invitation(Builder builder) {
+        this.token = builder.getToken();
+        this.id = builder.getId();
         this.outing = builder.getOuting();
         this.member = builder.getMember();
-        this.state = InvitationState.INITIAL;
-        this.id = builder.getId();
-        evaluateToken();
-    }
-
-    /**
-     * Token is a 64-bit representation of the invitation where the upper 32 bits
-     * come from the Outing instance and the lower 32 bits come from the entire
-     * object.
-     */
-    private void evaluateToken() {
-        // Unable to handle left-shift until we put this into a long
-        long longToken = outing.hashCode();
-        longToken <<= 32;
-        longToken += this.hashCode();
-        token = Long.toHexString(longToken);
+        this.state = (builder.getState() != null) ? builder.getState() : InvitationState.INITIAL;
     }
 
     public String getToken() {
@@ -83,15 +61,26 @@ public class Invitation {
         return id;
     }
 
+    public void setState(InvitationState state) {
+        // TODO: Do we really want this in the immutable?
+        this.state = state;
+    }
+
+    public InvitationState getState() {
+        return state;
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }
 
     public static final class Builder {
+
+        private String token;
         private Outing outing;
         private Member member;
         private Integer id;
-
+        private InvitationState invitationState;
         /** No-arg constructor for our use only. */
         private Builder() {
             IdProvider idProvider = new MemoryBasedInvitationIdProvider();
@@ -112,6 +101,15 @@ public class Invitation {
 
         public Builder setBuiltOuting(Outing outing) {
             this.outing = outing;
+            return this;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public Builder setToken(String token) {
+            this.token = token;
             return this;
         }
 
@@ -136,6 +134,32 @@ public class Invitation {
 
         public void setId(Integer id) {
             this.id = id;
+        }
+
+        public InvitationState getState() {
+            return invitationState;
+        }
+
+        public Builder setState(InvitationState invitationState) {
+            this.invitationState = invitationState;
+            return this;
+        }
+
+        /**
+         * Token is a 64-bit representation of the invitation where the upper 32 bits
+         * come from the Outing instance and the lower 32 bits come from the entire
+         * object.
+         *
+         * This value should be calculated once, persisted, and then used unchanged from then on since
+         * the token will become "public", and is expected to match up through the life-cycle
+         * of the invitation.
+         */
+        public void evaluateToken() {
+            // Unable to handle left-shift until we put this into a long
+            long longToken = outing.hashCode();
+            longToken <<= 32;
+            longToken += this.hashCode();
+            token = Long.toHexString(longToken);
         }
     }
 }
