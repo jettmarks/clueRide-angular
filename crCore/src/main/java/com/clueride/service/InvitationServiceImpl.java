@@ -75,6 +75,7 @@ public class InvitationServiceImpl implements InvitationService {
         Invitation invitation = Invitation.Builder.builder()
                 .setMember(member)
                 .setBuiltOuting(outing)
+                .evaluateToken()
                 .build();
 
         invitationStore.addNew(invitation);
