@@ -18,6 +18,7 @@
 package com.clueride.infrastructure;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -30,14 +31,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.clueride.domain.Invitation;
+import com.clueride.domain.user.Badge;
+import com.clueride.service.AuthenticationService;
+import com.clueride.service.InvitationService;
+
 /**
  * Session Tracking filter.
  */
 public class CluerideSessionFilter implements Filter {
     private ServletContext servletContext;
 
+    private AuthenticationService authenticationService;
+    private InvitationService invitationService;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        // TODO: CA-269 Move this to dependency injection
+        authenticationService = CoreGuiceSetup.getGuiceInjector(null).getInstance(AuthenticationService.class);
+        invitationService = CoreGuiceSetup.getGuiceInjector(null).getInstance(InvitationService.class);
+
         this.servletContext = filterConfig.getServletContext();
         this.servletContext.log("Clueride Session Filter initialized");
     }
@@ -61,6 +74,16 @@ public class CluerideSessionFilter implements Filter {
                 chain.doFilter(request, response);
                 return;
             }
+            /* Check to see if this is an invitation with a valid token. */
+            if (isValidInvitation(req)) {
+                this.servletContext.log("Found Invitation");
+                /* Lookup details of invitation to place in the session. */
+                Invitation invitation = invitationService.getInvitationByToken(req.getParameter("inviteToken"));
+                List<Badge> badges = authenticationService.loginReturningBadges(invitation);
+                authenticationService.establishSession(badges, req);
+                chain.doFilter(request, response);
+                return;
+            }
             this.servletContext.log("Requested Resource::"+uri);
             this.servletContext.log("Unauthorized access request");
             this.servletContext.log("Host: "+req.getRequestURL());
@@ -73,6 +96,16 @@ public class CluerideSessionFilter implements Filter {
             /* We have a session;  pass the request along the filter chain */
             chain.doFilter(request, response);
         }
+    }
+
+    private boolean isValidInvitation(HttpServletRequest req) {
+        boolean result = false;
+        String invitationToken = req.getParameter("inviteToken");
+        if (invitationToken != null) {
+            this.servletContext.log("Invitation Token Found: " + invitationToken);
+            result = true;
+        }
+        return result;
     }
 
     boolean isLoginPageUri(String uri) {

@@ -106,17 +106,32 @@ public class InvitationServiceImpl implements InvitationService {
         Message message = new MimeMessage(session);
         try {
             message.setFrom(new InternetAddress("clueride@gmail.com"));
+            message.setSubject("Clue Ride Invitation - Calling All Seekers");
+            // TODO: During test, we want to ensure all emails come to my account
             message.setRecipients(
                     Message.RecipientType.TO,
                     new InternetAddress[]{new InternetAddress("jettmarks@bellsouth.net")}
             );
-            message.setContent("This is the message", "text/plain");
+            message.setContent(createEmailContent(invitation), "text/html; charset=utf-8");
             Transport.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
 
         return message;
+    }
+
+    private String createEmailContent(Invitation invitation) {
+        StringBuffer buffer = new StringBuffer();
+
+        buffer.append("Dear ").append(invitation.getMember().getName()).append(",<p>")
+                .append("You've been invited to join members of the ")
+                .append(invitation.getOuting().getTeamId()).append(" team.<p>")
+                .append("Follow this link to acknowledge this invitation: " +
+                        "<a href=\"http://localhost:8080/#/invitation?inviteToken=")
+                .append(invitation.getToken())
+                .append("\">Yes, I plan to Attend</a>");
+        return buffer.toString();
     }
 
     private void validateOuting(Outing outing) {

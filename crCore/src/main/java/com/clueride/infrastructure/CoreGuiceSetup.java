@@ -17,19 +17,18 @@
  */
 package com.clueride.infrastructure;
 
-import com.clueride.CluerideGuiceModule;
-import com.clueride.config.GeoToolsGuiceModule;
+import javax.servlet.ServletContext;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 
-import javax.servlet.ServletContext;
+import com.clueride.CluerideGuiceModule;
+import com.clueride.config.GeoToolsGuiceModule;
 
 /**
  * Configure the Guice container.
- *
- * TODO: Move this into the core module once we get that setup.
  */
 public class CoreGuiceSetup extends GuiceServletContextListener {
     private static Injector myInjector;
