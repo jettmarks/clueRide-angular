@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.clueride.domain.Invitation;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
 
@@ -35,6 +36,13 @@ public interface AuthenticationService {
      */
     List<Badge> loginReturningBadges(CRCredentials crCredentials);
 
+
+    /**
+     * Given a validated invitation, find the badges earned by the corresponding user.
+     * @param invitation - Stand-in for credentials.
+     * @return List of Badges representing capabilities (authorizations) for the account.
+     */
+    List<Badge> loginReturningBadges(Invitation invitation);
 
     /**
      * Given an HttpServletRequest and the list of appropriate badges,

@@ -26,6 +26,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import com.clueride.domain.Invitation;
 import com.clueride.domain.account.Member;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
@@ -55,6 +56,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Member member = new Member(crCredentials.name);
         // TODO: Hardcoded the team here; probably should go with establishing the outing
         teamService.addMember(2, member);
+        return result;
+    }
+
+    @Override
+    public List<Badge> loginReturningBadges(Invitation invitation) {
+        Member member = invitation.getMember();
+        List<Badge> result = new ArrayList<>();
+        if ("Jett".equals(member.getName())) {
+            result.add(Badge.TEAM_LEAD);
+        }
+        result.add(Badge.TEAM_MEMBER);
         return result;
     }
 
