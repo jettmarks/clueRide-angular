@@ -22,6 +22,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.clueride.dao.InvitationStore;
+import com.clueride.dao.MemberStore;
 import com.clueride.domain.Invitation;
 import com.clueride.domain.Outing;
 import com.clueride.domain.account.Member;
@@ -44,6 +45,9 @@ public class InvitationServiceImplTest {
     @Mock
     private InvitationStore invitationStore;
 
+    @Mock
+    private MemberStore memberStore;
+
     private Outing outing;
     private Member member;
 
@@ -56,7 +60,7 @@ public class InvitationServiceImplTest {
         initMocks(this);
         outing = createTestOuting();
         member = createTestMember();
-        toTest = new InvitationServiceImpl(invitationStore);
+        toTest = new InvitationServiceImpl(invitationStore, memberStore);
     }
 
     private Outing createTestOuting() {
@@ -78,31 +82,31 @@ public class InvitationServiceImplTest {
 
     @Test
     public void testCreateNew() throws Exception {
-        Invitation actual = toTest.createNew(outing, member);
+        Invitation actual = toTest.createNew(outing, member.getId());
         assertNotNull(actual);
         assertNotNull(actual.getToken());
     }
 
     @Test
     public void testCreateNew_TokenCheck() throws Exception {
-        Invitation firstInvite = toTest.createNew(outing, member);
+        Invitation firstInvite = toTest.createNew(outing, member.getId());
         System.out.println("First  Token: " + firstInvite.getToken());
         Member member2 = createTestMember();
         member2.setId(TEST_MEMBER_ID + 1);
-        Invitation secondInvite = toTest.createNew(outing, member2);
+        Invitation secondInvite = toTest.createNew(outing, member2.getId());
         System.out.println("Second Token: " + secondInvite.getToken());
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testCreateNew_InvalidMember() throws Exception {
         member.setEmailAddress(null);
-        Invitation actual = toTest.createNew(outing, member);
+        Invitation actual = toTest.createNew(outing, member.getId());
     }
 
     private Member createTestMember() {
         Member member = new Member();
         member.setId(TEST_MEMBER_ID);
-        member.setName("testee");
+        member.setDisplayName("testee");
         member.setEmailAddress("nowhere@bad-domain.com");
         return member;
     }

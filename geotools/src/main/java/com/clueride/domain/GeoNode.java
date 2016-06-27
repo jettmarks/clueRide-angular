@@ -19,12 +19,12 @@ package com.clueride.domain;
 
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.clueride.domain.dev.Node;
 import com.clueride.feature.Edge;
 import com.clueride.feature.TrackFeature;
-import com.vividsolutions.jts.geom.Point;
 
 /**
  * Refinement of Node that knows about the GeoTools objects.
@@ -59,7 +59,7 @@ public interface GeoNode extends Node {
 
     Double getLat();
 
-    abstract Double getElevation();
+    Double getElevation();
 
     /**
      * @deprecated

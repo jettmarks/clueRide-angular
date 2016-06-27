@@ -34,7 +34,7 @@ public interface ClueStore {
      */
     Integer addNew(Clue clue) throws IOException;
 
-    /**(
+    /**
      * Retrieves from the store the {@link Clue} matching the ID.
      * @param id - Unique identifier for the Clue.
      * @return the matching Clue.

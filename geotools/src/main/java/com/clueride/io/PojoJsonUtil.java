@@ -33,6 +33,8 @@ import com.clueride.domain.Course;
 import com.clueride.domain.GameCourse;
 import com.clueride.domain.GamePath;
 import com.clueride.domain.Invitation;
+import com.clueride.domain.account.Member;
+import com.clueride.domain.common.Builder;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.Path;
@@ -358,6 +360,51 @@ public class PojoJsonUtil {
         return invitation;
     }
 
+    public static <T> T loadJsonObject(File file, com.clueride.domain.common.Builder<T> builder) {
+        T jsonObject = null;
+        try {
+            Builder<T> populatedBuilder;
+            populatedBuilder = objectMapper.readValue(file, builder.getClass());
+            jsonObject = populatedBuilder.build();
+//            IdProvider.registerId(jsonObject.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    public static <T> List<T> loadJsonObjects(final JsonStoreType storeType) {
+        List<T> jsonObjects = new ArrayList<>();
+        File directory = new File(JsonStoreLocation.toString(storeType));
+        if (!directory.canWrite()) {
+            if (!directory.mkdir()) {
+                throw new RuntimeException("Unable to create directory " + directory.getName());
+            }
+        } else {
+            for (File file : directory.listFiles(new FilenameFilter() {
+
+                @Override
+                public boolean accept(File file, String s) {
+                    return s.startsWith(JsonPrefixMap.toString(storeType))
+                            && s.endsWith(".json");
+                }
+            })) {
+                switch (storeType) {
+                    case INVITATION:
+                        jsonObjects.add((T) loadJsonObject(file, Invitation.Builder.builder()));
+                        break;
+                    case MEMBER:
+                        jsonObjects.add((T) loadJsonObject(file, Member.Builder.builder()));
+                        break;
+                    default:
+                        LOGGER.error("Unrecognized Store Type: " + storeType);
+                        break;
+                }
+            }
+        }
+        return jsonObjects;
+    }
+
     public static List<Invitation> loadInvitations() {
         List<Invitation> invitations = new ArrayList<>();
         final JsonStoreType storeType = JsonStoreType.INVITATION;
@@ -380,4 +427,9 @@ public class PojoJsonUtil {
         }
         return invitations;
     }
+
+    public static List<Member> loadMembers() {
+        return loadJsonObjects(JsonStoreType.MEMBER);
+    }
+
 }

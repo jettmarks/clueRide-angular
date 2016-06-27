@@ -22,7 +22,6 @@ import java.util.List;
 
 import com.clueride.domain.Invitation;
 import com.clueride.domain.Outing;
-import com.clueride.domain.account.Member;
 
 /**
  * Service supporting the Invitation Model which ties together an Outing and a Member.
@@ -49,10 +48,10 @@ public interface InvitationService {
      * Both the Outing and the Member are validated to make sure we have what
      * is needed.
      * @param outing The Outing which we're inviting people to attend.
-     * @param member The person who we invite.
+     * @param memberId Unique identifier for the person who we invite.
      * @return Fully-populated Invitation instance.
      */
-    Invitation createNew(Outing outing, Member member) throws IOException;
+    Invitation createNew(Outing outing, Integer memberId) throws IOException;
 
     /**
      * Given an Outing's unique ID, generate and send emails for each of the Guests for the Outing.

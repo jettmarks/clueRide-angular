@@ -22,6 +22,9 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.domain.Invitation;
+import com.clueride.domain.account.Member;
+import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.Location;
 import static org.testng.Assert.assertEquals;
@@ -63,4 +66,31 @@ public class PojoJsonUtilTest {
         assertNotNull(clue);
         assertEquals(clue.getId(), new Integer(1));
     }
+
+    @Test
+    public void testLoadJsonObjects_Invitation() throws Exception {
+        List<Invitation> jsonObjects = PojoJsonUtil.loadJsonObjects(JsonStoreType.INVITATION);
+        assertNotNull(jsonObjects);
+        assertTrue(jsonObjects.size() > 0);
+        Invitation firstInvite = jsonObjects.get(0);
+        assertNotNull(firstInvite);
+        System.out.println("Token: " + firstInvite.getToken());
+
+        Integer memberId = firstInvite.getMemberId();
+        assertNotNull(memberId);
+    }
+
+    @Test
+    public void testLoadJsonObjects_Member() throws Exception {
+        List<Member> jsonObjects = PojoJsonUtil.loadJsonObjects(JsonStoreType.MEMBER);
+        assertNotNull(jsonObjects);
+        assertTrue(jsonObjects.size() > 0);
+        Member firstMember = jsonObjects.get(0);
+        assertNotNull(firstMember);
+        System.out.println("Email Address: " + firstMember.getEmailAddress());
+        for (Badge badge : firstMember.getBadges()) {
+            System.out.println(badge);
+        }
+    }
+
 }

@@ -66,7 +66,7 @@ public class InvitationWebService {
             throws IOException {
         return invitationService.createNew(
                 invitationBuilder.getOuting(),
-                invitationBuilder.getMember()
+                invitationBuilder.getMemberId()
         );
     }
 

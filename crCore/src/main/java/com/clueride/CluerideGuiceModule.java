@@ -31,19 +31,20 @@ public class CluerideGuiceModule extends AbstractModule {
     protected void configure() {
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(RecommendationService.class).to(DefaultRecommendationService.class);
-        bind(LocationService.class).to(DefaultLocationService.class);
+        bind(ControlService.class).to(DefaultControlService.class);
         bind(CourseService.class).to(CourseServiceImpl.class);
         bind(ClueService.class).to(ClueServiceImpl.class);
-        bind(OutingService.class).to(OutingServiceImpl.class);
-        bind(InvitationService.class).to(InvitationServiceImpl.class);
-        bind(PathService.class).to(PathServiceImpl.class);
-        bind(ControlService.class).to(DefaultControlService.class);
-        bind(GameStateService.class).to(GameStateServiceImpl.class);
-        bind(TeamService.class).to(TeamServiceImpl.class);
-        bind(NodeService.class).to(DefaultNodeService.class);
         bind(DiagnosticService.class).to(DiagnosticServiceImpl.class);
-        bind(Network.class).to(DefaultNetwork.class);
+        bind(GameStateService.class).to(GameStateServiceImpl.class);
         bind(ImageStore.class).to(FileImageStore.class);
+        bind(InvitationService.class).to(InvitationServiceImpl.class);
+        bind(LocationService.class).to(DefaultLocationService.class);
+        bind(MemberService.class).to(MemberServiceImpl.class);
+        bind(Network.class).to(DefaultNetwork.class);
         bind(NetworkEval.class).to(NetworkEvalImpl.class);
+        bind(NodeService.class).to(DefaultNodeService.class);
+        bind(OutingService.class).to(OutingServiceImpl.class);
+        bind(PathService.class).to(PathServiceImpl.class);
+        bind(TeamService.class).to(TeamServiceImpl.class);
     }
 }

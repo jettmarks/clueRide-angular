@@ -17,7 +17,7 @@
  */
 package com.clueride.service;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,23 +37,40 @@ import com.clueride.rest.dto.CRCredentials;
 public class AuthenticationServiceImpl implements AuthenticationService {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationServiceImpl.class);
     private final TeamService teamService;
+    private final MemberService memberService;
 
     @Inject
-    public AuthenticationServiceImpl(TeamService teamService) {
+    public AuthenticationServiceImpl(
+            TeamService teamService,
+            MemberService memberService
+    ) {
         this.teamService = teamService;
+        this.memberService = memberService;
     }
 
     // TODO: Eventually, this will also hold the selected Team/Outing
 
     @Override
     public List<Badge> loginReturningBadges(CRCredentials crCredentials) {
-        LOGGER.info("Retrieving badges for user " + crCredentials.name);
-        List<Badge> result = new ArrayList<>();
-        if ("Jett".equals(crCredentials.name) && "adfhg".equals(crCredentials.password)) {
-            result.add(Badge.TEAM_LEAD);
+        String displayName = crCredentials.name;
+        LOGGER.info("Retrieving badges for user " + displayName);
+
+        List<Badge> result = Collections.emptyList();
+
+        // TODO: Add the check of the password when coming in from this direction
+//        if ("Jett".equals(displayName) && "adfhg".equals(crCredentials.password)) {
+
+        Member member = null;
+        List<Member> members = memberService.getMemberByDisplayName(crCredentials.name);
+        if (members.size() == 1) {
+            member = members.get(0);
+        } else {
+            LOGGER.error("More than one Member with the display Name: " + displayName);
         }
-        result.add(Badge.TEAM_MEMBER);
-        Member member = new Member(crCredentials.name);
+        if (member != null) {
+            result = member.getBadges();
+        }
+
         // TODO: Hardcoded the team here; probably should go with establishing the outing
         teamService.addMember(2, member);
         return result;
@@ -61,13 +78,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public List<Badge> loginReturningBadges(Invitation invitation) {
-        Member member = invitation.getMember();
-        List<Badge> result = new ArrayList<>();
-        if ("Jett".equals(member.getName())) {
-            result.add(Badge.TEAM_LEAD);
-        }
-        result.add(Badge.TEAM_MEMBER);
-        return result;
+        Member member = memberService.getMember(invitation.getMemberId());
+        return member.getBadges();
     }
 
     @Override
@@ -80,4 +92,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // TODO: This is a temporary hardcoding of the Outing ID for anyone logging in
         session.setAttribute("outingId", 2);
     }
+
 }

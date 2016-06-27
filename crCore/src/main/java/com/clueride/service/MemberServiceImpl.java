@@ -13,33 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 6/18/16.
+ * Created by jett on 6/26/16.
  */
 package com.clueride.service;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
+
+import com.google.inject.Inject;
+
+import com.clueride.dao.MemberStore;
+import com.clueride.domain.account.Member;
 
 /**
- * Memory-based approach for assigning unique IDs for Invitations.
+ * Implementation of MemberService.
  */
-public class MemoryBasedInvitationIdProvider implements IdProvider {
-    private static AtomicInteger lastId = new AtomicInteger(1);
+public class MemberServiceImpl implements MemberService {
+    private final MemberStore memberStore;
 
-
-    @Override
-    public Integer getId() {
-        return lastId.addAndGet(1);
+    @Inject
+    public MemberServiceImpl(MemberStore memberStore) {
+        this.memberStore = memberStore;
     }
 
     @Override
-    public void registerId(Integer id) {
-        if (id > lastId.get()) {
-            lastId.set(id);
-        }
+    public Member getMember(Integer id) {
+        return memberStore.getMemberById(id);
     }
 
     @Override
-    public int getLastId() {
-        return lastId.get();
+    public List<Member> getMemberByDisplayName(String displayName) {
+        return memberStore.getMemberByName(displayName);
     }
 }

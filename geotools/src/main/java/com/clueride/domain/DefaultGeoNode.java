@@ -125,11 +125,11 @@ public class DefaultGeoNode implements GeoNode {
 
     public Double getLat() {
         return getPoint().getY();
-    };
+    }
 
     public Double getLon() {
         return getPoint().getX();
-    };
+    }
 
     public Double getElevation() {
         return getPoint().getCoordinates()[0].z;

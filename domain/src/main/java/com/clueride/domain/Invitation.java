@@ -17,7 +17,6 @@
  */
 package com.clueride.domain;
 
-import com.clueride.domain.account.Member;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedInvitationIdProvider;
 
@@ -27,7 +26,7 @@ import com.clueride.service.MemoryBasedInvitationIdProvider;
  */
 public class Invitation {
     private String token;
-    private Member member;
+    private Integer memberId;
     private Outing outing;
     private Integer id = null;
     private InvitationState state;
@@ -41,7 +40,7 @@ public class Invitation {
         this.token = builder.getToken();
         this.id = builder.getId();
         this.outing = builder.getOuting();
-        this.member = builder.getMember();
+        this.memberId = builder.getMemberId();
         this.state = (builder.getState() != null) ? builder.getState() : InvitationState.INITIAL;
     }
 
@@ -49,8 +48,8 @@ public class Invitation {
         return token;
     }
 
-    public Member getMember() {
-        return member;
+    public Integer getMemberId() {
+        return memberId;
     }
 
     public Outing getOuting() {
@@ -74,13 +73,13 @@ public class Invitation {
         this.id = id;
     }
 
-    public static final class Builder {
-
+    public static final class Builder implements com.clueride.domain.common.Builder{
         private String token;
         private Outing outing;
-        private Member member;
+        private Integer memberId;
         private Integer id;
         private InvitationState invitationState;
+
         /** No-arg constructor for our use only. */
         private Builder() {
             IdProvider idProvider = new MemoryBasedInvitationIdProvider();
@@ -90,13 +89,21 @@ public class Invitation {
         public static Builder builder() {
             return new Builder();
         }
-
         public Invitation build() {
             return new Invitation(this);
         }
 
         public Outing getOuting() {
             return outing;
+        }
+
+        public Integer getMemberId() {
+            return memberId;
+        }
+
+        public Builder setMemberId(Integer memberId) {
+            this.memberId = memberId;
+            return this;
         }
 
         public Builder setBuiltOuting(Outing outing) {
@@ -116,15 +123,6 @@ public class Invitation {
         /* Assists Jackson in creating instances. */
         public Builder setOuting(Outing.Builder outingBuilder) {
             this.outing = outingBuilder.build();
-            return this;
-        }
-
-        public Member getMember() {
-            return member;
-        }
-
-        public Builder setMember(Member member) {
-            this.member = member;
             return this;
         }
 
@@ -163,4 +161,5 @@ public class Invitation {
             return this;
         }
     }
+
 }

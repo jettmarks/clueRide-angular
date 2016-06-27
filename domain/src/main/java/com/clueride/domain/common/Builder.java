@@ -1,11 +1,11 @@
-/**
- *   Copyright 2015 Jett Marks
- * 
+/*
+ * Copyright 2016 Jett Marks
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created Jul 28, 2015
+ * Created by jett on 6/26/16.
  */
-package com.clueride.domain;
-
-import com.clueride.domain.account.Profile;
+package com.clueride.domain.common;
 
 /**
- * Provides a value for ranking different segments, legs, and routes.
- * 
- * Different implementations will consider different factors.
- * 
- * @author jett
+ * Distillation of the methods essential for building an instance.
  */
-public interface Rating {
-	double getValue();
-
-	double getWeightedValue(Profile userProfile);
+public interface Builder<T> {
+    T build();
 }

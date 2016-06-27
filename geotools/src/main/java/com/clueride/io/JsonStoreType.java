@@ -42,5 +42,6 @@ public enum JsonStoreType {
     PATH,
     CLUE,
     COURSE,
-    INVITATION;
+    INVITATION,
+    MEMBER
 }
