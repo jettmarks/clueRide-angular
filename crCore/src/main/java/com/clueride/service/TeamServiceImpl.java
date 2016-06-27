@@ -56,7 +56,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public Team addMember(Integer teamId, Member newMember) {
-        LOGGER.info("Adding Member " + newMember.getName() + " to team " + teamId);
+        LOGGER.info("Adding Member " + newMember.getDisplayName() + " to team " + teamId);
         team.add(newMember);
         return team;
     }

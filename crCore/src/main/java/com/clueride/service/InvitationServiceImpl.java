@@ -35,6 +35,7 @@ import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
 import com.clueride.dao.InvitationStore;
+import com.clueride.dao.MemberStore;
 import com.clueride.domain.Invitation;
 import com.clueride.domain.Outing;
 import com.clueride.domain.account.Member;
@@ -46,14 +47,20 @@ public class InvitationServiceImpl implements InvitationService {
     private static final Logger LOGGER = Logger.getLogger(InvitationServiceImpl.class);
 
     private final InvitationStore invitationStore;
+    private final MemberStore memberStore;
 
     /**
      * Injectable constructor.
      * @param invitationStore - Persistence layer for Invitations.
+     * @param memberStore - Persistence layer for Members.
      */
     @Inject
-    public InvitationServiceImpl(InvitationStore invitationStore) {
+    public InvitationServiceImpl(
+            InvitationStore invitationStore,
+            MemberStore memberStore
+    ) {
         this.invitationStore = invitationStore;
+        this.memberStore = memberStore;
     }
 
     @Override
@@ -67,13 +74,15 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
-    public Invitation createNew(Outing outing, Member member) throws IOException {
-        LOGGER.info("Creating new instance");
+    public Invitation createNew(Outing outing, Integer memberId) throws IOException {
+        LOGGER.info("Creating new instance of Invitation");
+
+        Member member = memberStore.getMemberById(memberId);
         validateMember(member);
         validateOuting(outing);
 
         Invitation invitation = Invitation.Builder.builder()
-                .setMember(member)
+                .setMemberId(member.getId())
                 .setBuiltOuting(outing)
                 .evaluateToken()
                 .build();
@@ -124,7 +133,8 @@ public class InvitationServiceImpl implements InvitationService {
     private String createEmailContent(Invitation invitation) {
         StringBuffer buffer = new StringBuffer();
 
-        buffer.append("Dear ").append(invitation.getMember().getName()).append(",<p>")
+        Member member = memberStore.getMemberById(invitation.getMemberId());
+        buffer.append("Dear ").append(member.getDisplayName()).append(",<p>")
                 .append("You've been invited to join members of the ")
                 .append(invitation.getOuting().getTeamId()).append(" team.<p>")
                 .append("Follow this link to acknowledge this invitation: " +
@@ -139,7 +149,7 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     private void validateMember(Member member) {
-        if (Strings.isNullOrEmpty(member.getName())) {
+        if (Strings.isNullOrEmpty(member.getDisplayName())) {
             throw new IllegalAccessError("Expected Member Name to be non-empty");
         }
 

@@ -21,7 +21,7 @@ public class Answer {
     private AnswerKey answerKey;
     private String answer;
 
-    public Answer() {};
+    public Answer() {}
 
     public Answer(AnswerKey answerKey, String answer) {
         this.answerKey = answerKey;

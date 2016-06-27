@@ -26,8 +26,10 @@ import com.clueride.dao.JsonClueStore;
 import com.clueride.dao.JsonCourseStore;
 import com.clueride.dao.JsonInvitationStore;
 import com.clueride.dao.JsonLocationStore;
+import com.clueride.dao.JsonMemberStore;
 import com.clueride.dao.JsonPathStore;
 import com.clueride.dao.LocationStore;
+import com.clueride.dao.MemberStore;
 import com.clueride.dao.PathStore;
 
 /**
@@ -40,6 +42,7 @@ public class ServiceGuiceModule extends AbstractModule {
         bind(CourseStore.class).to(JsonCourseStore.class);
         bind(PathStore.class).to(JsonPathStore.class);
         bind(LocationStore.class).to(JsonLocationStore.class);
+        bind(MemberStore.class).to(JsonMemberStore.class);
         bind(InvitationStore.class).to(JsonInvitationStore.class);
     }
 }

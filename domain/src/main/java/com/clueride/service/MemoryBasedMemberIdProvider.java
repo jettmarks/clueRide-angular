@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 6/18/16.
+ * Created by jett on 6/26/16.
  */
 package com.clueride.service;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Memory-based approach for assigning unique IDs for Invitations.
- */
-public class MemoryBasedInvitationIdProvider implements IdProvider {
-    private static AtomicInteger lastId = new AtomicInteger(1);
+import com.clueride.domain.account.Member;
 
+/**
+ * Memory-based approach for assigning unique IDs for {@link Member}.
+ */
+public class MemoryBasedMemberIdProvider implements IdProvider {
+    private static AtomicInteger lastId = new AtomicInteger(1);
 
     @Override
     public Integer getId() {

@@ -33,6 +33,7 @@ public class JsonPrefixMap {
         prefixMap.put(JsonStoreType.COURSE, "course");
         prefixMap.put(JsonStoreType.CLUE, "clue");
         prefixMap.put(JsonStoreType.INVITATION, "invite");
+        prefixMap.put(JsonStoreType.MEMBER, "member");
     }
 
     public static String toString(JsonStoreType storeType) {
