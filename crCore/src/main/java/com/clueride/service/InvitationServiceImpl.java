@@ -138,9 +138,9 @@ public class InvitationServiceImpl implements InvitationService {
                 .append("You've been invited to join members of the ")
                 .append(invitation.getOuting().getTeamId()).append(" team.<p>")
                 .append("Follow this link to acknowledge this invitation: " +
-                        "<a href=\"http://localhost:8080/#/invitation?inviteToken=")
+                        "<a href=\"http://localhost:8080/?inviteToken=")
                 .append(invitation.getToken())
-                .append("\">Yes, I plan to Attend</a>");
+                .append("#/invitation\">Yes, I plan to Attend</a>");
         return buffer.toString();
     }
 
