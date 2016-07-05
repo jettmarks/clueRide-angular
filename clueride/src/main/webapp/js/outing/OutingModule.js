@@ -98,7 +98,7 @@
     }
 
     function OutingResource($resource) {
-        return $resource('/rest/outing', {}, {
+        return $resource('/rest/outing/:id', {}, {
 
         });
     }

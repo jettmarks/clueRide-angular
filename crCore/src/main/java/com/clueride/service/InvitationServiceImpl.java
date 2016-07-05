@@ -137,10 +137,17 @@ public class InvitationServiceImpl implements InvitationService {
         buffer.append("Dear ").append(member.getDisplayName()).append(",<p>")
                 .append("You've been invited to join members of the ")
                 .append(invitation.getOuting().getTeamId()).append(" team.<p>")
-                .append("Follow this link to acknowledge this invitation: " +
-                        "<a href=\"http://localhost:8080/?inviteToken=")
+                .append("Follow this link to acknowledge this invitation: ")
+                /*
+                 * This URL is passing the invitation token twice:
+                 * once before the hash for the server to pick up,
+                 * and once after the hash for the angular $routeParams to pick up.
+                 */
+                .append("<a href=\"http://localhost:8080/?inviteToken=")
                 .append(invitation.getToken())
-                .append("#/invitation\">Yes, I plan to Attend</a>");
+                .append("#/invitation?inviteToken=")
+                .append(invitation.getToken())
+                .append("\">Yes, I plan to Attend</a>");
         return buffer.toString();
     }
 

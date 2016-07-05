@@ -26,7 +26,7 @@
 
     function CourseDataResource ($resource) {
         return $resource('/rest/course/data', {}, {
-            getData: {
+            get: {
                 method: 'GET',
                 params: {courseId: selectedCourse},
                 isArray: false

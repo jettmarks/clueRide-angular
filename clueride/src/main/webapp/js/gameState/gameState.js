@@ -396,7 +396,7 @@
         localModel.outingStateResource = OutingStateResource;
         localModel.outingService = OutingService;
 
-        CourseDataResource.getData({
+        CourseDataResource.get({
             /* Future: put the course ID here. */
         }, dataToModel);
 

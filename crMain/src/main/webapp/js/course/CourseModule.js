@@ -36,7 +36,7 @@
         courseMapResource = CourseMapResource;
         courseDataResource = CourseDataResource;
 
-        courseDataResource.getData({
+        courseDataResource.get({
             /* At this time, we retrieve all courses until we have so many
              * that we need to apply selection criteria. */
         }, dataToModel);

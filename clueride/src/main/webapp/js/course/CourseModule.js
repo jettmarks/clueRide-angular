@@ -37,7 +37,7 @@
         courseMapResource.getMap({
             /* Future: put the courseId here. */
         }, featuresToMap);
-        courseDataResource.getData({
+        courseDataResource.get({
             /* Future: put the courseId here. */
         }, dataToModel);
     }
