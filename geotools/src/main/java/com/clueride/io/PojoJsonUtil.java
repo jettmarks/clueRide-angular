@@ -33,6 +33,7 @@ import com.clueride.domain.Course;
 import com.clueride.domain.GameCourse;
 import com.clueride.domain.GamePath;
 import com.clueride.domain.Invitation;
+import com.clueride.domain.Outing;
 import com.clueride.domain.account.Member;
 import com.clueride.domain.common.Builder;
 import com.clueride.domain.user.Clue;
@@ -99,9 +100,9 @@ public class PojoJsonUtil {
      * Creates a File spec with the pattern "<type>/</type>-<id>/<type>-<id>.json" where the 'id' field is 5 digits.
      * This is suitable for most objects being persisted, but for invitations, we don't require the directory
      * of the same name.
-     * @param id
-     * @param storeType
-     * @return
+     * @param id - Unique identifier for the particular record.
+     * @param storeType - Enumeration serving as index into the prefix map.
+     * @return File instance with a name expected to be used, including directory as part of path.
      */
     private static File getFileWithDirectoryForId(Integer id, JsonStoreType storeType) {
         String specificName = JsonPrefixMap.toString(storeType) + "-" + String.format("%05d", id);
@@ -393,6 +394,9 @@ public class PojoJsonUtil {
                     case INVITATION:
                         jsonObjects.add((T) loadJsonObject(file, Invitation.Builder.builder()));
                         break;
+                    case OUTING:
+                        jsonObjects.add((T) loadJsonObject(file, Outing.Builder.builder()));
+                        break;
                     case MEMBER:
                         jsonObjects.add((T) loadJsonObject(file, Member.Builder.builder()));
                         break;
@@ -432,4 +436,7 @@ public class PojoJsonUtil {
         return loadJsonObjects(JsonStoreType.MEMBER);
     }
 
+    public static List<Outing> loadOutings() {
+        return loadJsonObjects(JsonStoreType.OUTING);
+    }
 }

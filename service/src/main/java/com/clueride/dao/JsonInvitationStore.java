@@ -44,7 +44,6 @@ public class JsonInvitationStore implements InvitationStore {
 
     private void loadAll() {
         invitations = PojoJsonUtil.loadInvitations();
-
     }
 
     @Override
