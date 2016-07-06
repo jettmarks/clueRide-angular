@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.dao.OutingStore;
 import com.clueride.domain.Course;
 import com.clueride.domain.Outing;
 import com.clueride.domain.Team;
@@ -52,6 +53,9 @@ public class OutingServiceImplTest {
     private Team team1, team2;
 
     @Mock
+    private OutingStore outingStore;
+
+    @Mock
     private Course course1, course2;
 
     private List<Integer> outingIds;
@@ -59,8 +63,7 @@ public class OutingServiceImplTest {
     @BeforeMethod
     public void setUp() throws Exception {
         initMocks(this);
-//        toTest = testProvider.get();
-        toTest = new OutingServiceImpl();
+        toTest = new OutingServiceImpl(outingStore);
         populateToTest(toTest);
         assertTrue(outingIds.size() > 0);
     }

@@ -59,7 +59,7 @@ public class Outing {
 //        this.scheduledTime = scheduledTime;
 //    }
 
-    public static final class Builder {
+    public static final class Builder implements com.clueride.domain.common.Builder<Outing> {
         private Integer id;
         private Integer teamId;
 

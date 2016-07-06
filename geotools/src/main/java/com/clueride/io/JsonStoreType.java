@@ -43,5 +43,6 @@ public enum JsonStoreType {
     CLUE,
     COURSE,
     INVITATION,
+    OUTING,
     MEMBER
 }

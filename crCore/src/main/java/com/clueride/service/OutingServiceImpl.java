@@ -26,6 +26,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
+import com.clueride.dao.OutingStore;
 import com.clueride.domain.Outing;
 import com.clueride.rest.dto.OutingState;
 
@@ -42,8 +43,12 @@ public class OutingServiceImpl implements OutingService {
     private static Map<Integer,Long> lastModifiedPositionPerOuting;
     private static Map<Integer,OutingState> statePerOuting;
 
+    private final OutingStore outingStore;
+
     @Inject
-    public OutingServiceImpl() {
+    public OutingServiceImpl(OutingStore outingStore) {
+        this.outingStore = outingStore;
+
         if (outings == null || outings.isEmpty()) {
             loadOutings();
         }
@@ -51,6 +56,7 @@ public class OutingServiceImpl implements OutingService {
     }
 
     private void loadOutings() {
+        // TODO: Move these indices into the DAO?
         outings = new ArrayList<>();
         outingPerId = new HashMap<>();
         outingPerTeam = new HashMap<>();
@@ -81,7 +87,7 @@ public class OutingServiceImpl implements OutingService {
     @Override
     public Outing getByOutingId(Integer outingId) {
         LOGGER.info("Retrieving Outing ID " + outingId);
-        return outingPerId.get(outingId);
+        return outingStore.getOutingById(outingId);
     }
 
     @Override
