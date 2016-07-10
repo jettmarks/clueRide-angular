@@ -43,6 +43,6 @@ public interface CourseService {
      */
     String getCourseGeometry(Integer courseId);
 
-    /** Future release. */
+    /** TODO: CA-283 Put this on the Outing. */
     String getCourseSchedule(Integer courseId);
 }
