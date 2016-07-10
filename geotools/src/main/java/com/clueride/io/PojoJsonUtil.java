@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
 import com.clueride.domain.Course;
+import com.clueride.domain.CourseType;
 import com.clueride.domain.GameCourse;
 import com.clueride.domain.GamePath;
 import com.clueride.domain.Invitation;
@@ -394,6 +395,9 @@ public class PojoJsonUtil {
                     case INVITATION:
                         jsonObjects.add((T) loadJsonObject(file, Invitation.Builder.builder()));
                         break;
+                    case COURSE_TYPE:
+                        jsonObjects.add((T) loadJsonObject(file, CourseType.Builder.builder()));
+                        break;
                     case OUTING:
                         jsonObjects.add((T) loadJsonObject(file, Outing.Builder.builder()));
                         break;
@@ -438,5 +442,9 @@ public class PojoJsonUtil {
 
     public static List<Outing> loadOutings() {
         return loadJsonObjects(JsonStoreType.OUTING);
+    }
+
+    public static List<CourseType> loadCourseTypes() {
+        return loadJsonObjects(JsonStoreType.COURSE_TYPE);
     }
 }

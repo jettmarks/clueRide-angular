@@ -31,6 +31,7 @@ public class JsonPrefixMap {
         prefixMap.put(JsonStoreType.LOCATION, "loc");
         prefixMap.put(JsonStoreType.PATH, "path");
         prefixMap.put(JsonStoreType.COURSE, "course");
+        prefixMap.put(JsonStoreType.COURSE_TYPE, "courseType");
         prefixMap.put(JsonStoreType.CLUE, "clue");
         prefixMap.put(JsonStoreType.INVITATION, "invite");
         prefixMap.put(JsonStoreType.MEMBER, "member");
