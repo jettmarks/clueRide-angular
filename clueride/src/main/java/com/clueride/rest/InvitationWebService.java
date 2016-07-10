@@ -30,6 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.clueride.domain.Invitation;
+import com.clueride.domain.InvitationFull;
 import com.clueride.service.InvitationService;
 
 /**
@@ -54,7 +55,7 @@ public class InvitationWebService {
     @GET
     @Path("{token}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Invitation getInvitation(@PathParam("token") String token) {
+    public InvitationFull getInvitation(@PathParam("token") String token) {
         return invitationService.getInvitationByToken(token);
     }
 

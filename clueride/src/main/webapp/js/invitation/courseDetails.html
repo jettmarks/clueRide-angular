@@ -1,8 +1,11 @@
 <div id="courseDescription" class="entry-field">
   <div id="course-name">
-    Course Name: {{vm.name}}
+    Course Name: {{vm.invite.course.name}}
   </div>
   <div id="course-type">
-    {{vm.type.description}}
+    {{vm.invite.courseType.description}}
+    <div id="details-link">
+      <a ng-href="{{vm.invite.courseType.url}}" class="btn btn=-primary">Further Details</a>
+    </div>
   </div>
 </div>
