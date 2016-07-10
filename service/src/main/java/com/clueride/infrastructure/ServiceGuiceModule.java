@@ -19,20 +19,7 @@ package com.clueride.infrastructure;
 
 import com.google.inject.AbstractModule;
 
-import com.clueride.dao.ClueStore;
-import com.clueride.dao.CourseStore;
-import com.clueride.dao.InvitationStore;
-import com.clueride.dao.JsonClueStore;
-import com.clueride.dao.JsonCourseStore;
-import com.clueride.dao.JsonInvitationStore;
-import com.clueride.dao.JsonLocationStore;
-import com.clueride.dao.JsonMemberStore;
-import com.clueride.dao.JsonOutingStore;
-import com.clueride.dao.JsonPathStore;
-import com.clueride.dao.LocationStore;
-import com.clueride.dao.MemberStore;
-import com.clueride.dao.OutingStore;
-import com.clueride.dao.PathStore;
+import com.clueride.dao.*;
 
 /**
  * Bindings for Services Guice Module.
@@ -42,6 +29,7 @@ public class ServiceGuiceModule extends AbstractModule {
     protected void configure() {
         bind(ClueStore.class).to(JsonClueStore.class);
         bind(CourseStore.class).to(JsonCourseStore.class);
+        bind(CourseTypeStore.class).to(JsonCourseTypeStore.class);
         bind(PathStore.class).to(JsonPathStore.class);
         bind(LocationStore.class).to(JsonLocationStore.class);
         bind(MemberStore.class).to(JsonMemberStore.class);

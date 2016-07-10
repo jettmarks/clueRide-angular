@@ -22,6 +22,7 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.domain.CourseType;
 import com.clueride.domain.Invitation;
 import com.clueride.domain.account.Member;
 import com.clueride.domain.user.Badge;
@@ -91,6 +92,17 @@ public class PojoJsonUtilTest {
         for (Badge badge : firstMember.getBadges()) {
             System.out.println(badge);
         }
+    }
+
+    @Test
+    public void testLoadJsonObjects_CourseType() throws Exception {
+        List<CourseType> jsonObjects = PojoJsonUtil.loadJsonObjects(JsonStoreType.COURSE_TYPE);
+        assertNotNull(jsonObjects);
+        assertTrue(jsonObjects.size() > 0);
+        CourseType firstCourseType = jsonObjects.get(0);
+        assertNotNull(firstCourseType);
+        System.out.print("Name/Type: " + firstCourseType.getType());
+        System.out.println(" Description: " + firstCourseType.getDescription());
     }
 
 }

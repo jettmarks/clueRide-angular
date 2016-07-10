@@ -59,9 +59,15 @@ public class Outing {
 //        this.scheduledTime = scheduledTime;
 //    }
 
+    /**
+     * Builder pattern implements interface to allow construction of a given type.
+     */
     public static final class Builder implements com.clueride.domain.common.Builder<Outing> {
         private Integer id;
         private Integer teamId;
+        private Integer courseId;
+
+        private static IdProvider idProvider = new MemoryBasedOutingIdProvider();
 
         public Integer getCourseId() {
             return courseId;
@@ -80,10 +86,6 @@ public class Outing {
             this.teamId = teamId;
             return this;
         }
-
-        private Integer courseId;
-
-        private static IdProvider idProvider = new MemoryBasedOutingIdProvider();
 
         /* For Jackson when creating a new Outing. */
         public Builder() {
