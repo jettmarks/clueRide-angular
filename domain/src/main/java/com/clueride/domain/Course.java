@@ -31,6 +31,7 @@ public interface Course {
     String getName();
     String getDescription();
     List<Integer> getPathIds();
+    Integer getCourseTypeId();
 
 //    Location getDeparture();
 //    Location getDestination();
