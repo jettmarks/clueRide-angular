@@ -33,6 +33,7 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(RecommendationService.class).to(DefaultRecommendationService.class);
         bind(ControlService.class).to(DefaultControlService.class);
         bind(CourseService.class).to(CourseServiceImpl.class);
+        bind(CourseTypeService.class).to(CourseTypeServiceImpl.class);
         bind(ClueService.class).to(ClueServiceImpl.class);
         bind(DiagnosticService.class).to(DiagnosticServiceImpl.class);
         bind(GameStateService.class).to(GameStateServiceImpl.class);
