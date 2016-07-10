@@ -38,6 +38,7 @@ public class GameCourse implements Course {
     private List<Integer> pathIds;
     private String description;
     private String name;
+    private Integer courseTypeId;
 
     private int stepIndex;
     private int lastStep;
@@ -46,6 +47,7 @@ public class GameCourse implements Course {
         this.id = builder.getId();
         this.name = builder.getName();
         this.description = builder.getDescription();
+        this.courseTypeId = builder.getCourseTypeId();
 
         stepIndex = 0;
         this.steps = ImmutableList.copyOf(builder.getSteps());
@@ -76,6 +78,11 @@ public class GameCourse implements Course {
     }
 
     @Override
+    public Integer getCourseTypeId() {
+        return courseTypeId;
+    }
+
+    @Override
     public Step nextStep() {
         if (stepIndex == lastStep) {
             throw new IllegalStateException("Course is complete; no more steps");
@@ -97,6 +104,7 @@ public class GameCourse implements Course {
         private Integer id;
         private String name;
         private String description;
+        private Integer courseTypeId;
 
         private List<Step> steps;
         private IdProvider idProvider;
@@ -163,6 +171,15 @@ public class GameCourse implements Course {
 
         public List<Integer> getPathIds() {
             return pathIds;
+        }
+
+        public Integer getCourseTypeId() {
+            return courseTypeId;
+        }
+
+        public Builder setCourseTypeId(Integer courseTypeId) {
+            this.courseTypeId = courseTypeId;
+            return this;
         }
     }
 }

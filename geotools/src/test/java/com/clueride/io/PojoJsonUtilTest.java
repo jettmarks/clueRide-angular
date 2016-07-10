@@ -22,6 +22,7 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.domain.Course;
 import com.clueride.domain.CourseType;
 import com.clueride.domain.Invitation;
 import com.clueride.domain.account.Member;
@@ -66,6 +67,13 @@ public class PojoJsonUtilTest {
         Clue clue = PojoJsonUtil.loadClue(1);
         assertNotNull(clue);
         assertEquals(clue.getId(), new Integer(1));
+    }
+
+    @Test
+    public void testLoadJsonObjects_Course() throws Exception {
+        List<Course> jsonObjects = PojoJsonUtil.loadCourses();
+        assertNotNull(jsonObjects);
+        assertTrue(jsonObjects.size() > 0);
     }
 
     @Test
