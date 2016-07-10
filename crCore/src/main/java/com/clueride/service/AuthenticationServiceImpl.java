@@ -26,7 +26,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.Invitation;
+import com.clueride.domain.InvitationFull;
 import com.clueride.domain.account.Member;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
@@ -77,9 +77,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public List<Badge> loginReturningBadges(Invitation invitation) {
-        Member member = memberService.getMember(invitation.getMemberId());
-        return member.getBadges();
+    public List<Badge> loginReturningBadges(InvitationFull invitation) {
+        return invitation.getMember().getBadges();
     }
 
     @Override

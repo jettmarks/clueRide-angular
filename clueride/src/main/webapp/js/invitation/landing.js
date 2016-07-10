@@ -11,9 +11,10 @@
          * Start-up logic for initializing the controller.
          */
         function activate() {
+            var tokenFromSearch = $route.current.params.inviteToken;
+
             /* Turn the URL parameter for the inviteToken into the invite (promise). */
-            vm.tokenFromSearch = $route.current.params
-            vm.invite = InviteResource.get({token: $route.current.params.inviteToken});
+            vm.invite = InviteResource.get({token: tokenFromSearch});
         }
 
         /* Initialize the controller. */

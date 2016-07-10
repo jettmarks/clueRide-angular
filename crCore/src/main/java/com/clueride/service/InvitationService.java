@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.clueride.domain.Invitation;
+import com.clueride.domain.InvitationFull;
 import com.clueride.domain.Outing;
 
 /**
@@ -33,7 +34,7 @@ public interface InvitationService {
      * @param token Unique String identifying the Invitation.
      * @return fully populated Invitation.
      */
-    Invitation getInvitationByToken(String token);
+    InvitationFull getInvitationByToken(String token);
 
     /**
      * Given an outingId, return all the active Invitations.

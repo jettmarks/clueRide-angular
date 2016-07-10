@@ -34,10 +34,16 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
+import com.clueride.dao.CourseStore;
+import com.clueride.dao.CourseTypeStore;
 import com.clueride.dao.InvitationStore;
 import com.clueride.dao.MemberStore;
+import com.clueride.domain.Course;
+import com.clueride.domain.CourseType;
 import com.clueride.domain.Invitation;
+import com.clueride.domain.InvitationFull;
 import com.clueride.domain.Outing;
+import com.clueride.domain.Team;
 import com.clueride.domain.account.Member;
 
 /**
@@ -48,24 +54,49 @@ public class InvitationServiceImpl implements InvitationService {
 
     private final InvitationStore invitationStore;
     private final MemberStore memberStore;
+    private final CourseStore courseStore;
+    private final CourseTypeStore courseTypeStore;
+    private final TeamService teamService;
 
     /**
      * Injectable constructor.
      * @param invitationStore - Persistence layer for Invitations.
      * @param memberStore - Persistence layer for Members.
+     * @param courseStore - Persistence layer for Courses.
+     * @param courseTypeStore - Persistence layer for Course Types.
+     * @param teamService - Provides Team-related services; for us, Team retrieval.
      */
     @Inject
     public InvitationServiceImpl(
             InvitationStore invitationStore,
-            MemberStore memberStore
-    ) {
+            MemberStore memberStore,
+            CourseStore courseStore,
+            CourseTypeStore courseTypeStore,
+            TeamService teamService) {
         this.invitationStore = invitationStore;
         this.memberStore = memberStore;
+        this.courseStore = courseStore;
+        this.courseTypeStore = courseTypeStore;
+        this.teamService = teamService;
     }
 
     @Override
-    public Invitation getInvitationByToken(String token) {
-        return invitationStore.getInvitationByToken(token);
+    public InvitationFull getInvitationByToken(String token) {
+        Invitation invitation = invitationStore.getInvitationByToken(token);
+        Outing outing = invitation.getOuting();
+        Course course = courseStore.getCourseById(outing.getCourseId());
+        Team team = teamService.getTeam(outing.getTeamId());
+        Member member = memberStore.getMemberById(invitation.getMemberId());
+
+        return InvitationFull.Builder.builder()
+                .setToken(token)
+                .setId(invitation.getId())
+                .setOuting(outing)
+                .setCourse(course)
+                .setCourseType(courseTypeStore.getCourseTypeById(course.getCourseTypeId()))
+                .setTeam(team)
+                .setMember(member)
+                .build();
     }
 
     @Override
@@ -134,9 +165,18 @@ public class InvitationServiceImpl implements InvitationService {
         StringBuffer buffer = new StringBuffer();
 
         Member member = memberStore.getMemberById(invitation.getMemberId());
+        Course course = courseStore.getCourseById(invitation.getOuting().getCourseId());
+        CourseType courseType = courseTypeStore.getCourseTypeById(course.getCourseTypeId());
+
         buffer.append("Dear ").append(member.getDisplayName()).append(",<p>")
                 .append("You've been invited to join members of the ")
-                .append(invitation.getOuting().getTeamId()).append(" team.<p>")
+                .append(invitation.getOuting().getTeamId()).append(" team as they explore the ")
+                .append("<i>")
+                .append(course.getName())
+                .append("</i> course.<p>")
+                .append("Details of the course can be found by following <a href=\"")
+                .append(courseType.getUrl())
+                .append("\">this link</a><p>")
                 .append("Follow this link to acknowledge this invitation: ")
                 /*
                  * This URL is passing the invitation token twice:

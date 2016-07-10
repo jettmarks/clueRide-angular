@@ -21,6 +21,8 @@ import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.clueride.dao.CourseStore;
+import com.clueride.dao.CourseTypeStore;
 import com.clueride.dao.InvitationStore;
 import com.clueride.dao.MemberStore;
 import com.clueride.domain.Invitation;
@@ -48,6 +50,15 @@ public class InvitationServiceImplTest {
     @Mock
     private MemberStore memberStore;
 
+    @Mock
+    private CourseStore courseStore;
+
+    @Mock
+    private CourseTypeStore courseTypeStore;
+
+    @Mock
+    private TeamService teamService;
+
     private Outing outing;
     private Member member;
 
@@ -60,7 +71,13 @@ public class InvitationServiceImplTest {
         initMocks(this);
         outing = createTestOuting();
         member = createTestMember();
-        toTest = new InvitationServiceImpl(invitationStore, memberStore);
+        toTest = new InvitationServiceImpl(
+                invitationStore,
+                memberStore,
+                courseStore,
+                courseTypeStore,
+                teamService
+        );
     }
 
     private Outing createTestOuting() {

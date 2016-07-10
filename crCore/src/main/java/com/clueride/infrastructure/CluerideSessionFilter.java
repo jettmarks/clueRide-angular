@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.clueride.domain.Invitation;
+import com.clueride.domain.InvitationFull;
 import com.clueride.domain.user.Badge;
 import com.clueride.service.AuthenticationService;
 import com.clueride.service.InvitationService;
@@ -78,7 +78,7 @@ public class CluerideSessionFilter implements Filter {
             if (isValidInvitation(req)) {
                 this.servletContext.log("Found Invitation");
                 /* Lookup details of invitation to place in the session. */
-                Invitation invitation = invitationService.getInvitationByToken(req.getParameter("inviteToken"));
+                InvitationFull invitation = invitationService.getInvitationByToken(req.getParameter("inviteToken"));
                 List<Badge> badges = authenticationService.loginReturningBadges(invitation);
                 authenticationService.establishSession(badges, req);
                 chain.doFilter(request, response);
