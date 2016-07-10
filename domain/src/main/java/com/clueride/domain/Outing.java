@@ -36,7 +36,7 @@ public class Outing {
         this.id = builder.id;
         this.teamId = builder.getTeamId();
         this.courseId = builder.getCourseId();
-        this.scheduledTime = null;
+        this.scheduledTime = builder.getScheduledTime();
     }
 
     public Integer getId() {
@@ -51,21 +51,34 @@ public class Outing {
         return courseId;
     }
 
-//    public Date getScheduledTime() {
-//        return scheduledTime;
-//    }
-//
-//    public void setScheduledTime(Date scheduledTime) {
-//        this.scheduledTime = scheduledTime;
-//    }
+    public Date getScheduledTime() {
+        return scheduledTime;
+    }
 
-    /**
-     * Builder pattern implements interface to allow construction of a given type.
-     */
+    public void setScheduledTime(Date scheduledTime) {
+        this.scheduledTime = scheduledTime;
+    }
+
     public static final class Builder implements com.clueride.domain.common.Builder<Outing> {
         private Integer id;
         private Integer teamId;
         private Integer courseId;
+        private Date scheduledTime;
+
+        /**
+         * Builder pattern implements interface to allow construction of a given type.
+         */
+        /* For other users of an Outing. */
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public Outing build() {
+            if (scheduledTime == null) {
+                scheduledTime = new Date();
+            }
+            return new Outing(this);
+        }
 
         private static IdProvider idProvider = new MemoryBasedOutingIdProvider();
 
@@ -98,13 +111,13 @@ public class Outing {
             return this;
         }
 
-        /* For other users of an Outing. */
-        public static Builder builder() {
-            return new Builder();
+        public Date getScheduledTime() {
+            return scheduledTime;
         }
 
-        public Outing build() {
-            return new Outing(this);
+        public Builder setScheduledTime(Date scheduledTime) {
+            this.scheduledTime = scheduledTime;
+            return this;
         }
     }
 }
