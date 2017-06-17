@@ -60,6 +60,7 @@ app.config(function($routeProvider, $httpProvider) {
     $routeProvider.when('/locEdit/estab',   {templateUrl: 'js/locEdit/newImage.html', reloadOnSearch: false});
     $routeProvider.when('/status',          {templateUrl: 'js/status/status.html', reloadOnSearch: false});
     $routeProvider.when('/outing',          {templateUrl: 'js/outing/outingEdit.html', reloadOnSearch: false});
+    $routeProvider.when('/invite',          {templateUrl: 'js/invite/inviteEdit.html', reloadOnSearch: false});
     $routeProvider.when('/invitation',      {templateUrl: 'js/invitation/landing.html', reloadOnSearch: false});
     $routeProvider.when('/ice',             {templateUrl: 'ice.html', reloadOnSearch: false});
 
