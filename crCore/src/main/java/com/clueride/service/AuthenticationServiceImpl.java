@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import com.clueride.domain.InvitationFull;
 import com.clueride.domain.account.Member;
+import com.clueride.domain.account.OAuthCredentials;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
 
@@ -82,7 +83,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void establishSession(List<Badge> badges, HttpServletRequest request) {
+    public List<Badge> loginReturningBadges(OAuthCredentials oaCredentials) {
+        // Here's where we connect the OAuthCredentials with one of our users (or not).
+
+        // Meanwhile, let us in
+        return Collections.singletonList(Badge.LOCATION_EDITOR);
+    }
+
+    @Override
+    public String establishSession(List<Badge> badges, HttpServletRequest request) {
         request.getSession(true);
         HttpSession session = request.getSession();
         LOGGER.debug("Session created");
@@ -90,6 +99,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         session.setAttribute("badges", badges);
         // TODO: This is a temporary hardcoding of the Outing ID for anyone logging in
         session.setAttribute("outingId", 2);
+        return "tempToken";
     }
 
 }

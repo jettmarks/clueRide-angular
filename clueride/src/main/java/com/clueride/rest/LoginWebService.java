@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -30,6 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import com.clueride.domain.account.OAuthCredentials;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
 import com.clueride.service.AuthenticationService;
@@ -38,15 +40,18 @@ import com.clueride.service.AuthenticationService;
  * Rest API for Authentication and Authorization functionality.
  */
 @Path("login")
-public class Login {
+public class LoginWebService {
 
     @Context
     private HttpServletRequest request;
 
+    @Context
+    private HttpServletResponse response;
+
     private final AuthenticationService authenticationService;
 
     @Inject
-    public Login(AuthenticationService authenticationService) {
+    public LoginWebService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
@@ -61,12 +66,25 @@ public class Login {
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Badge> authenticate(CRCredentials crCredentials) {
         List<Badge> badges = authenticationService.loginReturningBadges(crCredentials);
-        authenticationService.establishSession(badges, request);
+        String token = authenticationService.establishSession(badges, request);
+        response.setHeader("Authentication-Token", token);
+        return badges;
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("oauth")
+    public List<Badge> authenticateUsingOAuth(OAuthCredentials.Builder oaCredentialsBuilder) {
+        List<Badge> badges = authenticationService.loginReturningBadges(oaCredentialsBuilder.build());
+        String token = authenticationService.establishSession(badges, request);
+        response.setHeader("Authentication-Token", token);
         return badges;
     }
 
     @DELETE
     public void logout() {
+        /* TODO: Pull token from the session list. */
         request.getSession().invalidate();
     }
 }

@@ -68,6 +68,34 @@ public class CluerideSessionFilter implements Filter {
 
         HttpSession session = req.getSession(false);
 
+        /* CORS - May want separate filters for this. */
+        if (req.getMethod().equals("OPTIONS")) {
+            /* TODO: Make this configurable; currently the Ionic Server in dev mode. */
+            res.setHeader("Access-Control-Allow-Origin",
+                    "http://localhost:8100");
+            res.setHeader(
+                    "Access-Control-Allow-Headers",
+                    new StringBuilder()
+                            .append("Access-Control-Allow-Headers,")
+                            .append("Origin,")
+                            .append("Accept,")
+                            .append("X-Requested-With,")
+                            .append("Authorization,")
+                            .append("Content-Type,")
+                            .append("Access-Control-Request-Method,")
+                            .append("Access-Control-Request-Headers,")
+                            .toString()
+            );
+            chain.doFilter(request, response);
+            return;
+        }
+
+        /* Providing the Authorization token is a get into jail free card. */
+        if (((HttpServletRequest) request).getHeader("Authorization") != null) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         if (session == null) {
             /* No session; are we presenting the login page? */
             if (isLoginPageUri(uri)) {
@@ -108,9 +136,17 @@ public class CluerideSessionFilter implements Filter {
         return result;
     }
 
+    /**
+     *  This method is intended to return true for any of the URLs that
+     * are associated with logging in -- they get a free pass because they
+     * are in the business of establishing a session.
+     *
+     * TODO: Need a better method because this constantly breaks.
+     */
     boolean isLoginPageUri(String uri) {
         return uri.contains("login.html")
                 || uri.endsWith("/rest/login")
+                || uri.endsWith("/rest/login/oauth")
                 || uri.contains("loginBubbles.html")
                 || uri.endsWith("credentials.html")
                 || uri.contains("bubble.html")

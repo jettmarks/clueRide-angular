@@ -22,6 +22,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.clueride.domain.InvitationFull;
+import com.clueride.domain.account.OAuthCredentials;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
 
@@ -45,10 +46,18 @@ public interface AuthenticationService {
     List<Badge> loginReturningBadges(InvitationFull invitation);
 
     /**
+     * Given an authenticated OAuth response, use this to find the account information and
+     * Badges earned by the corresponding user.
+     * @param oaCredentials instance of OAuthCredentials from the client.
+     * @return List of Badges representing capabilities (authorizations) for the account.
+     */
+    List<Badge> loginReturningBadges(OAuthCredentials oaCredentials);
+
+    /**
      * Given an HttpServletRequest and the list of appropriate badges,
      * populate a session with the badges and other details for the session.
      * @param badges - Authorizations represented as Badges.
      * @param request - HttpServletRequest which holds the session.
      */
-    void establishSession(List<Badge> badges, HttpServletRequest request);
+    String establishSession(List<Badge> badges, HttpServletRequest request);
 }
