@@ -47,5 +47,6 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(OutingService.class).to(OutingServiceImpl.class);
         bind(PathService.class).to(PathServiceImpl.class);
         bind(TeamService.class).to(TeamServiceImpl.class);
+        bind(TokenService.class).to(TokenServiceJwt.class);
     }
 }
