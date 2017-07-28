@@ -31,12 +31,10 @@ public class CluerideObjectMapperProvider implements ContextResolver<ObjectMappe
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static {
-//        MAPPER.setSerializationInclusion(Include.NON_EMPTY);
-//        MAPPER.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
-        //MAPPER.disable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
     }
 
     public CluerideObjectMapperProvider() {
+        // Would we be able to use the LOGGER?
         System.out.println("Instantiate CluerideObjectMapperProvider");
     }
 

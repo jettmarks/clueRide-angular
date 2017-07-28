@@ -35,6 +35,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 
+import com.clueride.infrastructure.AuthenticationFilter;
 import com.clueride.infrastructure.CoreGuiceSetup;
 
 /**
@@ -71,13 +72,17 @@ public class CluerideJerseyModule extends ResourceConfig {
         guiceBridge.bridgeGuiceInjector(CoreGuiceSetup.getGuiceInjector(servletContext));
         dumpBindings();
         LOGGER.info("Jersey Module is Prepared");
+
+        LOGGER.info("Adding Auth Filter");
+        register(AuthenticationFilter.class);
     }
 
     void dumpBindings() {
         Injector injector = CoreGuiceSetup.getGuiceInjector(null);
         Map<Key<?>,Binding<?>> map = injector.getBindings();
         for(Map.Entry<Key<?>, Binding<?>> e : map.entrySet()) {
-            LOGGER.debug(e.getKey() + ": " + e.getValue());
+            LOGGER.debug(e.getValue());
+//            LOGGER.debug(e.getKey() + ": " + e.getValue());
         }
     }
 }
