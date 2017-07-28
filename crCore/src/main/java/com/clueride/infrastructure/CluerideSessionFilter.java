@@ -64,31 +64,15 @@ public class CluerideSessionFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        String uri = req.getRequestURI();
-
-        HttpSession session = req.getSession(false);
-
-        /* CORS - May want separate filters for this. */
+        /* This filter doesn't do OPTIONS. */
         if (req.getMethod().equals("OPTIONS")) {
-            /* TODO: Make this configurable; currently the Ionic Server in dev mode. */
-            res.setHeader("Access-Control-Allow-Origin",
-                    "http://localhost:8100");
-            res.setHeader(
-                    "Access-Control-Allow-Headers",
-                    new StringBuilder()
-                            .append("Access-Control-Allow-Headers,")
-                            .append("Origin,")
-                            .append("Accept,")
-                            .append("X-Requested-With,")
-                            .append("Authorization,")
-                            .append("Content-Type,")
-                            .append("Access-Control-Request-Method,")
-                            .append("Access-Control-Request-Headers,")
-                            .toString()
-            );
             chain.doFilter(request, response);
             return;
         }
+
+        String uri = req.getRequestURI();
+
+        HttpSession session = req.getSession(false);
 
         /* Providing the Authorization token is a get into jail free card. */
         if (((HttpServletRequest) request).getHeader("Authorization") != null) {
