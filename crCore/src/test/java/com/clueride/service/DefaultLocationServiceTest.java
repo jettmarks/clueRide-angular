@@ -22,21 +22,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.inject.Provider;
-
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
+import com.clueride.CoreGuiceModuleTest;
 import com.clueride.dao.ClueStore;
 import com.clueride.dao.CourseStore;
 import com.clueride.dao.ImageStore;
-import com.clueride.dao.JsonLocationStore;
-import com.clueride.dao.JsonNodeStore;
 import com.clueride.dao.LocationStore;
-import com.clueride.dao.NodeStore;
 import com.clueride.dao.PathStore;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.user.Location;
@@ -51,26 +48,10 @@ import static org.testng.AssertJUnit.assertTrue;
 /**
  * Exercises the DefaultLocationServiceTest class.
  */
+@Guice(modules=CoreGuiceModuleTest.class)
 public class DefaultLocationServiceTest {
     private static final Logger LOGGER = Logger.getLogger(DefaultLocationServiceTest.class);
-
-    @Mock
-    private NodeService nodeService;
-
-    @Mock
-    private LocationStore locationStore;
-
-    @Mock
-    private ClueStore mockedClueStore;
-
-    @Inject
-    private ImageStore imageStore;
-
-    @Inject
-    private LocationBuilder locationBuilder;
-
-    @Inject
-    private Provider<ClueStore> clueStoreProvider;
+    private LocationService toTest;
 
     @Inject
     private ClueStore clueStore;
@@ -79,20 +60,26 @@ public class DefaultLocationServiceTest {
     private CourseStore courseStore;
 
     @Inject
-    private PathStore pathStore;
+    private ImageStore imageStore;
 
-    private LocationService toTest;
+    @Inject
+    private Location location;
+
+    @Inject
+    private LocationBuilder locationBuilder;
+
+    @Mock
+    private LocationStore locationStore;
+
+    @Inject
+    private NodeService nodeService;
+
+    @Inject
+    private PathStore pathStore;
 
     @BeforeMethod
     public void setup() {
         initMocks(this);
-    }
-
-    @Test
-    public void testGetLocation() throws Exception {
-        // Actual instances for this test
-        NodeStore nodeStore = new JsonNodeStore();
-        locationStore = new JsonLocationStore(nodeStore, clueStoreProvider);
         toTest = new DefaultLocationService(
                 locationStore,
                 imageStore,
@@ -100,11 +87,21 @@ public class DefaultLocationServiceTest {
                 courseStore,
                 pathStore,
                 clueStore,
-                locationBuilder);
-        assertNotNull(toTest);
+                locationBuilder
+                );
+    }
 
-        Integer locationId = 1;
+    @Test
+    public void testGetLocation() throws Exception {
+        Location expected = location;
+        /* train mocks */
+        Integer locationId = location.getId();
+        when(locationStore.getLocationById(locationId)).thenReturn(expected);
+
+        /* make call */
         String actual = toTest.getLocation(locationId);
+
+        /* verify results */
         assertNotNull(actual);
         assertTrue(!actual.isEmpty());
         LOGGER.debug(actual);
@@ -135,44 +132,37 @@ public class DefaultLocationServiceTest {
         Location.Builder builder = Location.Builder.builder();
         for (Integer id = 1; id<7; id++) {
             locationList.add(
-                    builder.setId(id)
-                            .setNodeId(id)
-                            .setName("Test Loc " + id)
-                            .setDescription("Description for Loc " + id)
-                            .setLocationType(LocationType.BAR)
-                            .setImageUrls(imageList)
-                            .setClueIds(clueList)
+                    builder.withId(id)
+                            .withNodeId(id)
+                            .withName("Test Loc " + id)
+                            .withDescription("Description for Loc " + id)
+                            .withLocationType(LocationType.BAR)
+                            .withImageUrls(imageList)
+                            .withClueIds(clueList)
                             .build());
         }
         when(locationStore.getLocations()).thenReturn(locationList);
 
-        toTest = new DefaultLocationService(
-                locationStore,
-                imageStore,
-                nodeService,
-                courseStore,
-                pathStore,
-                clueStore,
-                locationBuilder);
         assertNotNull(toTest);
 
         String actual = toTest.getNearestLocations(-10.0, 12.7);
         LOGGER.debug(actual);
     }
 
-    @Test
+//    @Test
+    /** TODO: This is testing a method outside of the interface; change that. */
     public void testValidateLocationBuilder() {
         Location.Builder builder = Location.Builder.builder();
-        builder.setClueIds(Arrays.asList(1, 2, 3, 4, 5, 6, 4, null, 5, 6, null, 3));
-        when(mockedClueStore.hasValidClue(anyInt())).thenReturn(true);
-        when(mockedClueStore.hasValidClue(1)).thenReturn(false);
+        builder.withClueIds(Arrays.asList(1, 2, 3, 4, 5, 6, 4, null, 5, 6, null, 3));
+        when(clueStore.hasValidClue(anyInt())).thenReturn(true);
+        when(clueStore.hasValidClue(1)).thenReturn(false);
         DefaultLocationService implToTest = new DefaultLocationService(
                 locationStore,
                 imageStore,
                 nodeService,
                 courseStore,
                 pathStore,
-                mockedClueStore,
+                clueStore,
                 locationBuilder
         );
         implToTest.validateUpdatedLocationBuilder(builder);

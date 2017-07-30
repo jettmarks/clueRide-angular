@@ -39,7 +39,7 @@ import com.clueride.feature.TrackFeature;
  * At this time, we're implementing {@link NetworkRecommendation}.
  * 
  * @author jett
- * @deprecated in favor of TrackRecBuilder and OnSegmentRecBuilder.
+ * @deprecated in favor of {@link TrackRecBuilder} and {@link OnSegmentRecBuilder}.
  */
 public class RecommendationBuilder {
     /** The requested node which we're making a recommendation for. */

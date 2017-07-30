@@ -164,7 +164,7 @@ public class DefaultLocationService implements LocationService {
                 LOGGER.warn("Unable to find valid Clue with ID " + clueId);
             }
         }
-        locationBuilder.setClueIds(ImmutableList.copyOf(validatedClueIds));
+        locationBuilder.withClueIds(ImmutableList.copyOf(validatedClueIds));
     }
 
     @Override

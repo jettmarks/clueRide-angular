@@ -213,7 +213,11 @@ public class Location implements Step {
             return new Builder();
         }
 
-        public Builder setId(Integer id) {
+        public Location build() {
+            return new Location(this);
+        }
+
+        public Builder withId(Integer id) {
             this.id = id;
             return this;
         }
@@ -232,7 +236,7 @@ public class Location implements Step {
             return name;
         }
 
-        public Builder setName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
@@ -241,7 +245,7 @@ public class Location implements Step {
             return description;
         }
 
-        public Builder setDescription(String description) {
+        public Builder withDescription(String description) {
             this.description = description;
             return this;
         }
@@ -250,7 +254,7 @@ public class Location implements Step {
             return locationType;
         }
 
-        public Builder setLocationType(LocationType locationType) {
+        public Builder withLocationType(LocationType locationType) {
             this.locationType = locationType;
             return this;
         }
@@ -259,7 +263,7 @@ public class Location implements Step {
             return nodeId;
         }
 
-        public Builder setNodeId(Integer nodeId) {
+        public Builder withNodeId(Integer nodeId) {
             this.nodeId = nodeId;
             return this;
         }
@@ -268,7 +272,7 @@ public class Location implements Step {
             return tagScores;
         }
 
-        public Builder setTagScores(Map<String, Optional<Double>> tagScores) {
+        public Builder withTagScores(Map<String, Optional<Double>> tagScores) {
             this.tagScores = tagScores;
             return this;
         }
@@ -277,7 +281,7 @@ public class Location implements Step {
             return locationGroupId;
         }
 
-        public Builder setLocationGroupId(Optional<Integer> locationGroupId) {
+        public Builder withLocationGroupId(Optional<Integer> locationGroupId) {
             this.locationGroupId = locationGroupId;
             return this;
         }
@@ -286,7 +290,7 @@ public class Location implements Step {
             return clueIds;
         }
 
-        public Builder setClueIds(List<Integer> clueIds) {
+        public Builder withClueIds(List<Integer> clueIds) {
             validateClueIds(clueIds);
             this.clueIds = clueIds;
             return this;
@@ -300,7 +304,7 @@ public class Location implements Step {
             return establishment;
         }
 
-        public Builder setEstablishment(Optional<Establishment> establishment) {
+        public Builder withEstablishment(Optional<Establishment> establishment) {
             this.establishment = establishment;
             return this;
         }
@@ -309,13 +313,9 @@ public class Location implements Step {
             return imageUrls;
         }
 
-        public Builder setImageUrls(List<URL> imageUrls) {
+        public Builder withImageUrls(List<URL> imageUrls) {
             this.imageUrls = imageUrls;
             return this;
-        }
-
-        public Location build() {
-            return new Location(this);
         }
 
         /**
@@ -325,15 +325,15 @@ public class Location implements Step {
          */
         public static Builder builder(com.clueride.rest.dto.Location locationDto) {
             return builder()
-                    .setName(locationDto.name)
-                    .setId(locationDto.id)
-                    .setDescription(locationDto.description)
-                    .setNodeId(locationDto.nodeId)
-                    .setLocationType(locationDto.locationType)
-                    .setLocationGroupId(Optional.fromNullable(locationDto.locationGroupId))
-                    .setClueIds(Arrays.asList(locationDto.clueIds))
-                    .setImageUrls(locationDto.imageUrls)
-//                    .setEstablishment(Optional.<Establishment>fromNullable(locationDto.establishment))
+                    .withName(locationDto.name)
+                    .withId(locationDto.id)
+                    .withDescription(locationDto.description)
+                    .withNodeId(locationDto.nodeId)
+                    .withLocationType(locationDto.locationType)
+                    .withLocationGroupId(Optional.fromNullable(locationDto.locationGroupId))
+                    .withClueIds(Arrays.asList(locationDto.clueIds))
+                    .withImageUrls(locationDto.imageUrls)
+//                    .withEstablishment(Optional.<Establishment>fromNullable(locationDto.establishment))
             ;
         }
     }

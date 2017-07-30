@@ -73,6 +73,13 @@ public class Outing {
             return new Builder();
         }
 
+        public static Builder from(Outing outing) {
+            return builder()
+                    .withId(outing.getId())
+                    .withTeamId(outing.getTeamId())
+                    .withCourseId(outing.getCourseId());
+        }
+
         public Outing build() {
             if (scheduledTime == null) {
                 scheduledTime = new Date();
@@ -86,7 +93,7 @@ public class Outing {
             return courseId;
         }
 
-        public Builder setCourseId(Integer courseId) {
+        public Builder withCourseId(Integer courseId) {
             this.courseId = courseId;
             return this;
         }
@@ -95,7 +102,7 @@ public class Outing {
             return teamId;
         }
 
-        public Builder setTeamId(Integer teamId) {
+        public Builder withTeamId(Integer teamId) {
             this.teamId = teamId;
             return this;
         }
@@ -106,7 +113,7 @@ public class Outing {
         }
 
         /* Also for Jackson when accepting a fully-populated Outing (ID already assigned). */
-        public Builder setId(Integer id) {
+        public Builder withId(Integer id) {
             this.id = id;
             return this;
         }

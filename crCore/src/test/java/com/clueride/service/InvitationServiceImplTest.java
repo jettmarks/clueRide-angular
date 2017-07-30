@@ -17,6 +17,8 @@
  */
 package com.clueride.service;
 
+import javax.inject.Inject;
+
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -28,6 +30,7 @@ import com.clueride.dao.MemberStore;
 import com.clueride.domain.Invitation;
 import com.clueride.domain.Outing;
 import com.clueride.domain.account.Member;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.assertNotNull;
 
@@ -50,7 +53,7 @@ public class InvitationServiceImplTest {
     @Mock
     private MemberStore memberStore;
 
-    @Mock
+    @Inject
     private CourseStore courseStore;
 
     @Mock
@@ -82,8 +85,8 @@ public class InvitationServiceImplTest {
 
     private Outing createTestOuting() {
         return Outing.Builder.builder()
-                .setCourseId(TEST_COURSE_ID)
-                .setTeamId(TEST_TEAM_ID)
+                .withCourseId(TEST_COURSE_ID)
+                .withTeamId(TEST_TEAM_ID)
                 .build();
     }
 
@@ -99,6 +102,7 @@ public class InvitationServiceImplTest {
 
     @Test
     public void testCreateNew() throws Exception {
+        when(memberStore.getMemberById(TEST_MEMBER_ID)).thenReturn(member);
         Invitation actual = toTest.createNew(outing, member.getId());
         assertNotNull(actual);
         assertNotNull(actual.getToken());
@@ -106,10 +110,12 @@ public class InvitationServiceImplTest {
 
     @Test
     public void testCreateNew_TokenCheck() throws Exception {
+        when(memberStore.getMemberById(TEST_MEMBER_ID)).thenReturn(member);
         Invitation firstInvite = toTest.createNew(outing, member.getId());
         System.out.println("First  Token: " + firstInvite.getToken());
         Member member2 = createTestMember();
         member2.setId(TEST_MEMBER_ID + 1);
+        when(memberStore.getMemberById(TEST_MEMBER_ID + 1)).thenReturn(member2);
         Invitation secondInvite = toTest.createNew(outing, member2.getId());
         System.out.println("Second Token: " + secondInvite.getToken());
     }
@@ -117,6 +123,7 @@ public class InvitationServiceImplTest {
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testCreateNew_InvalidMember() throws Exception {
         member.setEmailAddress(null);
+        when(memberStore.getMemberById(TEST_MEMBER_ID)).thenReturn(member);
         Invitation actual = toTest.createNew(outing, member.getId());
     }
 

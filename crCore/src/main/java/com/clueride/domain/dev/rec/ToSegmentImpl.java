@@ -22,7 +22,6 @@ import java.util.List;
 
 import com.google.common.base.Objects;
 
-import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
@@ -58,11 +57,15 @@ public class ToSegmentImpl extends OnTrackImpl implements ToSegment {
      * @param splittingNode
      *            - Node at which the track connects to the Edge.
      */
-    public ToSegmentImpl(GeoNode reqNode, LineFeature track,
-            Edge edge, GeoNode splittingNode) {
+    public ToSegmentImpl(
+            GeoNode reqNode,
+            LineFeature track,
+            Edge edge,
+            GeoNode splittingNode
+    ) {
         super(reqNode, (TrackFeature) track);
         this.segment = edge;
-        addFeature(((EdgeImpl) edge).getFeature());
+        addFeature(edge.getFeature());
         this.splittingNode = splittingNode;
         addFeature(TranslateUtil.geoNodeToFeature(splittingNode));
     }
