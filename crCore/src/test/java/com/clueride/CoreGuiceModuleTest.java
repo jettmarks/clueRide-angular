@@ -42,6 +42,10 @@ import com.clueride.domain.user.LocationType;
 import com.clueride.feature.Edge;
 import com.clueride.geo.score.EasyTrack;
 import com.clueride.gpx.TrackUtil;
+import com.clueride.infrastructure.AuthService;
+import com.clueride.infrastructure.AuthServiceImpl;
+import com.clueride.service.AuthenticationService;
+import com.clueride.service.InvitationService;
 import com.clueride.service.LocationService;
 import com.clueride.service.NodeService;
 import com.clueride.service.OutingService;
@@ -57,6 +61,9 @@ import static org.mockito.MockitoAnnotations.initMocks;
  */
 public class CoreGuiceModuleTest extends AbstractModule {
     @Mock
+    private AuthenticationService authenticationService;
+
+    @Mock
     private ClueStore clueStore;
 
     @Mock
@@ -64,6 +71,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
 
     @Mock
     private ImageStore imageStore;
+
+    @Mock
+    private InvitationService invitationService;
 
     @Mock
     private LocationService locationService;
@@ -86,9 +96,12 @@ public class CoreGuiceModuleTest extends AbstractModule {
     @Override
     protected void configure() {
         initMocks(this);
+        bind(AuthenticationService.class).toInstance(authenticationService);
+        bind(AuthService.class).to(AuthServiceImpl.class);
         bind(ClueStore.class).toInstance(clueStore);
         bind(CourseStore.class).toInstance(courseStore);
         bind(ImageStore.class).toInstance(imageStore);
+        bind(InvitationService.class).toInstance(invitationService);
         bind(LocationService.class).toInstance(locationService);
         bind(NodeService.class).toInstance(nodeService);
         bind(NodeStore.class).toInstance(nodeStore);

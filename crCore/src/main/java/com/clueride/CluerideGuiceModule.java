@@ -21,6 +21,8 @@ import com.google.inject.AbstractModule;
 
 import com.clueride.dao.FileImageStore;
 import com.clueride.dao.ImageStore;
+import com.clueride.infrastructure.AuthService;
+import com.clueride.infrastructure.AuthServiceImpl;
 import com.clueride.service.*;
 
 /**
@@ -29,6 +31,7 @@ import com.clueride.service.*;
 public class CluerideGuiceModule extends AbstractModule {
     @Override
     protected void configure() {
+        bind(AuthService.class).to(AuthServiceImpl.class);
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(RecommendationService.class).to(DefaultRecommendationService.class);
         bind(ControlService.class).to(DefaultControlService.class);

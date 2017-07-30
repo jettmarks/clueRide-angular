@@ -357,7 +357,7 @@ public class PojoJsonUtil {
                 invitationIdProvider.registerId(invitation.getId());
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unexpected I/O error while reading Clue: ", e);
+            throw new RuntimeException("Unexpected I/O error while reading Invitation: ", e);
         }
         return invitation;
     }
