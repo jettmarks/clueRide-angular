@@ -39,14 +39,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationServiceImpl.class);
     private final TeamService teamService;
     private final MemberService memberService;
+    private final TokenService tokenService;
 
     @Inject
     public AuthenticationServiceImpl(
             TeamService teamService,
-            MemberService memberService
+            MemberService memberService,
+            TokenService tokenService
     ) {
         this.teamService = teamService;
         this.memberService = memberService;
+        this.tokenService = tokenService;
     }
 
     // TODO: Eventually, this will also hold the selected Team/Outing
@@ -99,7 +102,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         session.setAttribute("badges", badges);
         // TODO: This is a temporary hardcoding of the Outing ID for anyone logging in
         session.setAttribute("outingId", 2);
-        return "tempToken";
+        return tokenService.generateSignedToken();
     }
 
 }

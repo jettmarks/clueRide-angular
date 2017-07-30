@@ -8,7 +8,7 @@
     <display-name>ClueRide Player</display-name>
 
     <servlet>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>rest-container</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <!-- REST Packages are configured within the Application module. -->
         <init-param>
@@ -22,11 +22,19 @@
             <param-value>ALL</param-value>
         </init-param>
 
+        <!-- Authorization Filter -->
+        <!--
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>com.clueride.infrastructure</param-value>
+        </init-param>
+        -->
+
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>rest-container</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 

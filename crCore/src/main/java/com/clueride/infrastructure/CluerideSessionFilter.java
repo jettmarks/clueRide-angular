@@ -42,12 +42,14 @@ import com.clueride.service.InvitationService;
 public class CluerideSessionFilter implements Filter {
     private ServletContext servletContext;
 
+    private AuthService authService;
     private AuthenticationService authenticationService;
     private InvitationService invitationService;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // TODO: CA-269 Move this to dependency injection
+        // TODO: CA-269 Move this to dependency injection; including servletContext?
+        authService = CoreGuiceSetup.getGuiceInjector(null).getInstance(AuthService.class);
         authenticationService = CoreGuiceSetup.getGuiceInjector(null).getInstance(AuthenticationService.class);
         invitationService = CoreGuiceSetup.getGuiceInjector(null).getInstance(InvitationService.class);
 
@@ -64,9 +66,11 @@ public class CluerideSessionFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
+        authService.withChain(chain);
+        authService.withResponse(res);
+
         /* This filter doesn't do OPTIONS. */
-        if (req.getMethod().equals("OPTIONS")) {
-            chain.doFilter(request, response);
+        if (authService.isOptionsRequest(req)) {
             return;
         }
 

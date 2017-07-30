@@ -107,9 +107,10 @@ public class Outing {
             return this;
         }
 
-        /* For Jackson when creating a new Outing. */
-        public Builder() {
-            id = idProvider.getId();
+        /* ID is interesting because it can pick-up from a new instance (assigned), or have been persisted for existing
+         * instances. */
+        public Integer getId() {
+            return id;
         }
 
         /* Also for Jackson when accepting a fully-populated Outing (ID already assigned). */
@@ -118,11 +119,16 @@ public class Outing {
             return this;
         }
 
+        /* For Jackson when creating a new Outing. */
+        public Builder() {
+            id = idProvider.getId();
+        }
+
         public Date getScheduledTime() {
             return scheduledTime;
         }
 
-        public Builder setScheduledTime(Date scheduledTime) {
+        public Builder withScheduledTime(Date scheduledTime) {
             this.scheduledTime = scheduledTime;
             return this;
         }
