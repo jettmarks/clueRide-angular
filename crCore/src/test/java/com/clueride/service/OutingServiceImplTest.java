@@ -25,12 +25,14 @@ import javax.inject.Provider;
 
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
+import com.clueride.CoreGuiceModuleTest;
 import com.clueride.dao.OutingStore;
-import com.clueride.domain.Course;
 import com.clueride.domain.Outing;
 import com.clueride.domain.Team;
+import static java.util.Arrays.asList;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.assertNotEquals;
@@ -41,35 +43,43 @@ import static org.testng.AssertJUnit.assertNotNull;
 /**
  * Exercises the Outing Service.
  */
+@Guice(modules = CoreGuiceModuleTest.class)
 public class OutingServiceImplTest {
+    private OutingService toTest;
+    private List<Outing> outings;
+    private List<Integer> outingIds;
+    private static final Integer OUTING_ID1 = 1;
+    private static final Integer OUTING_ID2 = 2;
+    private static final Integer TEAM_ID1 = 101;
+    private static final Integer TEAM_ID2 = 102;
 
     @Inject
-    private OutingService toTest;
+    private Outing outing;
 
     @Inject
     private Provider<OutingService> testProvider;
 
-    @Mock
-    private Team team1, team2;
-
-    @Mock
+    @Inject
     private OutingStore outingStore;
 
     @Mock
-    private Course course1, course2;
-
-    private List<Integer> outingIds;
+    private Team team1, team2;
 
     @BeforeMethod
     public void setUp() throws Exception {
         initMocks(this);
-        toTest = new OutingServiceImpl(outingStore);
+        toTest = testProvider.get();
         populateToTest(toTest);
         assertTrue(outingIds.size() > 0);
     }
 
     @Test
     public void testGetByOutingId() throws Exception {
+        /* train mocks */
+
+        when(outingStore.getOutingById(OUTING_ID1)).thenReturn(outings.get(0));
+        when(outingStore.getOutingById(OUTING_ID2)).thenReturn(outings.get(1));
+
         for (Integer outingId : outingIds) {
             assertNotNull(toTest.getByOutingId(outingId));
         }
@@ -84,17 +94,21 @@ public class OutingServiceImplTest {
     @Test
     public void testCreateOuting() throws Exception {
         Outing expected = Outing.Builder.builder()
-                .setTeamId(101)
-                .setCourseId(14)
+                .withTeamId(101)
+                .withCourseId(14)
                 .build();
         Outing created = toTest.createOuting(expected);
         assertNotNull(created);
+
         Integer outingId = created.getId();
         assertNotNull(created.getId());
+
+        when(outingStore.getOutingById(outingId)).thenReturn(expected);
         Outing actual = toTest.getByOutingId(outingId);
-        assertEquals(actual, expected);
+        assertEquals(expected, actual);
+
         expected = toTest.getByTeamId(101);
-        assertEquals(actual, expected);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -120,7 +134,7 @@ public class OutingServiceImplTest {
     public void testUpdateState() throws Exception {
         for (Integer outingId : outingIds) {
             toTest.updateState(outingId);
-            assertNotEquals(toTest.lastStateChange(outingId), new Long(0L));
+            assertNotEquals(toTest.lastStateChange(outingId), 0L);
         }
     }
 
@@ -128,28 +142,40 @@ public class OutingServiceImplTest {
     public void testUpdatePosition() throws Exception {
         for (Integer outingId : outingIds) {
             toTest.updatePosition(outingId);
-            assertNotEquals(toTest.lastPositionChange(outingId), new Long(0L));
+            assertNotEquals(toTest.lastPositionChange(outingId), 0L);
         }
     }
 
     /* Helper methods. */
 
     private void populateToTest(OutingService toTest) {
-        when(team1.getId()).thenReturn(101);
-        when(team2.getId()).thenReturn(102);
+        Outing outing1 = Outing.Builder.from(outing)
+                .withId(OUTING_ID1)
+                .withTeamId(TEAM_ID1)
+                .build();
+        Outing outing2 = Outing.Builder.from(outing)
+                .withId(OUTING_ID2)
+                .withTeamId(TEAM_ID2)
+                .build();
+        when(team1.getId()).thenReturn(TEAM_ID1);
+        when(team2.getId()).thenReturn(TEAM_ID2);
+
+        outings = asList(
+                outing1,
+                outing2
+        );
+
         outingIds = new ArrayList<>();
         outingIds.add(
-                toTest.createOuting(Outing.Builder.builder()
-                        .setTeamId(101)
-                        .setCourseId(14)
-                        .build()).getId()
+                toTest.createOuting(
+                        outing1
+                ).getId()
         );
 
         outingIds.add(
-                toTest.createOuting(Outing.Builder.builder()
-                        .setTeamId(102)
-                        .setCourseId(14)
-                        .build()).getId()
+                toTest.createOuting(
+                        outing2
+                ).getId()
         );
     }
 }

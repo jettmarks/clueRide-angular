@@ -17,10 +17,15 @@
  */
 package com.clueride.domain;
 
+import javax.inject.Provider;
+
+import com.google.inject.Inject;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
+import com.clueride.CoreGuiceModuleTest;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.Path;
 import com.clueride.service.IdProvider;
@@ -31,7 +36,10 @@ import static org.testng.Assert.assertEquals;
 /**
  * Exercises the GameCourseTest class.
  */
+@Guice(modules = CoreGuiceModuleTest.class)
 public class GameCourseTest {
+    private GameCourse toTest;
+    private IdProvider idProvider = new MemoryBasedCourseIdProvider();
 
     @Mock
     private Location startLocation;
@@ -48,23 +56,19 @@ public class GameCourseTest {
     @Mock
     private Path secondPath;
 
-    private GameCourse toTest;
-
-    private IdProvider idProvider = new MemoryBasedCourseIdProvider();
+    @Inject
+    private Provider<GameCourse> gameCourseProvider;
 
     @BeforeMethod
     public void setUp() throws Exception {
         initMocks(this);
-        GameCourse.Builder builder = GameCourse.Builder.getBuilder();
-        toTest = builder
-                .withName("Test Course")
-                .withDescription("Trying out the Builder for a Game Course")
+        GameCourse.Builder gameCourseBuilder = GameCourse.Builder.from(gameCourseProvider.get())
                 .addLocation(startLocation)
                 .addPath(firstPath)
                 .addLocation(secondLocation)
                 .addPath(secondPath)
-                .addLocation(destinationLocation)
-                .build();
+                .addLocation(destinationLocation);
+        toTest = gameCourseBuilder.build();
     }
 
     @Test

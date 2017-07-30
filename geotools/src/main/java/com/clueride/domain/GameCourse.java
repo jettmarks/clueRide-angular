@@ -53,7 +53,8 @@ public class GameCourse implements Course {
         this.steps = ImmutableList.copyOf(builder.getSteps());
         this.pathIds = ImmutableList.copyOf(builder.getPathIds());
 //        this.departure = (Location) steps.get(0);
-//        this.lastStep = steps.size() - 1;
+        /* TODO: there was a reason this had been commented out. */
+        this.lastStep = steps.size() - 1;
 //        this.destination = (Location) steps.get(lastStep);
     }
 
@@ -167,6 +168,13 @@ public class GameCourse implements Course {
         public GameCourse build() {
             // Validations happen here
             return new GameCourse(this);
+        }
+
+        /* TODO: Add the code to copy paths and locations. */
+        public static Builder from(GameCourse gameCourse) {
+            return getBuilder()
+                    .withName(gameCourse.getName())
+                    .withDescription(gameCourse.getDescription());
         }
 
         public List<Integer> getPathIds() {

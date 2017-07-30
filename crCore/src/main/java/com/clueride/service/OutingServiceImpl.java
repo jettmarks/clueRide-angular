@@ -144,8 +144,8 @@ public class OutingServiceImpl implements OutingService {
 
         // TODO: Making up an outing for now - empty list was clearing the maps upon "load"
         outings.add(Outing.Builder.builder()
-                .setCourseId(3)
-                .setTeamId(42)
+                .withCourseId(3)
+                .withTeamId(42)
                 .build()
         );
         OutingState outingState = new OutingState();

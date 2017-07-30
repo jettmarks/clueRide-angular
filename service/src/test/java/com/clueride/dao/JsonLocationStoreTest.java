@@ -77,7 +77,7 @@ public class JsonLocationStoreTest {
     @Test(expectedExceptions = IllegalStateException.class)
     public void testAddNewBadNodeId() throws Exception {
         // Negative is allowed, but won't be found
-        builder.setNodeId(-1);
+        builder.withNodeId(-1);
         Location location = builder.build();
         LocationStore locationStore = injector.getInstance(LocationStore.class);
 
@@ -102,6 +102,7 @@ public class JsonLocationStoreTest {
         assertNotNull(locations);
     }
 
+    /* TODO: Move this into the Test Module and inject where needed. */
     private Location.Builder getLocationBuilder() throws MalformedURLException {
         // Test values
         String expectedName = "Test Location";
@@ -115,12 +116,12 @@ public class JsonLocationStoreTest {
         expectedClues.add(2);
 
         builder = Location.Builder.builder()
-                .setName(expectedName)
-                .setDescription(expectedDescription)
-                .setLocationType(expectedLocationType)
-                .setNodeId(expectedNodeId)
-                .setClueIds(expectedClues)
-                .setImageUrls(expectedImageUrls);
+                .withName(expectedName)
+                .withDescription(expectedDescription)
+                .withLocationType(expectedLocationType)
+                .withNodeId(expectedNodeId)
+                .withClueIds(expectedClues)
+                .withImageUrls(expectedImageUrls);
         return builder;
     }
 }

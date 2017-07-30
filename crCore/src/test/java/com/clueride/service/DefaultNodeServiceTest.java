@@ -17,27 +17,30 @@
  */
 package com.clueride.service;
 
-import com.clueride.dao.NodeStore;
+import javax.inject.Provider;
+
 import com.google.inject.Inject;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
+
+import com.clueride.CoreGuiceModuleTest;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Exercises the DefaultNodeServiceTest class.
  */
+@Guice(modules = CoreGuiceModuleTest.class)
 public class DefaultNodeServiceTest {
+    private NodeService toTest;
 
     @Inject
-    private NodeStore nodeStore;
-
-    @Inject
-    private RecommendationService recommendationService;
-
-    private DefaultNodeService toTest;
+    private Provider<NodeService> toTestProvider;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        toTest = new DefaultNodeService(nodeStore, recommendationService);
+        initMocks(this);
+        toTest = toTestProvider.get();
     }
 
     @Test

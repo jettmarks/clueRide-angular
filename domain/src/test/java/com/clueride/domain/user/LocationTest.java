@@ -57,12 +57,12 @@ public class LocationTest {
         expectedClues.add(7);
         expectedImageUrls.add(new URL("https://clueride.com/"));
         builder = Location.Builder.builder()
-                .setName(expectedName)
-                .setDescription(expectedDescription)
-                .setLocationType(expectedLocationType)
-                .setNodeId(expectedNodeId)
-                .setClueIds(expectedClues)
-                .setImageUrls(expectedImageUrls);
+                .withName(expectedName)
+                .withDescription(expectedDescription)
+                .withLocationType(expectedLocationType)
+                .withNodeId(expectedNodeId)
+                .withClueIds(expectedClues)
+                .withImageUrls(expectedImageUrls);
     }
 
     @Test(expectedExceptions =NullPointerException.class, expectedExceptionsMessageRegExp = "Location name missing")
@@ -71,7 +71,7 @@ public class LocationTest {
         assertNotNull(toTest);
         String actual = toTest.getName();
         assertEquals(actual, expectedName);
-        builder.setName(null);
+        builder.withName(null);
         toTest = builder.build();
         assertNull(toTest);
     }
@@ -82,7 +82,7 @@ public class LocationTest {
         assertNotNull(toTest);
         String actual = toTest.getDescription();
         assertEquals(actual, expectedDescription);
-        builder.setDescription(null);
+        builder.withDescription(null);
         toTest = builder.build();
         assertNull(toTest);
     }
@@ -93,7 +93,7 @@ public class LocationTest {
         assertNotNull(toTest);
         LocationType actual = toTest.getLocationType();
         assertEquals(actual, expectedLocationType);
-        builder.setLocationType(null);
+        builder.withLocationType(null);
         toTest = builder.build();
         assertNull(toTest);
     }
@@ -104,7 +104,7 @@ public class LocationTest {
         assertNotNull(toTest);
         Integer actual = toTest.getNodeId();
         assertEquals(actual, expectedNodeId);
-        builder.setNodeId(null);
+        builder.withNodeId(null);
         toTest = builder.build();
         assertNull(toTest);
     }
@@ -120,7 +120,7 @@ public class LocationTest {
 //        Double expected = 1.234;
 //        moreTags.put("T1", expected);
 //
-//        builder.setTagScores(moreTags);
+//        builder.withTagScores(moreTags);
 //        toTest = builder.build();
 //        assertNotNull(toTest);
 //        assertEquals(toTest.getTags().size(), 1);
@@ -136,7 +136,7 @@ public class LocationTest {
 //        Optional<Double> expected = Optional.of(1.234);
         moreTags.put("T1", Optional.of(expected));
 
-        builder.setTagScores(moreTags);
+        builder.withTagScores(moreTags);
         toTest = builder.build();
         assertNotNull(toTest);
         Optional<Double> actual = toTest.getScorePerTag("T1");
@@ -151,7 +151,7 @@ public class LocationTest {
 
         Integer expectedLocationId = 1234;
 //        Optional<Integer> expectedLocationId = Optional.of(1234);
-        builder.setLocationGroupId(Optional.of(expectedLocationId));
+        builder.withLocationGroupId(Optional.of(expectedLocationId));
         toTest = builder.build();
         assertNotNull(toTest);
 
@@ -166,7 +166,7 @@ public class LocationTest {
 
         String expectedName = "Atlanta Bicycle";
         Optional<Establishment> expectedEstablishment = Optional.of(new Establishment(expectedName));
-        builder.setEstablishment(expectedEstablishment);
+        builder.withEstablishment(expectedEstablishment);
         toTest = builder.build();
         assertNotNull(toTest);
 
@@ -182,7 +182,7 @@ public class LocationTest {
         List<Integer> actual = toTest.getClueIds();
         assertTrue(actual.size() > 0);
 
-        builder.setClueIds(Collections.<Integer>emptyList());
+        builder.withClueIds(Collections.<Integer>emptyList());
         toTest = builder.build();
     }
 
@@ -193,7 +193,7 @@ public class LocationTest {
         List<Integer> expectedCluesAfterAdd = new ArrayList<>(expectedCluesAfterDelete);
         expectedCluesAfterAdd.add(10);
 
-        toTest = builder.setClueIds(expectedCluesAfterAdd).build();
+        toTest = builder.withClueIds(expectedCluesAfterAdd).build();
         List<Integer> actualAfterAdd = toTest.getClueIds();
         assertEquals(actualAfterAdd, expectedCluesAfterAdd);
 
@@ -210,7 +210,7 @@ public class LocationTest {
         List<URL> actual = toTest.getImageUrls();
         assertTrue(actual.size() > 0);
 
-        builder.setImageUrls(Collections.<URL>emptyList());
+        builder.withImageUrls(Collections.<URL>emptyList());
         toTest = builder.build();
     }
 }

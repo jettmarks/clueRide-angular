@@ -54,6 +54,7 @@ public interface OutingService {
      * This will be more useful for Outings which have already been advertised,
      * announced or otherwise made public and now have changes in either the
      * Course or the Scheduled Time.
+     * TODO: This would be more clear if it accepted a Builder and returned an Immutable instance carrying the Integer.
      * @param outing - Outing instance whose details have changed.
      */
     Integer updateOuting(Outing outing);
