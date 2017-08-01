@@ -17,6 +17,8 @@
  */
 package com.clueride.rest;
 
+import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,12 +37,15 @@ import com.clueride.domain.account.OAuthCredentials;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
 import com.clueride.service.AuthenticationService;
+import com.clueride.token.TokenService;
 
 /**
  * Rest API for Authentication and Authorization functionality.
  */
 @Path("login")
 public class LoginWebService {
+    private final AuthenticationService authenticationService;
+    private final TokenService tokenService;
 
     @Context
     private HttpServletRequest request;
@@ -48,10 +53,12 @@ public class LoginWebService {
     @Context
     private HttpServletResponse response;
 
-    private final AuthenticationService authenticationService;
-
     @Inject
-    public LoginWebService(AuthenticationService authenticationService) {
+    public LoginWebService(
+            TokenService tokenService,
+            AuthenticationService authenticationService
+    ) {
+        this.tokenService = tokenService;
         this.authenticationService = authenticationService;
     }
 
@@ -65,10 +72,10 @@ public class LoginWebService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Badge> authenticate(CRCredentials crCredentials) {
-        List<Badge> badges = authenticationService.loginReturningBadges(crCredentials);
-        String token = authenticationService.establishSession(badges, request);
-        response.setHeader("Authentication-Token", token);
-        return badges;
+        Principal principal = authenticationService.getPrincipal(crCredentials);
+        String token = tokenService.generateTokenForExistingPrincipal(principal);
+        response.setHeader("Authorization", "Bearer " + token);
+        return Collections.emptyList();
     }
 
     @POST

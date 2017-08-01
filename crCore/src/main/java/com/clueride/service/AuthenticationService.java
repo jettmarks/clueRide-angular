@@ -17,6 +17,7 @@
  */
 package com.clueride.service;
 
+import java.security.Principal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,4 +61,11 @@ public interface AuthenticationService {
      * @param request - HttpServletRequest which holds the session.
      */
     String establishSession(List<Badge> badges, HttpServletRequest request);
+
+    /**
+     * Based on the credentials, validate the credentials and if valid, return the principal associated
+     * with those credentials.
+     * @param crCredentials ClueRide specific credentials (username/password).
+     */
+    Principal getPrincipal(CRCredentials crCredentials);
 }

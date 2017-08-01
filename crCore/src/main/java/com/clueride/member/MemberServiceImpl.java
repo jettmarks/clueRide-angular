@@ -15,14 +15,20 @@
  *
  * Created by jett on 6/26/16.
  */
-package com.clueride.service;
+package com.clueride.member;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 import com.google.inject.Inject;
 
 import com.clueride.dao.MemberStore;
 import com.clueride.domain.account.Member;
+import com.clueride.domain.user.Badge;
 
 /**
  * Implementation of MemberService.
@@ -43,5 +49,37 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<Member> getMemberByDisplayName(String displayName) {
         return memberStore.getMemberByName(displayName);
+    }
+
+    @Override
+    public Member getMemberByEmail(String email) {
+        InternetAddress internetAddress = null;
+        try {
+            internetAddress = new InternetAddress(email);
+        } catch (AddressException e) {
+            e.printStackTrace();
+        }
+        return memberStore.getMemberByEmail(internetAddress);
+    }
+
+    @Override
+    public Member createNewMemberWithEmail(String email) {
+        Member newMember = Member.Builder.builder()
+                .withEmailAddress(email)
+                .withBadges(Collections.singletonList(Badge.LOCATION_EDITOR))
+                .build();
+
+        try {
+            memberStore.addNew(newMember);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return newMember;
+    }
+
+    @Override
+    public List<Member> getAllMembers() {
+        return memberStore.getAllMembers();
     }
 }

@@ -15,7 +15,7 @@
  *
  * Created by jett on 6/26/16.
  */
-package com.clueride.service;
+package com.clueride.member;
 
 import java.util.List;
 
@@ -38,4 +38,26 @@ public interface MemberService {
      * @return Matching instance of Member.
      */
     List<Member> getMemberByDisplayName(String displayName);
+
+    /**
+     * Retrieve Member instances by displayName
+     * @param email String representation of what should be a valid email address.
+     * @return Matching instance of Member.
+     */
+    Member getMemberByEmail(String email);
+
+    /**
+     * Sets up a brand new user with the given email address.
+     * If the user already exists, that Member account is returned.
+     * @param email for the new user.
+     * @return new instance of Member.
+     */
+    Member createNewMemberWithEmail(String email);
+
+    /**
+     * Returns the entire list of members contained within the store.
+     * TODO: This won't be sustainable once we have a significant number of members, but it's sufficient for testing.
+     * @return List of the Members currently defined.
+     */
+    List<Member> getAllMembers();
 }

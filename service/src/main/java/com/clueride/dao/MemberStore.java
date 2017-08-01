@@ -61,4 +61,10 @@ public interface MemberStore {
 
     void update(Member member);
 
+    /**
+     * Returns the entire list of members contained within the store.
+     * TODO: This won't be sustainable once we have a significant number of members, but it's sufficient for testing.
+     * @return List of the Members currently defined.
+     */
+    List<Member> getAllMembers();
 }

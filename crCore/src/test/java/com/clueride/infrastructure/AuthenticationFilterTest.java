@@ -30,7 +30,7 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
-import com.clueride.service.TokenService;
+import com.clueride.token.TokenService;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;

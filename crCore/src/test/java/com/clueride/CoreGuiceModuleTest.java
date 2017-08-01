@@ -19,14 +19,22 @@ package com.clueride;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.Principal;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.jettmarks.gmaps.encoder.Trackpoint;
 import com.vividsolutions.jts.geom.LineString;
 import org.mockito.Mock;
 
+import com.clueride.config.ConfigService;
+import com.clueride.config.ConfigServiceImpl;
 import com.clueride.dao.ClueStore;
 import com.clueride.dao.CourseStore;
 import com.clueride.dao.ImageStore;
@@ -36,7 +44,9 @@ import com.clueride.dao.PathStore;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GameCourse;
 import com.clueride.domain.Outing;
+import com.clueride.domain.account.Member;
 import com.clueride.domain.dev.TrackImpl;
+import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.LocationType;
 import com.clueride.feature.Edge;
@@ -44,6 +54,9 @@ import com.clueride.geo.score.EasyTrack;
 import com.clueride.gpx.TrackUtil;
 import com.clueride.infrastructure.AuthService;
 import com.clueride.infrastructure.AuthServiceImpl;
+import com.clueride.member.MemberService;
+import com.clueride.principal.EmailPrincipal;
+import com.clueride.principal.PrincipalService;
 import com.clueride.service.AuthenticationService;
 import com.clueride.service.InvitationService;
 import com.clueride.service.LocationService;
@@ -51,7 +64,10 @@ import com.clueride.service.NodeService;
 import com.clueride.service.OutingService;
 import com.clueride.service.OutingServiceImpl;
 import com.clueride.service.RecommendationService;
-import com.clueride.service.TokenService;
+import com.clueride.token.CustomClaim;
+import com.clueride.token.JtiService;
+import com.clueride.token.JtiServiceImpl;
+import com.clueride.token.TokenService;
 import static java.util.Arrays.asList;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -78,6 +94,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
     private LocationService locationService;
 
     @Mock
+    private MemberService memberService;
+
+    @Mock
     private NodeStore nodeStore;
 
     @Mock
@@ -88,6 +107,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
 
     @Mock
     private PathStore pathStore;
+
+    @Mock
+    private PrincipalService principalService;
 
     @Mock
     private RecommendationService recommendationService;
@@ -101,21 +123,25 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(AuthenticationService.class).toInstance(authenticationService);
         bind(AuthService.class).to(AuthServiceImpl.class);
         bind(ClueStore.class).toInstance(clueStore);
+        bind(ConfigService.class).to(ConfigServiceImpl.class);
         bind(CourseStore.class).toInstance(courseStore);
         bind(ImageStore.class).toInstance(imageStore);
         bind(InvitationService.class).toInstance(invitationService);
+        bind(JtiService.class).to(JtiServiceImpl.class);
         bind(LocationService.class).toInstance(locationService);
+        bind(MemberService.class).toInstance(memberService);
         bind(NodeService.class).toInstance(nodeService);
         bind(NodeStore.class).toInstance(nodeStore);
         bind(OutingStore.class).toInstance(outingStore);
         bind(PathStore.class).toInstance(pathStore);
+        bind(PrincipalService.class).toInstance(principalService);
         bind(RecommendationService.class).toInstance(recommendationService);
         bind(TokenService.class).toInstance(tokenService);
         bind(OutingService.class).to(OutingServiceImpl.class);
     }
 
     @Provides
-    public Location provideLocation() {
+    private Location provideLocation() {
         try {
             return Location.Builder.builder()
                     .withId(1)
@@ -134,7 +160,7 @@ public class CoreGuiceModuleTest extends AbstractModule {
     }
 
     @Provides
-    public Outing provideOuting() {
+    private Outing provideOuting() {
         return Outing.Builder.builder()
                 .withId(101)
                 .withCourseId(2)
@@ -143,7 +169,7 @@ public class CoreGuiceModuleTest extends AbstractModule {
     }
 
     @Provides
-    public GameCourse provideGameCourse() {
+    private GameCourse provideGameCourse() {
         return GameCourse.Builder.getBuilder()
                 .withName("Test Course")
                 .withDescription("Trying out the Builder for a Game Course")
@@ -169,7 +195,7 @@ public class CoreGuiceModuleTest extends AbstractModule {
     }
 
     @Provides
-    public Edge provideEdge(
+    private Edge provideEdge(
             TrackImpl trackFeature,
             LineString lineString
     ) {
@@ -177,5 +203,39 @@ public class CoreGuiceModuleTest extends AbstractModule {
                 trackFeature,
                 lineString
         );
+    }
+
+    @Provides
+    private Principal getPrincipal() {
+        return new EmailPrincipal("guest.test@clueride.com");
+    }
+
+    @Provides
+    private JWTCreator.Builder getJwtBuilder(
+            JtiService jtiService
+    ) {
+        Date now = new Date();
+        Date inASecond = new Date(now.getTime() + 1000);
+
+        Map<String, Object> headerClaims = new HashMap<>();
+        headerClaims.put(CustomClaim.BADGES, Collections.singletonList("GUEST"));
+        headerClaims.put(CustomClaim.EMAIL, "guest.1234567890@clueride.com");
+
+        return JWT.create()
+                .withHeader(headerClaims)
+                .withJWTId(jtiService.registerNewId())
+                .withExpiresAt(inASecond);
+    }
+
+    @Provides
+    private Member getMember() {
+        return Member.Builder.builder()
+                .withFirstName("ClueRide")
+                .withLastName("Guest")
+                .withEmailAddress("guest.dummy@clueride.com")
+                .withBadges(Collections.singletonList(Badge.LOCATION_EDITOR))
+                .withDisplayName("ClueRide Guest")
+                .withPhone("123-456-7890")
+                .build();
     }
 }

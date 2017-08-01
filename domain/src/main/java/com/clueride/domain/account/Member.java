@@ -19,6 +19,10 @@ package com.clueride.domain.account;
 
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.clueride.domain.user.Badge;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedMemberIdProvider;
@@ -57,7 +61,7 @@ public class Member {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void withId(Integer id) {
         this.id = id;
     }
 
@@ -65,7 +69,7 @@ public class Member {
         return displayName;
     }
 
-    public void setDisplayName(String displayName) {
+    public void withDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
@@ -73,7 +77,7 @@ public class Member {
         return emailAddress;
     }
 
-    public void setEmailAddress(String emailAddress) {
+    public void withEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
 
@@ -81,12 +85,27 @@ public class Member {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void withPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
     public List<Badge> getBadges() {
         return badges;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     public static final class Builder implements com.clueride.domain.common.Builder {
@@ -114,11 +133,21 @@ public class Member {
             return new Builder();
         }
 
+        public static Builder from(Member member) {
+            return builder()
+                    .withPhone(member.getPhoneNumber())
+                    .withFirstName(member.firstName)
+                    .withLastName(member.lastName)
+                    .withDisplayName(member.getDisplayName())
+                    .withEmailAddress(member.emailAddress)
+                    .withBadges(member.getBadges());
+        }
+
         public Integer getId() {
             return id;
         }
 
-        public Builder setId(Integer id) {
+        public Builder withId(Integer id) {
             this.id = id;
             return this;
         }
@@ -127,7 +156,7 @@ public class Member {
             return displayName;
         }
 
-        public Builder setDisplayName(String displayName) {
+        public Builder withDisplayName(String displayName) {
             this.displayName = displayName;
             return this;
         }
@@ -136,7 +165,7 @@ public class Member {
             return firstName;
         }
 
-        public Builder setFirstName(String firstName) {
+        public Builder withFirstName(String firstName) {
             this.firstName = firstName;
             return this;
         }
@@ -145,7 +174,7 @@ public class Member {
             return lastName;
         }
 
-        public Builder setLastName(String lastName) {
+        public Builder withLastName(String lastName) {
             this.lastName = lastName;
             return this;
         }
@@ -154,7 +183,7 @@ public class Member {
             return emailAddress;
         }
 
-        public Builder setEmailAddress(String emailAddress) {
+        public Builder withEmailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
             return this;
         }
@@ -163,7 +192,7 @@ public class Member {
             return phone;
         }
 
-        public Builder setPhone(String phone) {
+        public Builder withPhone(String phone) {
             this.phone = phone;
             return this;
         }
@@ -172,9 +201,25 @@ public class Member {
             return badges;
         }
 
-        public Builder setBadges(List<Badge> badges) {
+        public Builder withBadges(List<Badge> badges) {
             this.badges = badges;
             return this;
         }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj);
+        }
+
+        @Override
+        public int hashCode() {
+            return HashCodeBuilder.reflectionHashCode(this);
+        }
+
     }
 }

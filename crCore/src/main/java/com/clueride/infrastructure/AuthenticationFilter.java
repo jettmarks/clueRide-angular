@@ -30,14 +30,13 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import com.clueride.service.TokenService;
+import com.clueride.token.TokenService;
 
 /**
  * Allows picking up Authorization headers and extracting the Principal.
  */
-//@Secured
+@Secured
 //@Provider
-//@PreMatching
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationFilter.class);
@@ -80,17 +79,14 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                             .status(Response.Status.OK)
                             .header(
                                     HttpHeaders.AUTHORIZATION,
-                                    "Bearer " + tokenService.generateSignedToken())
+                                    "Bearer " + tokenService.generateTokenForNewPrincipal())
                             .build()
             );
             return;
         }
 
         try {
-
-            // Validate the token
             tokenService.validateToken(token);
-
         } catch (Exception e) {
             requestContext.abortWith(
                     Response.status(Response.Status.UNAUTHORIZED).build());

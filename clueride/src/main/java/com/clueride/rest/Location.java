@@ -30,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import com.clueride.infrastructure.Secured;
 import com.clueride.service.LocationService;
 
 /**
@@ -43,6 +44,7 @@ import com.clueride.service.LocationService;
  * There is a separate GET (path location/nearest) for the nearest locations, an array of the five
  * nearest locations for selection.
  */
+@Secured
 @Path("location")
 public class Location {
     private LocationService locationService;

@@ -74,7 +74,7 @@ public class CorsFilter implements Filter {
         response.setHeader(
                 /* Custom header for Clue Ride. */
                 "Access-Control-Expose-Headers",
-                "Authentication-Token,"
+                "Authorization"
         );
 
         filterChain.doFilter(request, response);
