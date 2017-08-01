@@ -33,4 +33,10 @@ public interface TokenService {
      * Throws exception if the token is invalid and decodes the passed token.
      */
     DecodedJWT verifyToken(String token);
+
+    /**
+     * Throws exception if the token isn't acceptable by this application.
+     * @param token representing a given principal; should be issued by this app.
+     */
+    void validateToken(String token);
 }
