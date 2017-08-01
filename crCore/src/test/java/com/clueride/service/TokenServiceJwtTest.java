@@ -31,11 +31,11 @@ import static org.testng.Assert.assertEquals;
  */
 @Guice(modules=CoreGuiceModuleTest.class)
 public class TokenServiceJwtTest {
-    private TokenService toTest;
+    private TokenServiceJwt toTest;
     private String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjbHVlcmlkZS5jb20ifQ.i_K5QQC1lg2yeB-30wrMbm3dDIb7Az_WyCTxbg5wzr8";
 
     @Inject
-    private Provider<TokenService> toTestProvider;
+    private Provider<TokenServiceJwt> toTestProvider;
 
     @BeforeMethod
     public void setUp() throws Exception {

@@ -52,7 +52,6 @@ import com.clueride.service.OutingService;
 import com.clueride.service.OutingServiceImpl;
 import com.clueride.service.RecommendationService;
 import com.clueride.service.TokenService;
-import com.clueride.service.TokenServiceJwt;
 import static java.util.Arrays.asList;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -93,6 +92,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
     @Mock
     private RecommendationService recommendationService;
 
+    @Mock
+    private TokenService tokenService;
+
     @Override
     protected void configure() {
         initMocks(this);
@@ -108,7 +110,7 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(OutingStore.class).toInstance(outingStore);
         bind(PathStore.class).toInstance(pathStore);
         bind(RecommendationService.class).toInstance(recommendationService);
-        bind(TokenService.class).to(TokenServiceJwt.class);
+        bind(TokenService.class).toInstance(tokenService);
         bind(OutingService.class).to(OutingServiceImpl.class);
     }
 

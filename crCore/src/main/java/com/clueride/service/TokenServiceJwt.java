@@ -22,7 +22,9 @@ import java.io.UnsupportedEncodingException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
@@ -67,5 +69,14 @@ public class TokenServiceJwt implements TokenService {
                 .withIssuer(ISSUER)
                 .build(); //Reusable verifier instance
         return verifier.verify(token);
+    }
+
+    @Override
+    public void validateToken(String token) {
+        DecodedJWT jwt = verifyToken(token);
+        Claim principalClaim = jwt.getHeaderClaim("principal");
+        if (principalClaim.isNull()) {
+            throw new InvalidClaimException("Unable to verify token's principal");
+        }
     }
 }
