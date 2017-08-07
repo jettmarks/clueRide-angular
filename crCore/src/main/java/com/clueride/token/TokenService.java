@@ -15,7 +15,9 @@
  *
  * Created by jett on 7/25/17.
  */
-package com.clueride.service;
+package com.clueride.token;
+
+import java.security.Principal;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 
@@ -39,4 +41,16 @@ public interface TokenService {
      * @param token representing a given principal; should be issued by this app.
      */
     void validateToken(String token);
+
+    /**
+     * Creates (and persists) a new Principal and then generates a token for that new principal.
+     */
+    String generateTokenForNewPrincipal();
+
+    /**
+     * Creates token for an existing Principal.
+     * @param principal unique identifier indicating specific access to this system.
+     * @return String token representing the Principal, valid for a fixed period of time.
+     */
+    String generateTokenForExistingPrincipal(Principal principal);
 }

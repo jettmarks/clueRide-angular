@@ -114,7 +114,7 @@ public class InvitationServiceImplTest {
         Invitation firstInvite = toTest.createNew(outing, member.getId());
         System.out.println("First  Token: " + firstInvite.getToken());
         Member member2 = createTestMember();
-        member2.setId(TEST_MEMBER_ID + 1);
+        member2.withId(TEST_MEMBER_ID + 1);
         when(memberStore.getMemberById(TEST_MEMBER_ID + 1)).thenReturn(member2);
         Invitation secondInvite = toTest.createNew(outing, member2.getId());
         System.out.println("Second Token: " + secondInvite.getToken());
@@ -122,16 +122,17 @@ public class InvitationServiceImplTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testCreateNew_InvalidMember() throws Exception {
-        member.setEmailAddress(null);
+        member.withEmailAddress(null);
         when(memberStore.getMemberById(TEST_MEMBER_ID)).thenReturn(member);
         Invitation actual = toTest.createNew(outing, member.getId());
     }
 
     private Member createTestMember() {
+        // TODO: Replace this with the injected instance.
         Member member = new Member();
-        member.setId(TEST_MEMBER_ID);
-        member.setDisplayName("testee");
-        member.setEmailAddress("nowhere@bad-domain.com");
+        member.withId(TEST_MEMBER_ID);
+        member.withDisplayName("testee");
+        member.withEmailAddress("nowhere@bad-domain.com");
         return member;
     }
 }

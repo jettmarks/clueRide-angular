@@ -17,13 +17,26 @@
  */
 package com.clueride;
 
+import java.security.Principal;
+
 import com.google.inject.AbstractModule;
 
+import com.clueride.config.ConfigService;
+import com.clueride.config.ConfigServiceImpl;
 import com.clueride.dao.FileImageStore;
 import com.clueride.dao.ImageStore;
 import com.clueride.infrastructure.AuthService;
 import com.clueride.infrastructure.AuthServiceImpl;
+import com.clueride.member.MemberService;
+import com.clueride.member.MemberServiceImpl;
+import com.clueride.principal.EmailPrincipal;
+import com.clueride.principal.PrincipalService;
+import com.clueride.principal.PrincipalServiceImpl;
 import com.clueride.service.*;
+import com.clueride.token.JtiService;
+import com.clueride.token.JtiServiceImpl;
+import com.clueride.token.TokenService;
+import com.clueride.token.TokenServiceJwt;
 
 /**
  * Bindings for Guice in the Clueride Module.
@@ -34,6 +47,7 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(AuthService.class).to(AuthServiceImpl.class);
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(RecommendationService.class).to(DefaultRecommendationService.class);
+        bind(ConfigService.class).to(ConfigServiceImpl.class);
         bind(ControlService.class).to(DefaultControlService.class);
         bind(CourseService.class).to(CourseServiceImpl.class);
         bind(CourseTypeService.class).to(CourseTypeServiceImpl.class);
@@ -42,6 +56,7 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(GameStateService.class).to(GameStateServiceImpl.class);
         bind(ImageStore.class).to(FileImageStore.class);
         bind(InvitationService.class).to(InvitationServiceImpl.class);
+        bind(JtiService.class).to(JtiServiceImpl.class);
         bind(LocationService.class).to(DefaultLocationService.class);
         bind(MemberService.class).to(MemberServiceImpl.class);
         bind(Network.class).to(DefaultNetwork.class);
@@ -49,6 +64,8 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(NodeService.class).to(DefaultNodeService.class);
         bind(OutingService.class).to(OutingServiceImpl.class);
         bind(PathService.class).to(PathServiceImpl.class);
+        bind(Principal.class).to(EmailPrincipal.class);
+        bind(PrincipalService.class).to(PrincipalServiceImpl.class);
         bind(TeamService.class).to(TeamServiceImpl.class);
         bind(TokenService.class).to(TokenServiceJwt.class);
     }

@@ -30,10 +30,12 @@ import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
 import com.clueride.domain.account.Member;
+import com.clueride.exc.RecordNotFoundException;
 import com.clueride.io.PojoJsonUtil;
+import static java.util.Objects.requireNonNull;
 
 /**
- * TODO: Description.
+ * Implementation of MemberStore backed by JSON files.
  */
 public class JsonMemberStore implements MemberStore {
     private static final Logger LOGGER = Logger.getLogger(JsonMemberStore.class);
@@ -41,7 +43,8 @@ public class JsonMemberStore implements MemberStore {
     /** In-memory references to the full set of Members indexed by ID. */
     private static Map<Integer,Member> membersById = new HashMap<>();
     /** In-memory references to the full set of Members indexed by Email Address. */
-    private static Map<InternetAddress,Member> membersByEmail = new HashMap<>();
+//    private static Map<InternetAddress,Member> membersByEmail = new HashMap<>();
+    private static Map<String,Member> membersByEmail = new HashMap<>();
     /** In-memory references to the full set of Members indexed by Display Name. */
     private static Map<String,List<Member>> membersByName = new HashMap<>();
 
@@ -69,7 +72,7 @@ public class JsonMemberStore implements MemberStore {
     private void reIndex() {
         for (Member member : members) {
             membersById.put(member.getId(), member);
-//            membersByEmail(member.getEmailAddress(), member);
+            membersByEmail.put(member.getEmailAddress(), member);
             String displayName = member.getDisplayName();
             if (!membersByName.containsKey(displayName)) {
                 membersByName.put(displayName, new ArrayList<Member>());
@@ -80,7 +83,12 @@ public class JsonMemberStore implements MemberStore {
 
     @Override
     public Integer addNew(Member member) throws IOException {
-        return null;
+        requireNonNull(member, "Member cannot be null");
+        requireNonNull(member.getEmailAddress(), "Member Email Address cannot be null");
+        membersByEmail.put(member.getEmailAddress(), member);
+        members.add(member);
+        // TODO: Persistence with a ID
+        return 0;
     }
 
     @Override
@@ -95,12 +103,25 @@ public class JsonMemberStore implements MemberStore {
 
     @Override
     public Member getMemberByEmail(InternetAddress emailAddress) {
-        return null;
+        if (!membersByEmail.containsKey(emailAddress.toString())) {
+            throw new RecordNotFoundException("Principal not registered: " + emailAddress.getAddress());
+        }
+        return membersByEmail.get(emailAddress.toString());
     }
 
     @Override
     public void update(Member member) {
         // TODO: Build this impl
 
+    }
+
+    @Override
+    public List<Member> getAllMembers() {
+        /* convert Collection to List */
+        List<Member> returnList = new ArrayList<>();
+        for (Member member : members) {
+            returnList.add(member);
+        }
+        return returnList;
     }
 }

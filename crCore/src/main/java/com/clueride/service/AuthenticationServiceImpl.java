@@ -17,6 +17,7 @@
  */
 package com.clueride.service;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,7 +31,10 @@ import com.clueride.domain.InvitationFull;
 import com.clueride.domain.account.Member;
 import com.clueride.domain.account.OAuthCredentials;
 import com.clueride.domain.user.Badge;
+import com.clueride.member.MemberService;
+import com.clueride.principal.EmailPrincipal;
 import com.clueride.rest.dto.CRCredentials;
+import com.clueride.token.TokenService;
 
 /**
  * Implementation of Authentication services.
@@ -103,6 +107,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // TODO: This is a temporary hardcoding of the Outing ID for anyone logging in
         session.setAttribute("outingId", 2);
         return tokenService.generateSignedToken();
+    }
+
+    @Override
+    public Principal getPrincipal(CRCredentials crCredentials) {
+        Member member = memberService.getMemberByEmail(crCredentials.name);
+        return new EmailPrincipal(member.getEmailAddress());
     }
 
 }
