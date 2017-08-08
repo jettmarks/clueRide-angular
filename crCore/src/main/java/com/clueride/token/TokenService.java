@@ -53,4 +53,11 @@ public interface TokenService {
      * @return String token representing the Principal, valid for a fixed period of time.
      */
     String generateTokenForExistingPrincipal(Principal principal);
+
+    /**
+     * Given a valid token, retrieve the user's name.
+     * @param token JWT token that has been validated.
+     * @return String user name.
+     */
+    String getNameFromToken(String token);
 }

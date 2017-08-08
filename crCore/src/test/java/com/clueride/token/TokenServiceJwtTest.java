@@ -139,6 +139,20 @@ public class TokenServiceJwtTest {
         toTest.validateToken(tokenMap.get(TokenType.INVALID_JTI));
     }
 
+    @Test
+    public void testGetName() throws Exception {
+        /* setup */
+        String expected = member.getEmailAddress();
+
+        /* make call */
+        String actual = toTest.getNameFromToken(
+                tokenMap.get(TokenType.OK)
+        );
+
+        /* verify results */
+        assertEquals(actual, expected);
+    }
+
     private Map<TokenType,String> buildTokenTypeMap() {
         Map<TokenType, String> map = new HashMap<>();
 

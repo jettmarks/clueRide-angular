@@ -206,20 +206,23 @@ public class CoreGuiceModuleTest extends AbstractModule {
     }
 
     @Provides
-    private Principal getPrincipal() {
-        return new EmailPrincipal("guest.test@clueride.com");
+    private Principal getPrincipal(
+            Member member
+    ) {
+        return new EmailPrincipal(member.getEmailAddress());
     }
 
     @Provides
     private JWTCreator.Builder getJwtBuilder(
-            JtiService jtiService
+            JtiService jtiService,
+            Member member
     ) {
         Date now = new Date();
         Date inASecond = new Date(now.getTime() + 1000);
 
         Map<String, Object> headerClaims = new HashMap<>();
-        headerClaims.put(CustomClaim.BADGES, Collections.singletonList("GUEST"));
-        headerClaims.put(CustomClaim.EMAIL, "guest.1234567890@clueride.com");
+        headerClaims.put(CustomClaim.BADGES, member.getBadges());
+        headerClaims.put(CustomClaim.EMAIL, member.getEmailAddress());
 
         return JWT.create()
                 .withHeader(headerClaims)

@@ -18,6 +18,7 @@
 package com.clueride.infrastructure;
 
 import java.io.IOException;
+import java.security.Principal;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import org.apache.log4j.Logger;
 
@@ -90,6 +92,42 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         } catch (Exception e) {
             requestContext.abortWith(
                     Response.status(Response.Status.UNAUTHORIZED).build());
+            /* Our work is done for this request. */
+            return;
         }
+
+        /* Add user to the Context for this invocation. */
+        final String principalName = tokenService.getNameFromToken(token);
+        final SecurityContext currentSecurityContext = requestContext.getSecurityContext();
+        requestContext.setSecurityContext(new SecurityContext() {
+
+            @Override
+            public Principal getUserPrincipal() {
+
+                return new Principal() {
+
+                    @Override
+                    public String getName() {
+                        return principalName;
+                    }
+                };
+            }
+
+            @Override
+            public boolean isUserInRole(String role) {
+                return true;
+            }
+
+            @Override
+            public boolean isSecure() {
+                return currentSecurityContext.isSecure();
+            }
+
+            @Override
+            public String getAuthenticationScheme() {
+                return "Bearer";
+            }
+        });
+
     }
 }
