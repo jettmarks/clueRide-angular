@@ -41,8 +41,8 @@ import com.clueride.service.LocationService;
  * POST - Changes to a Location given by the ID.
  * DELETE - Not supported by this API - must be removed from the persistence layer using other means.
  *
- * There is a separate GET (path location/nearest) for the nearest locations, an array of the five
- * nearest locations for selection.
+ * There is a separate GET (path location/nearest) for the nearest locations, an array of a set of
+ * nearest locations.
  */
 @Secured
 @Path("location")

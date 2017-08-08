@@ -46,10 +46,11 @@ public class TokenServiceJwt implements TokenService {
 
     private static final String ISSUER = "clueride.com";
     private static Algorithm ALGORITHM = null;
+    private static JWTVerifier verifier;
+
     private final PrincipalService principalService;
     private final JtiService jtiService;
     private final MemberService memberService;
-    private final ConfigService configService;
 
     /**
      * Injectable constructor
@@ -68,11 +69,15 @@ public class TokenServiceJwt implements TokenService {
         this.principalService = principalService;
         this.jtiService = jtiService;
         this.memberService = memberService;
-        this.configService = configService;
 
+        String secret = configService.get("token.jwt.secret");
+        requireNonNull(secret, "Configuration missing for 'token.jwt.secret'");
         if (ALGORITHM == null) {
             try {
-                ALGORITHM = HMAC256(this.configService.get("token.jwt.secret"));
+                ALGORITHM = HMAC256(secret);
+                verifier = JWT.require(ALGORITHM)
+                        .withIssuer(ISSUER)
+                        .build(); //Reusable verifier instance
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -95,9 +100,6 @@ public class TokenServiceJwt implements TokenService {
     @Override
     public DecodedJWT verifyToken(String token) {
         requireNonNull(token, "Token can't be null or empty");
-        JWTVerifier verifier = JWT.require(ALGORITHM)
-                .withIssuer(ISSUER)
-                .build(); //Reusable verifier instance
         return verifier.verify(token);
     }
 
@@ -144,6 +146,13 @@ public class TokenServiceJwt implements TokenService {
                 .withHeader(headerClaims)
                 .sign(ALGORITHM);
         return token;
+    }
+
+    @Override
+    public String getNameFromToken(String token) {
+        DecodedJWT jwt = verifyToken(token);
+        Claim emailClaim = jwt.getHeaderClaim(CustomClaim.EMAIL);
+        return emailClaim.asString();
     }
 
 }
