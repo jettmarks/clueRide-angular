@@ -1,17 +1,24 @@
 package com.clueride.geo.score;
 
+import javax.inject.Provider;
+
+import com.google.inject.Inject;
+import com.jettmarks.gmaps.encoder.Track;
+import com.jettmarks.gmaps.encoder.Trackpoint;
+import com.vividsolutions.jts.geom.LineString;
+import org.mockito.Mock;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Guice;
+import org.testng.annotations.Test;
+
+import com.clueride.CrMainGuiceModuleTest;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.factory.LineFeatureFactory;
 import com.clueride.feature.Edge;
 import com.clueride.feature.SegmentFeature;
 import com.clueride.feature.TrackFeature;
 import com.clueride.gpx.TrackUtil;
-import com.jettmarks.gmaps.encoder.Trackpoint;
-import com.vividsolutions.jts.geom.LineString;
-import org.mockito.Mock;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
+import com.clueride.service.builder.TrackBuilder;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -21,7 +28,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
  * @author jett
  *
  */
+@Guice(modules = CrMainGuiceModuleTest.class)
 public class TrackScoreTest {
+
+    // TODO: Mock services; instantiate data
 
     private TrackScore toTest;
     private Edge mockSegmentEast;
@@ -41,21 +51,28 @@ public class TrackScoreTest {
     @Mock
     private SubTrackScore expected;
 
+    @Inject
+    private Provider<TrackBuilder> trackBuilderProvider;
+
     @BeforeMethod
     public void setUp() {
         initMocks(this);
-        com.jettmarks.gmaps.encoder.Track eastTrack = new EasyTrack(
-                new Trackpoint(-83.0, 33.0),
-                new Trackpoint(-83.0, 34.0));
+        Track eastTrack = trackBuilderProvider.get()
+                .withBegin(new Trackpoint(-83.0, 33.0))
+                .withEnd(new Trackpoint(-83.0, 34.0))
+                .build();
+
         LineString eastLineString = TrackUtil.getLineString(eastTrack);
         // mockSegmentEast = TranslateUtil.lineStringToSegment(eastLineString);
         // mockSegmentEast = new SegmentFeatureImpl(eastLineString);
         mockSegmentEast = (Edge) LineFeatureFactory.getProposal(eastLineString);
         mockSegmentEast.setDisplayName("East");
 
-        com.jettmarks.gmaps.encoder.Track testTrack = new EasyTrack(
-                new Trackpoint(-84.0, 33.7),
-                new Trackpoint(-83.0, 33.7));
+        Track testTrack = trackBuilderProvider.get()
+                .withBegin(new Trackpoint(-84.0, 33.7))
+                .withEnd(new Trackpoint(-83.0, 33.7))
+                .build();
+
         trackLineString = TrackUtil.getLineString(testTrack);
         when(mockTrack.getLineString()).thenReturn(trackLineString);
 
