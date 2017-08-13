@@ -19,6 +19,11 @@ package com.clueride.domain.account;
 
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -108,18 +113,22 @@ public class Member {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    public static final class Builder implements com.clueride.domain.common.Builder {
+    @Entity(name="member")
+    public static class Builder implements com.clueride.domain.common.Builder {
+        @Id
         private Integer id;
-        private String displayName;
-        private String firstName;
-        private String lastName;
-        private String emailAddress;
-//        private InternetAddress emailAddress;
-        private String phone;
-//        private Phonenumber.PhoneNumber phone;
+
+        @Column(name="display_name") private String displayName;
+        @Column(name="first_name") private String firstName;
+        @Column(name="last_name") private String lastName;
+        @Column(name="primary_email") private String emailAddress;
+        //        private InternetAddress emailAddress;
+        @Column private String phone;
+        //        private Phonenumber.PhoneNumber phone;
+        @Transient
         private List<Badge> badges;
 
-        private Builder() {
+        public Builder() {
             IdProvider idProvider = new MemoryBasedMemberIdProvider();
             id = idProvider.getId();
         }
@@ -147,6 +156,11 @@ public class Member {
             return id;
         }
 
+        public Builder setId(Integer id) {
+            this.id = id;
+            return this;
+        }
+
         public Builder withId(Integer id) {
             this.id = id;
             return this;
@@ -154,6 +168,10 @@ public class Member {
 
         public String getDisplayName() {
             return displayName;
+        }
+
+        public void setDisplayName(String displayName) {
+            this.displayName = displayName;
         }
 
         public Builder withDisplayName(String displayName) {
@@ -165,6 +183,10 @@ public class Member {
             return firstName;
         }
 
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
+
         public Builder withFirstName(String firstName) {
             this.firstName = firstName;
             return this;
@@ -172,6 +194,10 @@ public class Member {
 
         public String getLastName() {
             return lastName;
+        }
+
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
         }
 
         public Builder withLastName(String lastName) {
@@ -183,6 +209,10 @@ public class Member {
             return emailAddress;
         }
 
+        public void setEmailAddress(String emailAddress) {
+            this.emailAddress = emailAddress;
+        }
+
         public Builder withEmailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
             return this;
@@ -192,6 +222,10 @@ public class Member {
             return phone;
         }
 
+        public void setPhone(String phone) {
+            this.phone = phone;
+        }
+
         public Builder withPhone(String phone) {
             this.phone = phone;
             return this;
@@ -199,6 +233,10 @@ public class Member {
 
         public List<Badge> getBadges() {
             return badges;
+        }
+
+        public void setBadges(List<Badge> badges) {
+            this.badges = badges;
         }
 
         public Builder withBadges(List<Badge> badges) {
