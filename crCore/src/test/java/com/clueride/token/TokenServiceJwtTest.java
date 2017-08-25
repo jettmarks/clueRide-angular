@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
 import com.clueride.config.ConfigService;
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 import com.clueride.exc.RecordNotFoundException;
 import com.clueride.member.MemberService;
 import com.clueride.principal.PrincipalService;

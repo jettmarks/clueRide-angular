@@ -15,14 +15,12 @@
  *
  * Created by jett on 6/25/16.
  */
-package com.clueride.dao;
+package com.clueride.domain.account.member;
 
 import java.io.IOException;
 import java.util.List;
 
 import javax.mail.internet.InternetAddress;
-
-import com.clueride.domain.account.Member;
 
 /**
  * Persistence interface for {@link Member} instances.

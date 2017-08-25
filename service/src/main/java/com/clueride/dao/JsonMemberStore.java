@@ -29,7 +29,8 @@ import javax.mail.internet.InternetAddress;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
+import com.clueride.domain.account.member.MemberStore;
 import com.clueride.exc.RecordNotFoundException;
 import com.clueride.io.PojoJsonUtil;
 import static java.util.Objects.requireNonNull;
@@ -119,9 +120,7 @@ public class JsonMemberStore implements MemberStore {
     public List<Member> getAllMembers() {
         /* convert Collection to List */
         List<Member> returnList = new ArrayList<>();
-        for (Member member : members) {
-            returnList.add(member);
-        }
+        returnList.addAll(members);
         return returnList;
     }
 }

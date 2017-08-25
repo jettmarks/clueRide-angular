@@ -19,7 +19,7 @@ package com.clueride.service;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 
 /**
  * Memory-based approach for assigning unique IDs for {@link Member}.

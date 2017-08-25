@@ -13,36 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 8/6/17.
+ * Created by jett on 8/13/17.
  */
-package com.clueride.dao;
+package com.clueride.domain;
 
-import java.util.Collections;
+import javax.persistence.EntityManager;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
-import com.clueride.domain.account.member.Member;
-import com.clueride.domain.user.Badge;
+import com.clueride.domain.account.member.MemberStore;
+import com.clueride.domain.account.member.MemberStoreJpa;
+import com.clueride.infrastructure.JpaUtil;
 
 /**
- * Configures bindings for the Service module.
+ * Guice Bindings for the Domain module.
  */
-public class ServiceGuiceModuleTest extends AbstractModule {
+public class DomainGuiceModule extends AbstractModule {
     @Override
     protected void configure() {
-
+        bind(MemberStore.class).to(MemberStoreJpa.class);
     }
 
     @Provides
-    private Member getMember() {
-        return Member.Builder.builder()
-                .withFirstName("ClueRide")
-                .withLastName("Guest")
-                .withEmailAddress("guest.dummy@clueride.com")
-                .withBadges(Collections.singletonList(Badge.LOCATION_EDITOR))
-                .withDisplayName("ClueRide Guest")
-                .withPhone("123-456-7890")
-                .build();
+    private EntityManager getEntityManager() {
+        return JpaUtil.getEntityManagerFactory().createEntityManager();
     }
 }

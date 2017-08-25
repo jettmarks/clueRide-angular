@@ -26,8 +26,8 @@ import javax.mail.internet.InternetAddress;
 
 import com.google.inject.Inject;
 
-import com.clueride.dao.MemberStore;
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
+import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.user.Badge;
 
 /**

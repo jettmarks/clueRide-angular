@@ -20,21 +20,21 @@ package com.clueride.service;
 import java.util.List;
 
 import com.clueride.domain.Team;
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 
 public interface TeamService {
 
     /**
      * At this time, there is only a single team, but eventually, we'll have a number
      * of teams managed by the store.
-     * @return
+     * @return List of all Teams.
      */
     List<Team> getTeams();
 
     /**
      *
-     * @param teamId
-     * @return
+     * @param teamId unique identifier for the Team.
+     * @return Matching Team.
      */
     Team getTeam(Integer teamId);
 
