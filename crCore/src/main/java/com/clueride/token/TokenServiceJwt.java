@@ -31,9 +31,10 @@ import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.apache.log4j.Logger;
 
 import com.clueride.config.ConfigService;
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 import com.clueride.member.MemberService;
 import com.clueride.principal.PrincipalService;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
@@ -43,6 +44,7 @@ import static java.util.Objects.requireNonNull;
  * JWT implementation of Token Service.
  */
 public class TokenServiceJwt implements TokenService {
+    private static final Logger LOGGER = Logger.getLogger(TokenServiceJwt.class);
 
     private static final String ISSUER = "clueride.com";
     private static Algorithm ALGORITHM = null;
@@ -113,12 +115,14 @@ public class TokenServiceJwt implements TokenService {
         Claim badgesClaim = jwt.getHeaderClaim(CustomClaim.BADGES);
 
         if (emailClaim.isNull()) {
+            LOGGER.warn("Unable to verify token's email");
             throw new InvalidClaimException("Unable to verify token's email");
         }
 
         principalService.validate(emailClaim.asString());
 
         if (badgesClaim.isNull()) {
+            LOGGER.warn("Unable to verify token's badge set");
             throw new InvalidClaimException("Unable to verify token's badge set");
         }
     }

@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 import com.clueride.domain.Course;
 import com.clueride.domain.CourseType;
 import com.clueride.domain.Invitation;
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.Location;

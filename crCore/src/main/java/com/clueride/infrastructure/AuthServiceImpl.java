@@ -27,26 +27,23 @@ import javax.ws.rs.HttpMethod;
 
 import com.google.inject.Inject;
 
-import com.clueride.service.AuthenticationService;
-import com.clueride.service.InvitationService;
-
 /**
  * Implementation of AuthService.
  */
 public class AuthServiceImpl implements AuthService {//    @Inject
-    private final AuthenticationService authenticationService;
-    private final InvitationService invitationService;
+//    private final AuthenticationService authenticationService;
+//    private final InvitationService invitationService;
     private FilterChain filterChain = null;
     private HttpServletRequest request = null;
     private HttpServletResponse response = null;
 
     @Inject
     public AuthServiceImpl (
-            AuthenticationService authenticationService,
-            InvitationService invitationService
+//            AuthenticationService authenticationService,
+//            InvitationService invitationService
     ) {
-        this.authenticationService = authenticationService;
-        this.invitationService = invitationService;
+//        this.authenticationService = authenticationService;
+//        this.invitationService = invitationService;
     }
 
 

@@ -15,8 +15,9 @@
  * <p/>
  * Created 11/17/15.
  */
-package com.clueride.domain.account;
+package com.clueride.domain.account.member;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -105,7 +106,7 @@ public class Member {
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+        return EqualsBuilder.reflectionEquals(this, obj, Collections.singletonList("id"));
     }
 
     @Override
@@ -126,7 +127,7 @@ public class Member {
         @Column private String phone;
         //        private Phonenumber.PhoneNumber phone;
         @Transient
-        private List<Badge> badges;
+        private List<Badge> badges = Collections.emptyList();
 
         public Builder() {
             IdProvider idProvider = new MemoryBasedMemberIdProvider();

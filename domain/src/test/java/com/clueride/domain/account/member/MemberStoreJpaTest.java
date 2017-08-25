@@ -1,4 +1,4 @@
-package com.clueride.dao;/*
+package com.clueride.domain.account.member;/*
  * Copyright 2017 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,50 +13,50 @@ package com.clueride.dao;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 8/6/17.
+ * Created by jett on 8/13/17.
  */
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.mail.internet.InternetAddress;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
-import com.clueride.domain.account.member.Member;
-import com.clueride.exc.RecordNotFoundException;
-import static org.mockito.MockitoAnnotations.initMocks;
+import com.clueride.domain.DomainGuiceModuleTest;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 /**
- * Exercises the JsonMemberStoreTest class.
+ * Exercises the MemberStoreJpaTest class.
  */
-@Guice(modules = ServiceGuiceModuleTest.class)
-public class JsonMemberStoreTest {
-    private JsonMemberStore toTest;
-    private Member testMember;
+@Guice(modules = DomainGuiceModuleTest.class)
+public class MemberStoreJpaTest {
+    private MemberStoreJpa toTest;
+
+    private InternetAddress email;
 
     @Inject
-    private Provider<JsonMemberStore> toTestProvider;
-
-    @Inject
-    private Member member;
+    private Provider<MemberStoreJpa> toTestProvider;
 
     @BeforeMethod
-    public void setUp() {
-        initMocks(this);
+    public void setUp() throws Exception {
         toTest = toTestProvider.get();
-        testMember = Member.Builder.from(member)
-                .withEmailAddress("test.member@clueride.com")
-                .build();
+    }
+
+    @AfterMethod
+    public void tearDown() throws Exception {
+    }
+
+    @Test
+    public void testInstantiation() {
+        assertNotNull(toTest);
     }
 
     @Test
     public void testAddNew() throws Exception {
-        /* make call */
-        toTest.addNew(testMember);
     }
 
     @Test
@@ -69,25 +69,30 @@ public class JsonMemberStoreTest {
 
     @Test
     public void testGetMemberByEmail() throws Exception {
-        /* set up */
-        Member expected = testMember;
-        toTest.addNew(testMember);
+        /* expected */
+        Member expected = Member.Builder.builder()
+                .withEmailAddress("test.email@clueride.com")
+                .withDisplayName("tester")
+                .withFirstName("Test")
+                .withLastName("Account")
+                .withPhone("123.456.7890")
+                .build();
+        email = new InternetAddress("test.email@clueride.com");
 
         /* make call */
-        Member actual = toTest.getMemberByEmail(new InternetAddress(testMember.getEmailAddress()));
+        Member actual = toTest.getMemberByEmail(email);
+        assertNotNull(actual);
 
         /* verify results */
-        assertNotNull(actual);
         assertEquals(actual, expected);
-    }
-
-    @Test(expectedExceptions = RecordNotFoundException.class)
-    public void testGetMemberByEmail_recordNotFound() throws Exception {
-        toTest.getMemberByEmail(new InternetAddress("cant.find@clueride.com"));
     }
 
     @Test
     public void testUpdate() throws Exception {
+    }
+
+    @Test
+    public void testGetAllMembers() throws Exception {
     }
 
 }

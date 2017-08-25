@@ -37,14 +37,14 @@ import org.apache.log4j.Logger;
 import com.clueride.dao.CourseStore;
 import com.clueride.dao.CourseTypeStore;
 import com.clueride.dao.InvitationStore;
-import com.clueride.dao.MemberStore;
 import com.clueride.domain.Course;
 import com.clueride.domain.CourseType;
 import com.clueride.domain.Invitation;
 import com.clueride.domain.InvitationFull;
 import com.clueride.domain.Outing;
 import com.clueride.domain.Team;
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
+import com.clueride.domain.account.member.MemberStore;
 
 /**
  * Default implementation of InvitationService.
@@ -72,7 +72,8 @@ public class InvitationServiceImpl implements InvitationService {
             MemberStore memberStore,
             CourseStore courseStore,
             CourseTypeStore courseTypeStore,
-            TeamService teamService) {
+            TeamService teamService
+    ) {
         this.invitationStore = invitationStore;
         this.memberStore = memberStore;
         this.courseStore = courseStore;

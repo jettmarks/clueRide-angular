@@ -35,7 +35,7 @@ import com.clueride.domain.GameCourse;
 import com.clueride.domain.GamePath;
 import com.clueride.domain.Invitation;
 import com.clueride.domain.Outing;
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 import com.clueride.domain.common.Builder;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.Location;

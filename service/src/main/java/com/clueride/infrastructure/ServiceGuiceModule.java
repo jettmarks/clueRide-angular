@@ -20,6 +20,8 @@ package com.clueride.infrastructure;
 import com.google.inject.AbstractModule;
 
 import com.clueride.dao.*;
+import com.clueride.domain.account.member.MemberStore;
+import com.clueride.domain.account.member.MemberStoreJpa;
 
 /**
  * Bindings for Services Guice Module.
@@ -27,13 +29,17 @@ import com.clueride.dao.*;
 public class ServiceGuiceModule extends AbstractModule {
     @Override
     protected void configure() {
+//        install(new DomainGuiceModule());
+
         bind(ClueStore.class).to(JsonClueStore.class);
         bind(CourseStore.class).to(JsonCourseStore.class);
         bind(CourseTypeStore.class).to(JsonCourseTypeStore.class);
-        bind(PathStore.class).to(JsonPathStore.class);
-        bind(LocationStore.class).to(JsonLocationStore.class);
-        bind(MemberStore.class).to(JsonMemberStore.class);
         bind(InvitationStore.class).to(JsonInvitationStore.class);
+        bind(LocationStore.class).to(JsonLocationStore.class);
+        bind(MemberStore.class).annotatedWith(Json.class).to(JsonMemberStore.class);
+        bind(MemberStore.class).annotatedWith(Jpa.class).to(MemberStoreJpa.class);
+        bind(NodeStore.class).to(JsonNodeStore.class);
         bind(OutingStore.class).to(JsonOutingStore.class);
+        bind(PathStore.class).to(JsonPathStore.class);
     }
 }

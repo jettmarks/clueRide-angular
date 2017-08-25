@@ -23,7 +23,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.clueride.domain.Team;
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 
 /**
  * Implementation of the Team Interface for maintaining the list of Teams and their members.
@@ -38,9 +38,6 @@ public class TeamServiceImpl implements TeamService {
         // TODO: Move this over to using a Store to hold onto the Teams and their members.
         team = new Team("Spokes Folks");
         team.add(new Member("Jett"));
-//        for (int i=1; i<=3; i++) {
-//            team.add(new Member("Member "+i));
-//        }
     }
 
     @Override

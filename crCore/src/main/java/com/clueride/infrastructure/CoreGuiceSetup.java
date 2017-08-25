@@ -26,6 +26,7 @@ import com.google.inject.servlet.ServletModule;
 
 import com.clueride.CluerideGuiceModule;
 import com.clueride.config.GeoToolsGuiceModule;
+import com.clueride.domain.DomainGuiceModule;
 
 /**
  * Configure the Guice container.
@@ -37,6 +38,7 @@ public class CoreGuiceSetup extends GuiceServletContextListener {
     protected Injector getInjector() {
         myInjector =  Guice.createInjector(
                 new ServletModule() { },
+                new DomainGuiceModule(),
                 new GeoToolsGuiceModule(),
                 new CluerideGuiceModule(),
                 new ServiceGuiceModule()

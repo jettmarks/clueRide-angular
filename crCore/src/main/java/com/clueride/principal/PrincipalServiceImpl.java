@@ -25,14 +25,15 @@ import javax.inject.Inject;
 
 import com.auth0.jwt.exceptions.InvalidClaimException;
 
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 import com.clueride.member.MemberService;
 
 /**
  * Exploratory implementation.
  */
 public class PrincipalServiceImpl implements PrincipalService {
-    private static List<Principal> principals = new ArrayList<>();
+    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(PrincipalServiceImpl.class);
+    private static List<Principal> principals = null;
     private final MemberService memberService;
 
     @Inject
@@ -40,8 +41,6 @@ public class PrincipalServiceImpl implements PrincipalService {
             MemberService memberService
     ) {
         this.memberService = memberService;
-        /* Refreshes principal list from the service. */
-        getCount();
     }
 
     @Override
@@ -53,11 +52,16 @@ public class PrincipalServiceImpl implements PrincipalService {
 
     @Override
     public void validate(String email) {
+        if (principals == null) {
+            principals = new ArrayList<>();
+            getCount();
+        }
+
         try {
             Principal principal = new EmailPrincipal(email);
-            if (!principals.contains(principal)) {
-                throw new RuntimeException();
-            }
+            /* Test existence within the database */
+            Member member = memberService.getMemberByEmail(email);
+            principals.add(principal);
         }  catch (Exception e) {
             throw new InvalidClaimException("Unable to verify email");
         }
@@ -65,9 +69,11 @@ public class PrincipalServiceImpl implements PrincipalService {
 
     public int getCount() {
         principals.clear();
-        for (Member member : this.memberService.getAllMembers()) {
+        LOGGER.debug("Refreshing from DB");
+        for (Member member : memberService.getAllMembers()) {
             principals.add(new EmailPrincipal(member.getEmailAddress()));
         }
+        LOGGER.debug("Found " + principals.size() + " records");
         return principals.size();
     }
 }

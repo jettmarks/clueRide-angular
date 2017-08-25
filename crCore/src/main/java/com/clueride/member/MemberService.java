@@ -19,7 +19,7 @@ package com.clueride.member;
 
 import java.util.List;
 
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 
 /**
  * Provides business-layer services for Members and their Badges.

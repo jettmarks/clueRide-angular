@@ -44,7 +44,7 @@ import com.clueride.dao.PathStore;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GameCourse;
 import com.clueride.domain.Outing;
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 import com.clueride.domain.dev.TrackImpl;
 import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.Location;

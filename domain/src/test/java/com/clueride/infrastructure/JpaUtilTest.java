@@ -25,7 +25,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.clueride.domain.account.Member;
+import com.clueride.domain.account.member.Member;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
