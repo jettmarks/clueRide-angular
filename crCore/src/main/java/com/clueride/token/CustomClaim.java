@@ -22,4 +22,5 @@ package com.clueride.token;/*
 public class CustomClaim {
     public static final String BADGES = "badges";
     public static final String EMAIL = "email";
+    public static final String GUEST = "guest";
 }

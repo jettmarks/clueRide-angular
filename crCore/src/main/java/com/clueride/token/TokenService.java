@@ -50,9 +50,10 @@ public interface TokenService {
     /**
      * Creates token for an existing Principal.
      * @param principal unique identifier indicating specific access to this system.
+     * @param isGuest true if the principal is a Guest.
      * @return String token representing the Principal, valid for a fixed period of time.
      */
-    String generateTokenForExistingPrincipal(Principal principal);
+    String generateTokenForExistingPrincipal(Principal principal, boolean isGuest);
 
     /**
      * Given a valid token, retrieve the user's name.
@@ -60,4 +61,11 @@ public interface TokenService {
      * @return String user name.
      */
     String getNameFromToken(String token);
+
+    /**
+     * For the given token, retrieve whether or not this is a Guest Token.
+     * @param token to be checked.
+     * @return true if this token represents a guest.
+     */
+    boolean isGuestToken(String token);
 }

@@ -133,30 +133,44 @@ public class TokenServiceJwt implements TokenService {
         Principal newPrincipal = principalService.getNewPrincipal();
         requireNonNull(newPrincipal, "Unable to generate new Principal");
         memberService.createNewMemberWithEmail(newPrincipal.getName());
-        return generateTokenForExistingPrincipal(newPrincipal);
+        return generateTokenForExistingPrincipal(newPrincipal, true);
     }
 
     @Override
-    public String generateTokenForExistingPrincipal(Principal principal) {
+    public String generateTokenForExistingPrincipal(Principal principal, boolean isGuest) {
         Member member = memberService.getMemberByEmail(principal.getName());
 
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put(CustomClaim.BADGES, member.getBadges());
         headerClaims.put(CustomClaim.EMAIL, principal.getName());
+        headerClaims.put(CustomClaim.GUEST, isGuest);
 
-        String token = JWT.create()
+        return JWT.create()
                 .withIssuer(ISSUER)
                 .withJWTId(jtiService.registerNewId())
                 .withHeader(headerClaims)
                 .sign(ALGORITHM);
-        return token;
     }
 
     @Override
     public String getNameFromToken(String token) {
         DecodedJWT jwt = verifyToken(token);
         Claim emailClaim = jwt.getHeaderClaim(CustomClaim.EMAIL);
+        if (emailClaim.isNull()) {
+            throw new IllegalStateException("Provided token doesn't have a EMAIL claim");
+        }
         return emailClaim.asString();
+    }
+
+    /** Tokens without the GUEST claim throw an exception. */
+    @Override
+    public boolean isGuestToken(String token) {
+        DecodedJWT jwt = verifyToken(token);
+        Claim claim = jwt.getHeaderClaim(CustomClaim.GUEST);
+        if (claim.isNull()) {
+            throw new IllegalStateException("Provided token doesn't have a GUEST claim");
+        }
+        return claim.asBoolean();
     }
 
 }

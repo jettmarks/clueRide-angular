@@ -44,7 +44,9 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Exercises the TokenServiceJwtTest class.
@@ -98,7 +100,7 @@ public class TokenServiceJwtTest {
     }
 
     @Test
-    public void testGenerateTokenForPrincipal() throws Exception {
+    public void testGenerateTokenForNewPrincipal() throws Exception {
         /* train mocks */
         when(memberService.getMemberByEmail(anyString())).thenReturn(member);
         when(principalService.getNewPrincipal()).thenReturn(principal);
@@ -106,6 +108,22 @@ public class TokenServiceJwtTest {
         /* make call */
         String actual = toTest.generateTokenForNewPrincipal();
         assertNotNull(actual);
+
+        /* Verify results */
+        assertTrue(toTest.isGuestToken(actual));
+    }
+
+    @Test
+    public void testGenerateTokenForExistingPrincipal() throws Exception {
+        /* train mocks */
+        when(memberService.getMemberByEmail(anyString())).thenReturn(member);
+
+        /* make call */
+        String actual = toTest.generateTokenForExistingPrincipal(principal, false);
+        assertNotNull(actual);
+
+        /* verify results */
+        assertFalse(toTest.isGuestToken(actual));
     }
 
     @Test
