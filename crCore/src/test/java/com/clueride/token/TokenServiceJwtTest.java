@@ -124,6 +124,7 @@ public class TokenServiceJwtTest {
 
         /* verify results */
         assertFalse(toTest.isGuestToken(actual));
+        System.out.println(actual);
     }
 
     @Test

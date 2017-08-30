@@ -114,10 +114,10 @@ public class Location {
     }
 
     /**
-     * Endpoint for requesting the nearest 5 locations to offer the user for selection.
+     * Endpoint for requesting the nearest locations to offer the user for selection.
      * @param lat - Latitude for current location.
      * @param lon - Longitude for current location.
-     * @return JSON array containing Location objects for the five nearest locations.
+     * @return JSON array containing Location objects for the nearest locations.
      */
     @GET
     @Path("nearest")
@@ -127,6 +127,22 @@ public class Location {
             @QueryParam("lon") Double lon
     ) {
         return locationService.getNearestLocations(lat, lon);
+    }
+
+    /**
+     * Endpoint for requesting the nearest Marker locations for editing.
+     * @param lat - Latitude for current location.
+     * @param lon - Longitude for current location.
+     * @return JSON array containing Location with node objects for the nearest locations.
+     */
+    @GET
+    @Path("nearest-marker")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getNearestMarkerLocations(
+            @QueryParam("lat") Double lat,
+            @QueryParam("lon") Double lon
+    ) {
+        return locationService.getNearestMarkerLocations(lat, lon);
     }
 
     @GET

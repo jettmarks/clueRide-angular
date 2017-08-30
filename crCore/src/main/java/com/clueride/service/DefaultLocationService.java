@@ -51,30 +51,31 @@ import com.clueride.service.builder.LocationBuilder;
 public class DefaultLocationService implements LocationService {
     private static final Logger LOGGER = Logger.getLogger(DefaultLocationService.class);
 
+    private final ClueStore clueStore;
+    private final CourseStore courseStore;
+    private final ImageStore imageStore;
+    private final LocationBuilder locationBuilder;
     private final LocationStore locationStore;
     private final NodeService nodeService;
-    private final ImageStore imageStore;
-    private final CourseStore courseStore;
     private final PathStore pathStore;
-    private final ClueStore clueStore;
-    private final LocationBuilder locationBuilder;
 
     @Inject
     public DefaultLocationService(
-            LocationStore locationStore,
-            ImageStore imageStore,
-            NodeService nodeService,
+            ClueStore clueStore,
             CourseStore courseStore,
-            PathStore pathStore,
-            ClueStore clueStore, LocationBuilder locationBuilder
+            ImageStore imageStore,
+            LocationBuilder locationBuilder,
+            LocationStore locationStore,
+            NodeService nodeService,
+            PathStore pathStore
     ) {
-        this.locationStore = locationStore;
-        this.imageStore = imageStore;
-        this.nodeService = nodeService;
-        this.courseStore = courseStore;
-        this.pathStore = pathStore;
         this.clueStore = clueStore;
+        this.courseStore = courseStore;
+        this.imageStore = imageStore;
         this.locationBuilder = locationBuilder;
+        this.locationStore = locationStore;
+        this.nodeService = nodeService;
+        this.pathStore = pathStore;
     }
 
     @Override
@@ -104,6 +105,24 @@ public class DefaultLocationService implements LocationService {
             locationList.add(location);
         }
         Collections.sort(locationList, new LocationDistanceComparator(lat, lon));
+
+        return getJsonStringForLocationList(locationList);
+    }
+
+    @Override
+    public String getNearestMarkerLocations(Double lat, Double lon) {
+        LOGGER.info("Retrieving Nearest Marker Locations for (" + lat + ", " + lon + ")");
+        // Brute force approach of running through all locations and keeping the top few
+        List<Location> locationList = new ArrayList<>();
+        for (Location location : locationStore.getLocations()) {
+            Point point = nodeService.getPointByNodeId(location.getNodeId());
+            Location.Point locPoint = new Location.Point();
+            locPoint.lat = point.getY();
+            locPoint.lon = point.getX();
+            Location.Builder locationBuilder = Location.Builder.from(location).withPoint(locPoint);
+            locationList.add(locationBuilder.build());
+        }
+//        Collections.sort(locationList, new LocationDistanceComparator(lat, lon));
 
         return getJsonStringForLocationList(locationList);
     }

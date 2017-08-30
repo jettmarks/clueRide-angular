@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Provider;
+
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.mockito.Mock;
@@ -31,14 +33,10 @@ import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
 import com.clueride.dao.ClueStore;
-import com.clueride.dao.CourseStore;
-import com.clueride.dao.ImageStore;
 import com.clueride.dao.LocationStore;
-import com.clueride.dao.PathStore;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.user.Location;
 import com.clueride.domain.user.LocationType;
-import com.clueride.service.builder.LocationBuilder;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -57,16 +55,7 @@ public class DefaultLocationServiceTest {
     private ClueStore clueStore;
 
     @Inject
-    private CourseStore courseStore;
-
-    @Inject
-    private ImageStore imageStore;
-
-    @Inject
     private Location location;
-
-    @Inject
-    private LocationBuilder locationBuilder;
 
     @Mock
     private LocationStore locationStore;
@@ -75,20 +64,12 @@ public class DefaultLocationServiceTest {
     private NodeService nodeService;
 
     @Inject
-    private PathStore pathStore;
+    private Provider<DefaultLocationService> toTestProvider;
 
     @BeforeMethod
     public void setup() {
         initMocks(this);
-        toTest = new DefaultLocationService(
-                locationStore,
-                imageStore,
-                nodeService,
-                courseStore,
-                pathStore,
-                clueStore,
-                locationBuilder
-                );
+        toTest = toTestProvider.get();
     }
 
     @Test
@@ -156,15 +137,7 @@ public class DefaultLocationServiceTest {
         builder.withClueIds(Arrays.asList(1, 2, 3, 4, 5, 6, 4, null, 5, 6, null, 3));
         when(clueStore.hasValidClue(anyInt())).thenReturn(true);
         when(clueStore.hasValidClue(1)).thenReturn(false);
-        DefaultLocationService implToTest = new DefaultLocationService(
-                locationStore,
-                imageStore,
-                nodeService,
-                courseStore,
-                pathStore,
-                clueStore,
-                locationBuilder
-        );
+        DefaultLocationService implToTest = toTestProvider.get();
         implToTest.validateUpdatedLocationBuilder(builder);
         assertTrue(builder.getClueIds().size() == 5);
     }

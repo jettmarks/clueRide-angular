@@ -73,7 +73,7 @@ public class LoginWebService {
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Badge> authenticate(CRCredentials crCredentials) {
         Principal principal = authenticationService.getPrincipal(crCredentials);
-        String token = tokenService.generateTokenForExistingPrincipal(principal);
+        String token = tokenService.generateTokenForExistingPrincipal(principal, false);
         response.setHeader("Authorization", "Bearer " + token);
         return Collections.emptyList();
     }

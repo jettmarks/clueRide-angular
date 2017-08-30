@@ -46,6 +46,7 @@ public class Location implements Step {
     private final String description;
     private final LocationType locationType;
     private final Integer nodeId;
+    private final Location.Point point;
     private List<Integer> clueIds;
     private final List<URL> imageUrls;
     private final Optional<Integer> locationGroupId;
@@ -61,6 +62,7 @@ public class Location implements Step {
         description = requireNonNull(builder.getDescription(), "Location description missing");
         locationType = requireNonNull(builder.getLocationType(), "Location Type missing");
         nodeId = requireNonNull(builder.getNodeId(), "Location Node (point) missing");
+        point = builder.getPoint();
         // Lists that cannot be empty
         imageUrls = requireNonNull(builder.getImageUrls(), "Location images missing");
         if (imageUrls.isEmpty()) {
@@ -116,6 +118,10 @@ public class Location implements Step {
      */
     public Integer getNodeId() {
         return nodeId;
+    }
+
+    public Point getPoint() {
+        return point;
     }
 
     @Override
@@ -190,12 +196,23 @@ public class Location implements Step {
         }
     }
 
+    /** Temporary class representing a point until we can sort out how we want to use this. */
+    public static final class Point {
+        public Double lat;
+        public Double lon;
+        public Double elev;
+    }
+
+    /**
+     * Knows how to assemble the parts of a Location.
+     */
     public static final class Builder {
         private Integer id;
         private String name;
         private String description;
         private LocationType locationType;
         private Integer nodeId;
+        private Location.Point point;
         private List<Integer> clueIds;
         private List<URL> imageUrls;
 
@@ -211,6 +228,21 @@ public class Location implements Step {
 
         public static Builder builder() {
             return new Builder();
+        }
+
+        public static Builder from(Location location) {
+            return builder()
+                    .withId(location.id)
+                    .withName(location.name)
+                    .withDescription(location.description)
+                    .withLocationType(location.locationType)
+                    .withNodeId(location.getNodeId())
+                    .withPoint(location.point)
+                    .withClueIds(location.clueIds)
+                    .withImageUrls(location.imageUrls)
+                    .withEstablishment(location.establishment)
+                    .withTagScores(location.tagScores)
+                    ;
         }
 
         public Location build() {
@@ -315,6 +347,15 @@ public class Location implements Step {
 
         public Builder withImageUrls(List<URL> imageUrls) {
             this.imageUrls = imageUrls;
+            return this;
+        }
+
+        public Point getPoint() {
+            return point;
+        }
+
+        public Builder withPoint(Point point) {
+            this.point = point;
             return this;
         }
 

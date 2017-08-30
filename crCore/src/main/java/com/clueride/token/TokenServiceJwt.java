@@ -109,7 +109,7 @@ public class TokenServiceJwt implements TokenService {
     public void validateToken(String token) {
         DecodedJWT jwt = verifyToken(token);
         String jtiId = jwt.getId();
-        jtiService.validateId(jtiId);
+        // jtiService.validateId(jtiId);
 
         Claim emailClaim = jwt.getHeaderClaim(CustomClaim.EMAIL);
         Claim badgesClaim = jwt.getHeaderClaim(CustomClaim.BADGES);

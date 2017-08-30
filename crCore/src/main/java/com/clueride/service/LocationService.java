@@ -56,9 +56,17 @@ public interface LocationService {
      * of the top five locations in order of closeness.
      * @param lat of current location.
      * @param lon of current location.
-     * @return JSON String representing the nearest five locations to select from.
+     * @return JSON String representing the nearest locations to select from.
      */
     String getNearestLocations(Double lat, Double lon);
+
+    /**
+     * Nearest locations to the given location for the purposes of editing from a map; includes Node info.
+     * @param lat of current location.
+     * @param lon of current location.
+     * @return JSON String, array of node-populated Locations.
+     */
+    String getNearestMarkerLocations(Double lat, Double lon);
 
     /**
      * Given a Course ID, return an array of ordered locations.
