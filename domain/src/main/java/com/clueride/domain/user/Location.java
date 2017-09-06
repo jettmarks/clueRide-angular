@@ -28,10 +28,13 @@ import javax.annotation.concurrent.Immutable;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.clueride.domain.Step;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedLocationIdProvider;
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -47,34 +50,41 @@ public class Location implements Step {
     private final LocationType locationType;
     private final Integer nodeId;
     private final Location.Point point;
+    private final URL featuredImage;
+    private final Integer googlePlaceId;
     private List<Integer> clueIds;
     private final List<URL> imageUrls;
     private final Optional<Integer> locationGroupId;
     private final Optional<Establishment> establishment;
     private final Map<String,Optional<Double>> tagScores;
-
     private final static Integer SYNCH_LOCK = -1;
 
-    public Location(Builder builder) {
-        // Required values
+    /**
+     * Constructor accepting Builder instance.
+     * @param builder
+     */
+    private Location(Builder builder) {
         id = requireNonNull(builder.getId(), "Location ID missing");
-        name = requireNonNull(builder.getName(), "Location name missing");
-        description = requireNonNull(builder.getDescription(), "Location description missing");
-        locationType = requireNonNull(builder.getLocationType(), "Location Type missing");
         nodeId = requireNonNull(builder.getNodeId(), "Location Node (point) missing");
         point = builder.getPoint();
-        // Lists that cannot be empty
-        imageUrls = requireNonNull(builder.getImageUrls(), "Location images missing");
-        if (imageUrls.isEmpty()) {
-            throw new IllegalArgumentException("Location must have at least one image");
-        }
-        clueIds = requireNonNull(builder.getClueIds(), "Location clues missing");
-        if (clueIds.isEmpty()) {
-            throw new IllegalArgumentException("Location must have at least one clue");
-        }
+
+        // If any of these are missing, we're at the Draft level
+        name = builder.getName();
+        description = builder.getDescription();
+        locationType = builder.getLocationType();
+        featuredImage = builder.getFeaturedImage();
+
+        // If we have multiple images, the ranking goes up
+        imageUrls = builder.getImageUrls();
+
+        // If this is missing, we're at the Place level; present, we're at the Attraction level
+        clueIds = builder.getClueIds();
+
+        // Featured Level requires the following
+        googlePlaceId = builder.getGooglePlaceId();
 
         // Possibly empty list
-        tagScores = requireNonNull(builder.getTagScores());
+        tagScores = builder.getTagScores();
 
         // Optional values
         locationGroupId = builder.getLocationGroupId();
@@ -166,8 +176,44 @@ public class Location implements Step {
         return establishment;
     }
 
+    public URL getFeaturedImage() {
+        return featuredImage;
+    }
+
     public List<URL> getImageUrls() {
         return imageUrls;
+    }
+
+    /**
+     * Determines progress against criteria described here: http://bikehighways.wikidot.com/clueride-location-details
+     * @return Readiness level based on completeness of the fields for this object.
+     */
+    public LocationLevel getReadinessLevel() {
+        /* Handle anything that could make this a draft. */
+        if (isNullOrEmpty(name)
+                || isNullOrEmpty(description)
+                || isNullOrEmpty(String.valueOf(featuredImage))
+                || isNullOrEmpty(String.valueOf(locationType))
+        ) {
+            return LocationLevel.DRAFT;
+        }
+
+        /* If we're missing the Clues, we're just a Place. */
+        if (clueIds.size() == 0) {
+            return LocationLevel.PLACE;
+        }
+
+        /* If everything else is defined except our Google Place ID, we're an Attraction. */
+        if (googlePlaceId == null) {
+            return LocationLevel.ATTRACTION;
+        } else {
+            return LocationLevel.FEATURED;
+        }
+
+    }
+
+    public Integer getGooglePlaceId() {
+        return googlePlaceId;
     }
 
     /**
@@ -196,12 +242,26 @@ public class Location implements Step {
         }
     }
 
-    /** Temporary class representing a point until we can sort out how we want to use this. */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+
+    /**
+     * Temporary class representing a point until we can sort out how we want to use this.
+     */
     public static final class Point {
         public Double lat;
         public Double lon;
         public Double elev;
     }
+
 
     /**
      * Knows how to assemble the parts of a Location.
@@ -215,6 +275,8 @@ public class Location implements Step {
         private Location.Point point;
         private List<Integer> clueIds;
         private List<URL> imageUrls;
+        private URL featuredImage;
+        private Integer googlePlaceId;
 
         private Optional<Establishment> establishment;
         private Optional<Integer> locationGroupId;
@@ -359,6 +421,24 @@ public class Location implements Step {
             return this;
         }
 
+        public URL getFeaturedImage() {
+            return featuredImage;
+        }
+
+        public Builder withFeaturedImage(URL featuredImage) {
+            this.featuredImage = featuredImage;
+            return this;
+        }
+
+        public Integer getGooglePlaceId() {
+            return googlePlaceId;
+        }
+
+        public Builder withGooglePlaceId(Integer googlePlaceId) {
+            this.googlePlaceId = googlePlaceId;
+            return this;
+        }
+
         /**
          * For creating a copy from a DTO instance.
          * @param locationDto - inbound from the Web REST API.
@@ -375,7 +455,8 @@ public class Location implements Step {
                     .withClueIds(Arrays.asList(locationDto.clueIds))
                     .withImageUrls(locationDto.imageUrls)
 //                    .withEstablishment(Optional.<Establishment>fromNullable(locationDto.establishment))
-            ;
+                    ;
         }
     }
+
 }

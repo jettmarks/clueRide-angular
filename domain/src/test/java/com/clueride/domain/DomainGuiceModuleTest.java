@@ -17,11 +17,18 @@
  */
 package com.clueride.domain;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
+import com.clueride.domain.user.Location;
+import com.clueride.domain.user.LocationType;
 import com.clueride.infrastructure.JpaUtil;
 
 /**
@@ -36,5 +43,36 @@ public class DomainGuiceModuleTest extends AbstractModule {
     @Provides
     private EntityManager getEntityManager() {
         return JpaUtil.getEntityManagerFactory().createEntityManager();
+    }
+
+    @Provides
+    private Location.Builder getLocationBuilder() {
+        String expectedName = "Test Location";
+        String expectedDescription = "Here's a nice spot to spread out the blanket or toss the frisbee.";
+        LocationType expectedLocationType = LocationType.PICNIC;
+        Integer expectedNodeId = 123;
+
+        List<Integer> expectedClues = new ArrayList<>();
+        expectedClues.add(1);
+        expectedClues.add(2);
+        expectedClues.add(3);
+        expectedClues.add(4);
+        expectedClues.add(5);
+        expectedClues.add(6);
+        expectedClues.add(7);
+
+        List<URL> expectedImageUrls = new ArrayList<>();
+        try {
+            expectedImageUrls.add(new URL("https://clueride.com/"));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return Location.Builder.builder()
+                .withName(expectedName)
+                .withDescription(expectedDescription)
+                .withLocationType(expectedLocationType)
+                .withNodeId(expectedNodeId)
+                .withClueIds(expectedClues)
+                .withImageUrls(expectedImageUrls);
     }
 }
