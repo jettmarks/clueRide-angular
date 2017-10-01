@@ -32,7 +32,8 @@ import javax.inject.Singleton;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.clueride.domain.user.Location;
+import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.location.LocationStore;
 import com.clueride.io.PojoJsonUtil;
 
 @Singleton
@@ -120,14 +121,35 @@ public class JsonLocationStore implements LocationStore {
         return location.getId();
     }
 
+    /**
+     * Likely to take over the other `addNew` signature.
+     * @param locationBuilder newly proposed Location, ready to persist.
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public Integer addNew(Location.Builder locationBuilder) throws IOException {
+        return null;
+    }
+
     @Override
     public Location getLocationById(Integer id) {
         return locationMap.get(id);
     }
 
     @Override
+    public Location.Builder getLocationBuilderById(Integer id) {
+        return null;
+    }
+
+    @Override
     public Collection<Location> getLocations() {
         return locationMap.values();
+    }
+
+    @Override
+    public Collection<Location.Builder> getLocationsBuilders() {
+        return null;
     }
 
     /**
@@ -144,6 +166,11 @@ public class JsonLocationStore implements LocationStore {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void update(Location.Builder locationBuilder) {
+
     }
 
     /**

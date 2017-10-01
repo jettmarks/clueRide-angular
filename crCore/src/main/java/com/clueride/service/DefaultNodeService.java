@@ -47,6 +47,7 @@ import com.clueride.domain.dev.NodeNetworkState;
 import com.clueride.domain.dev.rec.DiagnosticRec;
 import com.clueride.domain.dev.rec.Rec;
 import com.clueride.domain.factory.PointFactory;
+import com.clueride.domain.user.latlon.LatLonStore;
 import com.clueride.feature.Edge;
 import com.clueride.feature.LineFeature;
 import com.clueride.geo.TranslateUtil;
@@ -59,26 +60,29 @@ import com.clueride.io.JsonStoreType;
 public class DefaultNodeService implements NodeService {
     private static final Logger LOGGER = Logger.getLogger(DefaultNodeService.class);
 
-    private final NodeStore nodeStore;
+    private final NodeStore jsonNodeStore;
+    private final LatLonStore latLonStore;
     private final RecommendationService recommendationService;
 
     /**
      * Injectable constructor.
-     * @param nodeStore - persistence of Nodes.
+     * @param jsonNodeStore - persistence of Nodes.
      * @param recommendationService - supports requests to add to the Network.
      */
     @Inject
     public DefaultNodeService(
-            NodeStore nodeStore,
+            NodeStore jsonNodeStore,
+            LatLonStore latLonStore,
             RecommendationService recommendationService
     ) {
-        this.nodeStore = nodeStore;
+        this.jsonNodeStore = jsonNodeStore;
+        this.latLonStore = latLonStore;
         this.recommendationService = recommendationService;
     }
 
     @Override
     public Point getPointByNodeId(Integer nodeId) {
-        GeoNode node = (GeoNode) nodeStore.getNodeById(nodeId);
+        GeoNode node = (GeoNode) jsonNodeStore.getNodeById(nodeId);
         return node.getPoint();
     }
 
@@ -98,7 +102,7 @@ public class DefaultNodeService implements NodeService {
     public String getNodeGroups() {
         List<SimpleFeature> featureList = new ArrayList<>();
 
-        Set<NodeGroup> nodeGroups = nodeStore.getNodeGroups();
+        Set<NodeGroup> nodeGroups = jsonNodeStore.getNodeGroups();
         for (NodeGroup nodeGroup : nodeGroups) {
             featureList.add(TranslateUtil
                     .groupNodeToFeature((DefaultNodeGroup) nodeGroup));
@@ -111,11 +115,11 @@ public class DefaultNodeService implements NodeService {
     @Override
     // TODO: Copy/Pasted in without testing
     public String setNodeGroup(Integer id, Double lat, Double lon) {
-        NodeGroup nodeGroup = (NodeGroup) nodeStore.getNodeById(id);
+        NodeGroup nodeGroup = (NodeGroup) jsonNodeStore.getNodeById(id);
         nodeGroup.setLat(lat);
         nodeGroup.setLon(lon);
         try {
-            nodeStore.persistAndReload();
+            jsonNodeStore.persistAndReload();
         } catch (IOException e) {
             e.printStackTrace();
             return "{status: failed}";
@@ -162,7 +166,7 @@ public class DefaultNodeService implements NodeService {
             // Node first
             try {
                 rec.getNewNode().setId(pointId);
-                nodeStore.persistNode(rec.getNewNode());
+                jsonNodeStore.persistNode(rec.getNewNode());
             } catch (IOException e) {
                 LOGGER.error("Unable to persist updated Node");
                 e.printStackTrace();
@@ -195,7 +199,7 @@ public class DefaultNodeService implements NodeService {
     private NetworkProposal buildAllNodesProposal() {
         NewNodeProposal newNodeProposal = new NewNodeProposal(new DefaultGeoNode());
         DiagnosticRec diagnosticRec = new DiagnosticRec(null);
-        for (GeoNode geoNode : nodeStore.getNodes()) {
+        for (GeoNode geoNode : jsonNodeStore.getNodes()) {
             diagnosticRec.addFeature(TranslateUtil.geoNodeToFeature(geoNode));
         }
         newNodeProposal.add(diagnosticRec);
@@ -287,7 +291,7 @@ public class DefaultNodeService implements NodeService {
             return defaultRecId;
         }
 
-        public ProposalSummary(NewNodeProposal networkProposal) {
+        ProposalSummary(NewNodeProposal networkProposal) {
             type = networkProposal.getNodeNetworkState();
             for (NetworkRecommendation rec : networkProposal.getRecommendations()) {
                 if (defaultRecId == -1) {

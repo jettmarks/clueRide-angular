@@ -21,6 +21,13 @@ import com.vividsolutions.jts.geom.Point;
 
 /**
  * Handles business logic around Nodes.
+ * TODO: CA-310: Entanglement with NetworkProposal:
+ * This is mostly concerned with the NetworkProposal class rather than Nodes. There
+ * is a more conventional "Node" service coming together under the Domain module
+ * which springs from Locations needing at least some Geo support, but
+ * more significantly, we want to support Nodes that aren't yet on the network.
+ *
+ * This service is more concerned about Nodes that are embedded within the Network.
  */
 public interface NodeService {
 

@@ -27,9 +27,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
 import com.clueride.dao.ClueStore;
-import com.clueride.dao.LocationStore;
 import com.clueride.domain.user.Clue;
-import com.clueride.domain.user.Location;
+import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.location.LocationStore;
+import com.clueride.infrastructure.Json;
 
 /**
  * Implementation of the Clue Service.
@@ -40,11 +41,15 @@ public class ClueServiceImpl implements ClueService {
     private final LocationStore locationStore;
 
     @Inject
-    public ClueServiceImpl(ClueStore clueStore, LocationStore locationStore) {
+    public ClueServiceImpl(
+            ClueStore clueStore,
+            @Json LocationStore locationStore
+    ) {
         this.clueStore = clueStore;
         this.locationStore = locationStore;
     }
 
+    /* TODO: Consider generating the JSON outside of this class. */
     @Override
     public String getCluesPerLocation(Integer locationId) {
         List<Clue> clues = clueStore.getCluesByLocation(locationId);

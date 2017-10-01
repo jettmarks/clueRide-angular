@@ -18,13 +18,17 @@
 package com.clueride.rest.dto;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.clueride.domain.user.LocationType;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import com.clueride.domain.user.LocationLevel;
+import com.clueride.domain.user.location.LocationType;
 
 /**
  * Holds the post parameters for an updated Location.
@@ -45,20 +49,40 @@ public class Location {
     public Integer locationGroupId;
     public List<URL> imageUrls;
 
+    @XmlElement(nillable = true)
+    public String featuredImage;
+
     @XmlElement(nillable=true)
     public TagScore tagScores;
 
+    @XmlElement(nillable=true)
+    public Integer googlePlaceId;
+
+    @XmlElement(nillable=true)
+    public FeatureNode latLon;
+
+    @XmlElement(nillable=true)
+    public LocationLevel readinessLevel;
+
     @Override
-    public String toString() {
-        return "Location{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", locationType=" + locationType +
-                ", clueIds=" + Arrays.toString(clueIds) +
-                ", establishment=" + establishment +
-                ", locationGroupId=" + locationGroupId +
-                '}';
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
+    public static class FeatureNode {
+        public Integer id;
+        public double lat;
+        public double lon;
+        public double elev;
+    }
 }

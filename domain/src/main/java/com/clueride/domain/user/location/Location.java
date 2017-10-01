@@ -15,16 +15,24 @@
  *
  * Created Aug 15, 2015
  */
-package com.clueride.domain.user;
+package com.clueride.domain.user.location;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.concurrent.Immutable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -32,13 +40,14 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.clueride.domain.Step;
+import com.clueride.domain.user.LocationLevel;
+import com.clueride.domain.user.latlon.LatLon;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedLocationIdProvider;
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.requireNonNull;
 
 /**
- * Holds the data for a Point of Interest, or easier to say, a Location.
+ * Holds the data for a Location, and provides some of the logic to provide derived properties.
  *
  * @author jett
  */
@@ -49,24 +58,25 @@ public class Location implements Step {
     private final String description;
     private final LocationType locationType;
     private final Integer nodeId;
-    private final Location.Point point;
     private final URL featuredImage;
     private final Integer googlePlaceId;
+    private final LatLon latLon;
     private List<Integer> clueIds;
     private final List<URL> imageUrls;
-    private final Optional<Integer> locationGroupId;
-    private final Optional<Establishment> establishment;
+    private final Integer locationGroupId;
+    private final String establishment;
+    private final Optional<Integer> establishmentId;
     private final Map<String,Optional<Double>> tagScores;
     private final static Integer SYNCH_LOCK = -1;
 
     /**
      * Constructor accepting Builder instance.
-     * @param builder
+     * @param builder instance carrying mutable Location.
      */
-    private Location(Builder builder) {
-        id = requireNonNull(builder.getId(), "Location ID missing");
-        nodeId = requireNonNull(builder.getNodeId(), "Location Node (point) missing");
-        point = builder.getPoint();
+    public Location(Builder builder) {
+        id = builder.getId();
+        nodeId = builder.getNodeId();
+        latLon = builder.getLatLon();
 
         // If any of these are missing, we're at the Draft level
         name = builder.getName();
@@ -88,6 +98,7 @@ public class Location implements Step {
 
         // Optional values
         locationGroupId = builder.getLocationGroupId();
+        establishmentId = builder.getEstablishmentId();
         establishment = builder.getEstablishment();
     }
 
@@ -124,14 +135,14 @@ public class Location implements Step {
 
     /**
      * Link over to the geographical representation of this Location.
-     * @return ID of the Node associated with this location for placement on a map.
+     * @return ID of the LatLon associated with this location for placement on a map.
      */
     public Integer getNodeId() {
         return nodeId;
     }
 
-    public Point getPoint() {
-        return point;
+    public LatLon getLatLon() {
+        return latLon;
     }
 
     @Override
@@ -145,7 +156,7 @@ public class Location implements Step {
                 ", clueIds=" + clueIds +
                 ", imageUrls=" + imageUrls +
                 ", locationGroupId=" + locationGroupId +
-                ", establishment=" + establishment +
+                ", establishment=" + establishmentId +
                 ", tagScores=" + tagScores +
                 '}';
     }
@@ -161,8 +172,8 @@ public class Location implements Step {
      * @return Integer or null if not present.
      */
     public Integer getLocationGroupId() {
-        if(locationGroupId != null && locationGroupId.isPresent()) {
-            return locationGroupId.get();
+        if(locationGroupId != null) {
+            return locationGroupId;
         } else {
             return null;
         }
@@ -172,8 +183,8 @@ public class Location implements Step {
         return clueIds;
     }
 
-    public Optional<Establishment> getEstablishment() {
-        return establishment;
+    public Optional<Integer> getEstablishment() {
+        return establishmentId;
     }
 
     public URL getFeaturedImage() {
@@ -189,6 +200,15 @@ public class Location implements Step {
      * @return Readiness level based on completeness of the fields for this object.
      */
     public LocationLevel getReadinessLevel() {
+        /* Emptiness across all of these makes it a NODE. */
+        if (isNullOrEmpty(name)
+                && isNullOrEmpty(description)
+                && isNullOrEmpty(String.valueOf(featuredImage))
+                && isNullOrEmpty(String.valueOf(locationType))
+        ) {
+            return LocationLevel.NODE;
+        }
+
         /* Handle anything that could make this a draft. */
         if (isNullOrEmpty(name)
                 || isNullOrEmpty(description)
@@ -254,35 +274,43 @@ public class Location implements Step {
 
 
     /**
-     * Temporary class representing a point until we can sort out how we want to use this.
-     */
-    public static final class Point {
-        public Double lat;
-        public Double lon;
-        public Double elev;
-    }
-
-
-    /**
      * Knows how to assemble the parts of a Location.
      */
+    @Entity(name="location")
     public static final class Builder {
+        @Id
+        @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="location_pk_sequence")
+        @SequenceGenerator(name="location_pk_sequence",sequenceName="location_id_seq", allocationSize=1)
         private Integer id;
+
         private String name;
         private String description;
-        private LocationType locationType;
-        private Integer nodeId;
-        private Location.Point point;
+        @Column(name="location_type") private LocationType locationType;
+        @Column(name="node_id") private Integer nodeId;
+        @Column(name="featured_image_id") private Integer featuredImageId;
+
+        @Transient
+        private LatLon latLon;
+        @Transient
         private List<Integer> clueIds;
+        @Transient
         private List<URL> imageUrls;
+        @Transient
         private URL featuredImage;
+        @Transient
         private Integer googlePlaceId;
 
-        private Optional<Establishment> establishment;
-        private Optional<Integer> locationGroupId;
+        @Transient
+        private Optional<Integer> establishmentId;
+        @Column(name="location_group_id") private Integer locationGroupId;
+
+        @Transient
         private Map<String,Optional<Double>> tagScores = new HashMap<>();
 
+        @Transient
         private IdProvider idProvider;
+        @Transient
+        private String establishment;
 
         public Builder() {
             idProvider = new MemoryBasedLocationIdProvider();
@@ -299,11 +327,35 @@ public class Location implements Step {
                     .withDescription(location.description)
                     .withLocationType(location.locationType)
                     .withNodeId(location.getNodeId())
-                    .withPoint(location.point)
+                    .withLatLon(location.latLon)
                     .withClueIds(location.clueIds)
                     .withImageUrls(location.imageUrls)
-                    .withEstablishment(location.establishment)
+                    .withEstablishmentId(location.establishmentId)
                     .withTagScores(location.tagScores)
+                    ;
+        }
+
+        /**
+         * Updates an existing Location.Builder with data from a dto.Location.
+         * @param location DTO from the front-end carrying updated Location info.
+         * @return this.
+         */
+        public Builder withLocationDto(com.clueride.rest.dto.Location location) {
+            return this.withId(location.id)
+                    .withName(location.name)
+                    .withDescription(location.description)
+                    .withLocationType(location.locationType)
+                    .withImageUrls(location.imageUrls)
+            ;
+        }
+
+        public static Builder from(com.clueride.rest.dto.Location location) {
+            return builder()
+                    .withId(location.id)
+                    .withName(location.name)
+                    .withDescription(location.description)
+                    .withLocationType(location.locationType)
+                    .withImageUrls(location.imageUrls)
                     ;
         }
 
@@ -371,17 +423,21 @@ public class Location implements Step {
             return this;
         }
 
-        public Optional<Integer> getLocationGroupId() {
+        public Integer getLocationGroupId() {
             return locationGroupId;
         }
 
-        public Builder withLocationGroupId(Optional<Integer> locationGroupId) {
+        public Builder withLocationGroupId(Integer locationGroupId) {
             this.locationGroupId = locationGroupId;
             return this;
         }
 
         public List<Integer> getClueIds() {
-            return clueIds;
+            if(clueIds != null) {
+                return clueIds;
+            } else {
+                return Collections.emptyList();
+            }
         }
 
         public Builder withClueIds(List<Integer> clueIds) {
@@ -394,17 +450,30 @@ public class Location implements Step {
 
         }
 
-        public Optional<Establishment> getEstablishment() {
+        public Optional<Integer> getEstablishmentId() {
+            return establishmentId;
+        }
+
+        public Builder withEstablishmentId(Optional<Integer> establishmentId) {
+            this.establishmentId = establishmentId;
+            return this;
+        }
+
+        public String getEstablishment() {
             return establishment;
         }
 
-        public Builder withEstablishment(Optional<Establishment> establishment) {
+        public Builder withEstablishment(String establishment) {
             this.establishment = establishment;
             return this;
         }
 
         public List<URL> getImageUrls() {
-            return imageUrls;
+            if (imageUrls != null) {
+                return imageUrls;
+            } else {
+                return Collections.emptyList();
+            }
         }
 
         public Builder withImageUrls(List<URL> imageUrls) {
@@ -412,12 +481,15 @@ public class Location implements Step {
             return this;
         }
 
-        public Point getPoint() {
-            return point;
+        public LatLon getLatLon() {
+            return latLon;
         }
 
-        public Builder withPoint(Point point) {
-            this.point = point;
+        public Builder withLatLon(LatLon latLon) {
+            this.latLon = latLon;
+            if (latLon != null) {
+                this.nodeId = latLon.getId();
+            }
             return this;
         }
 
@@ -451,7 +523,7 @@ public class Location implements Step {
                     .withDescription(locationDto.description)
                     .withNodeId(locationDto.nodeId)
                     .withLocationType(locationDto.locationType)
-                    .withLocationGroupId(Optional.fromNullable(locationDto.locationGroupId))
+                    .withLocationGroupId(locationDto.locationGroupId)
                     .withClueIds(Arrays.asList(locationDto.clueIds))
                     .withImageUrls(locationDto.imageUrls)
 //                    .withEstablishment(Optional.<Establishment>fromNullable(locationDto.establishment))

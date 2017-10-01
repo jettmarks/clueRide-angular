@@ -18,6 +18,7 @@
 package com.clueride.service;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,12 +37,16 @@ import org.apache.log4j.Logger;
 import com.clueride.dao.ClueStore;
 import com.clueride.dao.CourseStore;
 import com.clueride.dao.ImageStore;
-import com.clueride.dao.LocationStore;
 import com.clueride.dao.PathStore;
 import com.clueride.domain.Course;
-import com.clueride.domain.user.Location;
-import com.clueride.domain.user.LocationType;
 import com.clueride.domain.user.Path;
+import com.clueride.domain.user.latlon.LatLon;
+import com.clueride.domain.user.latlon.LatLonService;
+import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.location.LocationStore;
+import com.clueride.domain.user.location.LocationType;
+import com.clueride.infrastructure.Jpa;
+import com.clueride.infrastructure.Json;
 import com.clueride.io.PojoJsonUtil;
 import com.clueride.service.builder.LocationBuilder;
 
@@ -55,9 +60,11 @@ public class DefaultLocationService implements LocationService {
     private final CourseStore courseStore;
     private final ImageStore imageStore;
     private final LocationBuilder locationBuilder;
-    private final LocationStore locationStore;
+    private final LocationStore locationStoreJson;
+    private final LocationStore locationStoreJpa;
     private final NodeService nodeService;
     private final PathStore pathStore;
+    private final LatLonService latLonService;
 
     @Inject
     public DefaultLocationService(
@@ -65,23 +72,27 @@ public class DefaultLocationService implements LocationService {
             CourseStore courseStore,
             ImageStore imageStore,
             LocationBuilder locationBuilder,
-            LocationStore locationStore,
+            @Json LocationStore locationStoreJson,
+            @Jpa LocationStore locationStoreJpa,
             NodeService nodeService,
-            PathStore pathStore
+            PathStore pathStore,
+            LatLonService latLonService
     ) {
         this.clueStore = clueStore;
         this.courseStore = courseStore;
         this.imageStore = imageStore;
         this.locationBuilder = locationBuilder;
-        this.locationStore = locationStore;
+        this.locationStoreJson = locationStoreJson;
+        this.locationStoreJpa = locationStoreJpa;
         this.nodeService = nodeService;
         this.pathStore = pathStore;
+        this.latLonService = latLonService;
     }
 
     @Override
     public String getLocation(Integer locationId) {
         String result = null;
-        Location location = locationStore.getLocationById(locationId);
+        Location location = locationStoreJson.getLocationById(locationId);
         try {
             result = PojoJsonUtil.generateLocation(location);
         } catch (JsonProcessingException e) {
@@ -92,7 +103,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public String getLocationGeometry(Integer locationId) {
-        Location location = locationStore.getLocationById(locationId);
+        Location location = locationStoreJson.getLocationById(locationId);
         return locationBuilder.getLocationFeatureCollection(location);
     }
 
@@ -101,7 +112,7 @@ public class DefaultLocationService implements LocationService {
         LOGGER.info("Retrieving Nearest Locations for (" + lat + ", " + lon + ")");
         // Brute force approach of running through all locations and keeping the top few
         List<Location> locationList = new ArrayList<>();
-        for (Location location : locationStore.getLocations()) {
+        for (Location location : locationStoreJson.getLocations()) {
             locationList.add(location);
         }
         Collections.sort(locationList, new LocationDistanceComparator(lat, lon));
@@ -112,22 +123,15 @@ public class DefaultLocationService implements LocationService {
     @Override
     public String getNearestMarkerLocations(Double lat, Double lon) {
         LOGGER.info("Retrieving Nearest Marker Locations for (" + lat + ", " + lon + ")");
-        // Brute force approach of running through all locations and keeping the top few
         List<Location> locationList = new ArrayList<>();
-        for (Location location : locationStore.getLocations()) {
-            Point point = nodeService.getPointByNodeId(location.getNodeId());
-            Location.Point locPoint = new Location.Point();
-            locPoint.lat = point.getY();
-            locPoint.lon = point.getX();
-            Location.Builder locationBuilder = Location.Builder.from(location).withPoint(locPoint);
-            locationList.add(locationBuilder.build());
+        for (Location.Builder builder : locationStoreJpa.getLocationsBuilders()) {
+            LatLon latLon = latLonService.getLatLonById(builder.getNodeId());
+            locationList.add(builder.withLatLon(latLon).build());
         }
-//        Collections.sort(locationList, new LocationDistanceComparator(lat, lon));
-
         return getJsonStringForLocationList(locationList);
     }
 
-    public String getJsonStringForLocationList(List<Location> locationList) {
+    private String getJsonStringForLocationList(List<Location> locationList) {
         StringBuilder jsonBuilder = new StringBuilder();
         jsonBuilder.append('[');
         int count = 0;
@@ -154,10 +158,10 @@ public class DefaultLocationService implements LocationService {
         Path path = null;
         for (Integer pathId : course.getPathIds()) {
             path = pathStore.getPathById(pathId);
-            locations.add(locationStore.getLocationById(path.getStartLocationId()));
+            locations.add(locationStoreJson.getLocationById(path.getStartLocationId()));
         }
         if (path != null) {
-            locations.add(locationStore.getLocationById(path.getEndLocationId()));
+            locations.add(locationStoreJson.getLocationById(path.getEndLocationId()));
         }
         return getJsonStringForLocationList(locations);
     }
@@ -165,11 +169,27 @@ public class DefaultLocationService implements LocationService {
     @Override
     public void updateLocation(com.clueride.rest.dto.Location location) {
         LOGGER.info("Updating Location " + location.toString());
-        Location existingLocation = locationStore.getLocationById(location.id);
+        Location.Builder existingLocation = locationStoreJpa.getLocationBuilderById(location.id);
         LOGGER.info("Found matching Location " + existingLocation.toString());
-        Location.Builder locationBuilder = Location.Builder.builder(location);
-        validateUpdatedLocationBuilder(locationBuilder);
-        locationStore.update(locationBuilder.build());
+        existingLocation.withLocationDto(location);
+        validateUpdatedLocationBuilder(existingLocation);
+        locationStoreJpa.update(existingLocation);
+    }
+
+    @Override
+    public Location proposeLocation(LatLon latLon, LocationType locationType) {
+        LOGGER.info("Proposing a new Location of type " + locationType + " at " + latLon);
+        latLonService.addNew(latLon);
+        Location.Builder locationBuilder = Location.Builder.builder()
+                .withLatLon(latLon)
+                .withLocationType(locationType);
+        Integer id = null;
+        try {
+            id = locationStoreJpa.addNew(locationBuilder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return locationStoreJpa.getLocationById(id);
     }
 
     void validateUpdatedLocationBuilder(Location.Builder locationBuilder) {
@@ -205,7 +225,7 @@ public class DefaultLocationService implements LocationService {
     private class LocationDistanceComparator implements Comparator<Location> {
         private final Double lat, lon;
 
-        public LocationDistanceComparator(Double lat, Double lon) {
+        LocationDistanceComparator(Double lat, Double lon) {
             this.lat = lat;
             this.lon = lon;
         }
@@ -255,8 +275,8 @@ public class DefaultLocationService implements LocationService {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Location location = locationStore.getLocationById(locationId);
+        Location location = locationStoreJson.getLocationById(locationId);
         location.getImageUrls().add(imageUrl);
-        locationStore.update(location);
+        locationStoreJson.update(location);
     }
 }

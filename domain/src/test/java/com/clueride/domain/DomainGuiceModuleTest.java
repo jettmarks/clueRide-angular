@@ -27,8 +27,8 @@ import javax.persistence.EntityManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
-import com.clueride.domain.user.Location;
-import com.clueride.domain.user.LocationType;
+import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.location.LocationType;
 import com.clueride.infrastructure.JpaUtil;
 
 /**

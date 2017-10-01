@@ -22,6 +22,8 @@ import com.google.inject.AbstractModule;
 import com.clueride.dao.*;
 import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.account.member.MemberStoreJpa;
+import com.clueride.domain.user.location.LocationStore;
+import com.clueride.domain.user.location.LocationStoreJpa;
 
 /**
  * Bindings for Services Guice Module.
@@ -35,7 +37,8 @@ public class ServiceGuiceModule extends AbstractModule {
         bind(CourseStore.class).to(JsonCourseStore.class);
         bind(CourseTypeStore.class).to(JsonCourseTypeStore.class);
         bind(InvitationStore.class).to(JsonInvitationStore.class);
-        bind(LocationStore.class).to(JsonLocationStore.class);
+        bind(LocationStore.class).annotatedWith(Json.class).to(JsonLocationStore.class);
+        bind(LocationStore.class).annotatedWith(Jpa.class).to(LocationStoreJpa.class);
         bind(MemberStore.class).annotatedWith(Json.class).to(JsonMemberStore.class);
         bind(MemberStore.class).annotatedWith(Jpa.class).to(MemberStoreJpa.class);
         bind(NodeStore.class).to(JsonNodeStore.class);
