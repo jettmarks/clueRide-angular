@@ -15,21 +15,29 @@
  * <p/>
  * Created by jett on 11/23/15.
  */
-package com.clueride.dao;
+package com.clueride.domain.user.location;
 
 import java.io.IOException;
 import java.util.Collection;
 
-import com.clueride.domain.user.Location;
-
+// TODO: CA-309: Location Store API is straddling two implementations; clean these up.
 public interface LocationStore {
+
     /**
      * Accepts a fully constructed Location to the store and returns the ID.
-     * This does write out to the disk.
+     * Implementations are expected to write to permanent storage.
      * @param location newly and fully constructed Location, ready to persist.
      * @return ID of the new Location.
      */
     Integer addNew(Location location) throws IOException;
+
+    /**
+     * Accepts a partially constructed Location to the store and returns the ID.
+     * Implementations are expected to write to permanent storage.
+     * @param locationBuilder newly proposed Location, ready to persist.
+     * @return ID of the new Location.
+     */
+    Integer addNew(Location.Builder locationBuilder) throws IOException;
 
     /**
      * Returns the Location matching the ID from the store.
@@ -38,6 +46,8 @@ public interface LocationStore {
      * @return Location with the given ID or null if no location is found.
      */
     Location getLocationById(Integer id);
+
+    Location.Builder getLocationBuilderById(Integer id);
 
     /**
      * Returns the list of Locations maintained by this store.
@@ -48,9 +58,13 @@ public interface LocationStore {
      */
     Collection<Location> getLocations();
 
+    Collection<Location.Builder> getLocationsBuilders();
+
     /**
      * Accepts an existing Location and updates the persistent record with new information.
      * @param location to be updated.
      */
     void update(Location location);
+
+    void update(Location.Builder locationBuilder);
 }

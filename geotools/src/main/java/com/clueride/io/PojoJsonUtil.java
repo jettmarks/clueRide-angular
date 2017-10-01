@@ -38,8 +38,8 @@ import com.clueride.domain.Outing;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.common.Builder;
 import com.clueride.domain.user.Clue;
-import com.clueride.domain.user.Location;
 import com.clueride.domain.user.Path;
+import com.clueride.domain.user.location.Location;
 import com.clueride.rest.dto.ClueRideState;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedClueIdProvider;
@@ -50,6 +50,11 @@ import com.clueride.service.MemoryBasedPathIdProvider;
 /**
  * Utility for reading and writing JSON files and strings without the GeoJson
  * features.
+ * TODO: CA-311: Numerous refactorings:
+ * - IDE's checks turned off for ignoring return value
+ * - Yellow blocks where 'directory' isn't being checked for null
+ * - Repeated code
+ * - Existing CA-266 ticket
  */
 public class PojoJsonUtil {
     private static final Logger LOGGER = Logger.getLogger(PojoJsonUtil.class);

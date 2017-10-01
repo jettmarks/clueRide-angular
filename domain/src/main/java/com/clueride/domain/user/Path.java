@@ -22,6 +22,7 @@ import java.util.SortedSet;
 
 import com.clueride.domain.Step;
 import com.clueride.domain.dev.Segment;
+import com.clueride.domain.user.location.Location;
 
 /**
  * Represents a particular choice of Segments to travel between two

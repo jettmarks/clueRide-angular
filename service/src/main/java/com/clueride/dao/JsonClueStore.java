@@ -31,7 +31,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
 import com.clueride.domain.user.Clue;
-import com.clueride.domain.user.Location;
+import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.location.LocationStore;
+import com.clueride.infrastructure.Json;
 import com.clueride.io.PojoJsonUtil;
 
 /**
@@ -53,7 +55,7 @@ public class JsonClueStore implements ClueStore {
     private final LocationStore locationStore;
 
     @Inject
-    public JsonClueStore(LocationStore locationStore) {
+    public JsonClueStore(@Json LocationStore locationStore) {
         this.locationStore = locationStore;
         if (needsReload) {
             loadAll();
@@ -76,6 +78,7 @@ public class JsonClueStore implements ClueStore {
         needsReload = false;
     }
 
+    /* TODO: CA-305 - Clue Store should not depend on Location Store. */
     public void reIndex() {
         /* Index the clues by ID. */
         for (Clue clue : clues) {
@@ -105,7 +108,7 @@ public class JsonClueStore implements ClueStore {
      * with the new Clue and when that object is updated, it will kick off a reIndex.
      * @param clue - instance to be added to the memory-based copy (which may be persisted).
      * @return Integer ID of the new Clue.
-     * @throws IOException
+     * @throws IOException - thrown when attempting to write JSON out to disk.
      */
     @Override
     public Integer addNew(Clue clue) throws IOException {

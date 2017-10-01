@@ -25,6 +25,10 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
+import com.clueride.domain.GeoNode;
+import com.clueride.domain.dev.NetworkProposal;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
@@ -35,7 +39,13 @@ public class DefaultNodeServiceTest {
     private NodeService toTest;
 
     @Inject
-    private Provider<NodeService> toTestProvider;
+    private Provider<DefaultNodeService> toTestProvider;
+
+    @Inject
+    private RecommendationService recommendationService;
+
+    @Inject
+    private NetworkProposal networkProposal;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -50,8 +60,14 @@ public class DefaultNodeServiceTest {
 
     @Test
     public void testAddNewNode() throws Exception {
+        /* setup data */
         Double lat = 33.0;
         Double lon = -84.0;
+
+        /* train mocks */
+        when(recommendationService.buildProposalForNewNode(any(GeoNode.class))).thenReturn(networkProposal);
+
+        /* make call */
         String actual = toTest.addNewNode(lat, lon);
         System.out.println(actual);
     }
@@ -75,4 +91,5 @@ public class DefaultNodeServiceTest {
     public void testShowAllNodes() throws Exception {
 
     }
+
 }

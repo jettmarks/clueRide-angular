@@ -21,10 +21,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import com.clueride.domain.account.member.Member;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -36,26 +32,26 @@ import static org.testng.Assert.assertTrue;
 public class JpaUtilTest {
     private EntityManagerFactory entityManagerFactory;
 
+    // TODO: Is there a better way to "run" these tests without needing an instance of the DB?
 
-
-    @BeforeClass
+//    @BeforeClass
     public void setUp() {
         entityManagerFactory = JpaUtil.getEntityManagerFactory();
         System.out.println("Entity Manager opened");
     }
 
-    @AfterClass
+//    @AfterClass
     public void tearDown() {
         entityManagerFactory.close();
         System.out.println("Entity Manager closed");
     }
 
-    @Test
+//    @Test
     public void testJpaUtil() {
         assertNotNull(entityManagerFactory);
     }
 
-    @Test
+//    @Test
     public void testJapUtil_readTable() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();

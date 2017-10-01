@@ -28,7 +28,7 @@ import com.clueride.domain.Invitation;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.Clue;
-import com.clueride.domain.user.Location;
+import com.clueride.domain.user.location.Location;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;

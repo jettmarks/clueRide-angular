@@ -19,31 +19,29 @@ package com.clueride.domain.user;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Provider;
 
-import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.domain.DomainGuiceModuleTest;
+import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.location.LocationType;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
 
 @Guice(modules = DomainGuiceModuleTest.class)
 public class LocationTest {
 
-    Location toTest;
-    Location.Builder builder;
-
     @Inject
     private Provider<Location.Builder> toTestProvider;
+
+    Location toTest;
+    Location.Builder builder;
 
     // Test values
     String expectedName;
@@ -53,71 +51,23 @@ public class LocationTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
-        toTest = toTestProvider.get().build();
-        assertNotNull(toTest);
         builder = toTestProvider.get();
 
-        expectedName = builder.getName();
-        expectedDescription = builder.getDescription();
-        expectedLocationType = builder.getLocationType();
-        expectedNodeId = builder.getNodeId();
-    }
-
-    @Test(expectedExceptions =NullPointerException.class, expectedExceptionsMessageRegExp = "Location Node \\(point\\) missing")
-    public void testGetNodeId() throws Exception {
-        Integer actual = toTest.getNodeId();
-        assertEquals(actual, expectedNodeId);
-        builder.withNodeId(null);
         toTest = builder.build();
-        assertNull(toTest);
-    }
-
-    @Test
-    public void testGetScorePerTag() throws Exception {
-        Map<String,Optional<Double>> moreTags = new HashMap<>();
-        Double expected = 1.234;
-//        Optional<Double> expected = Optional.of(1.234);
-        moreTags.put("T1", Optional.of(expected));
-
-        builder.withTagScores(moreTags);
-        toTest = builder.build();
+        expectedName = toTest.getName();
+        expectedDescription = toTest.getDescription();
+        expectedLocationType = toTest.getLocationType();
+        expectedNodeId = toTest.getNodeId();
         assertNotNull(toTest);
-        Optional<Double> actual = toTest.getScorePerTag("T1");
-        Double defaultScore = 1.0;
-        assertEquals(actual.or(defaultScore), expected);
-    }
-
-    @Test
-    public void testGetLocationGroupId() throws Exception {
-        Integer expectedLocationId = 1234;
-//        Optional<Integer> expectedLocationId = Optional.of(1234);
-        builder.withLocationGroupId(Optional.of(expectedLocationId));
-        toTest = builder.build();
-        assertNotNull(toTest);
-
-        Integer actual = toTest.getLocationGroupId();
-        assertEquals(actual, expectedLocationId);
-    }
-
-    @Test
-    public void testGetEstablishment() throws Exception {
-        String expectedName = "Atlanta Bicycle";
-        Optional<Establishment> expectedEstablishment = Optional.of(new Establishment(expectedName));
-        builder.withEstablishment(expectedEstablishment);
-        toTest = builder.build();
-        assertNotNull(toTest);
-
-        Establishment actual = toTest.getEstablishment().orNull();
-        assertEquals(actual.getName(), expectedName);
     }
 
     @Test
     public void testAddDeleteClues() throws Exception {
-        toTest = builder.build();
         List<Integer> expectedCluesAfterDelete = toTest.getClueIds();
         List<Integer> expectedCluesAfterAdd = new ArrayList<>(expectedCluesAfterDelete);
         expectedCluesAfterAdd.add(10);
 
+        builder = Location.Builder.from(toTest);
         toTest = builder.withClueIds(expectedCluesAfterAdd).build();
         List<Integer> actualAfterAdd = toTest.getClueIds();
         assertEquals(actualAfterAdd, expectedCluesAfterAdd);
@@ -137,12 +87,12 @@ public class LocationTest {
     }
 
     // Node's shouldn't be displayed
-//    @Test
+    @Test
     public void testReadinessLevel_Node() throws Exception {
         LocationLevel expected = LocationLevel.NODE;
         Location.Builder builder = Location.Builder.builder()
                 .withNodeId(toTest.getNodeId())
-                .withPoint(toTest.getPoint());
+                .withLatLon(toTest.getLatLon());
 
         toTest = builder.build();
         LocationLevel actual = toTest.getReadinessLevel();
@@ -155,7 +105,7 @@ public class LocationTest {
         Location.Builder builder = Location.Builder.builder()
                 .withName(toTest.getName())
                 .withNodeId(toTest.getNodeId())
-                .withPoint(toTest.getPoint());
+                .withLatLon(toTest.getLatLon());
 
         toTest = builder.build();
         LocationLevel actual = toTest.getReadinessLevel();
@@ -168,7 +118,7 @@ public class LocationTest {
         Location.Builder builder = Location.Builder.builder()
                 .withDescription(toTest.getDescription())
                 .withNodeId(toTest.getNodeId())
-                .withPoint(toTest.getPoint());
+                .withLatLon(toTest.getLatLon());
 
         toTest = builder.build();
         LocationLevel actual = toTest.getReadinessLevel();
@@ -181,7 +131,7 @@ public class LocationTest {
         Location.Builder builder = Location.Builder.builder()
                 .withFeaturedImage(toTest.getFeaturedImage())
                 .withNodeId(toTest.getNodeId())
-                .withPoint(toTest.getPoint());
+                .withLatLon(toTest.getLatLon());
 
         toTest = builder.build();
         LocationLevel actual = toTest.getReadinessLevel();
@@ -194,7 +144,7 @@ public class LocationTest {
         Location.Builder builder = Location.Builder.builder()
                 .withLocationType(toTest.getLocationType())
                 .withNodeId(toTest.getNodeId())
-                .withPoint(toTest.getPoint());
+                .withLatLon(toTest.getLatLon());
 
         toTest = builder.build();
         LocationLevel actual = toTest.getReadinessLevel();
@@ -219,6 +169,31 @@ public class LocationTest {
 
         Location.Builder builder = Location.Builder.from(toTest);
         builder.withGooglePlaceId(1);
+        toTest = builder.build();
+
+        LocationLevel actual = toTest.getReadinessLevel();
+        assertEquals(actual, expected);
+    }
+
+    @Test
+    public void testReadinessLevel_nullClues() throws Exception {
+        LocationLevel expected = LocationLevel.PLACE;
+
+        Location.Builder builder = Location.Builder.from(toTest);
+        builder.withClueIds(null);
+        toTest = builder.build();
+
+        LocationLevel actual = toTest.getReadinessLevel();
+        assertEquals(actual, expected);
+    }
+
+    @Test
+    public void testReadinessLevel_proposed() throws Exception {
+        LocationLevel expected = LocationLevel.DRAFT;
+
+        Location.Builder builder = Location.Builder.builder();
+        builder.withLatLon(toTest.getLatLon());
+        builder.withLocationType(toTest.getLocationType());
         toTest = builder.build();
 
         LocationLevel actual = toTest.getReadinessLevel();

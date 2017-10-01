@@ -31,6 +31,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.jettmarks.gmaps.encoder.Trackpoint;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 import org.mockito.Mock;
 
 import com.clueride.config.ConfigService;
@@ -41,19 +42,29 @@ import com.clueride.dao.ImageStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.dao.OutingStore;
 import com.clueride.dao.PathStore;
+import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GameCourse;
+import com.clueride.domain.GeoNode;
 import com.clueride.domain.Outing;
 import com.clueride.domain.account.member.Member;
+import com.clueride.domain.dev.NetworkProposal;
+import com.clueride.domain.dev.NewNodeProposal;
 import com.clueride.domain.dev.TrackImpl;
+import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.user.Badge;
-import com.clueride.domain.user.Location;
-import com.clueride.domain.user.LocationType;
+import com.clueride.domain.user.latlon.LatLonService;
+import com.clueride.domain.user.latlon.LatLonStore;
+import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.location.LocationStore;
+import com.clueride.domain.user.location.LocationType;
 import com.clueride.feature.Edge;
 import com.clueride.geo.score.EasyTrack;
 import com.clueride.gpx.TrackUtil;
 import com.clueride.infrastructure.AuthService;
 import com.clueride.infrastructure.AuthServiceImpl;
+import com.clueride.infrastructure.Jpa;
+import com.clueride.infrastructure.Json;
 import com.clueride.member.MemberService;
 import com.clueride.principal.EmailPrincipal;
 import com.clueride.principal.PrincipalService;
@@ -91,7 +102,16 @@ public class CoreGuiceModuleTest extends AbstractModule {
     private InvitationService invitationService;
 
     @Mock
+    private LatLonService latLonService;
+
+    @Mock
+    private LatLonStore latLonStore;
+
+    @Mock
     private LocationService locationService;
+
+    @Mock
+    private LocationStore locationStore;
 
     @Mock
     private MemberService memberService;
@@ -120,6 +140,7 @@ public class CoreGuiceModuleTest extends AbstractModule {
     @Override
     protected void configure() {
         initMocks(this);
+
         bind(AuthenticationService.class).toInstance(authenticationService);
         bind(AuthService.class).to(AuthServiceImpl.class);
         bind(ClueStore.class).toInstance(clueStore);
@@ -128,6 +149,11 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(ImageStore.class).toInstance(imageStore);
         bind(InvitationService.class).toInstance(invitationService);
         bind(JtiService.class).to(JtiServiceImpl.class);
+        bind(LatLonService.class).toInstance(latLonService);
+        bind(LatLonStore.class).toInstance(latLonStore);
+        bind(LocationStore.class).annotatedWith(Json.class).toInstance(locationStore);
+        bind(LocationStore.class).annotatedWith(Jpa.class).toInstance(locationStore);
+        bind(LocationStore.class).toInstance(locationStore);
         bind(LocationService.class).toInstance(locationService);
         bind(MemberService.class).toInstance(memberService);
         bind(NodeService.class).toInstance(nodeService);
@@ -138,6 +164,16 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(RecommendationService.class).toInstance(recommendationService);
         bind(TokenService.class).toInstance(tokenService);
         bind(OutingService.class).to(OutingServiceImpl.class);
+    }
+
+    @Provides
+    private Point providePoint() {
+        return PointFactory.getJtsInstance(33.771, -84.371, 0.0);
+    }
+
+    @Provides
+    private GeoNode provideGeoNode(Point point) {
+        return new DefaultGeoNode(point);
     }
 
     @Provides
@@ -240,5 +276,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
                 .withDisplayName("ClueRide Guest")
                 .withPhone("123-456-7890")
                 .build();
+    }
+
+    @Provides NetworkProposal getNewNodeNetworkProposal(GeoNode geoNode) {
+        return new NewNodeProposal(geoNode);
     }
 }

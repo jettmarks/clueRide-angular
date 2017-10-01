@@ -19,7 +19,9 @@ package com.clueride.service;
 
 import java.io.InputStream;
 
-import com.clueride.rest.dto.Location;
+import com.clueride.domain.user.latlon.LatLon;
+import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.location.LocationType;
 
 /**
  * Provides business-layer services for User's Location instances.
@@ -82,7 +84,16 @@ public interface LocationService {
      * matching ID.
      * @param location - com.clueride.rest.dto.Location instance from JSON.
      */
-    void updateLocation(Location location);
+    void updateLocation(com.clueride.rest.dto.Location location);
+
+    /**
+     * Most Locations will be against a Node that has been confirmed to be on the network, but
+     * this function allows proposing a Node that may not be on the network yet.
+     * @param latLon coordinates of the proposed location.
+     * @param locationType of the proposed Location.
+     * @return JSON String representing the new location.
+     */
+    Location proposeLocation(LatLon latLon, LocationType locationType);
 
     String getLocationTypes();
 }

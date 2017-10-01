@@ -19,27 +19,30 @@ package com.clueride.service;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Provider;
 
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
-import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
 import com.clueride.dao.ClueStore;
-import com.clueride.dao.LocationStore;
 import com.clueride.domain.factory.PointFactory;
-import com.clueride.domain.user.Location;
-import com.clueride.domain.user.LocationType;
-import static org.mockito.Matchers.anyInt;
+import com.clueride.domain.user.latlon.LatLon;
+import com.clueride.domain.user.latlon.LatLonService;
+import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.location.LocationStore;
+import com.clueride.domain.user.location.LocationType;
+import com.clueride.infrastructure.Jpa;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -57,11 +60,14 @@ public class DefaultLocationServiceTest {
     @Inject
     private Location location;
 
-    @Mock
-    private LocationStore locationStore;
+    @Inject
+    private @Jpa LocationStore locationStore;
 
     @Inject
     private NodeService nodeService;
+
+    @Inject
+    private LatLonService latLonService;
 
     @Inject
     private Provider<DefaultLocationService> toTestProvider;
@@ -69,6 +75,10 @@ public class DefaultLocationServiceTest {
     @BeforeMethod
     public void setup() {
         initMocks(this);
+        reset(
+                locationStore,
+                nodeService
+        );
         toTest = toTestProvider.get();
     }
 
@@ -90,7 +100,7 @@ public class DefaultLocationServiceTest {
 
     /**
      * For this test, the location IDs match the Node IDs.
-     * @throws Exception
+     * @throws Exception catchall
      */
     @Test
     public void testGetNearestLocations() throws Exception {
@@ -130,15 +140,31 @@ public class DefaultLocationServiceTest {
         LOGGER.debug(actual);
     }
 
-//    @Test
-    /** TODO: This is testing a method outside of the interface; change that. */
-    public void testValidateLocationBuilder() {
-        Location.Builder builder = Location.Builder.builder();
-        builder.withClueIds(Arrays.asList(1, 2, 3, 4, 5, 6, 4, null, 5, 6, null, 3));
-        when(clueStore.hasValidClue(anyInt())).thenReturn(true);
-        when(clueStore.hasValidClue(1)).thenReturn(false);
-        DefaultLocationService implToTest = toTestProvider.get();
-        implToTest.validateUpdatedLocationBuilder(builder);
-        assertTrue(builder.getClueIds().size() == 5);
+    @Test
+    public void testProposeLocation() throws Exception {
+        /* setup data */
+        double lat = 33.77;
+        double lon = -84.37;
+        Integer newLatLonId = 19;
+        LatLon latLonWithoutId = new LatLon(lat, lon);
+        LatLon latLon = new LatLon(lat, lon).setId(newLatLonId);
+        Location expected = Location.Builder.builder()
+                .withLocationType(LocationType.BIKE_SHARE)
+                .withLatLon(latLon)
+                .build();
+
+        /* train mocks */
+        when(latLonService.addNew(latLonWithoutId)).thenReturn(latLon);
+        when(locationStore.addNew(any(Location.Builder.class))).thenReturn(newLatLonId);
+        when(locationStore.getLocationById(newLatLonId)).thenReturn(expected);
+
+        /* make call */
+        Location actual;
+        actual = toTest.proposeLocation(latLon, LocationType.BIKE_SHARE);
+
+        /* verify results */
+        assertNotNull(actual);
+        assertEquals(actual, expected);
     }
+
 }

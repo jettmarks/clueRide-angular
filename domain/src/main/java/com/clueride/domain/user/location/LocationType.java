@@ -1,4 +1,6 @@
-package com.clueride.domain.user;
+package com.clueride.domain.user.location;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Copyright 2015 Jett Marks
@@ -17,6 +19,7 @@ package com.clueride.domain.user;
  * <p/>
  * Created by jett on 11/23/15.
  */
+@XmlRootElement
 public enum LocationType {
     RESTAURANT("Restaurant"),
     FOOD_TO_GO("Food to Go"),
@@ -31,7 +34,9 @@ public enum LocationType {
     SCENIC("Scenic"),
     CHAMPION_TREE("Champion Tree"),
     GEOCACHE("GeoCache"),
-    HISTORICAL_MARKER("Historical Marker");
+    HISTORICAL_MARKER("Historical Marker"),
+    BIKE_SHARE("Bike Share"),
+    BIKE_SHOP("Bike Shop");
 
     private final String name;
     LocationType(String name) {this.name = name;}

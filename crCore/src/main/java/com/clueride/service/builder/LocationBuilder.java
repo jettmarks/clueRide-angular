@@ -23,11 +23,10 @@ import org.geotools.feature.DefaultFeatureCollection;
 
 import com.clueride.dao.NodeStore;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.user.Location;
+import com.clueride.domain.user.location.Location;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
-import com.clueride.service.NodeService;
 
 /**
  * Assembles a Feature Collection for a Location so it can be displayed on a map.
@@ -36,7 +35,7 @@ public class LocationBuilder {
     private final NodeStore nodeStore;
 
     @Inject
-    public LocationBuilder(NodeStore nodeStore, NodeService nodeService) {
+    public LocationBuilder(NodeStore nodeStore) {
         this.nodeStore = nodeStore;
     }
 

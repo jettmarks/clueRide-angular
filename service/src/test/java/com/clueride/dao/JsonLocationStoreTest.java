@@ -31,8 +31,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.clueride.domain.user.Location;
-import com.clueride.domain.user.LocationType;
+import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.location.LocationStore;
+import com.clueride.domain.user.location.LocationType;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -48,6 +49,7 @@ public class JsonLocationStoreTest {
 
     @BeforeMethod
     public void setUp() throws MalformedURLException {
+        /* TODO: CA-309: Move this into the class-based config. */
         injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
@@ -102,7 +104,7 @@ public class JsonLocationStoreTest {
         assertNotNull(locations);
     }
 
-    /* TODO: Move this into the Test Module and inject where needed. */
+    /* TODO: CA-309: Move this into the Test Module and inject where needed. */
     private Location.Builder getLocationBuilder() throws MalformedURLException {
         // Test values
         String expectedName = "Test Location";

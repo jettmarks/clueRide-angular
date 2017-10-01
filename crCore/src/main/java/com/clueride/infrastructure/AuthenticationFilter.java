@@ -38,7 +38,7 @@ import com.clueride.token.TokenService;
  * Allows picking up Authorization headers and extracting the Principal.
  */
 @Secured
-//@Provider
+// TODO: CA-306: entanglement of this and AuthServiceImpl
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationFilter.class);
@@ -90,6 +90,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         try {
             tokenService.validateToken(token);
         } catch (Exception e) {
+            LOGGER.warn("Login Failure: " + e.getMessage());
             requestContext.abortWith(
                     Response.status(Response.Status.UNAUTHORIZED).build());
             /* Our work is done for this request. */

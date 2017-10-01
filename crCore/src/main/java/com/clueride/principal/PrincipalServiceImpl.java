@@ -63,7 +63,7 @@ public class PrincipalServiceImpl implements PrincipalService {
             Member member = memberService.getMemberByEmail(email);
             principals.add(principal);
         }  catch (Exception e) {
-            throw new InvalidClaimException("Unable to verify email");
+            throw new InvalidClaimException("Unable to verify email: " + email);
         }
     }
 

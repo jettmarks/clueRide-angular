@@ -30,6 +30,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import com.clueride.domain.user.latlon.LatLon;
+import com.clueride.domain.user.location.LocationType;
 import com.clueride.infrastructure.Secured;
 import com.clueride.service.LocationService;
 
@@ -150,6 +152,19 @@ public class Location {
     @Produces(MediaType.TEXT_PLAIN)
     public String getCourseLocations(@QueryParam("courseId") Integer courseId) {
         return locationService.getCourseLocations(courseId);
+    }
+
+    @POST
+    @Path("propose")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public com.clueride.domain.user.location.Location proposeLocation(
+            @QueryParam("lat") Double lat,
+            @QueryParam("lon") Double lon,
+            @QueryParam("locType") LocationType locationType
+    ) {
+        LatLon latLon = new LatLon(lat, lon);
+        return locationService.proposeLocation(latLon, locationType);
     }
 
 }

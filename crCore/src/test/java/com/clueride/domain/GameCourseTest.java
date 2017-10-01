@@ -26,8 +26,8 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
-import com.clueride.domain.user.Location;
 import com.clueride.domain.user.Path;
+import com.clueride.domain.user.location.Location;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedCourseIdProvider;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -79,7 +79,7 @@ public class GameCourseTest {
     }
 
 //    @Test
-    // TODO: Move to a controller/service that uses this instance to obtain the Departure
+    // TODO: CA-308: Move to a controller/service that uses this instance to obtain the Departure
 //    public void testGetDeparture() throws Exception {
 //        Location expected = startLocation;
 //        Location actual = toTest.getDeparture();
@@ -87,7 +87,7 @@ public class GameCourseTest {
 //    }
 
 //    @Test
-    // TODO: Move to a controller/service that uses this instance to obtain the Departure
+    // TODO: CA-308: Move to a controller/service that uses this instance to obtain the Departure
 //    public void testGetDestination() throws Exception {
 //        Location expected = destinationLocation;
 //        Location actual = toTest.getDestination();

@@ -30,6 +30,7 @@ import com.google.inject.Inject;
 /**
  * Implementation of AuthService.
  */
+// TODO: CA-306: entanglement of this and AuthenticationFilter
 public class AuthServiceImpl implements AuthService {//    @Inject
 //    private final AuthenticationService authenticationService;
 //    private final InvitationService invitationService;
@@ -56,7 +57,6 @@ public class AuthServiceImpl implements AuthService {//    @Inject
     public boolean isOptionsRequest(HttpServletRequest request) throws IOException, ServletException {
         isValid();
         if (request.getMethod().equals(HttpMethod.OPTIONS)) {
-            filterChain.doFilter(request, response);
             return true;
         }
         return false;
