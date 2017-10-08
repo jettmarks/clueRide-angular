@@ -21,7 +21,6 @@ import java.io.InputStream;
 
 import com.clueride.domain.user.latlon.LatLon;
 import com.clueride.domain.user.location.Location;
-import com.clueride.domain.user.location.LocationType;
 
 /**
  * Provides business-layer services for User's Location instances.
@@ -84,7 +83,7 @@ public interface LocationService {
      * matching ID.
      * @param location - com.clueride.rest.dto.Location instance from JSON.
      */
-    void updateLocation(com.clueride.rest.dto.Location location);
+    void updateLocation(Location location);
 
     /**
      * Most Locations will be against a Node that has been confirmed to be on the network, but
@@ -93,7 +92,6 @@ public interface LocationService {
      * @param locationType of the proposed Location.
      * @return JSON String representing the new location.
      */
-    Location proposeLocation(LatLon latLon, LocationType locationType);
+    Location proposeLocation(LatLon latLon, String locationType);
 
-    String getLocationTypes();
 }

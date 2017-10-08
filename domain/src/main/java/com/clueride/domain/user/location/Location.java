@@ -19,7 +19,6 @@ package com.clueride.domain.user.location;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -42,9 +41,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.clueride.domain.Step;
 import com.clueride.domain.user.LocationLevel;
 import com.clueride.domain.user.latlon.LatLon;
+import com.clueride.domain.user.loctype.LocationType;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedLocationIdProvider;
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Holds the data for a Location, and provides some of the logic to provide derived properties.
@@ -65,7 +66,7 @@ public class Location implements Step {
     private final List<URL> imageUrls;
     private final Integer locationGroupId;
     private final String establishment;
-    private final Optional<Integer> establishmentId;
+    private final Integer establishmentId;
     private final Map<String,Optional<Double>> tagScores;
     private final static Integer SYNCH_LOCK = -1;
 
@@ -183,7 +184,7 @@ public class Location implements Step {
         return clueIds;
     }
 
-    public Optional<Integer> getEstablishment() {
+    public Integer getEstablishment() {
         return establishmentId;
     }
 
@@ -203,8 +204,8 @@ public class Location implements Step {
         /* Emptiness across all of these makes it a NODE. */
         if (isNullOrEmpty(name)
                 && isNullOrEmpty(description)
-                && isNullOrEmpty(String.valueOf(featuredImage))
-                && isNullOrEmpty(String.valueOf(locationType))
+                && featuredImage == null
+                && locationType.getId() == 0
         ) {
             return LocationLevel.NODE;
         }
@@ -212,8 +213,8 @@ public class Location implements Step {
         /* Handle anything that could make this a draft. */
         if (isNullOrEmpty(name)
                 || isNullOrEmpty(description)
-                || isNullOrEmpty(String.valueOf(featuredImage))
-                || isNullOrEmpty(String.valueOf(locationType))
+                || featuredImage == null
+                || locationType.getId() == 0
         ) {
             return LocationLevel.DRAFT;
         }
@@ -285,9 +286,13 @@ public class Location implements Step {
 
         private String name;
         private String description;
-        @Column(name="location_type") private LocationType locationType;
+
+        @Column(name= "location_type_id") private Integer locationTypeId;
+
         @Column(name="node_id") private Integer nodeId;
         @Column(name="featured_image_id") private Integer featuredImageId;
+        @Transient
+        private LocationType locationType;
 
         @Transient
         private LatLon latLon;
@@ -299,16 +304,16 @@ public class Location implements Step {
         private URL featuredImage;
         @Transient
         private Integer googlePlaceId;
-
         @Transient
-        private Optional<Integer> establishmentId;
-        @Column(name="location_group_id") private Integer locationGroupId;
+        private Integer establishmentId;
 
+        @Column(name="location_group_id") private Integer locationGroupId;
         @Transient
         private Map<String,Optional<Double>> tagScores = new HashMap<>();
 
         @Transient
         private IdProvider idProvider;
+
         @Transient
         private String establishment;
 
@@ -329,37 +334,17 @@ public class Location implements Step {
                     .withNodeId(location.getNodeId())
                     .withLatLon(location.latLon)
                     .withClueIds(location.clueIds)
+                    .withFeaturedImage(location.featuredImage)
                     .withImageUrls(location.imageUrls)
                     .withEstablishmentId(location.establishmentId)
                     .withTagScores(location.tagScores)
                     ;
         }
 
-        /**
-         * Updates an existing Location.Builder with data from a dto.Location.
-         * @param location DTO from the front-end carrying updated Location info.
-         * @return this.
-         */
-        public Builder withLocationDto(com.clueride.rest.dto.Location location) {
-            return this.withId(location.id)
-                    .withName(location.name)
-                    .withDescription(location.description)
-                    .withLocationType(location.locationType)
-                    .withImageUrls(location.imageUrls)
-            ;
-        }
-
-        public static Builder from(com.clueride.rest.dto.Location location) {
-            return builder()
-                    .withId(location.id)
-                    .withName(location.name)
-                    .withDescription(location.description)
-                    .withLocationType(location.locationType)
-                    .withImageUrls(location.imageUrls)
-                    ;
-        }
-
         public Location build() {
+            if (locationType == null) {
+                throw new IllegalStateException("Location Type cannot be null");
+            }
             return new Location(this);
         }
 
@@ -400,8 +385,18 @@ public class Location implements Step {
             return locationType;
         }
 
+        public Builder withLocationTypeId(Integer locationTypeId) {
+            this.locationTypeId = locationTypeId;
+            return this;
+        }
+
+        public Integer getLocationTypeId() {
+            return locationTypeId;
+        }
+
         public Builder withLocationType(LocationType locationType) {
             this.locationType = locationType;
+            this.locationTypeId = locationType.getId();
             return this;
         }
 
@@ -447,14 +442,14 @@ public class Location implements Step {
         }
 
         private void validateClueIds(List<Integer> clueIds) {
-
+            requireNonNull(clueIds);
         }
 
-        public Optional<Integer> getEstablishmentId() {
+        public Integer getEstablishmentId() {
             return establishmentId;
         }
 
-        public Builder withEstablishmentId(Optional<Integer> establishmentId) {
+        public Builder withEstablishmentId(Integer establishmentId) {
             this.establishmentId = establishmentId;
             return this;
         }
@@ -511,23 +506,18 @@ public class Location implements Step {
             return this;
         }
 
-        /**
-         * For creating a copy from a DTO instance.
-         * @param locationDto - inbound from the Web REST API.
-         * @return populated Builder.
-         */
-        public static Builder builder(com.clueride.rest.dto.Location locationDto) {
-            return builder()
-                    .withName(locationDto.name)
-                    .withId(locationDto.id)
-                    .withDescription(locationDto.description)
-                    .withNodeId(locationDto.nodeId)
-                    .withLocationType(locationDto.locationType)
-                    .withLocationGroupId(locationDto.locationGroupId)
-                    .withClueIds(Arrays.asList(locationDto.clueIds))
-                    .withImageUrls(locationDto.imageUrls)
-//                    .withEstablishment(Optional.<Establishment>fromNullable(locationDto.establishment))
-                    ;
+        public void withLocation(Location location) {
+            this
+                    .withName(location.name)
+                    .withId(location.id)
+                    .withDescription(location.description)
+                    .withNodeId(location.nodeId)
+                    .withLocationType(location.locationType)
+                    .withLocationGroupId(location.locationGroupId)
+                    .withClueIds(location.clueIds)
+                    .withImageUrls(location.imageUrls)
+//                    .withEstablishment(Optional.<Establishment>fromNullable(location.establishment))
+            ;
         }
     }
 

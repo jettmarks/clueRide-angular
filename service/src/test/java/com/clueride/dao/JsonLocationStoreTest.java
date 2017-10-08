@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Provider;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -33,7 +35,7 @@ import org.testng.annotations.Test;
 
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.location.LocationStore;
-import com.clueride.domain.user.location.LocationType;
+import com.clueride.domain.user.loctype.LocationType;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -45,7 +47,7 @@ public class JsonLocationStoreTest {
     private Injector injector;
 
     @Inject
-    private LocationStore locationStore;
+    private Provider<LocationType> locationTypeProvider;
 
     @BeforeMethod
     public void setUp() throws MalformedURLException {
@@ -109,7 +111,7 @@ public class JsonLocationStoreTest {
         // Test values
         String expectedName = "Test Location";
         String expectedDescription = "Here's a nice spot to spread out the blanket or toss the frisbee.";
-        LocationType expectedLocationType = LocationType.PICNIC;
+        LocationType expectedLocationType = locationTypeProvider.get();
         Integer expectedNodeId = 5;
         List<Integer> expectedClues = new ArrayList<>();
         List<URL> expectedImageUrls = new ArrayList<>();

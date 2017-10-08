@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.location.LocationStore;
-import com.clueride.infrastructure.Json;
+import com.clueride.infrastructure.Jpa;
 import com.clueride.io.PojoJsonUtil;
 
 /**
@@ -55,7 +55,7 @@ public class JsonClueStore implements ClueStore {
     private final LocationStore locationStore;
 
     @Inject
-    public JsonClueStore(@Json LocationStore locationStore) {
+    public JsonClueStore(@Jpa LocationStore locationStore) {
         this.locationStore = locationStore;
         if (needsReload) {
             loadAll();
@@ -86,8 +86,8 @@ public class JsonClueStore implements ClueStore {
         }
 
         /* Index the clues by Location. */
-        Collection<Location> locations = locationStore.getLocations();
-        for (Location location : locations) {
+        Collection<Location.Builder> locations = locationStore.getLocationsBuilders();
+        for (Location.Builder location : locations) {
             List<Clue> cluesInThisLocation = new ArrayList<>();
             cluesPerLocation.put(location.getId(), cluesInThisLocation);
             for (Integer clueId : location.getClueIds()) {
