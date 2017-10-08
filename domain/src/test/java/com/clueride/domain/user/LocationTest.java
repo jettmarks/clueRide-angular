@@ -30,35 +30,33 @@ import org.testng.annotations.Test;
 
 import com.clueride.domain.DomainGuiceModuleTest;
 import com.clueride.domain.user.location.Location;
-import com.clueride.domain.user.location.LocationType;
+import com.clueride.domain.user.loctype.LocationType;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 @Guice(modules = DomainGuiceModuleTest.class)
 public class LocationTest {
 
+    private Location toTest;
+    private Location.Builder builder;
+
     @Inject
     private Provider<Location.Builder> toTestProvider;
 
-    Location toTest;
-    Location.Builder builder;
+    @Inject
+    private Provider<LocationType> locationTypeProvider;
 
     // Test values
-    String expectedName;
-    String expectedDescription;
-    LocationType expectedLocationType;
-    Integer expectedNodeId;
+    private LocationType expectedLocationType;
 
     @BeforeMethod
     public void setUp() throws Exception {
         builder = toTestProvider.get();
 
         toTest = builder.build();
-        expectedName = toTest.getName();
-        expectedDescription = toTest.getDescription();
         expectedLocationType = toTest.getLocationType();
-        expectedNodeId = toTest.getNodeId();
         assertNotNull(toTest);
+        assertNotNull(expectedLocationType);
     }
 
     @Test
@@ -77,6 +75,12 @@ public class LocationTest {
         assertEquals(actualAfterDelete, expectedCluesAfterDelete);
     }
 
+    @Test(expectedExceptions = IllegalStateException.class)
+    public void testBuilder_missingLocationType() throws Exception {
+        builder = Location.Builder.builder();
+        builder.build();
+    }
+
     /* Readiness level. */
 
     @Test
@@ -89,13 +93,22 @@ public class LocationTest {
     // Node's shouldn't be displayed
     @Test
     public void testReadinessLevel_Node() throws Exception {
+        /* setup test */
         LocationLevel expected = LocationLevel.NODE;
+        LocationType locationTypeForNode = LocationType.Builder.from(locationTypeProvider.get())
+                .withId(0)
+                .build();
         Location.Builder builder = Location.Builder.builder()
                 .withNodeId(toTest.getNodeId())
-                .withLatLon(toTest.getLatLon());
+                .withLatLon(toTest.getLatLon())
+                .withLocationType(locationTypeForNode);
 
         toTest = builder.build();
+
+        /* make call */
         LocationLevel actual = toTest.getReadinessLevel();
+
+        /* verify results */
         assertEquals(actual, expected);
     }
 
@@ -103,6 +116,7 @@ public class LocationTest {
     public void testReadinessLevel_Draft_onName() throws Exception {
         LocationLevel expected = LocationLevel.DRAFT;
         Location.Builder builder = Location.Builder.builder()
+                .withLocationType(toTest.getLocationType())
                 .withName(toTest.getName())
                 .withNodeId(toTest.getNodeId())
                 .withLatLon(toTest.getLatLon());
@@ -116,6 +130,7 @@ public class LocationTest {
     public void testReadinessLevel_Draft_onDescription() throws Exception {
         LocationLevel expected = LocationLevel.DRAFT;
         Location.Builder builder = Location.Builder.builder()
+                .withLocationType(toTest.getLocationType())
                 .withDescription(toTest.getDescription())
                 .withNodeId(toTest.getNodeId())
                 .withLatLon(toTest.getLatLon());
@@ -129,6 +144,7 @@ public class LocationTest {
     public void testReadinessLevel_Draft_onFeaturedImage() throws Exception {
         LocationLevel expected = LocationLevel.DRAFT;
         Location.Builder builder = Location.Builder.builder()
+                .withLocationType(toTest.getLocationType())
                 .withFeaturedImage(toTest.getFeaturedImage())
                 .withNodeId(toTest.getNodeId())
                 .withLatLon(toTest.getLatLon());
@@ -175,7 +191,7 @@ public class LocationTest {
         assertEquals(actual, expected);
     }
 
-    @Test
+    @Test (expectedExceptions = NullPointerException.class)
     public void testReadinessLevel_nullClues() throws Exception {
         LocationLevel expected = LocationLevel.PLACE;
 

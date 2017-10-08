@@ -45,6 +45,7 @@ public class PrincipalServiceImpl implements PrincipalService {
 
     @Override
     public Principal getNewPrincipal() {
+        refreshPrincipalCache();
         Principal newPrincipal = new EmailPrincipal("guest.dummy@clueride.com");
         principals.add(newPrincipal);
         return newPrincipal;
@@ -52,18 +53,22 @@ public class PrincipalServiceImpl implements PrincipalService {
 
     @Override
     public void validate(String email) {
-        if (principals == null) {
-            principals = new ArrayList<>();
-            getCount();
-        }
+        refreshPrincipalCache();
 
         try {
             Principal principal = new EmailPrincipal(email);
             /* Test existence within the database */
-            Member member = memberService.getMemberByEmail(email);
+            memberService.getMemberByEmail(email);
             principals.add(principal);
         }  catch (Exception e) {
             throw new InvalidClaimException("Unable to verify email: " + email);
+        }
+    }
+
+    private void refreshPrincipalCache() {
+        if (principals == null) {
+            principals = new ArrayList<>();
+            getCount();
         }
     }
 

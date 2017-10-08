@@ -31,6 +31,7 @@ import org.testng.annotations.Test;
 import com.clueride.CoreGuiceModuleTest;
 import com.clueride.domain.account.member.Member;
 import com.clueride.member.MemberService;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -61,8 +62,14 @@ public class PrincipalServiceImplTest {
         List<Member> members = new ArrayList<>();
         members.add(member);
         members.add(Member.Builder.from(member).withEmailAddress("test.member2@clueride.com").build());
+
+        /* train mocks */
         when(memberService.getAllMembers()).thenReturn(members);
+
+        /* make call */
         int principalCount = toTest.getCount();
+
+        /* verify results */
         assertTrue(principalCount == members.size());
     }
 
@@ -80,7 +87,9 @@ public class PrincipalServiceImplTest {
 
     @Test(expectedExceptions = InvalidClaimException.class)
     public void testValidate_invalidClaim() throws Exception {
-        toTest.validate("not.a.valid@email.address");
+        String invalidAddress = "not.a.valid@email.address";
+        doThrow(new InvalidClaimException("Oops")).when(memberService).getMemberByEmail(invalidAddress);
+        toTest.validate(invalidAddress);
     }
 
 }

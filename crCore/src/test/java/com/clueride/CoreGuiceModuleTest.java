@@ -17,8 +17,6 @@
  */
 package com.clueride;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Date;
@@ -43,11 +41,13 @@ import com.clueride.dao.NodeStore;
 import com.clueride.dao.OutingStore;
 import com.clueride.dao.PathStore;
 import com.clueride.domain.DefaultGeoNode;
+import com.clueride.domain.DomainGuiceProviderModule;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GameCourse;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.Outing;
 import com.clueride.domain.account.member.Member;
+import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NewNodeProposal;
 import com.clueride.domain.dev.TrackImpl;
@@ -55,9 +55,8 @@ import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.latlon.LatLonService;
 import com.clueride.domain.user.latlon.LatLonStore;
-import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.location.LocationStore;
-import com.clueride.domain.user.location.LocationType;
+import com.clueride.domain.user.loctype.LocationTypeService;
 import com.clueride.feature.Edge;
 import com.clueride.geo.score.EasyTrack;
 import com.clueride.gpx.TrackUtil;
@@ -79,7 +78,6 @@ import com.clueride.token.CustomClaim;
 import com.clueride.token.JtiService;
 import com.clueride.token.JtiServiceImpl;
 import com.clueride.token.TokenService;
-import static java.util.Arrays.asList;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
@@ -114,7 +112,13 @@ public class CoreGuiceModuleTest extends AbstractModule {
     private LocationStore locationStore;
 
     @Mock
+    private LocationTypeService locationTypeService;
+
+    @Mock
     private MemberService memberService;
+
+    @Mock
+    private MemberStore memberStore;
 
     @Mock
     private NodeStore nodeStore;
@@ -141,6 +145,8 @@ public class CoreGuiceModuleTest extends AbstractModule {
     protected void configure() {
         initMocks(this);
 
+        install(new DomainGuiceProviderModule());
+
         bind(AuthenticationService.class).toInstance(authenticationService);
         bind(AuthService.class).to(AuthServiceImpl.class);
         bind(ClueStore.class).toInstance(clueStore);
@@ -154,8 +160,10 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(LocationStore.class).annotatedWith(Json.class).toInstance(locationStore);
         bind(LocationStore.class).annotatedWith(Jpa.class).toInstance(locationStore);
         bind(LocationStore.class).toInstance(locationStore);
+        bind(LocationTypeService.class).toInstance(locationTypeService);
         bind(LocationService.class).toInstance(locationService);
         bind(MemberService.class).toInstance(memberService);
+        bind(MemberStore.class).toInstance(memberStore);
         bind(NodeService.class).toInstance(nodeService);
         bind(NodeStore.class).toInstance(nodeStore);
         bind(OutingStore.class).toInstance(outingStore);
@@ -174,25 +182,6 @@ public class CoreGuiceModuleTest extends AbstractModule {
     @Provides
     private GeoNode provideGeoNode(Point point) {
         return new DefaultGeoNode(point);
-    }
-
-    @Provides
-    private Location provideLocation() {
-        try {
-            return Location.Builder.builder()
-                    .withId(1)
-                    .withNodeId(100)
-                    .withName("Test Location")
-                    .withClueIds(asList(1, 2, 3))
-                    .withDescription("Beautiful Test")
-                    .withLocationType(LocationType.PICNIC)
-                    .withImageUrls(Collections.singletonList(new URL("https://img.clueride.com/dummy.png")))
-                    .withTagScores(Collections.EMPTY_MAP)
-                    .build();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     @Provides

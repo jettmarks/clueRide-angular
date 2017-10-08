@@ -18,6 +18,7 @@
 package com.clueride.rest;
 
 import java.io.InputStream;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -31,7 +32,8 @@ import javax.ws.rs.core.MediaType;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import com.clueride.domain.user.latlon.LatLon;
-import com.clueride.domain.user.location.LocationType;
+import com.clueride.domain.user.loctype.LocationType;
+import com.clueride.domain.user.loctype.LocationTypeService;
 import com.clueride.infrastructure.Secured;
 import com.clueride.service.LocationService;
 
@@ -49,11 +51,16 @@ import com.clueride.service.LocationService;
 @Secured
 @Path("location")
 public class Location {
-    private LocationService locationService;
+    private final LocationService locationService;
+    private final LocationTypeService locationTypeService;
 
     @Inject
-    public Location(LocationService locationService) {
+    public Location(
+            LocationService locationService,
+            LocationTypeService locationTypeService
+    ) {
         this.locationService = locationService;
+        this.locationTypeService = locationTypeService;
     }
 
     /**
@@ -68,8 +75,8 @@ public class Location {
     @GET
     @Path("types")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getTypes() {
-        return locationService.getLocationTypes();
+    public List<LocationType> getTypes() {
+        return locationTypeService.getLocationTypes();
     }
 
     /**
@@ -86,7 +93,7 @@ public class Location {
     @Path("update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public void updateLocation(com.clueride.rest.dto.Location location) {
+    public void updateLocation(com.clueride.domain.user.location.Location location) {
         locationService.updateLocation(location);
     }
 
@@ -161,7 +168,7 @@ public class Location {
     public com.clueride.domain.user.location.Location proposeLocation(
             @QueryParam("lat") Double lat,
             @QueryParam("lon") Double lon,
-            @QueryParam("locType") LocationType locationType
+            @QueryParam("locType") String locationType
     ) {
         LatLon latLon = new LatLon(lat, lon);
         return locationService.proposeLocation(latLon, locationType);

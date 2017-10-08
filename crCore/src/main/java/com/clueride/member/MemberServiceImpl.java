@@ -53,11 +53,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member getMemberByEmail(String email) {
-        InternetAddress internetAddress = null;
+        InternetAddress internetAddress;
         try {
             internetAddress = new InternetAddress(email);
         } catch (AddressException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not parse supplied Email", e);
         }
         return memberStore.getMemberByEmail(internetAddress);
     }

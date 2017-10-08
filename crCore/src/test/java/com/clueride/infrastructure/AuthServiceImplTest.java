@@ -29,14 +29,12 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
 
 /**
  * Exercises the AuthServiceImplTest class.
@@ -85,24 +83,6 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    public void testIsOptionsRequest_isOptionRequest() throws Exception {
-        /* setup */
-        toTest.withChain(filterChain);
-        toTest.withResponse(response);
-
-        /* train mocks */
-        when(request.getMethod()).thenReturn(HttpMethod.OPTIONS);
-
-        /* make call */
-        boolean actual = toTest.isOptionsRequest(request);
-
-        /* verify results */
-        assertTrue(actual);
-        verify(filterChain).doFilter(request, response);
-    }
-
-
-    @Test
     public void testIsOptionsRequest_isNotOptionRequest() throws Exception {
         /* setup */
         toTest.withChain(filterChain);
@@ -122,23 +102,6 @@ public class AuthServiceImplTest {
     @Test(expectedExceptions = IllegalStateException.class)
     public void testIsOptionsRequest_illegalState() throws Exception {
         toTest.isOptionsRequest(request);
-    }
-
-//    @Test
-    public void testAddToken() throws Exception {
-        /* setup */
-        toTest.withChain(filterChain);
-        toTest.withResponse(response);
-        toTest.addToken();
-
-        /* train mocks */
-        when(request.getMethod()).thenReturn(HttpMethod.POST);
-
-        /* make call */
-         toTest.addToken();
-
-        /* verify results */
-        verify(response).addHeader(anyString(), anyString());
     }
 
 }

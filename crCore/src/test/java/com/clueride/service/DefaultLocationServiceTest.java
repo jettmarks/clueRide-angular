@@ -30,13 +30,13 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
-import com.clueride.dao.ClueStore;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.user.latlon.LatLon;
 import com.clueride.domain.user.latlon.LatLonService;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.location.LocationStore;
-import com.clueride.domain.user.location.LocationType;
+import com.clueride.domain.user.loctype.LocationType;
+import com.clueride.domain.user.loctype.LocationTypeService;
 import com.clueride.infrastructure.Jpa;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.reset;
@@ -55,9 +55,6 @@ public class DefaultLocationServiceTest {
     private LocationService toTest;
 
     @Inject
-    private ClueStore clueStore;
-
-    @Inject
     private Location location;
 
     @Inject
@@ -70,7 +67,13 @@ public class DefaultLocationServiceTest {
     private LatLonService latLonService;
 
     @Inject
+    private LocationTypeService locationTypeService;
+
+    @Inject
     private Provider<DefaultLocationService> toTestProvider;
+
+    @Inject
+    private Provider<LocationType> locationTypeProvider;
 
     @BeforeMethod
     public void setup() {
@@ -103,14 +106,7 @@ public class DefaultLocationServiceTest {
      * @throws Exception catchall
      */
     @Test
-    public void testGetNearestLocations() throws Exception {
-        // Prepare Node Mocking (with fake lat/lon pairs)
-        when(nodeService.getPointByNodeId(1)).thenReturn(PointFactory.getJtsInstance(10.0, 11.0, 0.0));
-        when(nodeService.getPointByNodeId(2)).thenReturn(PointFactory.getJtsInstance(10.0, 12.0, 0.0));
-        when(nodeService.getPointByNodeId(3)).thenReturn(PointFactory.getJtsInstance(10.0, 13.0, 0.0));
-        when(nodeService.getPointByNodeId(4)).thenReturn(PointFactory.getJtsInstance(10.0, 14.0, 0.0));
-        when(nodeService.getPointByNodeId(5)).thenReturn(PointFactory.getJtsInstance(10.0, 15.0, 0.0));
-        when(nodeService.getPointByNodeId(6)).thenReturn(PointFactory.getJtsInstance(10.0, 16.0, 0.0));
+    public void testGetNearestMarkerLocations() throws Exception {
 
         List<URL> imageList = new ArrayList<>();
         imageList.add(new URL("http://localhost:8080/"));
@@ -119,24 +115,31 @@ public class DefaultLocationServiceTest {
         clueList.add(2);
 
         // Prepare fake locations
-        List<Location> locationList = new ArrayList<>();
+        List<Location.Builder> locationList = new ArrayList<>();
         Location.Builder builder = Location.Builder.builder();
-        for (Integer id = 1; id<7; id++) {
+        for (Integer id = 1; id<=6; id++) {
+            LocationType.Builder locationTypeBuilderFromService =
+                    LocationType.Builder.from(locationTypeProvider.get())
+                    .withId(id);
+            LocationType locationTypeToMatch = locationTypeBuilderFromService.build();
+            when(locationTypeService.getById(id)).thenReturn(locationTypeToMatch);
+            when(nodeService.getPointByNodeId(id)).thenReturn(PointFactory.getJtsInstance(10.0, 11.0, 0.0));
+
             locationList.add(
                     builder.withId(id)
                             .withNodeId(id)
                             .withName("Test Loc " + id)
                             .withDescription("Description for Loc " + id)
-                            .withLocationType(LocationType.BAR)
+                            .withLocationTypeId(id)
                             .withImageUrls(imageList)
                             .withClueIds(clueList)
-                            .build());
+            );
         }
-        when(locationStore.getLocations()).thenReturn(locationList);
+        when(locationStore.getLocationsBuilders()).thenReturn(locationList);
 
         assertNotNull(toTest);
 
-        String actual = toTest.getNearestLocations(-10.0, 12.7);
+        String actual = toTest.getNearestMarkerLocations(-10.0, 12.7);
         LOGGER.debug(actual);
     }
 
@@ -149,7 +152,7 @@ public class DefaultLocationServiceTest {
         LatLon latLonWithoutId = new LatLon(lat, lon);
         LatLon latLon = new LatLon(lat, lon).setId(newLatLonId);
         Location expected = Location.Builder.builder()
-                .withLocationType(LocationType.BIKE_SHARE)
+                .withLocationType(locationTypeProvider.get())
                 .withLatLon(latLon)
                 .build();
 
@@ -157,10 +160,12 @@ public class DefaultLocationServiceTest {
         when(latLonService.addNew(latLonWithoutId)).thenReturn(latLon);
         when(locationStore.addNew(any(Location.Builder.class))).thenReturn(newLatLonId);
         when(locationStore.getLocationById(newLatLonId)).thenReturn(expected);
+        when(locationTypeService.getByName(expected.getLocationType().getName()))
+                .thenReturn(expected.getLocationType());
 
         /* make call */
         Location actual;
-        actual = toTest.proposeLocation(latLon, LocationType.BIKE_SHARE);
+        actual = toTest.proposeLocation(latLon, locationTypeProvider.get().getName());
 
         /* verify results */
         assertNotNull(actual);

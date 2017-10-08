@@ -109,6 +109,7 @@ public class TokenServiceJwt implements TokenService {
     public void validateToken(String token) {
         DecodedJWT jwt = verifyToken(token);
         String jtiId = jwt.getId();
+        // TODO: CA-315 Decide if we want to configure the JTI check; currently commented out.
         // jtiService.validateId(jtiId);
 
         Claim emailClaim = jwt.getHeaderClaim(CustomClaim.EMAIL);

@@ -153,7 +153,8 @@ public class TokenServiceJwtTest {
         toTest.validateToken(tokenMap.get(TokenType.PRINCIPAL_NOT_FOUND));
     }
 
-    @Test(expectedExceptions = RuntimeException.class)
+    // TODO: CA-315 Decide if we want to configure the JTI check; currently commented out.
+//    @Test(expectedExceptions = RuntimeException.class)
     public void testValidateToken_badJti() throws Exception {
         toTest.validateToken(tokenMap.get(TokenType.INVALID_JTI));
     }

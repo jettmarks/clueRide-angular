@@ -21,6 +21,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.testng.SkipException;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
 import com.clueride.domain.account.member.Member;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -33,26 +38,37 @@ public class JpaUtilTest {
     private EntityManagerFactory entityManagerFactory;
 
     // TODO: Is there a better way to "run" these tests without needing an instance of the DB?
+    private boolean dbAvailable = false;
 
-//    @BeforeClass
+    @BeforeClass
     public void setUp() {
-        entityManagerFactory = JpaUtil.getEntityManagerFactory();
-        System.out.println("Entity Manager opened");
+        if (dbAvailable) {
+            entityManagerFactory = JpaUtil.getEntityManagerFactory();
+            System.out.println("Entity Manager opened");
+        }
     }
 
-//    @AfterClass
+    @AfterClass
     public void tearDown() {
-        entityManagerFactory.close();
-        System.out.println("Entity Manager closed");
+        if (dbAvailable) {
+            entityManagerFactory.close();
+            System.out.println("Entity Manager closed");
+        }
     }
 
-//    @Test
+    @Test
     public void testJpaUtil() {
+        if (!dbAvailable) {
+            throw new SkipException("DB Not Available -- skipping");
+        }
         assertNotNull(entityManagerFactory);
     }
 
-//    @Test
+    @Test
     public void testJapUtil_readTable() {
+        if (!dbAvailable) {
+            throw new SkipException("DB Not Available -- skipping");
+        }
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
