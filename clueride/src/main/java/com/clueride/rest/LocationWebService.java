@@ -50,12 +50,12 @@ import com.clueride.service.LocationService;
  */
 @Secured
 @Path("location")
-public class Location {
+public class LocationWebService {
     private final LocationService locationService;
     private final LocationTypeService locationTypeService;
 
     @Inject
-    public Location(
+    public LocationWebService(
             LocationService locationService,
             LocationTypeService locationTypeService
     ) {

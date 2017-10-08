@@ -26,6 +26,7 @@ import javax.persistence.EntityManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
+import com.clueride.domain.user.image.Image;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.loctype.LocationType;
 import com.clueride.infrastructure.JpaUtil;
@@ -84,5 +85,35 @@ public class DomainGuiceProviderModule extends AbstractModule {
                 .build();
     }
 
+    /**
+     * Image Builder appears similar to what comes out of the Store/DAO.
+     * @return partially constructed Image.Builder instance.
+     */
+    @Provides
+    private Image.Builder provideImageBuilder() {
+        String urlString = "https://images.clueride.com/img/4/1.jpg";
+        return Image.Builder.builder()
+                .withId(10)
+                .withUrlString(urlString);
+    }
+
+    /**
+     * Provides fully-constructed instance based on the provided imageBuilder.
+     * @param imageBuilder contains data similar to what comes out of DataStore.
+     * @return fully-constructed immutable instance.
+     */
+    @Provides
+    private Image provideImage(
+           Image.Builder imageBuilder
+    ) {
+        try {
+            return imageBuilder
+                    .withUrl(new URL(imageBuilder.getUrlString()))
+                    .build();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }

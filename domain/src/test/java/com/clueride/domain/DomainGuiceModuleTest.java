@@ -18,15 +18,31 @@
 package com.clueride.domain;
 
 import com.google.inject.AbstractModule;
+import org.mockito.Mock;
+
+import com.clueride.domain.user.image.ImageStore;
+import com.clueride.domain.user.image.ImageStoreJpa;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Guice Bindings for the Testing of the Domain Module.
  */
 public class DomainGuiceModuleTest extends AbstractModule {
+    private boolean runWithDB = ("true".equals(System.getProperty("db.available")));
+
+    @Mock
+    private ImageStore imageStore;
 
     @Override
     protected void configure() {
+        initMocks(this);
+
         install(new DomainGuiceProviderModule());
+        if (runWithDB) {
+            bind(ImageStore.class).to(ImageStoreJpa.class);
+        } else {
+            bind(ImageStore.class).toInstance(imageStore);
+        }
     }
 
 }
