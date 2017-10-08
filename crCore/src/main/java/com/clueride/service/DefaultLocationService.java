@@ -40,12 +40,14 @@ import com.clueride.dao.ImageStore;
 import com.clueride.dao.PathStore;
 import com.clueride.domain.Course;
 import com.clueride.domain.user.Path;
+import com.clueride.domain.user.image.ImageService;
 import com.clueride.domain.user.latlon.LatLon;
 import com.clueride.domain.user.latlon.LatLonService;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.location.LocationStore;
 import com.clueride.domain.user.loctype.LocationType;
 import com.clueride.domain.user.loctype.LocationTypeService;
+import com.clueride.domain.user.place.ScoredLocationService;
 import com.clueride.infrastructure.Jpa;
 import com.clueride.io.PojoJsonUtil;
 import com.clueride.service.builder.LocationBuilder;
@@ -65,6 +67,8 @@ public class DefaultLocationService implements LocationService {
     private final PathStore pathStore;
     private final LatLonService latLonService;
     private final LocationTypeService locationTypeService;
+    private final ScoredLocationService scoredLocationService;
+    private final ImageService imageService;
 
     @Inject
     public DefaultLocationService(
@@ -76,7 +80,9 @@ public class DefaultLocationService implements LocationService {
             NodeService nodeService,
             PathStore pathStore,
             LatLonService latLonService,
-            LocationTypeService locationTypeService
+            LocationTypeService locationTypeService,
+            ScoredLocationService scoredLocationService,
+            ImageService imageService
     ) {
         this.clueStore = clueStore;
         this.courseStore = courseStore;
@@ -87,6 +93,8 @@ public class DefaultLocationService implements LocationService {
         this.pathStore = pathStore;
         this.latLonService = latLonService;
         this.locationTypeService = locationTypeService;
+        this.scoredLocationService = scoredLocationService;
+        this.imageService = imageService;
     }
 
     @Override
@@ -125,15 +133,16 @@ public class DefaultLocationService implements LocationService {
         LOGGER.info("Retrieving Nearest Marker Locations for (" + lat + ", " + lon + ")");
         List<Location> locationList = new ArrayList<>();
         for (Location.Builder builder : locationStoreJpa.getLocationsBuilders()) {
-            LatLon latLon = latLonService.getLatLonById(builder.getNodeId());
-            LocationType locationType = locationTypeService.getById(builder.getLocationTypeId());
+            /* Assemble the derived transient fields. */
+            builder.withLatLon(latLonService.getLatLonById(builder.getNodeId()));
+            builder.withLocationType(locationTypeService.getById(builder.getLocationTypeId()));
+            builder.withFeaturedImage(imageService.getImageUrl(builder.getFeaturedImageId()));
 
-            locationList.add(
-                    builder.withLatLon(latLon)
-                            .withLocationType(locationType)
-                            .build()
-            );
+            /* Last thing to assemble; after other pieces have been put into place. */
+            builder.withReadinessLevel(scoredLocationService.calculateReadinessLevel(builder));
+            locationList.add(builder.build());
         }
+        // TODO: consider letting Jackson convert automatically
         return getJsonStringForLocationList(locationList);
     }
 

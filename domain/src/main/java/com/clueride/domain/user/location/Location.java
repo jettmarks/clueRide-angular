@@ -39,12 +39,11 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.clueride.domain.Step;
-import com.clueride.domain.user.LocationLevel;
+import com.clueride.domain.user.ReadinessLevel;
 import com.clueride.domain.user.latlon.LatLon;
 import com.clueride.domain.user.loctype.LocationType;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedLocationIdProvider;
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -62,6 +61,7 @@ public class Location implements Step {
     private final URL featuredImage;
     private final Integer googlePlaceId;
     private final LatLon latLon;
+    private final ReadinessLevel readinessLevel;
     private List<Integer> clueIds;
     private final List<URL> imageUrls;
     private final Integer locationGroupId;
@@ -78,6 +78,7 @@ public class Location implements Step {
         id = builder.getId();
         nodeId = builder.getNodeId();
         latLon = builder.getLatLon();
+        readinessLevel = builder.getReadinessLevel();
 
         // If any of these are missing, we're at the Draft level
         name = builder.getName();
@@ -200,37 +201,8 @@ public class Location implements Step {
      * Determines progress against criteria described here: http://bikehighways.wikidot.com/clueride-location-details
      * @return Readiness level based on completeness of the fields for this object.
      */
-    public LocationLevel getReadinessLevel() {
-        /* Emptiness across all of these makes it a NODE. */
-        if (isNullOrEmpty(name)
-                && isNullOrEmpty(description)
-                && featuredImage == null
-                && locationType.getId() == 0
-        ) {
-            return LocationLevel.NODE;
-        }
-
-        /* Handle anything that could make this a draft. */
-        if (isNullOrEmpty(name)
-                || isNullOrEmpty(description)
-                || featuredImage == null
-                || locationType.getId() == 0
-        ) {
-            return LocationLevel.DRAFT;
-        }
-
-        /* If we're missing the Clues, we're just a Place. */
-        if (clueIds.size() == 0) {
-            return LocationLevel.PLACE;
-        }
-
-        /* If everything else is defined except our Google Place ID, we're an Attraction. */
-        if (googlePlaceId == null) {
-            return LocationLevel.ATTRACTION;
-        } else {
-            return LocationLevel.FEATURED;
-        }
-
+    public ReadinessLevel getReadinessLevel() {
+        return readinessLevel;
     }
 
     public Integer getGooglePlaceId() {
@@ -317,6 +289,9 @@ public class Location implements Step {
         @Transient
         private String establishment;
 
+        @Transient
+        private ReadinessLevel readinessLevel;
+
         public Builder() {
             idProvider = new MemoryBasedLocationIdProvider();
         }
@@ -397,6 +372,11 @@ public class Location implements Step {
         public Builder withLocationType(LocationType locationType) {
             this.locationType = locationType;
             this.locationTypeId = locationType.getId();
+            return this;
+        }
+
+        public Builder withReadinessLevel(ReadinessLevel readinessLevel) {
+            this.readinessLevel = readinessLevel;
             return this;
         }
 
@@ -497,6 +477,15 @@ public class Location implements Step {
             return this;
         }
 
+        public Integer getFeaturedImageId() {
+            return featuredImageId;
+        }
+
+        public Builder withFeaturedImageId(int imageId) {
+            this.featuredImageId = imageId;
+            return this;
+        }
+
         public Integer getGooglePlaceId() {
             return googlePlaceId;
         }
@@ -518,6 +507,10 @@ public class Location implements Step {
                     .withImageUrls(location.imageUrls)
 //                    .withEstablishment(Optional.<Establishment>fromNullable(location.establishment))
             ;
+        }
+
+        public ReadinessLevel getReadinessLevel() {
+            return readinessLevel;
         }
     }
 

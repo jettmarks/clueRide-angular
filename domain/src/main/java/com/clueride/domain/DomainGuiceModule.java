@@ -21,6 +21,10 @@ import com.google.inject.AbstractModule;
 
 import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.account.member.MemberStoreJpa;
+import com.clueride.domain.user.image.ImageService;
+import com.clueride.domain.user.image.ImageServiceImpl;
+import com.clueride.domain.user.image.ImageStore;
+import com.clueride.domain.user.image.ImageStoreJpa;
 import com.clueride.domain.user.latlon.LatLonService;
 import com.clueride.domain.user.latlon.LatLonServiceImpl;
 import com.clueride.domain.user.latlon.LatLonStore;
@@ -29,6 +33,8 @@ import com.clueride.domain.user.loctype.LocationTypeService;
 import com.clueride.domain.user.loctype.LocationTypeServiceImpl;
 import com.clueride.domain.user.loctype.LocationTypeStore;
 import com.clueride.domain.user.loctype.LocationTypeStoreJpa;
+import com.clueride.domain.user.place.ScoredLocationService;
+import com.clueride.domain.user.place.ScoredLocationServiceImpl;
 
 /**
  * Guice Bindings for the Domain module.
@@ -39,11 +45,14 @@ public class DomainGuiceModule extends AbstractModule {
         install(new DomainGuiceProviderModule());
 
         /* Bindings for Application use. */
+        bind(ImageService.class).to(ImageServiceImpl.class);
+        bind(ImageStore.class).to(ImageStoreJpa.class);
         bind(LatLonStore.class).to(LatLonStoreJpa.class);
         bind(LatLonService.class).to(LatLonServiceImpl.class);
         bind(LocationTypeService.class).to(LocationTypeServiceImpl.class);
         bind(LocationTypeStore.class).to(LocationTypeStoreJpa.class);
         bind(MemberStore.class).to(MemberStoreJpa.class);
+        bind(ScoredLocationService.class).to(ScoredLocationServiceImpl.class);
     }
 
 }

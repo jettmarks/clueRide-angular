@@ -22,7 +22,7 @@ package com.clueride.domain.user;
  *
  * See http://bikehighways.wikidot.com/clueride-location-details for business definitions.
  */
-public enum LocationLevel {
+public enum ReadinessLevel {
     NODE,
     ISSUE,
     DRAFT,
