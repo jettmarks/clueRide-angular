@@ -28,7 +28,7 @@ import com.google.common.collect.ImmutableList;
 import com.clueride.dao.JsonNetworkStore;
 import com.clueride.dao.JsonNodeStore;
 import com.clueride.domain.dev.Segment;
-import com.clueride.domain.user.Path;
+import com.clueride.domain.user.path.Path;
 import com.clueride.feature.Edge;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedPathIdProvider;

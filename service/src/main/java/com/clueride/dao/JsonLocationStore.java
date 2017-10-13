@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.location.LocationStore;
+import com.clueride.io.PojoJsonService;
 import com.clueride.io.PojoJsonUtil;
 
 @Singleton
@@ -41,21 +41,27 @@ public class JsonLocationStore implements LocationStore {
 
     /** Reference to the Nodes which support the Locations. */
     private final NodeStore nodeStore;
-    private final Provider<ClueStore> clueStoreProvider;
+    private final PojoJsonService pojoJsonService;
 
+    private final ClueStore clueStore;
     private static Map<Integer,Location> locationMap = new HashMap<>();
     private static List<Location> locations;
     private static boolean firstTimeThrough = true;
 
     @Inject
-    public JsonLocationStore(NodeStore nodeStore, Provider<ClueStore> clueStoreProvider) {
+    public JsonLocationStore(
+            NodeStore nodeStore,
+            PojoJsonService pojoJsonService,
+            ClueStore clueStore
+    ) {
         this.nodeStore = nodeStore;
-        this.clueStoreProvider = clueStoreProvider;
+        this.pojoJsonService = pojoJsonService;
+        this.clueStore = clueStore;
         loadAll();
     }
 
     private void loadAll() {
-        locations = PojoJsonUtil.loadLocations();
+        locations = pojoJsonService.loadLocations();
         reIndex(locations);
     }
 
@@ -82,7 +88,7 @@ public class JsonLocationStore implements LocationStore {
 
         // Prevent Circular Dependency by waiting until all classes are constructed
         if (!firstTimeThrough) {
-            clueStoreProvider.get().reIndex();
+            clueStore.reIndex();
         }
         firstTimeThrough = false;
     }

@@ -22,11 +22,11 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 
 import com.clueride.dao.PathStore;
-import com.clueride.domain.user.Path;
+import com.clueride.domain.user.path.Path;
 import com.clueride.service.builder.PathBuilder;
 
 /**
- * TODO: Description.
+ * Implementation of the PathService interface.
  */
 public class PathServiceImpl implements PathService {
     private static final Logger LOGGER = Logger.getLogger(PathServiceImpl.class);

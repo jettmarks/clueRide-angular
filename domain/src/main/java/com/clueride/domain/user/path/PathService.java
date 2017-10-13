@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jett Marks
+ * Copyright 2017 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 1/16/16.
+ * Created by jett on 10/12/17.
  */
-package com.clueride.service;
+package com.clueride.domain.user.path;
 
-import com.clueride.domain.user.path.Path;
+import java.util.List;
 
 /**
- * Evaluations of Network Connectivity outside of a Geometry-dependent level.
+ * Defines operations on Paths.
  */
-public interface NetworkEval {
+public interface PathService {
     /**
-     * Start at the Starting Node and walk the segment/edges in sequence to make
-     * sure they end at the Ending Node.
-     * @param path - Path to be evaluated.
-     * @throws IllegalStateException if there is a gap in the sequence.
+     * Given an ID, retrieve the Path instance matching the ID.
+     * @param id unique identifier for the Path.
+     * @return fully-populated Path instance matching the ID.
      */
-    void checkPathEdgesFromStartToEnd(Path path);
+    Path getById(Integer id);
+
+    /**
+     * Retrieve all Paths available to the system.
+     * @return List of all Paths.
+     */
+    List<Path> getAll();
+
 }

@@ -17,57 +17,66 @@
  */
 package com.clueride.dao;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.domain.GamePath;
-import com.clueride.domain.user.Path;
-import com.clueride.service.NetworkEval;
-import com.clueride.service.NetworkEvalImpl;
+import com.clueride.domain.user.path.Path;
+import com.clueride.io.PojoJsonService;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 /**
  * Exercises the JsonPathStoreTest class.
  */
+@Guice(modules=ServiceGuiceModuleTest.class)
 public class JsonPathStoreTest {
     /** Instance under test. */
     private PathStore toTest;
 
-    private GamePath.Builder builder;
-    private Injector injector;
-    private NetworkEval networkEval;
+    private GamePath.Builder gamePathBuilder;
 
-    private Integer startNodeId = 30;
-    private Integer endNodeId = 8;
+    @Inject
+    private PojoJsonService pojoJsonService;
+
+    @Inject
+    private Provider<JsonPathStore> toTestProvider;
+
+    @Inject
+    private Provider<GamePath.Builder> gamePathBuilderProvider;
 
     @BeforeMethod
     public void setUp() throws Exception {
         initMocks(this);
-        injector = Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(NodeStore.class).to(JsonNodeStore.class);
-                bind(NetworkStore.class).to(JsonNetworkStore.class);
-                bind(NetworkEval.class).to(NetworkEvalImpl.class);
-                bind(PathStore.class).to(JsonPathStore.class);
-            }
-        });
-        networkEval = injector.getInstance(NetworkEval.class);
+        reset(pojoJsonService);
+        gamePathBuilder = gamePathBuilderProvider.get();
 
-        builder = getBuilder();
+        /* setup data */
+        List<Path> paths = new ArrayList<>();
+        paths.add(gamePathBuilder.build());
+
+        /* train mocks */
+        when(pojoJsonService.loadPaths()).thenReturn(paths);
+
+        /* TODO: Would prefer populating outside the constructor so we can get an instance and then train the mock. */
+        toTest = toTestProvider.get();
+        assertNotNull(toTest);
     }
 
     @Test
     public void testAddNew() throws Exception {
-        Path path = builder.build();
-        toTest = injector.getInstance(PathStore.class);
-        assertNotNull(toTest);
+        Path path = gamePathBuilder.build();
+        toTest = toTestProvider.get();
 
         Integer id = toTest.addNew(path);
         assertNotNull(id);
@@ -77,17 +86,6 @@ public class JsonPathStoreTest {
         String asJson = objectMapper.writeValueAsString(path);
         System.out.println("As JSON: ");
         System.out.println(asJson);
-    }
-
-    @Test
-    public void testLoadAll() throws Exception {
-        int expected = 5;
-        toTest = injector.getInstance(PathStore.class);
-        assertNotNull(toTest);
-
-        Path actual = toTest.getPathById(2);
-        assertNotNull(actual);
-        assertEquals(actual.getEdgeIds().size(), expected, "Right number of Edges");
     }
 
     @Test
@@ -105,14 +103,4 @@ public class JsonPathStoreTest {
 
     }
 
-    private GamePath.Builder getBuilder() {
-        return GamePath.Builder.getBuilder(networkEval)
-                .withStartNodeId(startNodeId)
-                .withEndNodeId(endNodeId)
-                .addEdgeId(39)
-                .addEdgeId(43)
-                .addEdgeId(79)
-                .addEdgeId(78)
-                .addEdgeId(87);
-    }
 }

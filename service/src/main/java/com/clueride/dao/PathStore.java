@@ -19,7 +19,7 @@ package com.clueride.dao;
 
 import java.io.IOException;
 
-import com.clueride.domain.user.Path;
+import com.clueride.domain.user.path.Path;
 
 /**
  * Persistance interface for {@link Path} instances.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jett Marks
+ * Copyright 2017 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 1/15/16.
+ * Created by jett on 10/10/17.
  */
-package com.clueride.domain;
+package com.clueride.io;
 
+import java.util.List;
+
+import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.path.Path;
 
 /**
- * "Marker" interface for Locations and Paths which helps keep order.
- *
- * The next Step at a Location will be a {@link Path} (or choice of Paths).  The next Step while
- * on a Path will be arrival at the next Location.
- *
- * This allows an ordered list of Steps without necessarily worrying about whether the next
- * one comes from the Location List or the Path List, or whatever else we might want to
- * stick in a {@link Course}.
+ * Defines operations for Json Pojos.
  */
-public interface Step {
+public interface PojoJsonService {
+    /**
+     * Knows how to retrieve the Location data from JSON files/stores on disk.
+     * @return List of all Locations in the store.
+     */
+    List<Location> loadLocations();
 
+    /**
+     * Knows how to retrieve the Path data from JSON files/stores on disk.
+     * @return List of all Paths in the store.
+     */
+    List<Path> loadPaths();
 }

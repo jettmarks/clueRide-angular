@@ -23,6 +23,8 @@ import com.clueride.dao.JsonNetworkStore;
 import com.clueride.dao.JsonNodeStore;
 import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
+import com.clueride.io.PojoJsonService;
+import com.clueride.io.PojoJsonUtil;
 
 /**
  * Bindings for GeoTools Guice Module.
@@ -32,5 +34,6 @@ public class GeoToolsGuiceModule extends AbstractModule {
     protected void configure() {
         bind(NodeStore.class).to(JsonNodeStore.class);
         bind(NetworkStore.class).to(JsonNetworkStore.class);
+        bind(PojoJsonService.class).to(PojoJsonUtil.class);
     }
 }

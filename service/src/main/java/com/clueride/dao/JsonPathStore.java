@@ -28,8 +28,9 @@ import javax.inject.Singleton;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
-import com.clueride.domain.user.Path;
+import com.clueride.domain.user.path.Path;
 import com.clueride.io.JsonStoreType;
+import com.clueride.io.PojoJsonService;
 import com.clueride.io.PojoJsonUtil;
 
 /**
@@ -40,18 +41,20 @@ public class JsonPathStore implements PathStore {
 
     /** In-memory references to our known Paths. */
     private Map<Integer,Path> pathMap = new HashMap<>();
+    private final PojoJsonService pojoJsonService;
 
     @Inject
-    public JsonPathStore() {
+    public JsonPathStore(PojoJsonService pojoJsonService) {
+        this.pojoJsonService = pojoJsonService;
         loadAll();
     }
 
     private void loadAll() {
-        List<Path> paths = PojoJsonUtil.loadPaths();
+        List<Path> paths = pojoJsonService.loadPaths();
         for (Path path : paths) {
             Integer id = path.getId();
             pathMap.put(id, path);
-            // TODO: Validate the Edges against the Edge store
+            // TODO: Validate the Edges against the Edge store -- In the Service layer
         }
     }
 
@@ -72,7 +75,7 @@ public class JsonPathStore implements PathStore {
     }
 
     private void validate(Path path) {
-        // TODO: Populate this (NOTE: much of the validation should occur in the Builder)
+        // TODO: Populate this (NOTE: much of the validation should occur in a service).
     }
 
     @Override
