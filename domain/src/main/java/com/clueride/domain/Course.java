@@ -19,8 +19,8 @@ package com.clueride.domain;
 
 import java.util.List;
 
-import com.clueride.domain.user.Path;
 import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.path.Path;
 
 /**
  * Representation of a Course, including an ordered list of Locations and the Paths

@@ -1,5 +1,5 @@
-/*
- * Copyright 2016 Jett Marks
+package com.clueride.service;/*
+ * Copyright 2017 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 1/16/16.
+ * Created by jett on 10/12/17.
  */
-package com.clueride.service;
 
-import com.clueride.domain.user.path.Path;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
- * Evaluations of Network Connectivity outside of a Geometry-dependent level.
+ * TODO: Exercises the PathServiceImplTest class.
  */
-public interface NetworkEval {
-    /**
-     * Start at the Starting Node and walk the segment/edges in sequence to make
-     * sure they end at the Ending Node.
-     * @param path - Path to be evaluated.
-     * @throws IllegalStateException if there is a gap in the sequence.
-     */
-    void checkPathEdgesFromStartToEnd(Path path);
+public class PathServiceImplTest {
+    @BeforeMethod
+    public void setUp() throws Exception {
+    }
+
+    @Test
+    public void testGetPathMetaData() throws Exception {
+    }
+
+    @Test
+    public void testGetPathGeometry() throws Exception {
+    }
+
 }

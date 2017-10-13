@@ -22,8 +22,8 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-import com.clueride.domain.user.Path;
 import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.path.Path;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedCourseIdProvider;
 

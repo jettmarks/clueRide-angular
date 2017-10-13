@@ -38,9 +38,11 @@ import static org.testng.Assert.assertTrue;
  */
 public class PojoJsonUtilTest {
 
+    private PojoJsonService toTest = new PojoJsonUtil();
+
     @BeforeMethod
     public void setUp() throws Exception {
-
+        toTest = new PojoJsonUtil();
     }
 
     @Test
@@ -50,7 +52,7 @@ public class PojoJsonUtilTest {
 
     @Test
     public void testLoadLocations() throws Exception {
-        List<Location> locations = PojoJsonUtil.loadLocations();
+        List<Location> locations = toTest.loadLocations();
         assertNotNull(locations);
         assertTrue(locations.size() > 0);
     }

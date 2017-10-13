@@ -53,10 +53,12 @@ import com.clueride.domain.dev.NewNodeProposal;
 import com.clueride.domain.dev.TrackImpl;
 import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.user.Badge;
+import com.clueride.domain.user.image.ImageService;
 import com.clueride.domain.user.latlon.LatLonService;
 import com.clueride.domain.user.latlon.LatLonStore;
 import com.clueride.domain.user.location.LocationStore;
 import com.clueride.domain.user.loctype.LocationTypeService;
+import com.clueride.domain.user.place.ScoredLocationService;
 import com.clueride.feature.Edge;
 import com.clueride.geo.score.EasyTrack;
 import com.clueride.gpx.TrackUtil;
@@ -92,6 +94,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
 
     @Mock
     private CourseStore courseStore;
+
+    @Mock
+    private ImageService imageService;
 
     @Mock
     private ImageStore imageStore;
@@ -139,6 +144,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
     private RecommendationService recommendationService;
 
     @Mock
+    private ScoredLocationService scoredLocationService;
+
+    @Mock
     private TokenService tokenService;
 
     @Override
@@ -153,6 +161,7 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(ConfigService.class).to(ConfigServiceImpl.class);
         bind(CourseStore.class).toInstance(courseStore);
         bind(ImageStore.class).toInstance(imageStore);
+        bind(ImageService.class).toInstance(imageService);
         bind(InvitationService.class).toInstance(invitationService);
         bind(JtiService.class).to(JtiServiceImpl.class);
         bind(LatLonService.class).toInstance(latLonService);
@@ -166,12 +175,13 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(MemberStore.class).toInstance(memberStore);
         bind(NodeService.class).toInstance(nodeService);
         bind(NodeStore.class).toInstance(nodeStore);
+        bind(OutingService.class).to(OutingServiceImpl.class);
         bind(OutingStore.class).toInstance(outingStore);
         bind(PathStore.class).toInstance(pathStore);
         bind(PrincipalService.class).toInstance(principalService);
         bind(RecommendationService.class).toInstance(recommendationService);
+        bind(ScoredLocationService.class).toInstance(scoredLocationService);
         bind(TokenService.class).toInstance(tokenService);
-        bind(OutingService.class).to(OutingServiceImpl.class);
     }
 
     @Provides

@@ -26,8 +26,8 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
-import com.clueride.domain.user.Path;
 import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.path.Path;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedCourseIdProvider;
 import static org.mockito.MockitoAnnotations.initMocks;

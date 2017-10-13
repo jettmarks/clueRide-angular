@@ -25,50 +25,61 @@ import java.util.List;
 
 import javax.inject.Provider;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
+import com.clueride.domain.dev.Node;
 import com.clueride.domain.user.location.Location;
-import com.clueride.domain.user.location.LocationStore;
 import com.clueride.domain.user.loctype.LocationType;
+import com.clueride.io.PojoJsonService;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 /**
  * Exercises an injected instance of JsonLocationStore.
  */
+@Guice(modules=ServiceGuiceModuleTest.class)
 public class JsonLocationStoreTest {
-    private Location.Builder builder;
-    private Injector injector;
+    private JsonLocationStore toTest;
+
+    @Inject
+    private Location.Builder locationBuilder;
 
     @Inject
     private Provider<LocationType> locationTypeProvider;
 
+    @Inject
+    private Provider<JsonLocationStore> toTestProvider;
+
+    @Inject
+    private PojoJsonService pojoJsonService;
+
+    @Inject
+    private NodeStore nodeStore;
+
+    @Inject
+    private Provider<Node> nodeProvider;
+
     @BeforeMethod
     public void setUp() throws MalformedURLException {
-        /* TODO: CA-309: Move this into the class-based config. */
-        injector = Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(NodeStore.class).to(JsonNodeStore.class);
-                bind(LocationStore.class).to(JsonLocationStore.class);
-            }
-        });
-        builder = getLocationBuilder();
+        List<Location> locations = new ArrayList<>();
+        Location location = locationBuilder.build();
+        locations.add(location);
+        when(pojoJsonService.loadLocations()).thenReturn(locations);
+        when(nodeStore.getNodeById(location.getNodeId())).thenReturn(nodeProvider.get());
+        toTest = toTestProvider.get();
+        assertNotNull(toTest);
     }
 
     @Test
     public void testAddNew() throws Exception {
-        Location location = builder.build();
-        LocationStore locationStore = injector.getInstance(LocationStore.class);
-        assertNotNull(locationStore);
+        Location location = locationBuilder.build();
 
-        Integer id = locationStore.addNew(location);
+        Integer id = toTest.addNew(location);
         assertNotNull(id);
 
         System.out.println("Location ID: " + id);
@@ -81,28 +92,27 @@ public class JsonLocationStoreTest {
     @Test(expectedExceptions = IllegalStateException.class)
     public void testAddNewBadNodeId() throws Exception {
         // Negative is allowed, but won't be found
-        builder.withNodeId(-1);
-        Location location = builder.build();
-        LocationStore locationStore = injector.getInstance(LocationStore.class);
+        locationBuilder.withNodeId(-1);
+        Location location = locationBuilder.build();
 
-        Integer id = locationStore.addNew(location);
+        Integer id = toTest.addNew(location);
         assertNotNull(id);
     }
 
     @Test
     public void testGetLocationById() throws Exception {
-        LocationStore locationStore = injector.getInstance(LocationStore.class);
-        assertNotNull(locationStore);
-
-        Integer id = 1;
-        Location location = locationStore.getLocationById(id);
+        Integer id = locationBuilder.getId();
+        List<Location> locations = new ArrayList<>();
+        locations.add(locationBuilder.build());
+        when(pojoJsonService.loadLocations()).thenReturn(locations);
+        Location location = toTest.getLocationById(id);
         assertNotNull(location);
         assertEquals(location.getId(), id);
     }
 
     @Test
     public void testGetLocations() throws Exception {
-        Collection<Location> locations = injector.getInstance(LocationStore.class).getLocations();
+        Collection<Location> locations = toTest.getLocations();
         assertNotNull(locations);
     }
 
@@ -119,13 +129,13 @@ public class JsonLocationStoreTest {
         expectedClues.add(1);
         expectedClues.add(2);
 
-        builder = Location.Builder.builder()
+        locationBuilder = Location.Builder.builder()
                 .withName(expectedName)
                 .withDescription(expectedDescription)
                 .withLocationType(expectedLocationType)
                 .withNodeId(expectedNodeId)
                 .withClueIds(expectedClues)
                 .withImageUrls(expectedImageUrls);
-        return builder;
+        return locationBuilder;
     }
 }

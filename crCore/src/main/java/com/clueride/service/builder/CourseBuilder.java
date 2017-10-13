@@ -27,7 +27,7 @@ import com.clueride.dao.NodeStore;
 import com.clueride.dao.PathStore;
 import com.clueride.domain.Course;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.user.Path;
+import com.clueride.domain.user.path.Path;
 import com.clueride.feature.Edge;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;

@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.domain.dev.Node;
-import com.clueride.domain.user.Path;
+import com.clueride.domain.user.path.Path;
 import com.clueride.feature.Edge;
 import static java.util.Objects.requireNonNull;
 

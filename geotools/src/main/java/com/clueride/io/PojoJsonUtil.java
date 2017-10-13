@@ -38,8 +38,8 @@ import com.clueride.domain.Outing;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.common.Builder;
 import com.clueride.domain.user.Clue;
-import com.clueride.domain.user.Path;
 import com.clueride.domain.user.location.Location;
+import com.clueride.domain.user.path.Path;
 import com.clueride.rest.dto.ClueRideState;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedClueIdProvider;
@@ -56,7 +56,7 @@ import com.clueride.service.MemoryBasedPathIdProvider;
  * - Repeated code
  * - Existing CA-266 ticket
  */
-public class PojoJsonUtil {
+public class PojoJsonUtil implements PojoJsonService {
     private static final Logger LOGGER = Logger.getLogger(PojoJsonUtil.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static IdProvider locationIdProvider = new MemoryBasedLocationIdProvider();
@@ -145,7 +145,7 @@ public class PojoJsonUtil {
                 + ".json");
     }
 
-    public static List<Location> loadLocations() {
+    public List<Location> loadLocations() {
         List<Location> locations = new ArrayList<>();
         File locationDirectory = new File(JsonStoreLocation.toString(JsonStoreType.LOCATION));
         for (File child : locationDirectory.listFiles(new FilenameFilter(){
@@ -204,7 +204,7 @@ public class PojoJsonUtil {
         return objectMapper.writeValueAsString(clueRideState);
     }
 
-    public static List<Path> loadPaths() {
+    public List<Path> loadPaths() {
         final JsonStoreType storeType = JsonStoreType.PATH;
         List<Path> paths = new ArrayList<>();
         File directory = new File(JsonStoreLocation.toString(storeType));

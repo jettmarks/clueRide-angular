@@ -15,7 +15,7 @@
  *
  * Created Oct 20, 2015
  */
-package com.clueride.domain.user;
+package com.clueride.domain.user.path;
 
 import java.util.List;
 import java.util.SortedSet;

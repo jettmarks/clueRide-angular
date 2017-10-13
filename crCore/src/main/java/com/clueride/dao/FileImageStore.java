@@ -17,12 +17,16 @@
  */
 package com.clueride.dao;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation of ImageStore that places the Image data into a file
@@ -38,6 +42,7 @@ import java.util.Map;
 public class FileImageStore implements ImageStore {
     private static final Logger LOGGER = Logger.getLogger(FileImageStore.class);
 
+    // TODO: CA-319 - remove testing dependency on this mount being present.
     private static final String BASE_DIR_STRING = "/media/crImg/img";
     private static final File BASE_DIR = new File(BASE_DIR_STRING);
     private Map<Integer,File> locationDirectories = new HashMap<>();
