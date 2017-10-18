@@ -93,7 +93,7 @@ public class LocationWebService {
     @Path("update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public void updateLocation(com.clueride.domain.user.location.Location location) {
+    public void updateLocation(com.clueride.domain.user.location.Location.Builder location) {
         locationService.updateLocation(location);
     }
 

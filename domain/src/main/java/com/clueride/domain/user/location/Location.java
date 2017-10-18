@@ -37,6 +37,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.clueride.domain.Step;
 import com.clueride.domain.user.ReadinessLevel;
@@ -131,8 +132,12 @@ public class Location implements Step {
      * Plays a role in helping select locations and categorizes them.
      * @return Enumeration of the type of Location.
      */
-    public LocationType getLocationType() {
-        return locationType;
+    public Integer getLocationTypeId() {
+        return locationType.getId();
+    }
+
+    public String getLocationTypeName() {
+        return locationType.getName();
     }
 
     /**
@@ -145,22 +150,6 @@ public class Location implements Step {
 
     public LatLon getLatLon() {
         return latLon;
-    }
-
-    @Override
-    public String toString() {
-        return "Location{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", locationType=" + locationType +
-                ", nodeId=" + nodeId +
-                ", clueIds=" + clueIds +
-                ", imageUrls=" + imageUrls +
-                ", locationGroupId=" + locationGroupId +
-                ", establishment=" + establishmentId +
-                ", tagScores=" + tagScores +
-                '}';
     }
 
     public Map<String, Optional<Double>> getTagScores() {
@@ -245,6 +234,10 @@ public class Location implements Step {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 
     /**
      * Knows how to assemble the parts of a Location.
@@ -263,9 +256,11 @@ public class Location implements Step {
 
         @Column(name="node_id") private Integer nodeId;
         @Column(name="featured_image_id") private Integer featuredImageId;
+
         @Transient
         private LocationType locationType;
-
+        @Transient
+        private String locationTypeName;
         @Transient
         private LatLon latLon;
         @Transient
@@ -276,10 +271,11 @@ public class Location implements Step {
         private URL featuredImage;
         @Transient
         private Integer googlePlaceId;
+
         @Transient
         private Integer establishmentId;
-
         @Column(name="location_group_id") private Integer locationGroupId;
+
         @Transient
         private Map<String,Optional<Double>> tagScores = new HashMap<>();
 
@@ -367,6 +363,15 @@ public class Location implements Step {
 
         public Integer getLocationTypeId() {
             return locationTypeId;
+        }
+
+        public Builder withLocationTypeName(String locationTypeName) {
+            this.locationTypeName = locationTypeName;
+            return this;
+        }
+
+        public String getLocationTypeName() {
+            return this.locationTypeName;
         }
 
         public Builder withLocationType(LocationType locationType) {
@@ -495,22 +500,25 @@ public class Location implements Step {
             return this;
         }
 
-        public void withLocation(Location location) {
-            this
-                    .withName(location.name)
-                    .withId(location.id)
-                    .withDescription(location.description)
-                    .withNodeId(location.nodeId)
-                    .withLocationType(location.locationType)
-                    .withLocationGroupId(location.locationGroupId)
-                    .withClueIds(location.clueIds)
-                    .withImageUrls(location.imageUrls)
-//                    .withEstablishment(Optional.<Establishment>fromNullable(location.establishment))
-            ;
-        }
-
         public ReadinessLevel getReadinessLevel() {
             return readinessLevel;
+        }
+
+        /**
+         * Accepts a partial set of information -- generally posted from REST API -- and updates this copy with the
+         * new fields.
+         * @param locationBuilder instance with the new info.
+         */
+        public void updateFrom(Builder locationBuilder) {
+            this
+                    .withName(locationBuilder.name)
+                    .withId(locationBuilder.id)
+                    .withDescription(locationBuilder.description)
+                    .withNodeId(locationBuilder.nodeId)
+                    .withLocationTypeId(locationBuilder.locationTypeId)
+                    .withLocationGroupId(locationBuilder.locationGroupId)
+                    .withClueIds(locationBuilder.clueIds)
+                    .withImageUrls(locationBuilder.imageUrls);
         }
     }
 

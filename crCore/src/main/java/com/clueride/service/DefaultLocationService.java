@@ -182,12 +182,11 @@ public class DefaultLocationService implements LocationService {
     }
 
     @Override
-    public void updateLocation(Location location) {
-        LOGGER.info("Updating Location " + location.toString());
-        Location.Builder existingLocationBuilder = locationStoreJpa.getLocationBuilderById(location.getId());
+    public void updateLocation(Location.Builder locationBuilder) {
+        LOGGER.info("Updating Location " + locationBuilder.toString());
+        Location.Builder existingLocationBuilder = locationStoreJpa.getLocationBuilderById(locationBuilder.getId());
         LOGGER.info("Found matching Location " + existingLocationBuilder.toString());
-        // TODO: With Location?
-        existingLocationBuilder.withLocation(location);
+        existingLocationBuilder.updateFrom(locationBuilder);
         validateUpdatedLocationBuilder(existingLocationBuilder);
         locationStoreJpa.update(existingLocationBuilder);
     }
