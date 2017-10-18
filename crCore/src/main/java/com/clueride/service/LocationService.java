@@ -83,7 +83,7 @@ public interface LocationService {
      * matching ID.
      * @param location - com.clueride.rest.dto.Location instance from JSON.
      */
-    void updateLocation(Location location);
+    void updateLocation(Location.Builder location);
 
     /**
      * Most Locations will be against a Node that has been confirmed to be on the network, but

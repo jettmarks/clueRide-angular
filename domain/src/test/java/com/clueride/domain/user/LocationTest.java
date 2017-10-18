@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 
 import com.clueride.domain.DomainGuiceModuleTest;
 import com.clueride.domain.user.location.Location;
-import com.clueride.domain.user.loctype.LocationType;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -42,17 +41,12 @@ public class LocationTest {
     @Inject
     private Provider<Location.Builder> toTestProvider;
 
-    // Test values
-    private LocationType expectedLocationType;
-
     @BeforeMethod
     public void setUp() throws Exception {
         builder = toTestProvider.get();
 
         toTest = builder.build();
-        expectedLocationType = toTest.getLocationType();
         assertNotNull(toTest);
-        assertNotNull(expectedLocationType);
     }
 
     @Test

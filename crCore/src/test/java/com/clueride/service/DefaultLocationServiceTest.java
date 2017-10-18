@@ -151,8 +151,9 @@ public class DefaultLocationServiceTest {
         Integer newLatLonId = 19;
         LatLon latLonWithoutId = new LatLon(lat, lon);
         LatLon latLon = new LatLon(lat, lon).setId(newLatLonId);
+        LocationType expectedLocationType = locationTypeProvider.get();
         Location expected = Location.Builder.builder()
-                .withLocationType(locationTypeProvider.get())
+                .withLocationType(expectedLocationType)
                 .withLatLon(latLon)
                 .build();
 
@@ -160,8 +161,8 @@ public class DefaultLocationServiceTest {
         when(latLonService.addNew(latLonWithoutId)).thenReturn(latLon);
         when(locationStore.addNew(any(Location.Builder.class))).thenReturn(newLatLonId);
         when(locationStore.getLocationById(newLatLonId)).thenReturn(expected);
-        when(locationTypeService.getByName(expected.getLocationType().getName()))
-                .thenReturn(expected.getLocationType());
+        when(locationTypeService.getByName(expected.getLocationTypeName()))
+                .thenReturn(expectedLocationType);
 
         /* make call */
         Location actual;
