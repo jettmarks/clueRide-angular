@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.persistence.NoResultException;
 
 import com.google.inject.Inject;
 
@@ -57,9 +58,16 @@ public class MemberServiceImpl implements MemberService {
         try {
             internetAddress = new InternetAddress(email);
         } catch (AddressException e) {
-            throw new RuntimeException("Could not parse supplied Email", e);
+            throw new RuntimeException("Invalid format for Email", e);
         }
-        return memberStore.getMemberByEmail(internetAddress);
+
+        Member member;
+        try {
+            member = memberStore.getMemberByEmail(internetAddress);
+        } catch (NoResultException e) {
+            throw new RuntimeException("Unable to find member with account " + email, e);
+        }
+        return member;
     }
 
     @Override

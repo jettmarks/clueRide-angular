@@ -76,6 +76,7 @@ import com.clueride.service.NodeService;
 import com.clueride.service.OutingService;
 import com.clueride.service.OutingServiceImpl;
 import com.clueride.service.RecommendationService;
+import com.clueride.service.TeamService;
 import com.clueride.token.CustomClaim;
 import com.clueride.token.JtiService;
 import com.clueride.token.JtiServiceImpl;
@@ -147,6 +148,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
     private ScoredLocationService scoredLocationService;
 
     @Mock
+    private TeamService teamService;
+
+    @Mock
     private TokenService tokenService;
 
     @Override
@@ -181,6 +185,7 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(PrincipalService.class).toInstance(principalService);
         bind(RecommendationService.class).toInstance(recommendationService);
         bind(ScoredLocationService.class).toInstance(scoredLocationService);
+        bind(TeamService.class).toInstance(teamService);
         bind(TokenService.class).toInstance(tokenService);
     }
 
