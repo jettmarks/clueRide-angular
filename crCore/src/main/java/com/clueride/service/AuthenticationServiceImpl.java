@@ -35,6 +35,7 @@ import com.clueride.member.MemberService;
 import com.clueride.principal.EmailPrincipal;
 import com.clueride.rest.dto.CRCredentials;
 import com.clueride.token.TokenService;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Implementation of Authentication services.
@@ -111,7 +112,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Principal getPrincipal(CRCredentials crCredentials) {
-        Member member = memberService.getMemberByEmail(crCredentials.name);
+        requireNonNull(crCredentials, "Credentials cannot be null");
+        requireNonNull(crCredentials.name, "Credentials account cannot be null");
+        Member member = memberService.getMemberByEmail(crCredentials.name.toLowerCase());
         return new EmailPrincipal(member.getEmailAddress());
     }
 
