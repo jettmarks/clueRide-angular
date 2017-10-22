@@ -17,9 +17,6 @@
  */
 package com.clueride.domain.user;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Provider;
 
 import com.google.inject.Inject;
@@ -29,7 +26,6 @@ import org.testng.annotations.Test;
 
 import com.clueride.domain.DomainGuiceModuleTest;
 import com.clueride.domain.user.location.Location;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 @Guice(modules = DomainGuiceModuleTest.class)
@@ -49,21 +45,22 @@ public class LocationTest {
         assertNotNull(toTest);
     }
 
-    @Test
-    public void testAddDeleteClues() throws Exception {
-        List<Integer> expectedCluesAfterDelete = toTest.getClueIds();
-        List<Integer> expectedCluesAfterAdd = new ArrayList<>(expectedCluesAfterDelete);
-        expectedCluesAfterAdd.add(10);
-
-        builder = Location.Builder.from(toTest);
-        toTest = builder.withClueIds(expectedCluesAfterAdd).build();
-        List<Integer> actualAfterAdd = toTest.getClueIds();
-        assertEquals(actualAfterAdd, expectedCluesAfterAdd);
-
-        toTest.removeClue(10);
-        List<Integer> actualAfterDelete = toTest.getClueIds();
-        assertEquals(actualAfterDelete, expectedCluesAfterDelete);
-    }
+    // TODO: CA-324 -- Sort out where we want to put this functionality: Puzzle Service? LocationService?
+//    @Test
+//    public void testAddDeleteClues() throws Exception {
+//        List<Integer> expectedCluesAfterDelete = toTest.getClueIds();
+//        List<Integer> expectedCluesAfterAdd = new ArrayList<>(expectedCluesAfterDelete);
+//        expectedCluesAfterAdd.add(10);
+//
+//        builder = Location.Builder.from(toTest);
+//        toTest = builder.withClueIds(expectedCluesAfterAdd).build();
+//        List<Integer> actualAfterAdd = toTest.getClueIds();
+//        assertEquals(actualAfterAdd, expectedCluesAfterAdd);
+//
+//        toTest.removeClue(10);
+//        List<Integer> actualAfterDelete = toTest.getClueIds();
+//        assertEquals(actualAfterDelete, expectedCluesAfterDelete);
+//    }
 
     @Test(expectedExceptions = IllegalStateException.class)
     public void testBuilder_missingLocationType() throws Exception {

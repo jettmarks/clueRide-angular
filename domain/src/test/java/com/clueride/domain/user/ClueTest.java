@@ -17,14 +17,16 @@
  */
 package com.clueride.domain.user;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.testng.Assert.*;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.clueride.domain.user.answer.Answer;
+import com.clueride.domain.user.answer.AnswerKey;
+import static org.testng.Assert.assertEquals;
 
 /**
  * Exercises the ClueTest class.

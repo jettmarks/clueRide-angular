@@ -29,6 +29,7 @@ import com.clueride.domain.DomainGuiceModuleTest;
 import com.clueride.domain.user.ReadinessLevel;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.loctype.LocationType;
+import com.clueride.domain.user.puzzle.Puzzle;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -140,11 +141,11 @@ public class ScoredLocationServiceImplTest {
     }
 
     @Test
-    public void testReadinessLevel_Place_missingClues() throws Exception {
+    public void testReadinessLevel_Place_missingPuzzles() throws Exception {
         ReadinessLevel expected = ReadinessLevel.PLACE;
 
         Location.Builder builder = Location.Builder.from(locationBuilder.build());
-        builder.withClueIds(Collections.<Integer>emptyList());
+        builder.withPuzzleBuilders(Collections.<Puzzle.Builder>emptyList());
 
         ReadinessLevel actual = toTest.calculateReadinessLevel(builder);
         assertEquals(actual, expected);
@@ -166,7 +167,7 @@ public class ScoredLocationServiceImplTest {
         ReadinessLevel expected = ReadinessLevel.PLACE;
 
         Location.Builder builder = Location.Builder.from(locationBuilder.build());
-        builder.withClueIds(null);
+        builder.withPuzzleBuilders(null);
 
         ReadinessLevel actual = toTest.calculateReadinessLevel(builder);
         assertEquals(actual, expected);

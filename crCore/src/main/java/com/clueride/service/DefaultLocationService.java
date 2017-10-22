@@ -30,11 +30,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableList;
 import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
 
-import com.clueride.dao.ClueStore;
 import com.clueride.dao.CourseStore;
 import com.clueride.dao.ImageStore;
 import com.clueride.dao.PathStore;
@@ -58,7 +56,6 @@ import com.clueride.service.builder.LocationBuilder;
 public class DefaultLocationService implements LocationService {
     private static final Logger LOGGER = Logger.getLogger(DefaultLocationService.class);
 
-    private final ClueStore clueStore;
     private final CourseStore courseStore;
     private final ImageStore imageStore;
     private final LocationBuilder locationBuilder;
@@ -72,7 +69,6 @@ public class DefaultLocationService implements LocationService {
 
     @Inject
     public DefaultLocationService(
-            ClueStore clueStore,
             CourseStore courseStore,
             ImageStore imageStore,
             LocationBuilder locationBuilder,
@@ -84,7 +80,6 @@ public class DefaultLocationService implements LocationService {
             ScoredLocationService scoredLocationService,
             ImageService imageService
     ) {
-        this.clueStore = clueStore;
         this.courseStore = courseStore;
         this.imageStore = imageStore;
         this.locationBuilder = locationBuilder;
@@ -120,9 +115,7 @@ public class DefaultLocationService implements LocationService {
         LOGGER.info("Retrieving Nearest Locations for (" + lat + ", " + lon + ")");
         // Brute force approach of running through all locations and keeping the top few
         List<Location> locationList = new ArrayList<>();
-        for (Location location : locationStoreJpa.getLocations()) {
-            locationList.add(location);
-        }
+        locationList.addAll(locationStoreJpa.getLocations());
         Collections.sort(locationList, new LocationDistanceComparator(lat, lon));
 
         return getJsonStringForLocationList(locationList);
@@ -132,7 +125,7 @@ public class DefaultLocationService implements LocationService {
     public String getNearestMarkerLocations(Double lat, Double lon) {
         LOGGER.info("Retrieving Nearest Marker Locations for (" + lat + ", " + lon + ")");
         List<Location> locationList = new ArrayList<>();
-        for (Location.Builder builder : locationStoreJpa.getLocationsBuilders()) {
+        for (Location.Builder builder : locationStoreJpa.getLocationBuilders()) {
             /* Assemble the derived transient fields. */
             builder.withLatLon(latLonService.getLatLonById(builder.getNodeId()));
             builder.withLocationType(locationTypeService.getById(builder.getLocationTypeId()));
@@ -209,17 +202,18 @@ public class DefaultLocationService implements LocationService {
     }
 
     void validateUpdatedLocationBuilder(Location.Builder locationBuilder) {
-        List<Integer> validatedClueIds = new ArrayList<>();
-        for (Integer clueId : locationBuilder.getClueIds()) {
-            if (clueStore.hasValidClue(clueId)) {
-                if (!validatedClueIds.contains(clueId)) {
-                    validatedClueIds.add(clueId);
-                }
-            } else {
-                LOGGER.warn("Unable to find valid Clue with ID " + clueId);
-            }
-        }
-        locationBuilder.withClueIds(ImmutableList.copyOf(validatedClueIds));
+        // TODO: CA-324 - Switch this over to Puzzle.Builder check ?
+//        List<Integer> validatedClueIds = new ArrayList<>();
+//        for (Integer clueId : locationBuilder.getClueIds()) {
+//            if (clueStore.hasValidClue(clueId)) {
+//                if (!validatedClueIds.contains(clueId)) {
+//                    validatedClueIds.add(clueId);
+//                }
+//            } else {
+//                LOGGER.warn("Unable to find valid Clue with ID " + clueId);
+//            }
+//        }
+//        locationBuilder.withClueIds(ImmutableList.copyOf(validatedClueIds));
     }
 
     private class LocationDistanceComparator implements Comparator<Location> {

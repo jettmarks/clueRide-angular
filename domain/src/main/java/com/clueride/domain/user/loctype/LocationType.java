@@ -38,6 +38,9 @@ public class LocationType {
     private String description;
     private String icon;
 
+    // TODO: Temporary constructor in service of JSON
+    public LocationType() {}
+
     private LocationType(Builder builder) {
         this.id = builder.getId();
         this.name = builder.getName();

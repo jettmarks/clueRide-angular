@@ -73,7 +73,7 @@ public class Invitation {
         this.id = id;
     }
 
-    public static final class Builder implements com.clueride.domain.common.Builder{
+    public static final class Builder implements com.clueride.domain.common.Builder<Invitation> {
         private String token;
         private Outing outing;
         private Integer memberId;
@@ -89,6 +89,16 @@ public class Invitation {
         public static Builder builder() {
             return new Builder();
         }
+
+        public static com.clueride.domain.common.Builder<Invitation> from(Invitation instance) {
+            return builder()
+                    .setId(instance.id)
+                    .setOuting(Outing.Builder.from(instance.getOuting()))
+                    .setMemberId(instance.memberId)
+                    .setState(instance.state)
+                    .setToken(instance.token);
+        }
+
         public Invitation build() {
             return new Invitation(this);
         }
@@ -106,6 +116,7 @@ public class Invitation {
             return this;
         }
 
+        // TODO: Deprecate this; switch over to Builder/Mutable
         public Builder setBuiltOuting(Outing outing) {
             this.outing = outing;
             return this;
@@ -130,8 +141,9 @@ public class Invitation {
             return id;
         }
 
-        public void setId(Integer id) {
+        public Builder setId(Integer id) {
             this.id = id;
+            return this;
         }
 
         public InvitationState getState() {

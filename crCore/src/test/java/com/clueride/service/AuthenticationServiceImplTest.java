@@ -29,6 +29,9 @@ import com.clueride.CoreGuiceModuleTest;
 import com.clueride.domain.account.member.Member;
 import com.clueride.member.MemberService;
 import com.clueride.rest.dto.CRCredentials;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
@@ -51,6 +54,9 @@ public class AuthenticationServiceImplTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
+        reset(
+                memberService
+        );
         toTest = toTestProvider.get();
         assertNotNull(toTest);
         assertNotNull(member);
@@ -82,6 +88,18 @@ public class AuthenticationServiceImplTest {
 
     @Test(expectedExceptions = RuntimeException.class)
     public void testGetPrincipal_notFound() {
+        /* setup test */
+        String emailWithUpper = "Guest.Dummy@ClueRide.com";
+        CRCredentials crCredentials = new CRCredentials();
+        crCredentials.name = emailWithUpper;
+        crCredentials.password = "password";
 
+        /* train mocks */
+        doThrow(RuntimeException.class).when(memberService).getMemberByEmail(anyString());
+
+        /* make call */
+        toTest.getPrincipal(crCredentials);
+
+        /* verify results */
     }
 }

@@ -18,7 +18,6 @@
 package com.clueride.dao;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,7 +25,6 @@ import java.util.List;
 import javax.inject.Provider;
 
 import com.google.inject.Inject;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
@@ -36,7 +34,6 @@ import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.loctype.LocationType;
 import com.clueride.io.PojoJsonService;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 /**
@@ -75,20 +72,6 @@ public class JsonLocationStoreTest {
         assertNotNull(toTest);
     }
 
-    @Test
-    public void testAddNew() throws Exception {
-        Location location = locationBuilder.build();
-
-        Integer id = toTest.addNew(location);
-        assertNotNull(id);
-
-        System.out.println("Location ID: " + id);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String locationAsJson = objectMapper.writeValueAsString(location);
-        System.out.println("As JSON: ");
-        System.out.println(locationAsJson);
-    }
-
     @Test(expectedExceptions = IllegalStateException.class)
     public void testAddNewBadNodeId() throws Exception {
         // Negative is allowed, but won't be found
@@ -100,42 +83,9 @@ public class JsonLocationStoreTest {
     }
 
     @Test
-    public void testGetLocationById() throws Exception {
-        Integer id = locationBuilder.getId();
-        List<Location> locations = new ArrayList<>();
-        locations.add(locationBuilder.build());
-        when(pojoJsonService.loadLocations()).thenReturn(locations);
-        Location location = toTest.getLocationById(id);
-        assertNotNull(location);
-        assertEquals(location.getId(), id);
-    }
-
-    @Test
     public void testGetLocations() throws Exception {
         Collection<Location> locations = toTest.getLocations();
         assertNotNull(locations);
     }
 
-    /* TODO: CA-309: Move this into the Test Module and inject where needed. */
-    private Location.Builder getLocationBuilder() throws MalformedURLException {
-        // Test values
-        String expectedName = "Test Location";
-        String expectedDescription = "Here's a nice spot to spread out the blanket or toss the frisbee.";
-        LocationType expectedLocationType = locationTypeProvider.get();
-        Integer expectedNodeId = 5;
-        List<Integer> expectedClues = new ArrayList<>();
-        List<URL> expectedImageUrls = new ArrayList<>();
-        expectedImageUrls.add(new URL("https://clueride.com/"));
-        expectedClues.add(1);
-        expectedClues.add(2);
-
-        locationBuilder = Location.Builder.builder()
-                .withName(expectedName)
-                .withDescription(expectedDescription)
-                .withLocationType(expectedLocationType)
-                .withNodeId(expectedNodeId)
-                .withClueIds(expectedClues)
-                .withImageUrls(expectedImageUrls);
-        return locationBuilder;
-    }
 }

@@ -35,6 +35,10 @@ import com.clueride.domain.user.loctype.LocationTypeStore;
 import com.clueride.domain.user.loctype.LocationTypeStoreJpa;
 import com.clueride.domain.user.place.ScoredLocationService;
 import com.clueride.domain.user.place.ScoredLocationServiceImpl;
+import com.clueride.domain.user.puzzle.PuzzleService;
+import com.clueride.domain.user.puzzle.PuzzleServiceImpl;
+import com.clueride.domain.user.puzzle.PuzzleStore;
+import com.clueride.domain.user.puzzle.PuzzleStoreJpa;
 
 /**
  * Guice Bindings for the Domain module.
@@ -52,6 +56,8 @@ public class DomainGuiceModule extends AbstractModule {
         bind(LocationTypeService.class).to(LocationTypeServiceImpl.class);
         bind(LocationTypeStore.class).to(LocationTypeStoreJpa.class);
         bind(MemberStore.class).to(MemberStoreJpa.class);
+        bind(PuzzleService.class).to(PuzzleServiceImpl.class);
+        bind(PuzzleStore.class).to(PuzzleStoreJpa.class);
         bind(ScoredLocationService.class).to(ScoredLocationServiceImpl.class);
     }
 

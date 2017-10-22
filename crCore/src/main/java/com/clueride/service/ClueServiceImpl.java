@@ -18,6 +18,7 @@
 package com.clueride.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -49,10 +50,10 @@ public class ClueServiceImpl implements ClueService {
         this.locationStore = locationStore;
     }
 
-    /* TODO: Consider generating the JSON outside of this class. */
     @Override
     public String getCluesPerLocation(Integer locationId) {
-        List<Clue> clues = clueStore.getCluesByLocation(locationId);
+        List<Clue> clues = new ArrayList<>();
+//        List<Clue> clues = clueStore.getCluesByLocation(locationId);
         ObjectMapper objectMapper = new ObjectMapper();
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -97,12 +98,13 @@ public class ClueServiceImpl implements ClueService {
         return null;
     }
 
+    // TODO: CA-324 -- Move over to Location or Puzzle Service
     @Override
     public void removeClueFromLocation(Integer locId, Integer clueId) {
         LOGGER.info("Removing Clue ID " + clueId + " from Location " + locId);
 
         Location location = locationStore.getLocationById(locId);
-        location.removeClue(clueId);
+//        location.removeClue(clueId);
         locationStore.update(location);
     }
 

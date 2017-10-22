@@ -19,16 +19,21 @@ package com.clueride.domain;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
+import com.clueride.domain.user.answer.Answer;
+import com.clueride.domain.user.answer.AnswerKey;
 import com.clueride.domain.user.image.Image;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.loctype.LocationType;
+import com.clueride.domain.user.puzzle.Puzzle;
 import com.clueride.infrastructure.JpaUtil;
 import static java.util.Arrays.asList;
 
@@ -47,21 +52,39 @@ public class DomainGuiceProviderModule extends AbstractModule {
     }
 
     @Provides
+    private Puzzle.Builder getPuzzleBuilder() {
+        List<Answer> answers = new ArrayList<>();
+        answers.add(new Answer(AnswerKey.A, "Answer A"));
+        answers.add(new Answer(AnswerKey.B, "42"));
+        answers.add(new Answer(AnswerKey.C, "Answer C"));
+        answers.add(new Answer(AnswerKey.D, "Answer D"));
+
+        return Puzzle.Builder.builder()
+                .withId(1)
+                .withName("Test Puzzle")
+                .withQuestion("What is the Meaning of Life")
+                .withAnswers(answers)
+                .withCorrectAnswer(AnswerKey.B);
+    }
+
+    @Provides
     private Location provideLocation(
-            LocationType locationType
+            LocationType locationType,
+            Puzzle.Builder puzzleBuilder
     ) {
-        return getLocationBuilder(locationType).build();
+        return getLocationBuilder(locationType, puzzleBuilder).build();
     }
 
     @Provides
     private Location.Builder getLocationBuilder(
-            LocationType locationType
+            LocationType locationType,
+            Puzzle.Builder puzzleBuilder
     ) {
         Location.Builder locationBuilder = Location.Builder.builder()
                 .withId(1)
                 .withNodeId(100)
                 .withName("Test Location")
-                .withClueIds(asList(1, 2, 3))
+                .withPuzzleBuilders(asList(puzzleBuilder))
                 .withDescription("Beautiful Test")
                 .withLocationType(locationType)
                 .withTagScores(Collections.EMPTY_MAP);

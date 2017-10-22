@@ -46,8 +46,8 @@ public class ScoredLocationServiceImpl implements ScoredLocationService {
             return ReadinessLevel.DRAFT;
         }
 
-        /* If we're missing the Clues, we're just a Place. */
-        if (location.getClueIds().size() == 0) {
+        /* If we're missing the Puzzles, we're just a Place. */
+        if (location.getPuzzleBuilders().size() == 0) {
             return ReadinessLevel.PLACE;
         }
 

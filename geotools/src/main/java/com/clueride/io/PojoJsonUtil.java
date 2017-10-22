@@ -234,6 +234,42 @@ public class PojoJsonUtil implements PojoJsonService {
         return paths;
     }
 
+    @Override
+    public List<Location.Builder> loadLocationBuilders() {
+        List<Location.Builder> locations = new ArrayList<>();
+        File locationDirectory = new File(JsonStoreLocation.toString(JsonStoreType.LOCATION));
+        for (File child : locationDirectory.listFiles(new FilenameFilter(){
+            @Override
+            public boolean accept(File file, String s) {
+                LOGGER.debug("Checking for Location at "+s);
+                return s.contains("loc-");
+            }
+        })) {
+            LOGGER.debug("Checking for JSON Location in the directory " + child.getName());
+            for (File locationFile : child.listFiles(new FilenameFilter(){
+                @Override
+                public boolean accept(File file2, String s) {
+                    return s.startsWith("loc-") && s.endsWith(".json");
+                }
+            })) {
+                locations.add(loadLocationBuilder(locationFile));
+            }
+        }
+        return locations;
+    }
+
+    private Location.Builder loadLocationBuilder(File locationFile) {
+        Location.Builder locationBuilder;
+        try {
+            synchronized (objectMapper) {
+                locationBuilder = objectMapper.readValue(locationFile, Location.Builder.class);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected I/O error", e);
+        }
+        return locationBuilder;
+    }
+
     private static Path loadPath(File file) {
         Path path;
         try {

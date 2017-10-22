@@ -85,7 +85,6 @@ public class Image {
         @Transient
         private URL url;
 
-        // TODO: CA-318 - Add builder() to the interface (as well as .from())
         public static Builder builder() {
             return new Builder();
         }

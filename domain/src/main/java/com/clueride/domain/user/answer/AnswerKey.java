@@ -1,4 +1,4 @@
-package com.clueride.domain.user;
+package com.clueride.domain.user.answer;
 
 /**
  * Copyright 2015 Jett Marks
@@ -17,32 +17,10 @@ package com.clueride.domain.user;
  * <p/>
  * Created by jett on 11/23/15.
  */
-public class Answer {
-    private AnswerKey answerKey;
-    private String answer;
-
-    public Answer() {}
-
-    public Answer(AnswerKey answerKey, String answer) {
-        this.answerKey = answerKey;
-        this.answer = answer;
-    }
-
-    public Answer setKey(AnswerKey answerKey) {
-        this.answerKey = answerKey;
-        return this;
-    }
-
-    public Answer setAnswer(String answer) {
-        this.answer = answer;
-        return this;
-    }
-
-    public AnswerKey getKey() {
-        return answerKey;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
+public enum AnswerKey {
+    A,
+    B,
+    C,
+    D,
+    E
 }

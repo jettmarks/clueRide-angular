@@ -135,7 +135,7 @@ public class DefaultLocationServiceTest {
                             .withClueIds(clueList)
             );
         }
-        when(locationStore.getLocationsBuilders()).thenReturn(locationList);
+        when(locationStore.getLocationBuilders()).thenReturn(locationList);
 
         assertNotNull(toTest);
 
