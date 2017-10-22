@@ -21,5 +21,9 @@ package com.clueride.domain.common;
  * Distillation of the methods essential for building an instance.
  */
 public interface Builder<T> {
+    /**
+     * Create an immutable instance from the mutable properties within this Builder.
+     * @return instance of T.
+     */
     T build();
 }

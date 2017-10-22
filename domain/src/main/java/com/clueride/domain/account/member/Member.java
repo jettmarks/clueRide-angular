@@ -115,7 +115,7 @@ public class Member {
     }
 
     @Entity(name="member")
-    public static class Builder implements com.clueride.domain.common.Builder {
+    public static class Builder implements com.clueride.domain.common.Builder<Member> {
         @Id
         private Integer id;
 

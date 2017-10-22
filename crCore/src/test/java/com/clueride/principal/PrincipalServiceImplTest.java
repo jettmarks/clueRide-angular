@@ -32,6 +32,7 @@ import com.clueride.CoreGuiceModuleTest;
 import com.clueride.domain.account.member.Member;
 import com.clueride.member.MemberService;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -54,6 +55,7 @@ public class PrincipalServiceImplTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
+        reset(memberService);
         toTest = toTestProvider.get();
     }
 

@@ -57,7 +57,10 @@ public class JsonLocationStore implements LocationStore {
         this.nodeStore = nodeStore;
         this.pojoJsonService = pojoJsonService;
         this.clueStore = clueStore;
-        loadAll();
+    }
+
+    public List<Location.Builder> getLocationBuilders() {
+        return pojoJsonService.loadLocationBuilders();
     }
 
     private void loadAll() {
@@ -151,11 +154,6 @@ public class JsonLocationStore implements LocationStore {
     @Override
     public Collection<Location> getLocations() {
         return locationMap.values();
-    }
-
-    @Override
-    public Collection<Location.Builder> getLocationsBuilders() {
-        return null;
     }
 
     /**

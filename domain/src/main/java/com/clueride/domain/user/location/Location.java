@@ -30,6 +30,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
@@ -43,9 +44,9 @@ import com.clueride.domain.Step;
 import com.clueride.domain.user.ReadinessLevel;
 import com.clueride.domain.user.latlon.LatLon;
 import com.clueride.domain.user.loctype.LocationType;
+import com.clueride.domain.user.puzzle.Puzzle;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedLocationIdProvider;
-import static java.util.Objects.requireNonNull;
 
 /**
  * Holds the data for a Location, and provides some of the logic to provide derived properties.
@@ -63,7 +64,7 @@ public class Location implements Step {
     private final Integer googlePlaceId;
     private final LatLon latLon;
     private final ReadinessLevel readinessLevel;
-    private List<Integer> clueIds;
+    private List<Puzzle.Builder> puzzleBuilders;
     private final List<URL> imageUrls;
     private final Integer locationGroupId;
     private final String establishment;
@@ -91,7 +92,7 @@ public class Location implements Step {
         imageUrls = builder.getImageUrls();
 
         // If this is missing, we're at the Place level; present, we're at the Attraction level
-        clueIds = builder.getClueIds();
+        puzzleBuilders = builder.getPuzzleBuilders();
 
         // Featured Level requires the following
         googlePlaceId = builder.getGooglePlaceId();
@@ -170,10 +171,6 @@ public class Location implements Step {
         }
     }
 
-    public List<Integer> getClueIds() {
-        return clueIds;
-    }
-
     public Integer getEstablishment() {
         return establishmentId;
     }
@@ -212,15 +209,16 @@ public class Location implements Step {
         return tagScores.get(tag);
     }
 
-    public void removeClue(Integer clueId) {
+    // TODO: CA-324 -- Move this logic into the service
+    public void removePuzzle(Integer puzzleId) {
         synchronized(SYNCH_LOCK) {
-            List<Integer> remainingClueIds = new ArrayList<>();
-            for (Integer clueToCheck : clueIds) {
-                if (!clueId.equals(clueToCheck) && clueToCheck != null) {
-                    remainingClueIds.add(clueToCheck);
+            List<Puzzle.Builder> remainingPuzzles = new ArrayList<>();
+            for (Puzzle.Builder builder : puzzleBuilders) {
+                if (!puzzleId.equals(builder.getId()) && builder != null) {
+                    remainingPuzzles.add(builder);
                 }
             }
-            this.clueIds = ImmutableList.copyOf(remainingClueIds);
+            this.puzzleBuilders = ImmutableList.copyOf(remainingPuzzles);
         }
     }
 
@@ -257,14 +255,19 @@ public class Location implements Step {
         @Column(name="node_id") private Integer nodeId;
         @Column(name="featured_image_id") private Integer featuredImageId;
 
+        @OneToMany(mappedBy = "locationBuilder")
+        private List<Puzzle.Builder> puzzleBuilders;
+
+        // TODO: CA-325 - Coming out after we abandon the Json Clues
+        @Transient
+        private List<Integer> clueIds;
+
         @Transient
         private LocationType locationType;
         @Transient
         private String locationTypeName;
         @Transient
         private LatLon latLon;
-        @Transient
-        private List<Integer> clueIds;
         @Transient
         private List<URL> imageUrls;
         @Transient
@@ -304,7 +307,7 @@ public class Location implements Step {
                     .withLocationType(location.locationType)
                     .withNodeId(location.getNodeId())
                     .withLatLon(location.latLon)
-                    .withClueIds(location.clueIds)
+                    .withPuzzleBuilders(location.puzzleBuilders)
                     .withFeaturedImage(location.featuredImage)
                     .withImageUrls(location.imageUrls)
                     .withEstablishmentId(location.establishmentId)
@@ -374,6 +377,10 @@ public class Location implements Step {
             return this.locationTypeName;
         }
 
+        public void setLocationType(LocationType locationType) {
+            this.withLocationType(locationType);
+        }
+
         public Builder withLocationType(LocationType locationType) {
             this.locationType = locationType;
             this.locationTypeId = locationType.getId();
@@ -394,6 +401,20 @@ public class Location implements Step {
             return this;
         }
 
+        public List<Puzzle.Builder> getPuzzleBuilders() {
+            return puzzleBuilders;
+        }
+
+        public Builder withPuzzleBuilders(List<Puzzle.Builder> puzzleBuilders) {
+            this.puzzleBuilders = puzzleBuilders;
+            return this;
+        }
+
+        public Builder addPuzzleBuilder(Puzzle.Builder puzzleBuilder) {
+            this.puzzleBuilders.add(puzzleBuilder);
+            return this;
+        }
+
         public Map<String, Optional<Double>> getTagScores() {
             return tagScores;
         }
@@ -410,24 +431,6 @@ public class Location implements Step {
         public Builder withLocationGroupId(Integer locationGroupId) {
             this.locationGroupId = locationGroupId;
             return this;
-        }
-
-        public List<Integer> getClueIds() {
-            if(clueIds != null) {
-                return clueIds;
-            } else {
-                return Collections.emptyList();
-            }
-        }
-
-        public Builder withClueIds(List<Integer> clueIds) {
-            validateClueIds(clueIds);
-            this.clueIds = clueIds;
-            return this;
-        }
-
-        private void validateClueIds(List<Integer> clueIds) {
-            requireNonNull(clueIds);
         }
 
         public Integer getEstablishmentId() {
@@ -517,8 +520,17 @@ public class Location implements Step {
                     .withNodeId(locationBuilder.nodeId)
                     .withLocationTypeId(locationBuilder.locationTypeId)
                     .withLocationGroupId(locationBuilder.locationGroupId)
-                    .withClueIds(locationBuilder.clueIds)
                     .withImageUrls(locationBuilder.imageUrls);
+        }
+
+        /* TODO: CA-325 Only useful for moving from JSON to JPA; remove after JSON is abandoned for Clues. */
+        public List<Integer> getClueIds() {
+            return clueIds;
+        }
+
+        public Builder withClueIds(List<Integer> clueIds) {
+            this.clueIds = clueIds;
+            return this;
         }
     }
 

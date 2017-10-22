@@ -77,15 +77,19 @@ public class LocationStoreJpa implements LocationStore {
     @Override
     public Collection<Location> getLocations() {
         Collection<Location> locations = new ArrayList<>();
-        Collection<Location.Builder> builderCollection = getLocationsBuilders();
+        Collection<Location.Builder> builderCollection = getLocationBuilders();
         for (Location.Builder builder : builderCollection) {
-            locations.add(builder.build());
+            try {
+                locations.add(builder.build());
+            } catch (IllegalStateException ise) {
+                /* Defer to returning Builders; deprecated for now. */
+            }
         }
         return locations;
     }
 
     @Override
-    public Collection<Location.Builder> getLocationsBuilders() {
+    public Collection<Location.Builder> getLocationBuilders() {
         Collection<Location.Builder> builderCollection = new ArrayList<>();
         entityManager.getTransaction().begin();
         List<Location.Builder> locationList = entityManager.createQuery(

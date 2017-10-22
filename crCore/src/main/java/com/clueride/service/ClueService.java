@@ -25,6 +25,7 @@ import com.clueride.domain.user.Clue;
 public interface ClueService {
     /**
      * Given a Location ID, retrieve the list of clues associated with that Location.
+     * @deprecated moving to Puzzles instead of Clues.
      */
     String getCluesPerLocation(Integer locationId);
 

@@ -75,6 +75,15 @@ public class CourseType {
             return new Builder();
         }
 
+        public static Builder from(CourseType instance) {
+            return builder()
+                    .setId(instance.id)
+                    .setDescription(instance.description)
+                    .setType(instance.type)
+                    .setUrl(instance.url)
+                    ;
+        }
+
         public Integer getId() {
             return id;
         }

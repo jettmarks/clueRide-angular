@@ -31,9 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
 import com.clueride.domain.user.Clue;
-import com.clueride.domain.user.location.Location;
-import com.clueride.domain.user.location.LocationStore;
-import com.clueride.infrastructure.Jpa;
 import com.clueride.io.PojoJsonUtil;
 
 /**
@@ -42,8 +39,6 @@ import com.clueride.io.PojoJsonUtil;
 public class JsonClueStore implements ClueStore {
     private static final Logger LOGGER = Logger.getLogger(JsonClueStore.class);
 
-    /** In-memory references to the full set of Clues indexed by Location. */
-    private static Map<Integer,List<Clue>> cluesPerLocation = new HashMap<>();
     /** In-memory references to the full set of Clues indexed by their ID. */
     private static Map<Integer,Clue> clueById = new HashMap<>();
 
@@ -52,11 +47,8 @@ public class JsonClueStore implements ClueStore {
 
     private static boolean needsReload = true;
 
-    private final LocationStore locationStore;
-
     @Inject
-    public JsonClueStore(@Jpa LocationStore locationStore) {
-        this.locationStore = locationStore;
+    public JsonClueStore() {
         if (needsReload) {
             loadAll();
         }
@@ -78,26 +70,10 @@ public class JsonClueStore implements ClueStore {
         needsReload = false;
     }
 
-    /* TODO: CA-305 - Clue Store should not depend on Location Store. */
     public void reIndex() {
         /* Index the clues by ID. */
         for (Clue clue : clues) {
             clueById.put(clue.getId(), clue);
-        }
-
-        /* Index the clues by Location. */
-        Collection<Location.Builder> locations = locationStore.getLocationsBuilders();
-        for (Location.Builder location : locations) {
-            List<Clue> cluesInThisLocation = new ArrayList<>();
-            cluesPerLocation.put(location.getId(), cluesInThisLocation);
-            for (Integer clueId : location.getClueIds()) {
-                Clue clue = clueById.get(clueId);
-                if (clue != null) {
-                    cluesInThisLocation.add(clue);
-                } else {
-                    LOGGER.warn("Location " + location.getId() + " refers to missing clue " + clueId);
-                }
-            }
         }
     }
 
@@ -144,13 +120,15 @@ public class JsonClueStore implements ClueStore {
     }
 
     @Override
-    public List<Clue> getCluesByLocation(Integer locationId) {
-        return cluesPerLocation.get(locationId);
-    }
-
-    @Override
     public boolean hasValidClue(Integer clueId) {
         /* At this time, there are no clues kept in the store which are not valid. */
         return (clueById.containsKey(clueId));
+    }
+
+    @Override
+    public List<Clue> get() {
+        List<Clue> clueList = new ArrayList<>();
+        clueList.addAll(clues);
+        return clueList;
     }
 }

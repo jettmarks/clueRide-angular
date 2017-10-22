@@ -37,4 +37,11 @@ public interface PojoJsonService {
      * @return List of all Paths in the store.
      */
     List<Path> loadPaths();
+
+    /**
+     * Part of the move toward returning mutable objects from storage.
+     * @return List of Locations as Builders.
+     */
+    List<Location.Builder> loadLocationBuilders();
+
 }

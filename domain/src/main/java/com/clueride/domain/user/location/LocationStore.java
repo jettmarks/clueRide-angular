@@ -28,7 +28,9 @@ public interface LocationStore {
      * Implementations are expected to write to permanent storage.
      * @param location newly and fully constructed Location, ready to persist.
      * @return ID of the new Location.
+     * @deprecated prefer Builder.
      */
+    @Deprecated
     Integer addNew(Location location) throws IOException;
 
     /**
@@ -44,9 +46,16 @@ public interface LocationStore {
      *
      * @param id of the Location we expect to retrieve from the store.
      * @return Location with the given ID or null if no location is found.
+     * @deprecated prefer the Builder.
      */
+    @Deprecated
     Location getLocationById(Integer id);
 
+    /**
+     * Returns the Location Builder matching the unique ID.
+     * @param id unique identifier for the Location Builder.
+     * @return fully-populated Location Builder.
+     */
     Location.Builder getLocationBuilderById(Integer id);
 
     /**
@@ -55,16 +64,29 @@ public interface LocationStore {
      * The Store is populated from persisted store upon instantiation, so
      * the initial contents will come from some permanent storage.
      * @return Collection of all Locations in the store.
+     * @deprecated - Prefer returning Builders so the Service can handle build() problems.
      */
+    @Deprecated
     Collection<Location> getLocations();
 
-    Collection<Location.Builder> getLocationsBuilders();
+    /**
+     * Returns the list of Location Builders maintained by this store.
+     * @return Collection of all Locations in the store.
+     */
+    Collection<Location.Builder> getLocationBuilders();
 
     /**
      * Accepts an existing Location and updates the persistent record with new information.
      * @param location to be updated.
+     * @deprecated prefer Builder.
      */
+    @Deprecated
     void update(Location location);
 
+    /**
+     * Accepts an existing Location and updates the persistent record with new information.
+     * @param locationBuilder to be updated.
+     */
     void update(Location.Builder locationBuilder);
+
 }
