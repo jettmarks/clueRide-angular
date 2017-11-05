@@ -26,6 +26,7 @@ import javax.mail.internet.InternetAddress;
 import javax.persistence.NoResultException;
 
 import com.google.inject.Inject;
+import org.apache.log4j.Logger;
 
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.account.member.MemberStore;
@@ -35,6 +36,7 @@ import com.clueride.domain.user.Badge;
  * Implementation of MemberService.
  */
 public class MemberServiceImpl implements MemberService {
+    private static final Logger LOGGER = Logger.getLogger(MemberServiceImpl.class);
     private final MemberStore memberStore;
 
     @Inject
@@ -54,6 +56,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member getMemberByEmail(String email) {
+        LOGGER.debug("Looking up account from database: " + email);
         InternetAddress internetAddress;
         try {
             internetAddress = new InternetAddress(email);
@@ -63,9 +66,13 @@ public class MemberServiceImpl implements MemberService {
 
         Member member;
         try {
-            member = memberStore.getMemberByEmail(internetAddress);
+            synchronized (memberStore) {
+                member = memberStore.getMemberByEmail(internetAddress);
+            }
         } catch (NoResultException e) {
-            throw new RuntimeException("Unable to find member with account " + email, e);
+            String message = "Unable to find member with account " + email;
+            LOGGER.warn(message);
+            throw new RuntimeException(message, e);
         }
         return member;
     }

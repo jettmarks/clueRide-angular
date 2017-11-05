@@ -110,9 +110,9 @@ public class LocationWebService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public String uploadImage(
-            @QueryParam("lat") Double lat,
-            @QueryParam("lon") Double lon,
-            @QueryParam("locId") Integer locationId,
+            @FormDataParam("lat") Double lat,
+            @FormDataParam("lon") Double lon,
+            @FormDataParam("locId") Integer locationId,
             @FormDataParam("file") InputStream fileData
     ) {
         locationService.saveLocationImage(

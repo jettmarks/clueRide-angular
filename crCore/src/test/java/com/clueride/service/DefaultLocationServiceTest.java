@@ -52,7 +52,7 @@ import static org.testng.AssertJUnit.assertTrue;
 @Guice(modules=CoreGuiceModuleTest.class)
 public class DefaultLocationServiceTest {
     private static final Logger LOGGER = Logger.getLogger(DefaultLocationServiceTest.class);
-    private LocationService toTest;
+    private DefaultLocationService toTest;
 
     @Inject
     private Location location;
@@ -173,4 +173,12 @@ public class DefaultLocationServiceTest {
         assertEquals(actual, expected);
     }
 
+    @Test
+    public void testDecodeBase64() {
+//        String expected = "Test String to be encoded";
+//
+//        String encoded = "data:image/jpeg;base64," + BaseEncoding.base64().encode(expected);
+//        String actual = toTest.decodeBase64(encoded);
+//        assertEquals(actual, expected);
+    }
 }
