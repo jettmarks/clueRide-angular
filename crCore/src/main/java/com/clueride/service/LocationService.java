@@ -50,7 +50,7 @@ public interface LocationService {
      * @param locationId - Optional Integer representing an existing location (which may not have been created yet).
      * @param fileData - InputStream from which we read the image data to put into a file.
      */
-    void saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData);
+    Integer saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData);
 
     /**
      * Given the device's location -- or any relevant lat/lon pair -- return a list

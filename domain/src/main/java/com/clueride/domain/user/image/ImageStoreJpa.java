@@ -19,7 +19,12 @@ package com.clueride.domain.user.image;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 import static java.util.Objects.requireNonNull;
 
@@ -54,5 +59,30 @@ public class ImageStoreJpa implements ImageStore {
         Image.Builder imageBuilder = entityManager.find(Image.Builder.class, imageId);
         entityManager.getTransaction().commit();
         return imageBuilder;
+    }
+
+    @Override
+    public Integer linkImageToLocation(Integer imageId, Integer locationId) {
+        ImageByLocation imageByLocation = new ImageByLocation();
+        imageByLocation.image_id = imageId;
+        imageByLocation.location_id = locationId;
+
+        entityManager.getTransaction().begin();
+        entityManager.persist(imageByLocation);
+        entityManager.getTransaction().commit();
+        return imageByLocation.id;
+    }
+
+    @Entity(name="image_by_location")
+    public static class ImageByLocation {
+        @Id
+        @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="image_by_location_pk_sequence")
+        @SequenceGenerator(name="image_by_location_pk_sequence",
+                sequenceName="images_by_location_id_seq",
+                allocationSize=1)
+        Integer id;
+
+        Integer image_id;
+        Integer location_id;
     }
 }

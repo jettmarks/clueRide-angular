@@ -35,4 +35,13 @@ public interface ImageStore {
      */
     Image.Builder getById(Integer imageId);
 
+    /**
+     * Given the ID of both a persisted image and a persisted Location, record a link
+     * between the two.
+     * @param imageId unique identifier for an Image.
+     * @param locationId unique identifier for a Location.
+     * @return ID of the record linking the Image and the Location.
+     */
+    Integer linkImageToLocation(Integer imageId, Integer locationId);
+
 }

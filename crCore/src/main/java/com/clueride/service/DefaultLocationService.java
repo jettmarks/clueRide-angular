@@ -20,8 +20,8 @@ package com.clueride.service;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,6 +30,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.io.BaseEncoding;
 import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
 
@@ -37,6 +38,7 @@ import com.clueride.dao.CourseStore;
 import com.clueride.dao.ImageStore;
 import com.clueride.dao.PathStore;
 import com.clueride.domain.Course;
+import com.clueride.domain.user.image.Image;
 import com.clueride.domain.user.image.ImageService;
 import com.clueride.domain.user.latlon.LatLon;
 import com.clueride.domain.user.latlon.LatLonService;
@@ -253,24 +255,42 @@ public class DefaultLocationService implements LocationService {
      * @param lon - Double longitude of device location.
      * @param locationId - Optional Integer representing an existing location (which may not have been created yet).
      * @param fileData - InputStream from which we read the image data to put into a file.
+     * @returns Integer representing the ID of the newly created Image.
      */
     @Override
-    public void saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData) {
+    public Integer saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData) {
         LOGGER.info("Requesting Save of image for Location ID " + locationId);
         Integer newSeqId = null;
+        InputStream convertedFileData = decodeBase64(fileData);
         try {
-            newSeqId = imageStore.addNew(locationId, fileData);
+            newSeqId = imageStore.addNew(locationId, convertedFileData);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        URL imageUrl = null;
+
+        String imageUrlString =
+                "https://images.clueride.com/img/" + locationId + "/" + newSeqId + ".jpg";
+        Image.Builder imageBuilder = Image.Builder.builder()
+                .withUrlString(imageUrlString);
+        Integer recordId = -1;
         try {
-            imageUrl = new URL("https://images.clueride.com/img/" + locationId + "/" + newSeqId + ".jpg");
+            recordId = imageService.addNewToLocation(imageBuilder, locationId);
         } catch (MalformedURLException e) {
+            LOGGER.error("Messed up the URL creation: " + imageUrlString, e);
+        }
+        return recordId;
+    }
+
+    InputStream decodeBase64(InputStream fileData) {
+        InputStreamReader reader = new InputStreamReader(fileData);
+        try {
+            while (reader.read() != ',') {
+                // skip the header
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        Location location = locationStoreJpa.getLocationById(locationId);
-        location.getImageUrls().add(imageUrl);
-        locationStoreJpa.update(location);
+        return BaseEncoding.base64().decodingStream(reader);
     }
+
 }

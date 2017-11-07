@@ -61,12 +61,13 @@ public class PrincipalServiceImpl implements PrincipalService {
             memberService.getMemberByEmail(email);
             principals.add(principal);
         }  catch (Exception e) {
+            LOGGER.warn("Problem validating email", e);
             throw new InvalidClaimException("Unable to verify email: " + email);
         }
     }
 
     private void refreshPrincipalCache() {
-        if (principals == null) {
+        if (principals == null || principals.size() == 0) {
             principals = new ArrayList<>();
             getCount();
         }

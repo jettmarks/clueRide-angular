@@ -19,6 +19,7 @@ package com.clueride.domain.user.image;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Defines operations on Images.
@@ -46,4 +47,23 @@ public interface ImageService {
      */
     Integer addNew(Image.Builder imageBuilder) throws MalformedURLException;
 
+    /**
+     * Persists a new image for a given Location.
+     * Validation of the location assures it has been created.
+     * @param imageBuilder mutable object containing at least the String representation for the image URL.
+     * @param locationId unique identifier for the Location this image represents.
+     * @return New ID for the record.
+     * @throws MalformedURLException if the supplied URL has problems.
+     */
+    Integer addNewToLocation(
+            Image.Builder imageBuilder,
+            Integer locationId
+    ) throws MalformedURLException;
+
+    /**
+     * Given a Location ID, retrieve the list of Images for that location.
+     * @param locationId unique identifier for the location.
+     * @return List<Image> matching the location.
+     */
+    List<Image> getImagesByLocation(Integer locationId);
 }

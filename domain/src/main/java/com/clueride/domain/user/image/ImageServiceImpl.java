@@ -19,10 +19,12 @@ package com.clueride.domain.user.image;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Implementation of ImageService interface.
@@ -73,6 +75,26 @@ public class ImageServiceImpl implements ImageService {
                 .withId(null)
                 .withUrl(new URL(imageBuilder.getUrlString()));
         return imageStore.addNew(imageBuilder);
+    }
+
+    @Override
+    public Integer addNewToLocation(
+            Image.Builder imageBuilder,
+            Integer locationId
+    ) throws MalformedURLException {
+        validateLocationId(locationId);
+        Integer newImageId = addNew(imageBuilder);
+        Integer mapId = imageStore.linkImageToLocation(newImageId, locationId);
+        return newImageId;
+    }
+
+    private void validateLocationId(Integer locationId) {
+        requireNonNull(locationId);
+    }
+
+    @Override
+    public List<Image> getImagesByLocation(Integer locationId) {
+        return null;
     }
 
     private void validateUrlString(String urlString) throws MalformedURLException {
