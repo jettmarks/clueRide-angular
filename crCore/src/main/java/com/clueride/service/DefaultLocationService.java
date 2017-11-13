@@ -218,6 +218,73 @@ public class DefaultLocationService implements LocationService {
 //        locationBuilder.withClueIds(ImmutableList.copyOf(validatedClueIds));
     }
 
+    /**
+     * Generate the name and pass along to the ImageStore.
+     * If the locationId isn't present, we are likely attempting to create a new Location
+     * at the coordinates provided.  If we do have a locationId, then this location is used
+     * and would "adjust" the lat/lon provided.
+     * (Option considered: have the lat/lon stored with the image.)
+     *
+     * If the Location doesn't have a Featured Image, this image is added as that Featured Image.
+     *
+     * @param lat - Double latitude of device location.
+     * @param lon - Double longitude of device location.
+     * @param locationId - Optional Integer representing an existing location (which may not have been created yet).
+     * @param fileData - InputStream from which we read the image data to put into a file.
+     * @return Integer representing the ID of the newly created Image.
+     */
+    @Override
+    public Integer saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData) {
+        LOGGER.info("Requesting Save of image for Location ID " + locationId);
+        Integer newSeqId = persistImageContent(locationId, fileData);
+        Integer imageMetadataId = persistImageMetadata(locationId, newSeqId);
+        Location.Builder locationBuilder = locationStoreJpa.getLocationBuilderById(locationId);
+        if (locationBuilder.hasNoFeaturedImage()) {
+            locationBuilder.withFeaturedImageId(imageMetadataId);
+            locationStoreJpa.update(locationBuilder);
+        }
+        return imageMetadataId;
+    }
+
+    private Integer persistImageContent(Integer locationId, InputStream fileData) {
+        InputStream convertedFileData = decodeBase64(fileData);
+        Integer newSeqId = null;
+        try {
+            newSeqId = imageStore.addNew(locationId, convertedFileData);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return newSeqId;
+    }
+
+    private Integer persistImageMetadata(Integer locationId, Integer newSeqId) {
+        Integer recordId;
+        recordId = -1;
+        // TODO: URL responsibility probably belongs with the image service.
+        String imageUrlString =
+                "https://images.clueride.com/img/" + locationId + "/" + newSeqId + ".jpg";
+        Image.Builder imageBuilder = Image.Builder.builder()
+                .withUrlString(imageUrlString);
+        try {
+            recordId = imageService.addNewToLocation(imageBuilder, locationId);
+        } catch (MalformedURLException e) {
+            LOGGER.error("Messed up the URL creation: " + imageUrlString, e);
+        }
+        return recordId;
+    }
+
+    InputStream decodeBase64(InputStream fileData) {
+        InputStreamReader reader = new InputStreamReader(fileData);
+        try {
+            while (reader.read() != ',') {
+                // skip the header
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return BaseEncoding.base64().decodingStream(reader);
+    }
+
     private class LocationDistanceComparator implements Comparator<Location> {
         private final Double lat, lon;
 
@@ -243,54 +310,6 @@ public class DefaultLocationService implements LocationService {
         public boolean equals(Object o) {
             return false;
         }
-    }
-
-    /**
-     * Generate the name and pass along to the ImageStore.
-     * If the locationId isn't present, we are likely attempting to create a new Location
-     * at the coordinates provided.  If we do have a locationId, then this location is used
-     * and would "adjust" the lat/lon provided.
-     * (Option considered: have the lat/lon stored with the image.)
-     * @param lat - Double latitude of device location.
-     * @param lon - Double longitude of device location.
-     * @param locationId - Optional Integer representing an existing location (which may not have been created yet).
-     * @param fileData - InputStream from which we read the image data to put into a file.
-     * @returns Integer representing the ID of the newly created Image.
-     */
-    @Override
-    public Integer saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData) {
-        LOGGER.info("Requesting Save of image for Location ID " + locationId);
-        Integer newSeqId = null;
-        InputStream convertedFileData = decodeBase64(fileData);
-        try {
-            newSeqId = imageStore.addNew(locationId, convertedFileData);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        String imageUrlString =
-                "https://images.clueride.com/img/" + locationId + "/" + newSeqId + ".jpg";
-        Image.Builder imageBuilder = Image.Builder.builder()
-                .withUrlString(imageUrlString);
-        Integer recordId = -1;
-        try {
-            recordId = imageService.addNewToLocation(imageBuilder, locationId);
-        } catch (MalformedURLException e) {
-            LOGGER.error("Messed up the URL creation: " + imageUrlString, e);
-        }
-        return recordId;
-    }
-
-    InputStream decodeBase64(InputStream fileData) {
-        InputStreamReader reader = new InputStreamReader(fileData);
-        try {
-            while (reader.read() != ',') {
-                // skip the header
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return BaseEncoding.base64().decodingStream(reader);
     }
 
 }

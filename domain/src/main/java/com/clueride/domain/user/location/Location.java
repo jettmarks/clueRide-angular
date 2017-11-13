@@ -485,6 +485,10 @@ public class Location implements Step {
             return this;
         }
 
+        public boolean hasNoFeaturedImage() {
+            return featuredImageId == null;
+        }
+
         public Integer getFeaturedImageId() {
             return featuredImageId;
         }

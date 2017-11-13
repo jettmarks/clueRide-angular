@@ -19,3 +19,7 @@ There are two parts to the image:
 The Contents are placed on a webserver that Apache can handle.
 
 The metadata (for this package) are persisted via JPA.
+
+# Featured Image
+When an image is first added to a Location, if there is no Featured 
+Image, the new image becomes the Featured Image.
