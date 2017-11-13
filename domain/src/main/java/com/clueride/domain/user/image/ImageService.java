@@ -66,4 +66,5 @@ public interface ImageService {
      * @return List<Image> matching the location.
      */
     List<Image> getImagesByLocation(Integer locationId);
+
 }
