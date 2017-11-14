@@ -32,8 +32,16 @@ public interface LocationService {
      * Given an ID, return the JSON string representing the Location.
      * @param locationId - Unique Integer ID for the Location.
      * @return String JSON representing User's Location domain object.
+     * @deprecated Use getLocationById instead.
      */
     String getLocation(Integer locationId);
+
+    /**
+     * Given an ID, return the JSON string representing the Location.
+     * @param locationId - Unique Integer ID for the Location.
+     * @return String JSON representing User's Location domain object.
+     */
+    Location getLocationById(Integer locationId);
 
     /**
      * Given an ID, return the GeoJSON Feature Collection which places the location

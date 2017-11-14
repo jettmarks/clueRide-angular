@@ -68,8 +68,8 @@ public class LocationWebService {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getLocation(@QueryParam("id") Integer locationId) {
-        return locationService.getLocation(locationId);
+    public com.clueride.domain.user.location.Location getLocation(@QueryParam("id") Integer locationId) {
+        return locationService.getLocationById(locationId);
     }
 
     @GET

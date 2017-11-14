@@ -95,6 +95,13 @@ public class DefaultLocationService implements LocationService {
     }
 
     @Override
+    public Location getLocationById(Integer locationId) {
+        Location.Builder locationBuilder = locationStoreJpa.getLocationBuilderById(locationId);
+        fillAndGradeLocation(locationBuilder);
+        return locationBuilder.build();
+    }
+
+    @Override
     public String getLocation(Integer locationId) {
         String result = null;
         Location location = locationStoreJpa.getLocationById(locationId);
@@ -128,17 +135,21 @@ public class DefaultLocationService implements LocationService {
         LOGGER.info("Retrieving Nearest Marker Locations for (" + lat + ", " + lon + ")");
         List<Location> locationList = new ArrayList<>();
         for (Location.Builder builder : locationStoreJpa.getLocationBuilders()) {
-            /* Assemble the derived transient fields. */
-            builder.withLatLon(latLonService.getLatLonById(builder.getNodeId()));
-            builder.withLocationType(locationTypeService.getById(builder.getLocationTypeId()));
-            builder.withFeaturedImage(imageService.getImageUrl(builder.getFeaturedImageId()));
-
-            /* Last thing to assemble; after other pieces have been put into place. */
-            builder.withReadinessLevel(scoredLocationService.calculateReadinessLevel(builder));
+            fillAndGradeLocation(builder);
             locationList.add(builder.build());
         }
         // TODO: consider letting Jackson convert automatically
         return getJsonStringForLocationList(locationList);
+    }
+
+    private void fillAndGradeLocation(Location.Builder builder) {
+        /* Assemble the derived transient fields. */
+        builder.withLatLon(latLonService.getLatLonById(builder.getNodeId()));
+        builder.withLocationType(locationTypeService.getById(builder.getLocationTypeId()));
+        builder.withFeaturedImage(imageService.getImageUrl(builder.getFeaturedImageId()));
+
+        /* Last thing to assemble; after other pieces have been put into place. */
+        builder.withReadinessLevel(scoredLocationService.calculateReadinessLevel(builder));
     }
 
     private String getJsonStringForLocationList(List<Location> locationList) {
