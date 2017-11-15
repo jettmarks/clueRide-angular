@@ -56,7 +56,10 @@ public class CorsFilter implements Filter {
 
         /* TODO: Make this configurable; currently the Ionic Server in dev mode. */
         response.setHeader("Access-Control-Allow-Origin",
-                "http://localhost:8100");
+//                "http://localhost:8100"
+//                "http://localhost:8000"
+                "*"
+        );
         response.setHeader(
                 "Access-Control-Allow-Headers",
                 new StringBuilder()
@@ -69,6 +72,11 @@ public class CorsFilter implements Filter {
                         .append("Access-Control-Request-Method,")
                         .append("Access-Control-Request-Headers,")
                         .toString()
+        );
+
+        response.setHeader(
+                "Access-Control-Allow-Methods",
+                "GET,PUT,POST,DELETE,HEAD"
         );
 
         response.setHeader(

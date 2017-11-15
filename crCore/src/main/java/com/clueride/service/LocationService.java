@@ -103,4 +103,11 @@ public interface LocationService {
      */
     Location proposeLocation(LatLon latLon, String locationType);
 
+    /**
+     * Removes the current Image ID from the Featured link.
+     * Image remains linked to the location, but no longer selected as the Featured Image.
+     * @param locationId unique identifier for the Location.
+     * @return the updated Location (along with changes to the Readiness Level, if appropriate).
+     */
+    Location unlinkFeaturedImage(Integer locationId);
 }
