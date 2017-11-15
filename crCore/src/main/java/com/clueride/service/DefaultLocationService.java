@@ -245,16 +245,16 @@ public class DefaultLocationService implements LocationService {
      * @return Integer representing the ID of the newly created Image.
      */
     @Override
-    public Integer saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData) {
+    public Image saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData) {
         LOGGER.info("Requesting Save of image for Location ID " + locationId);
         Integer newSeqId = persistImageContent(locationId, fileData);
-        Integer imageMetadataId = persistImageMetadata(locationId, newSeqId);
+        Image image = persistImageMetadata(locationId, newSeqId);
         Location.Builder locationBuilder = locationStoreJpa.getLocationBuilderById(locationId);
         if (locationBuilder.hasNoFeaturedImage()) {
-            locationBuilder.withFeaturedImageId(imageMetadataId);
+            locationBuilder.withFeaturedImageId(image.getId());
             locationStoreJpa.update(locationBuilder);
         }
-        return imageMetadataId;
+        return image;
     }
 
     private Integer persistImageContent(Integer locationId, InputStream fileData) {
@@ -268,20 +268,19 @@ public class DefaultLocationService implements LocationService {
         return newSeqId;
     }
 
-    private Integer persistImageMetadata(Integer locationId, Integer newSeqId) {
-        Integer recordId;
-        recordId = -1;
+    private Image persistImageMetadata(Integer locationId, Integer newSeqId) {
         // TODO: URL responsibility probably belongs with the image service.
         String imageUrlString =
                 "https://images.clueride.com/img/" + locationId + "/" + newSeqId + ".jpg";
         Image.Builder imageBuilder = Image.Builder.builder()
                 .withUrlString(imageUrlString);
         try {
-            recordId = imageService.addNewToLocation(imageBuilder, locationId);
+            Integer recordId = imageService.addNewToLocation(imageBuilder, locationId);
+            imageBuilder.withId(recordId);
         } catch (MalformedURLException e) {
             LOGGER.error("Messed up the URL creation: " + imageUrlString, e);
         }
-        return recordId;
+        return imageBuilder.build();
     }
 
     InputStream decodeBase64(InputStream fileData) {

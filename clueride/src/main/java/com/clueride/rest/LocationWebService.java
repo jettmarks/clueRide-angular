@@ -31,6 +31,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import com.clueride.domain.user.image.Image;
 import com.clueride.domain.user.latlon.LatLon;
 import com.clueride.domain.user.loctype.LocationType;
 import com.clueride.domain.user.loctype.LocationTypeService;
@@ -103,23 +104,22 @@ public class LocationWebService {
      * @param lon - Double longitude of device location.
      * @param locationId - Optional Integer representing an existing location (which may not have been created yet).
      * @param fileData - InputStream from which we read the image data to put into a file.
-     * @return "OK" confirming success.
+     * @return Image instance which has just been created.
      */
     @POST
     @Path("uploadImage")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public String uploadImage(
+    public Image uploadImage(
             @FormDataParam("lat") Double lat,
             @FormDataParam("lon") Double lon,
             @FormDataParam("locId") Integer locationId,
             @FormDataParam("file") InputStream fileData
     ) {
-        locationService.saveLocationImage(
+        return locationService.saveLocationImage(
                 lat, lon,
                 locationId,
                 fileData);
-        return "OK";
     }
 
     /**
