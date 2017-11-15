@@ -19,6 +19,7 @@ package com.clueride.service;
 
 import java.io.InputStream;
 
+import com.clueride.domain.user.image.Image;
 import com.clueride.domain.user.latlon.LatLon;
 import com.clueride.domain.user.location.Location;
 
@@ -58,7 +59,7 @@ public interface LocationService {
      * @param locationId - Optional Integer representing an existing location (which may not have been created yet).
      * @param fileData - InputStream from which we read the image data to put into a file.
      */
-    Integer saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData);
+    Image saveLocationImage(Double lat, Double lon, Integer locationId, InputStream fileData);
 
     /**
      * Given the device's location -- or any relevant lat/lon pair -- return a list
