@@ -214,6 +214,15 @@ public class DefaultLocationService implements LocationService {
         return locationStoreJpa.getLocationById(id);
     }
 
+    @Override
+    public Location unlinkFeaturedImage(Integer locationId) {
+        Location.Builder locationBuilder = locationStoreJpa.getLocationBuilderById(locationId);
+        locationBuilder.clearFeaturedImage();
+        locationStoreJpa.update(locationBuilder);
+        fillAndGradeLocation(locationBuilder);
+        return locationBuilder.build();
+    }
+
     void validateUpdatedLocationBuilder(Location.Builder locationBuilder) {
         // TODO: CA-324 - Switch this over to Puzzle.Builder check ?
 //        List<Integer> validatedClueIds = new ArrayList<>();

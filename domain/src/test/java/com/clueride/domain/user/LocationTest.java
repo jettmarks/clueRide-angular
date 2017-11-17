@@ -26,6 +26,8 @@ import org.testng.annotations.Test;
 
 import com.clueride.domain.DomainGuiceModuleTest;
 import com.clueride.domain.user.location.Location;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.testng.Assert.assertNotNull;
 
 @Guice(modules = DomainGuiceModuleTest.class)
@@ -68,4 +70,12 @@ public class LocationTest {
         builder.build();
     }
 
+    @Test
+    public void testBuilder_removeFeaturedImage() throws Exception {
+        builder = toTestProvider.get();
+        builder.clearFeaturedImage();
+        assertTrue(builder.hasNoFeaturedImage());
+        Location location = builder.build();
+        assertNull(location.getFeaturedImage());
+    }
 }

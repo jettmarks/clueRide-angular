@@ -485,6 +485,12 @@ public class Location implements Step {
             return this;
         }
 
+        public Builder clearFeaturedImage() {
+            this.featuredImageId = null;
+            this.featuredImage = null;
+            return this;
+        }
+
         public boolean hasNoFeaturedImage() {
             return featuredImageId == null;
         }
