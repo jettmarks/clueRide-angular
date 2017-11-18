@@ -70,10 +70,22 @@ public class ImageServiceImplTest {
     }
 
     @Test
-    public void testAddNew() throws Exception {
+    public void testAddNew_whenDBAvailable() throws Exception {
         validateDBAvailability();
 
         toTest.addNew(Image.Builder.from(image));
+    }
+
+    @Test
+    public void testAddNewToLocation_mockedDB() throws Exception {
+        /* setup test */
+
+        /* train mocks */
+
+        /* make call */
+        toTest.addNewToLocation(Image.Builder.from(image), 0);
+
+        /* verify results */
     }
 
     @Test

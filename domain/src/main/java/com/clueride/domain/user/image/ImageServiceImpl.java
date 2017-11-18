@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.clueride.aop.badge.BadgeCapture;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Objects.requireNonNull;
 
@@ -78,6 +79,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    @BadgeCapture
     public Integer addNewToLocation(
             Image.Builder imageBuilder,
             Integer locationId
