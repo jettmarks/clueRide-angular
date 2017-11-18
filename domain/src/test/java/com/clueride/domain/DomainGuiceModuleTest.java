@@ -20,6 +20,7 @@ package com.clueride.domain;
 import com.google.inject.AbstractModule;
 import org.mockito.Mock;
 
+import com.clueride.aop.AopModule;
 import com.clueride.domain.user.image.ImageStore;
 import com.clueride.domain.user.image.ImageStoreJpa;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -38,6 +39,8 @@ public class DomainGuiceModuleTest extends AbstractModule {
         initMocks(this);
 
         install(new DomainGuiceProviderModule());
+        install(new AopModule());
+
         if (runWithDB) {
             bind(ImageStore.class).to(ImageStoreJpa.class);
         } else {
