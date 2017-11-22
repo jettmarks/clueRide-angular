@@ -13,34 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 11/17/17.
+ * Created by jett on 11/18/17.
  */
 package com.clueride.aop;
 
 import com.google.inject.AbstractModule;
 
-import com.clueride.aop.badge.BadgeCapture;
-import com.clueride.aop.badge.BadgeCaptureInterceptor;
-import com.clueride.domain.account.principal.SessionPrincipal;
-import static com.google.inject.matcher.Matchers.annotatedWith;
-import static com.google.inject.matcher.Matchers.any;
-
 /**
- * Guice Module for defining the AOP components.
+ * Defines the Guice bindings for testing the AOP Module.
  */
-public class AopModule extends AbstractModule {
+public class AopModuleTest extends AbstractModule {
 
     @Override
     protected void configure() {
-        BadgeCaptureInterceptor badgeCaptureInterceptor = new BadgeCaptureInterceptor(
-                getProvider(SessionPrincipal.class)
-        );
+        install(new AopModule());
 
-        bindInterceptor(
-                any(),
-                annotatedWith(BadgeCapture.class),
-                badgeCaptureInterceptor
-        );
+        bind(AopServiceConsumer.class).to(AopServiceConsumerImpl.class);
     }
-
 }

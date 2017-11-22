@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
 import com.clueride.domain.account.member.Member;
-import com.clueride.member.MemberService;
+import com.clueride.domain.account.member.MemberService;
 import com.clueride.rest.dto.CRCredentials;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;

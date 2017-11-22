@@ -15,7 +15,7 @@
  *
  * Created by jett on 7/31/17.
  */
-package com.clueride.principal;
+package com.clueride.domain.account.principal;
 
 import java.security.Principal;
 
@@ -37,4 +37,12 @@ public interface PrincipalService {
      * @param email string in a format that can be recognized as a valid email address.
      */
     void validate(String email);
+
+    /**
+     * Given an email address, return the matching Principal.
+     * @param emailAddress
+     * @return Unique Principal representing the holder of the given Email Address.
+     */
+    Principal getPrincipalForEmailAddress(String emailAddress);
+
 }

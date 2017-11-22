@@ -15,11 +15,9 @@
  *
  * Created by jett on 6/26/16.
  */
-package com.clueride.member;
+package com.clueride.domain.account.member;
 
 import java.util.List;
-
-import com.clueride.domain.account.member.Member;
 
 /**
  * Provides business-layer services for Members and their Badges.

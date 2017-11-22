@@ -15,7 +15,7 @@
  *
  * Created by jett on 7/31/17.
  */
-package com.clueride.principal;
+package com.clueride.domain.account.principal;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import com.auth0.jwt.exceptions.InvalidClaimException;
 
 import com.clueride.domain.account.member.Member;
-import com.clueride.member.MemberService;
+import com.clueride.domain.account.member.MemberService;
 
 /**
  * Exploratory implementation.
@@ -66,6 +66,11 @@ public class PrincipalServiceImpl implements PrincipalService {
         }
     }
 
+    @Override
+    public Principal getPrincipalForEmailAddress(String emailAddress) {
+        return new EmailPrincipal(emailAddress);
+    }
+
     private void refreshPrincipalCache() {
         if (principals == null || principals.size() == 0) {
             principals = new ArrayList<>();
@@ -82,4 +87,5 @@ public class PrincipalServiceImpl implements PrincipalService {
         LOGGER.debug("Found " + principals.size() + " records");
         return principals.size();
     }
+
 }

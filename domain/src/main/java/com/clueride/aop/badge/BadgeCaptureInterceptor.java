@@ -17,22 +17,37 @@
  */
 package com.clueride.aop.badge;
 
+import java.security.Principal;
+
+import javax.inject.Provider;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.log4j.Logger;
+
+import com.clueride.domain.account.principal.SessionPrincipal;
 
 /**
  * Method Interceptor responsible for capturing events that count toward the awarding of badges.
  */
 public class BadgeCaptureInterceptor implements MethodInterceptor {
     private static final Logger LOGGER = Logger.getLogger(BadgeCaptureInterceptor.class);
+    private Provider<SessionPrincipal> sessionPrincipalProvider;
+
+    public BadgeCaptureInterceptor(
+            Provider<SessionPrincipal> sessionPrincipalProvider
+    ) {
+        this.sessionPrincipalProvider = sessionPrincipalProvider;
+    }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         String methodName = invocation.getMethod().getName();
         String className = invocation.getMethod().getDeclaringClass().getCanonicalName();
+        Principal sessionPrincipal = sessionPrincipalProvider.get().getSessionPrincipal();
 
-        LOGGER.info("Called method " + methodName + " of class " + className);
+        // TODO: LOGGER is temporary until we send Badge Capture Event carrying this info
+        LOGGER.info("User " + sessionPrincipal.getName() + " called method " + methodName + " of class " + className);
         Object returnValue = invocation.proceed();
         LOGGER.info("Return Value: " + returnValue.toString());
         return returnValue;

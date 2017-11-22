@@ -15,7 +15,7 @@
  *
  * Created by jett on 8/2/17.
  */
-package com.clueride.principal;
+package com.clueride.domain.account.principal;
 
 import java.security.Principal;
 
