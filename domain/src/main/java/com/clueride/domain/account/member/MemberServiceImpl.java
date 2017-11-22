@@ -15,7 +15,7 @@
  *
  * Created by jett on 6/26/16.
  */
-package com.clueride.member;
+package com.clueride.domain.account.member;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -28,8 +28,6 @@ import javax.persistence.NoResultException;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.account.member.Member;
-import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.user.Badge;
 
 /**

@@ -1,4 +1,4 @@
-package com.clueride.member;/*
+package com.clueride.domain.account.member;/*
  * Copyright 2017 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,9 +24,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
-import com.clueride.CoreGuiceModuleTest;
-import com.clueride.domain.account.member.Member;
-import com.clueride.domain.account.member.MemberStore;
+import com.clueride.domain.DomainGuiceModuleTest;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -34,7 +32,7 @@ import static org.testng.Assert.assertNotNull;
 /**
  * Exercises the MemberServiceImplTest class.
  */
-@Guice(modules= CoreGuiceModuleTest.class)
+@Guice(modules= DomainGuiceModuleTest.class)
 public class MemberServiceImplTest {
     private MemberServiceImpl toTest;
     private InternetAddress goodAddress;

@@ -21,6 +21,10 @@ import com.google.inject.AbstractModule;
 
 import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.account.member.MemberStoreJpa;
+import com.clueride.domain.account.principal.PrincipalService;
+import com.clueride.domain.account.principal.PrincipalServiceImpl;
+import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.account.principal.SessionPrincipalImpl;
 import com.clueride.domain.user.image.ImageService;
 import com.clueride.domain.user.image.ImageServiceImpl;
 import com.clueride.domain.user.image.ImageStore;
@@ -56,9 +60,11 @@ public class DomainGuiceModule extends AbstractModule {
         bind(LocationTypeService.class).to(LocationTypeServiceImpl.class);
         bind(LocationTypeStore.class).to(LocationTypeStoreJpa.class);
         bind(MemberStore.class).to(MemberStoreJpa.class);
+        bind(PrincipalService.class).to(PrincipalServiceImpl.class);
         bind(PuzzleService.class).to(PuzzleServiceImpl.class);
         bind(PuzzleStore.class).to(PuzzleStoreJpa.class);
         bind(ScoredLocationService.class).to(ScoredLocationServiceImpl.class);
+        bind(SessionPrincipal.class).to(SessionPrincipalImpl.class);
     }
 
 }

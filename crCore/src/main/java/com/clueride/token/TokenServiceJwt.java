@@ -35,8 +35,8 @@ import org.apache.log4j.Logger;
 
 import com.clueride.config.ConfigService;
 import com.clueride.domain.account.member.Member;
-import com.clueride.member.MemberService;
-import com.clueride.principal.PrincipalService;
+import com.clueride.domain.account.member.MemberService;
+import com.clueride.domain.account.principal.PrincipalService;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
 import static java.util.Objects.requireNonNull;
 

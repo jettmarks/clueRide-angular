@@ -1,4 +1,4 @@
-package com.clueride.principal;/*
+package com.clueride.domain.account.principal;/*
  * Copyright 2017 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,9 +28,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
-import com.clueride.CoreGuiceModuleTest;
+import com.clueride.domain.DomainGuiceModuleTest;
 import com.clueride.domain.account.member.Member;
-import com.clueride.member.MemberService;
+import com.clueride.domain.account.member.MemberService;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -40,7 +40,7 @@ import static org.testng.Assert.assertTrue;
 /**
  * Exercises the PrincipalServiceImpl class.
  */
-@Guice(modules = CoreGuiceModuleTest.class)
+@Guice(modules = DomainGuiceModuleTest.class)
 public class PrincipalServiceImplTest {
     private PrincipalServiceImpl toTest;
 

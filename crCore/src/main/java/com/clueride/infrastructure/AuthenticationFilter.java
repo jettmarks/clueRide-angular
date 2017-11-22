@@ -22,6 +22,7 @@ import java.security.Principal;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -32,6 +33,8 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.log4j.Logger;
 
+import com.clueride.domain.account.principal.PrincipalService;
+import com.clueride.domain.account.principal.SessionPrincipal;
 import com.clueride.token.TokenService;
 
 /**
@@ -44,13 +47,19 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationFilter.class);
 
     private final TokenService tokenService;
+    private final Provider<SessionPrincipal> sessionPrincipalProvider;
+    private final PrincipalService principalService;
 
     @Inject
     public AuthenticationFilter(
-            TokenService tokenService
+            TokenService tokenService,
+            Provider<SessionPrincipal> sessionPrincipalProvider,
+            PrincipalService principalService
     ) {
         super();
         this.tokenService = tokenService;
+        this.sessionPrincipalProvider = sessionPrincipalProvider;
+        this.principalService = principalService;
         LOGGER.info("Instantiating my Auth");
     }
 
@@ -97,8 +106,19 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             return;
         }
 
-        /* Add user to the Context for this invocation. */
         final String principalName = tokenService.getNameFromToken(token);
+        /* This one is used for Method Interceptors for Badge Capture. */
+        setSessionPrincipal(principalName);
+
+        /* This one is used for Jersey Calls. */
+        setSecurityContextPrincipal(requestContext, principalName);
+    }
+
+    /** Add user to the Context for this invocation; used by JAX-RS & Jersey calls. */
+    private void setSecurityContextPrincipal(
+            ContainerRequestContext requestContext,
+            final String principalName
+    ) {
         final SecurityContext currentSecurityContext = requestContext.getSecurityContext();
         requestContext.setSecurityContext(new SecurityContext() {
 
@@ -129,6 +149,15 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 return "Bearer";
             }
         });
-
     }
+
+    /** Name the user's principal as the SessionPrincipal. */
+    private void setSessionPrincipal(String principalName) {
+        sessionPrincipalProvider.get().setSessionPrincipal(
+                principalService.getPrincipalForEmailAddress(
+                        principalName
+                )
+        );
+    }
+
 }

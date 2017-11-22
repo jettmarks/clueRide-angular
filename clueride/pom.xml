@@ -3,11 +3,16 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.clueride</groupId>
     <artifactId>clueride</artifactId>
     <packaging>war</packaging>
     <version>0.1-SNAPSHOT</version>
     <name>clueride</name>
+
+    <parent>
+        <groupId>com.clueride</groupId>
+        <artifactId>clueride-war</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
 
     <build>
         <finalName>clueride</finalName>
