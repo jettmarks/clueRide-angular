@@ -26,10 +26,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
+import com.clueride.aop.AopDummyService;
 import com.clueride.aop.AopServiceConsumerImpl;
 import com.clueride.domain.DomainGuiceModuleTest;
 import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.badge.event.BadgeEvent;
+import com.clueride.domain.badge.event.BadgeEventService;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
@@ -51,9 +57,17 @@ public class BadgeCaptureInterceptorTest {
     @Inject
     private Provider<AopServiceConsumerImpl> toTestProvider;
 
+    @Inject
+    private BadgeEventService badgeEventService;
+
+    @Inject
+    private AopDummyService dummyService;
+
     @BeforeMethod
     public void setUp() throws Exception {
         reset(
+                badgeEventService,
+                dummyService,
                 sessionPrincipal
         );
         toTest = toTestProvider.get();
@@ -89,6 +103,25 @@ public class BadgeCaptureInterceptorTest {
         /* verify results */
         assertEquals(actual, expected);
 
+    }
+
+    @Test
+    public void testAvoidCallUponException() throws Exception {
+        /* setup test */
+        Integer expected = 123;
+
+        /* train mocks */
+        doThrow(new RuntimeException()).when(dummyService).doSomeWork();
+
+        /* make call */
+        try {
+            toTest.performService(expected);
+        } catch (Exception e) {
+            /* Ignore; we're paying attention to the badgeEventService */
+        }
+
+        /* verify results */
+        verify(badgeEventService, times(0)).send(any(BadgeEvent.Builder.class));
     }
 
 }

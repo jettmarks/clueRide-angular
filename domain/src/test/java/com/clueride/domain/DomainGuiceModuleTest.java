@@ -23,11 +23,13 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.mockito.Mock;
 
+import com.clueride.aop.AopDummyService;
 import com.clueride.aop.AopModuleTest;
 import com.clueride.domain.account.member.MemberService;
 import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.badge.event.BadgeEventService;
 import com.clueride.domain.user.image.ImageStore;
 import com.clueride.domain.user.image.ImageStoreJpa;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -37,6 +39,12 @@ import static org.mockito.MockitoAnnotations.initMocks;
  */
 public class DomainGuiceModuleTest extends AbstractModule {
     private boolean runWithDB = ("true".equals(System.getProperty("db.available")));
+
+    @Mock
+    private AopDummyService dummyService;
+
+    @Mock
+    private BadgeEventService badgeEventService;
 
     @Mock
     private ImageStore imageStore;
@@ -62,11 +70,12 @@ public class DomainGuiceModuleTest extends AbstractModule {
         } else {
             bind(ImageStore.class).toInstance(imageStore);
         }
+        bind(AopDummyService.class).toInstance(dummyService);
+        bind(BadgeEventService.class).toInstance(badgeEventService);
         bind(MemberService.class).toInstance(memberService);
         bind(PrincipalService.class).toInstance(principleService);
         bind(SessionPrincipal.class).toInstance(sessionPrincipal);
 
-//        bindScope(SessionScoped.class, ServletScopes.SESSION);
     }
 
     @Provides
