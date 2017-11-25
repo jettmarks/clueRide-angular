@@ -17,39 +17,43 @@
  */
 package com.clueride.aop.badge;
 
-import java.security.Principal;
+import java.util.Date;
 
 import javax.inject.Provider;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.log4j.Logger;
 
 import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.badge.event.BadgeEvent;
+import com.clueride.domain.badge.event.BadgeEventService;
 
 /**
  * Method Interceptor responsible for capturing events that count toward the awarding of badges.
  */
 public class BadgeCaptureInterceptor implements MethodInterceptor {
-    private static final Logger LOGGER = Logger.getLogger(BadgeCaptureInterceptor.class);
-    private Provider<SessionPrincipal> sessionPrincipalProvider;
+    private final Provider<BadgeEventService> badgeEventClientProvider;
+    private final Provider<SessionPrincipal> sessionPrincipalProvider;
 
     public BadgeCaptureInterceptor(
+            Provider<BadgeEventService> badgeEventClientProvider,
             Provider<SessionPrincipal> sessionPrincipalProvider
     ) {
+        this.badgeEventClientProvider = badgeEventClientProvider;
         this.sessionPrincipalProvider = sessionPrincipalProvider;
     }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        String methodName = invocation.getMethod().getName();
-        String className = invocation.getMethod().getDeclaringClass().getCanonicalName();
-        Principal sessionPrincipal = sessionPrincipalProvider.get().getSessionPrincipal();
+        BadgeEvent.Builder badgeEventBuilder =  BadgeEvent.Builder.builder()
+                .withTimestamp(new Date())
+                .withMethodName(invocation.getMethod().getName())
+                .withMethodClass(invocation.getMethod().getDeclaringClass())
+                .withPrincipal(sessionPrincipalProvider.get().getSessionPrincipal());
 
-        // TODO: LOGGER is temporary until we send Badge Capture Event carrying this info
-        LOGGER.info("User " + sessionPrincipal.getName() + " called method " + methodName + " of class " + className);
         Object returnValue = invocation.proceed();
-        LOGGER.info("Return Value: " + returnValue.toString());
+        badgeEventBuilder.withReturnValue(returnValue);
+        badgeEventClientProvider.get().send(badgeEventBuilder);
         return returnValue;
     }
 }

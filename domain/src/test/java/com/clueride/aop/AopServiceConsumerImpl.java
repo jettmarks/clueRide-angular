@@ -20,29 +20,30 @@ package com.clueride.aop;
 import javax.inject.Inject;
 
 import com.clueride.aop.badge.BadgeCapture;
-import com.clueride.domain.account.principal.PrincipalService;
 
 /**
  * This class provides a method which is to be annotated by the classes under test.
  */
 public class AopServiceConsumerImpl implements AopServiceConsumer {
+    private AopDummyService dummyService;
 
     @Inject
     public AopServiceConsumerImpl(
-            PrincipalService principalService
+            AopDummyService dummyService
     ) {
         /**
-         * Although the service is unused in this class, it is important that we inject something because Guice takes
+         * It is important that we inject something because Guice takes
          * the short-cut to invoke a no arg constructor otherwise and this leads to the @BadgeCapture method interceptor
          * never being added.
          */
-        PrincipalService principalService1 = principalService;
+        this.dummyService = dummyService;
     }
 
     @Override
     @BadgeCapture
     public Integer performService(Integer input) {
         Integer response = input;
+        dummyService.doSomeWork();
         return response;
     }
 

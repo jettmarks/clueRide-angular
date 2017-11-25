@@ -22,6 +22,7 @@ import com.google.inject.AbstractModule;
 import com.clueride.aop.badge.BadgeCapture;
 import com.clueride.aop.badge.BadgeCaptureInterceptor;
 import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.badge.event.BadgeEventService;
 import static com.google.inject.matcher.Matchers.annotatedWith;
 import static com.google.inject.matcher.Matchers.any;
 
@@ -33,6 +34,7 @@ public class AopModule extends AbstractModule {
     @Override
     protected void configure() {
         BadgeCaptureInterceptor badgeCaptureInterceptor = new BadgeCaptureInterceptor(
+                getProvider(BadgeEventService.class),
                 getProvider(SessionPrincipal.class)
         );
 
