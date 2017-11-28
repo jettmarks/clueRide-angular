@@ -18,7 +18,6 @@
 package com.clueride;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,14 +47,12 @@ import com.clueride.domain.GeoNode;
 import com.clueride.domain.Outing;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.account.member.MemberService;
-import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NewNodeProposal;
 import com.clueride.domain.dev.TrackImpl;
 import com.clueride.domain.factory.PointFactory;
-import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.image.ImageService;
 import com.clueride.domain.user.latlon.LatLonService;
 import com.clueride.domain.user.latlon.LatLonStore;
@@ -124,9 +121,6 @@ public class CoreGuiceModuleTest extends AbstractModule {
     private MemberService memberService;
 
     @Mock
-    private MemberStore memberStore;
-
-    @Mock
     private NodeStore nodeStore;
 
     @Mock
@@ -176,7 +170,6 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(LocationTypeService.class).toInstance(locationTypeService);
         bind(LocationService.class).toInstance(locationService);
         bind(MemberService.class).toInstance(memberService);
-        bind(MemberStore.class).toInstance(memberStore);
         bind(NodeService.class).toInstance(nodeService);
         bind(NodeStore.class).toInstance(nodeStore);
         bind(OutingService.class).to(OutingServiceImpl.class);
@@ -268,18 +261,6 @@ public class CoreGuiceModuleTest extends AbstractModule {
                 .withHeader(headerClaims)
                 .withJWTId(jtiService.registerNewId())
                 .withExpiresAt(inASecond);
-    }
-
-    @Provides
-    private Member getMember() {
-        return Member.Builder.builder()
-                .withFirstName("ClueRide")
-                .withLastName("Guest")
-                .withEmailAddress("guest.dummy@clueride.com")
-                .withBadges(Collections.singletonList(Badge.LOCATION_EDITOR))
-                .withDisplayName("ClueRide Guest")
-                .withPhone("123-456-7890")
-                .build();
     }
 
     @Provides NetworkProposal getNewNodeNetworkProposal(GeoNode geoNode) {

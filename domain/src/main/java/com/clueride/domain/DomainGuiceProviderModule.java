@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -28,13 +29,21 @@ import javax.persistence.EntityManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
+import com.clueride.domain.account.member.Member;
+import com.clueride.domain.account.principal.EmailPrincipal;
+import com.clueride.domain.badge.event.BadgeEvent;
+import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.answer.Answer;
 import com.clueride.domain.user.answer.AnswerKey;
 import com.clueride.domain.user.image.Image;
+import com.clueride.domain.user.image.ImageServiceImpl;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.loctype.LocationType;
 import com.clueride.domain.user.puzzle.Puzzle;
+import com.clueride.infrastructure.ClientSourced;
+import com.clueride.infrastructure.DbSourced;
 import com.clueride.infrastructure.JpaUtil;
+import com.clueride.infrastructure.ServiceSourced;
 import static java.util.Arrays.asList;
 
 /**
@@ -137,6 +146,79 @@ public class DomainGuiceProviderModule extends AbstractModule {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Provides
+    private EmailPrincipal getEmailPrincipal() {
+        return new EmailPrincipal("guest.dummy@clueride.com");
+    }
+
+    @Provides
+    private Member getMember() {
+        return Member.Builder.builder()
+                .withId(-1)
+                .withFirstName("ClueRide")
+                .withLastName("Guest")
+                .withEmailAddress("guest.dummy@clueride.com")
+                .withBadges(Collections.singletonList(Badge.LOCATION_EDITOR))
+                .withDisplayName("ClueRide Guest")
+                .withPhone("123-456-7890")
+                .build();
+    }
+
+    @Provides
+    @DbSourced
+    private BadgeEvent.Builder getDbSourcedBadgeEvent(
+            Member member
+    ) {
+        return BadgeEvent.Builder.builder()
+                .withTimestamp(new Date())
+                .withId(123)
+                .withMemberId(member.getId())
+                .withClassName("com.clueride.domain.user.ImageServiceImpl")
+                .withMethodName("addNewToLocation")
+                .withReturnValue("1")
+                ;
+    }
+
+    @Provides
+    @ServiceSourced
+    private BadgeEvent.Builder getBadgeEventBuilder (
+            EmailPrincipal principal
+    ) {
+        return BadgeEvent.Builder.builder()
+                .withId(123)
+                .withPrincipal(principal)
+                .withMemberId(123)
+                .withReturnValue(123)
+                .withTimestamp(new Date())
+                .withMethodName("addNewToLocation")
+                .withMethodClass(ImageServiceImpl.class)
+                .withClassName("com.clueride.domain.user.ImageServiceImpl")
+                .withReturnValue(1)
+                ;
+    }
+
+    @Provides
+    @ClientSourced
+    private BadgeEvent.Builder getBadgeEventBuilderClientSourced(
+            EmailPrincipal principal
+    ) {
+        return BadgeEvent.Builder.builder()
+                .withPrincipal(principal)
+                .withReturnValue(123)
+                .withTimestamp(new Date())
+                .withMethodName("addNewToLocation")
+                .withMethodClass(ImageServiceImpl.class)
+                .withReturnValue(1)
+                ;
+    }
+
+    @Provides
+    private BadgeEvent getBadgeEvent(
+            @ServiceSourced BadgeEvent.Builder badgeEventBuilder
+    ) {
+        return badgeEventBuilder.build();
     }
 
 }

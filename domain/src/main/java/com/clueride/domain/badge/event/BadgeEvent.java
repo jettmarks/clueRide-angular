@@ -20,6 +20,15 @@ package com.clueride.domain.badge.event;
 import java.security.Principal;
 import java.util.Date;
 
+import javax.annotation.concurrent.Immutable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -27,19 +36,28 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 /**
  * DTO for the data captured for Badge-worthy deeds.
  */
+@Immutable
 public class BadgeEvent {
+    private Integer id;
     private Date timestamp;
     private Principal principal;
+    private Integer memberId;
     private String methodName;
     private Class methodClass;
     private Object returnValue;
 
     private BadgeEvent(Builder builder) {
+        this.id = builder.id;
         this.timestamp = builder.timestamp;
         this.principal = builder.principal;
+        this.memberId = builder.memberId;
         this.methodClass = builder.methodClass;
         this.methodName = builder.methodName;
         this.returnValue = builder.returnValue;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public Date getTimestamp() {
@@ -48,6 +66,10 @@ public class BadgeEvent {
 
     public Principal getPrincipal() {
         return principal;
+    }
+
+    public Integer getMemberId() {
+        return memberId;
     }
 
     public String getMethodName() {
@@ -80,11 +102,35 @@ public class BadgeEvent {
     /**
      * Mutable instance of BadgeEvent.
      */
+    @Entity(name="badge_event")
     public static class Builder {
+        @Id
+        @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "badge_event_pk_sequence")
+        @SequenceGenerator(name="badge_event_pk_sequence", sequenceName = "badge_event_id_seq", allocationSize = 1)
+        private Integer id;
+
+        @Column
         private Date timestamp;
+
+        @Transient
         private Principal principal;
+
+        @Column(name="member_id")
+        private Integer memberId;
+
+        @Column(name="method_name")
         private String methodName;
+
+        @Column(name="class_name")
+        private String className;
+
+        @Transient
         private Class methodClass;
+
+        @Column(name="return_value")
+        private String returnValueAsString;
+
+        @Transient
         private Object returnValue;
 
         public BadgeEvent build() {
@@ -97,11 +143,25 @@ public class BadgeEvent {
 
         public static Builder from(BadgeEvent badgeEvent) {
             return builder()
+                    .withId(badgeEvent.id)
                     .withPrincipal(badgeEvent.principal)
+                    .withMemberId(badgeEvent.memberId)
                     .withTimestamp(badgeEvent.timestamp)
                     .withMethodClass(badgeEvent.methodClass)
+                    .withClassName(badgeEvent.methodClass.getCanonicalName())
                     .withMethodName(badgeEvent.methodName)
-                    .withReturnValue(badgeEvent.returnValue);
+                    .withReturnValue(badgeEvent.returnValue)
+                    .withReturnValueAsString(badgeEvent.returnValue.toString())
+                    ;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public Builder withId(Integer id) {
+            this.id = id;
+            return this;
         }
 
         public Date getTimestamp() {
@@ -110,6 +170,15 @@ public class BadgeEvent {
 
         public Builder withTimestamp(Date timestamp) {
             this.timestamp = timestamp;
+            return this;
+        }
+
+        public Integer getMemberId() {
+            return memberId;
+        }
+
+        public Builder withMemberId(Integer memberId) {
+            this.memberId = memberId;
             return this;
         }
 
@@ -131,12 +200,22 @@ public class BadgeEvent {
             return this;
         }
 
+        public Builder withClassName(String className) {
+            this.className = className;
+            return this;
+        }
+
+        public String getClassName() {
+            return className;
+        }
+
         public Class getMethodClass() {
             return methodClass;
         }
 
         public Builder withMethodClass(Class methodClass) {
             this.methodClass = methodClass;
+            this.className = methodClass.getCanonicalName();
             return this;
         }
 
@@ -146,7 +225,17 @@ public class BadgeEvent {
 
         public Builder withReturnValue(Object returnValue) {
             this.returnValue = returnValue;
+            this.returnValueAsString = returnValue.toString();
             return this;
+        }
+
+        private Builder withReturnValueAsString(String returnValueAsString) {
+            this.returnValueAsString = returnValueAsString;
+            return this;
+        }
+
+        public String getReturnValueAsString() {
+            return returnValueAsString;
         }
 
         @Override
