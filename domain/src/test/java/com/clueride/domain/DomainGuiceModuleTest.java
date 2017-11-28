@@ -26,10 +26,12 @@ import org.mockito.Mock;
 import com.clueride.aop.AopDummyService;
 import com.clueride.aop.AopModuleTest;
 import com.clueride.domain.account.member.MemberService;
+import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.SessionPrincipal;
 import com.clueride.domain.badge.event.BadgeEventService;
+import com.clueride.domain.badge.event.BadgeEventStore;
 import com.clueride.domain.user.image.ImageStore;
 import com.clueride.domain.user.image.ImageStoreJpa;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -47,10 +49,16 @@ public class DomainGuiceModuleTest extends AbstractModule {
     private BadgeEventService badgeEventService;
 
     @Mock
+    private BadgeEventStore badgeEventStore;
+
+    @Mock
     private ImageStore imageStore;
 
     @Mock
     private MemberService memberService;
+
+    @Mock
+    private MemberStore memberStore;
 
     @Mock
     private PrincipalService principleService;
@@ -72,7 +80,9 @@ public class DomainGuiceModuleTest extends AbstractModule {
         }
         bind(AopDummyService.class).toInstance(dummyService);
         bind(BadgeEventService.class).toInstance(badgeEventService);
+        bind(BadgeEventStore.class).toInstance(badgeEventStore);
         bind(MemberService.class).toInstance(memberService);
+        bind(MemberStore.class).toInstance(memberStore);
         bind(PrincipalService.class).toInstance(principleService);
         bind(SessionPrincipal.class).toInstance(sessionPrincipal);
 
@@ -80,7 +90,7 @@ public class DomainGuiceModuleTest extends AbstractModule {
 
     @Provides
     private Principal getEmailPrincipal() {
-        return new EmailPrincipal("test.dummy@clueride.com");
+        return new EmailPrincipal("test.different@clueride.com");
     }
 
 }

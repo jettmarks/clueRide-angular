@@ -18,20 +18,21 @@
 package com.clueride.domain.badge.event;
 
 /**
- * Operations on Badge Events.
+ * Persistence operations for Badge Events.
  */
-public interface BadgeEventService {
+public interface BadgeEventStore {
     /**
-     * Passes captured Badge Event to the service thread that persists the event.
-     * @param badgeEvent instance of captured Badge Event.
+     * Create a new instance of Badge Event from the Builder.
+     * @param badgeEventBuilder instance of Builder for the BadgeEvent.
+     * @return Unique ID of the newly created record.
      */
-    void send(BadgeEvent.Builder badgeEvent);
+    Integer add(BadgeEvent.Builder badgeEventBuilder);
 
     /**
-     * Given the unique identifier for a Badge Event, retrieve that badge event.
+     * Return the matching BadgeEvent (as a Builder) given the ID.
      * @param badgeEventId unique identifier for the Badge Event.
-     * @return fully-populated Badge Event.
+     * @return partially populated BadgeEvent; needs other services to fill remaining fields.
      */
-    BadgeEvent getBadgeEventById(Integer badgeEventId);
+    BadgeEvent.Builder getById(Integer badgeEventId);
 
 }
