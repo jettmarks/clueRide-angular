@@ -47,6 +47,8 @@ import com.clueride.domain.user.puzzle.PuzzleService;
 import com.clueride.domain.user.puzzle.PuzzleServiceImpl;
 import com.clueride.domain.user.puzzle.PuzzleStore;
 import com.clueride.domain.user.puzzle.PuzzleStoreJpa;
+import com.clueride.infrastructure.tether.TetherService;
+import com.clueride.infrastructure.tether.TetherServiceImpl;
 
 /**
  * Guice Bindings for the Domain module.
@@ -71,6 +73,7 @@ public class DomainGuiceModule extends AbstractModule {
         bind(PuzzleStore.class).to(PuzzleStoreJpa.class);
         bind(ScoredLocationService.class).to(ScoredLocationServiceImpl.class);
         bind(SessionPrincipal.class).to(SessionPrincipalImpl.class);
+        bind(TetherService.class).to(TetherServiceImpl.class);
     }
 
 }
