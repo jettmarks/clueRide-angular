@@ -25,6 +25,8 @@ import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.PrincipalServiceImpl;
 import com.clueride.domain.account.principal.SessionPrincipal;
 import com.clueride.domain.account.principal.SessionPrincipalImpl;
+import com.clueride.domain.badge.BadgeService;
+import com.clueride.domain.badge.BadgeServiceImpl;
 import com.clueride.domain.badge.event.BadgeEventService;
 import com.clueride.domain.badge.event.BadgeEventServiceImpl;
 import com.clueride.domain.badge.event.BadgeEventStore;
@@ -63,6 +65,7 @@ public class DomainGuiceModule extends AbstractModule {
         install(new DomainGuiceProviderModule());
 
         /* Bindings for Application use. */
+        bind(BadgeService.class).to(BadgeServiceImpl.class);
         bind(BadgeEventService.class).to(BadgeEventServiceImpl.class);
         bind(BadgeEventStore.class).to(BadgeEventStoreJpa.class);
         bind(ImageService.class).to(ImageServiceImpl.class);
