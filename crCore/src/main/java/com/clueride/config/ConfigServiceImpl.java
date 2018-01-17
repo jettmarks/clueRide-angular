@@ -30,12 +30,12 @@ public class ConfigServiceImpl implements ConfigService {
         // TODO: Move this secret out of the committed code
         map.put(
                 "token.jwt.secret",
-                "4mui79htrj08e8j9taout4ar66"
+                "9QYMlYqGJaO9MLKzrA6Pc_rMX3id8CAeqa5cFPVJGPoUtx8l3vTENv8MGO8Nc4l1"
         );
 
         map.put(
                 "token.jwt.issuer",
-                "clueride.com"
+                "clueride-social.auth0.com"
         );
     }
     @Override
