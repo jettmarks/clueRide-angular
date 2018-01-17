@@ -28,6 +28,7 @@ public interface TokenService {
     /**
      *
      * @return String representing an authenticated user along with their badges.
+     * @deprecated - no longer generating tokens within app; using Auth0.
      */
     String generateSignedToken();
 
@@ -52,6 +53,7 @@ public interface TokenService {
      * @param principal unique identifier indicating specific access to this system.
      * @param isGuest true if the principal is a Guest.
      * @return String token representing the Principal, valid for a fixed period of time.
+     * @deprecated - Using Auth0 for generating tokens.
      */
     String generateTokenForExistingPrincipal(Principal principal, boolean isGuest);
 

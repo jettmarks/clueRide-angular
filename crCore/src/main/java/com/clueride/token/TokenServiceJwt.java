@@ -46,9 +46,12 @@ import static java.util.Objects.requireNonNull;
 public class TokenServiceJwt implements TokenService {
     private static final Logger LOGGER = Logger.getLogger(TokenServiceJwt.class);
 
+    private static final String ISSUER_SOCIAL = "https://clueride-social.auth0.com/";
+    private static final String ISSUER_PASSWORDLESS = "https://clueride.auth0.com/";
     private static final String ISSUER = "clueride.com";
     private static Algorithm ALGORITHM = null;
-    private static JWTVerifier verifier;
+    private static JWTVerifier verifierSocial;
+    private static JWTVerifier verifierPasswordless;
 
     private final PrincipalService principalService;
     private final JtiService jtiService;
@@ -77,8 +80,11 @@ public class TokenServiceJwt implements TokenService {
         if (ALGORITHM == null) {
             try {
                 ALGORITHM = HMAC256(secret);
-                verifier = JWT.require(ALGORITHM)
-                        .withIssuer(ISSUER)
+                verifierSocial = JWT.require(ALGORITHM)
+                        .withIssuer(ISSUER_SOCIAL)
+                        .build(); //Reusable verifier instance
+                verifierPasswordless = JWT.require(ALGORITHM)
+                        .withIssuer(ISSUER_PASSWORDLESS)
                         .build(); //Reusable verifier instance
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -102,18 +108,29 @@ public class TokenServiceJwt implements TokenService {
     @Override
     public DecodedJWT verifyToken(String token) {
         requireNonNull(token, "Token can't be null or empty");
-        return verifier.verify(token);
+        DecodedJWT decodedJWT = JWT.decode(token);
+        Claim issuerClaim = decodedJWT.getClaim("iss");
+        switch (issuerClaim.asString()) {
+            case ISSUER_SOCIAL:
+                decodedJWT = verifierSocial.verify(token);
+                break;
+            case ISSUER_PASSWORDLESS:
+                decodedJWT = verifierPasswordless.verify(token);
+                break;
+            default:
+                throw new RuntimeException("Unrecognized Issuer Claim: " + issuerClaim.asString());
+        }
+        return decodedJWT;
     }
 
     @Override
     public void validateToken(String token) {
         DecodedJWT jwt = verifyToken(token);
-        String jtiId = jwt.getId();
         // TODO: CA-315 Decide if we want to configure the JTI check; currently commented out.
+        // String jtiId = jwt.getId();
         // jtiService.validateId(jtiId);
 
-        Claim emailClaim = jwt.getHeaderClaim(CustomClaim.EMAIL);
-        Claim badgesClaim = jwt.getHeaderClaim(CustomClaim.BADGES);
+        Claim emailClaim = jwt.getClaim("email");
 
         if (emailClaim.isNull()) {
             LOGGER.warn("Unable to verify token's email");
@@ -121,11 +138,6 @@ public class TokenServiceJwt implements TokenService {
         }
 
         principalService.validate(emailClaim.asString());
-
-        if (badgesClaim.isNull()) {
-            LOGGER.warn("Unable to verify token's badge set");
-            throw new InvalidClaimException("Unable to verify token's badge set");
-        }
     }
 
     @Override
@@ -156,7 +168,7 @@ public class TokenServiceJwt implements TokenService {
     @Override
     public String getNameFromToken(String token) {
         DecodedJWT jwt = verifyToken(token);
-        Claim emailClaim = jwt.getHeaderClaim(CustomClaim.EMAIL);
+        Claim emailClaim = jwt.getClaim("email");
         if (emailClaim.isNull()) {
             throw new IllegalStateException("Provided token doesn't have a EMAIL claim");
         }
