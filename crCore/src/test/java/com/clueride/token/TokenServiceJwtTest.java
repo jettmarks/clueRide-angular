@@ -18,7 +18,6 @@ package com.clueride.token;
  */
 
 import java.io.UnsupportedEncodingException;
-import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,6 @@ import javax.inject.Provider;
 
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
@@ -37,16 +35,11 @@ import org.testng.annotations.Test;
 import com.clueride.CoreGuiceModuleTest;
 import com.clueride.config.ConfigService;
 import com.clueride.domain.account.member.Member;
-import com.clueride.domain.account.member.MemberService;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.exc.RecordNotFoundException;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
 
 /**
  * Exercises the TokenServiceJwtTest class.
@@ -71,18 +64,12 @@ public class TokenServiceJwtTest {
     private Member member;
 
     @Inject
-    private MemberService memberService;
-
-    @Inject
-    private Principal principal;
-
-    @Inject
     private PrincipalService principalService;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        secret = configService.get("token.jwt.secret");
-        issuer = configService.get("token.jwt.issuer");
+        secret = configService.getAuthSecret();
+        issuer = configService.getAuthIssuers().get(0);
         toTest = toTestProvider.get();
         tokenMap = buildTokenTypeMap();
     }
@@ -100,34 +87,6 @@ public class TokenServiceJwtTest {
     }
 
     @Test
-    public void testGenerateTokenForNewPrincipal() throws Exception {
-        /* train mocks */
-        when(memberService.getMemberByEmail(anyString())).thenReturn(member);
-        when(principalService.getNewPrincipal()).thenReturn(principal);
-
-        /* make call */
-        String actual = toTest.generateTokenForNewPrincipal();
-        assertNotNull(actual);
-
-        /* Verify results */
-        assertTrue(toTest.isGuestToken(actual));
-    }
-
-    @Test
-    public void testGenerateTokenForExistingPrincipal() throws Exception {
-        /* train mocks */
-        when(memberService.getMemberByEmail(anyString())).thenReturn(member);
-
-        /* make call */
-        String actual = toTest.generateTokenForExistingPrincipal(principal, false);
-        assertNotNull(actual);
-
-        /* verify results */
-        assertFalse(toTest.isGuestToken(actual));
-        System.out.println(actual);
-    }
-
-    @Test
     public void testVerifyToken() throws Exception {
         toTest.verifyToken(tokenMap.get(TokenType.OK));
     }
@@ -142,7 +101,7 @@ public class TokenServiceJwtTest {
         toTest.validateToken(tokenMap.get(TokenType.EXPIRED));
     }
 
-    @Test(expectedExceptions = InvalidClaimException.class)
+    @Test(expectedExceptions = NullPointerException.class)
     public void testValidateToken_wrongIssuer() throws Exception {
         toTest.validateToken(tokenMap.get(TokenType.BAD_ISSUER));
     }

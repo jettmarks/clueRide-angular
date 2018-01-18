@@ -19,8 +19,6 @@ package com.clueride;
 
 import java.security.Principal;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
@@ -49,6 +47,8 @@ import com.clueride.domain.account.member.Member;
 import com.clueride.domain.account.member.MemberService;
 import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
+import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.account.principal.SessionPrincipalImpl;
 import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NewNodeProposal;
 import com.clueride.domain.dev.TrackImpl;
@@ -74,7 +74,6 @@ import com.clueride.service.OutingService;
 import com.clueride.service.OutingServiceImpl;
 import com.clueride.service.RecommendationService;
 import com.clueride.service.TeamService;
-import com.clueride.token.CustomClaim;
 import com.clueride.token.JtiService;
 import com.clueride.token.JtiServiceImpl;
 import com.clueride.token.TokenService;
@@ -246,6 +245,11 @@ public class CoreGuiceModuleTest extends AbstractModule {
     }
 
     @Provides
+    private SessionPrincipal getSessionPrincipal() {
+        return new SessionPrincipalImpl();
+    }
+
+    @Provides
     private JWTCreator.Builder getJwtBuilder(
             JtiService jtiService,
             Member member
@@ -253,12 +257,8 @@ public class CoreGuiceModuleTest extends AbstractModule {
         Date now = new Date();
         Date inASecond = new Date(now.getTime() + 1000);
 
-        Map<String, Object> headerClaims = new HashMap<>();
-        headerClaims.put(CustomClaim.BADGES, member.getBadges());
-        headerClaims.put(CustomClaim.EMAIL, member.getEmailAddress());
-
         return JWT.create()
-                .withHeader(headerClaims)
+                .withClaim("email", member.getEmailAddress())
                 .withJWTId(jtiService.registerNewId())
                 .withExpiresAt(inASecond);
     }

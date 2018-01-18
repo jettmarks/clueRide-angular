@@ -17,29 +17,30 @@
  */
 package com.clueride.config;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 /**
  * Interim implementation until I can get the TypeSafe config impl going.
  */
 public class ConfigServiceImpl implements ConfigService {
-    private static Map<String,String> map = new HashMap<>();
+    private static Config config = ConfigFactory.load();
 
-    static {
-        // TODO: Move this secret out of the committed code
-        map.put(
-                "token.jwt.secret",
-                "9QYMlYqGJaO9MLKzrA6Pc_rMX3id8CAeqa5cFPVJGPoUtx8l3vTENv8MGO8Nc4l1"
-        );
-
-        map.put(
-                "token.jwt.issuer",
-                "clueride-social.auth0.com"
-        );
-    }
     @Override
     public String get(String key) {
-        return map.get(key);
+        return config.getString(key);
     }
+
+    @Override
+    public List<String> getAuthIssuers() {
+        return config.getStringList("clueride.jwt.issuers");
+    }
+
+    @Override
+    public String getAuthSecret() {
+        return config.getString("clueride.jwt.secret");
+    }
+
 }
