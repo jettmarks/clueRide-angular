@@ -17,6 +17,8 @@
  */
 package com.clueride.config;
 
+import java.util.List;
+
 /**
  * Defines interaction with configuration information.
  */
@@ -27,4 +29,8 @@ public interface ConfigService {
      * @return String matching the key.
      */
     String get(String key);
+
+    List<String> getAuthIssuers();
+
+    String getAuthSecret();
 }

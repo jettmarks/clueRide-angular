@@ -64,10 +64,4 @@ public interface TokenService {
      */
     String getNameFromToken(String token);
 
-    /**
-     * For the given token, retrieve whether or not this is a Guest Token.
-     * @param token to be checked.
-     * @return true if this token represents a guest.
-     */
-    boolean isGuestToken(String token);
 }

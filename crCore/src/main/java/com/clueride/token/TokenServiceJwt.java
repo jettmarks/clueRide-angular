@@ -20,6 +20,7 @@ package com.clueride.token;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -46,12 +47,9 @@ import static java.util.Objects.requireNonNull;
 public class TokenServiceJwt implements TokenService {
     private static final Logger LOGGER = Logger.getLogger(TokenServiceJwt.class);
 
-    private static final String ISSUER_SOCIAL = "https://clueride-social.auth0.com/";
-    private static final String ISSUER_PASSWORDLESS = "https://clueride.auth0.com/";
+    private static Map<String, JWTVerifier> verifierPerIssuerName = new HashMap<>();
     private static final String ISSUER = "clueride.com";
     private static Algorithm ALGORITHM = null;
-    private static JWTVerifier verifierSocial;
-    private static JWTVerifier verifierPasswordless;
 
     private final PrincipalService principalService;
     private final JtiService jtiService;
@@ -75,17 +73,18 @@ public class TokenServiceJwt implements TokenService {
         this.jtiService = jtiService;
         this.memberService = memberService;
 
-        String secret = configService.get("token.jwt.secret");
-        requireNonNull(secret, "Configuration missing for 'token.jwt.secret'");
+        String secret = configService.getAuthSecret();
+        requireNonNull(secret, "Configuration missing for Auth Secret");
         if (ALGORITHM == null) {
+            List<String> issuerNames = configService.getAuthIssuers();
             try {
                 ALGORITHM = HMAC256(secret);
-                verifierSocial = JWT.require(ALGORITHM)
-                        .withIssuer(ISSUER_SOCIAL)
-                        .build(); //Reusable verifier instance
-                verifierPasswordless = JWT.require(ALGORITHM)
-                        .withIssuer(ISSUER_PASSWORDLESS)
-                        .build(); //Reusable verifier instance
+                for (String issuerName : issuerNames) {
+                    JWTVerifier verifier = JWT.require(ALGORITHM)
+                            .withIssuer(issuerName)
+                            .build(); //Reusable verifier instance
+                    verifierPerIssuerName.put(issuerName, verifier);
+                }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -110,17 +109,9 @@ public class TokenServiceJwt implements TokenService {
         requireNonNull(token, "Token can't be null or empty");
         DecodedJWT decodedJWT = JWT.decode(token);
         Claim issuerClaim = decodedJWT.getClaim("iss");
-        switch (issuerClaim.asString()) {
-            case ISSUER_SOCIAL:
-                decodedJWT = verifierSocial.verify(token);
-                break;
-            case ISSUER_PASSWORDLESS:
-                decodedJWT = verifierPasswordless.verify(token);
-                break;
-            default:
-                throw new RuntimeException("Unrecognized Issuer Claim: " + issuerClaim.asString());
-        }
-        return decodedJWT;
+        JWTVerifier jwtVerifier = verifierPerIssuerName.get(issuerClaim.asString());
+        requireNonNull(jwtVerifier, "Unexpected issuer claim: " + issuerClaim.asString());
+        return jwtVerifier.verify(token);
     }
 
     @Override
@@ -173,17 +164,6 @@ public class TokenServiceJwt implements TokenService {
             throw new IllegalStateException("Provided token doesn't have a EMAIL claim");
         }
         return emailClaim.asString();
-    }
-
-    /** Tokens without the GUEST claim throw an exception. */
-    @Override
-    public boolean isGuestToken(String token) {
-        DecodedJWT jwt = verifyToken(token);
-        Claim claim = jwt.getHeaderClaim(CustomClaim.GUEST);
-        if (claim.isNull()) {
-            throw new IllegalStateException("Provided token doesn't have a GUEST claim");
-        }
-        return claim.asBoolean();
     }
 
 }
