@@ -17,18 +17,23 @@
  */
 package com.clueride.domain.badge;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.clueride.domain.user.Badge;
 
 /**
- * TODO: Description.
+ * Default Implementation of BadgeService.
  */
 public class BadgeServiceImpl implements BadgeService {
+    private static List<Badge> badges = new ArrayList<>();
+
+    static {
+        badges.add(Badge.TEAM_MEMBER);
+    }
+
     @Override
     public List<Badge> getBadges() {
-        // TODO: Return something significant.
-        return Collections.emptyList();
+        return badges;
     }
 }
