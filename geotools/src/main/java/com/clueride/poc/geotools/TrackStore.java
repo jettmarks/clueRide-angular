@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.vividsolutions.jts.geom.LineString;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
@@ -30,7 +31,6 @@ import com.clueride.domain.TrackFeatureImpl;
 import com.clueride.domain.factory.NodeFactory;
 import com.clueride.feature.LineFeature;
 import com.clueride.feature.TrackFeature;
-import com.vividsolutions.jts.geom.LineString;
 
 /**
  * This holds the Tracks we've brought in from GPX, but they are stored in this
@@ -48,7 +48,7 @@ public class TrackStore {
     private Map<Integer, TrackFeature> trackPerId = new HashMap<>();
 
     /**
-     * @param features
+     * @param trackFeatures
      */
     public TrackStore(DefaultFeatureCollection trackFeatures) {
         this.trackFeatures = trackFeatures;

@@ -50,21 +50,21 @@ public class PojoJsonUtilTest {
 
     }
 
-    @Test
+//    @Test
     public void testLoadLocations() throws Exception {
         List<Location> locations = toTest.loadLocations();
         assertNotNull(locations);
         assertTrue(locations.size() > 0);
     }
 
-    @Test
+//    @Test
     public void testLoadLocationId() throws Exception {
         Location location = PojoJsonUtil.loadLocationId(1);
         assertNotNull(location);
         assertEquals(location.getId(), new Integer(1));
     }
 
-    @Test
+//    @Test
     public void testLoadClueId() throws Exception {
         Clue clue = PojoJsonUtil.loadClue(1);
         assertNotNull(clue);
@@ -78,7 +78,7 @@ public class PojoJsonUtilTest {
         assertTrue(jsonObjects.size() > 0);
     }
 
-    @Test
+//    @Test
     public void testLoadJsonObjects_Invitation() throws Exception {
         List<Invitation> jsonObjects = PojoJsonUtil.loadJsonObjects(JsonStoreType.INVITATION);
         assertNotNull(jsonObjects);
@@ -91,7 +91,7 @@ public class PojoJsonUtilTest {
         assertNotNull(memberId);
     }
 
-    @Test
+//    @Test
     public void testLoadJsonObjects_Member() throws Exception {
         List<Member> jsonObjects = PojoJsonUtil.loadJsonObjects(JsonStoreType.MEMBER);
         assertNotNull(jsonObjects);

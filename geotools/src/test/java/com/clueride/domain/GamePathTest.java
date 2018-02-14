@@ -35,7 +35,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.assertEquals;
 
 /**
- * Exercises the GamePathTest class.
+ * Exercises the GamePath class.
  */
 public class GamePathTest {
     private GamePath toTest;
@@ -68,7 +68,6 @@ public class GamePathTest {
                 .addEdgeId(43)
                 .addEdgeId(79)
                 .addEdgeId(78)
-                .addEdgeId(87)
                 .build();
     }
 
