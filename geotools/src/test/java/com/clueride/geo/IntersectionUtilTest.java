@@ -119,7 +119,7 @@ public class IntersectionUtilTest {
         assertNotNull(point);
     }
 
-    @Test
+//    @Test
     public void findFirstIntersectionSpecificPair() {
         TrackFeature track = JsonTrackStore.getInstance().getTrackById(75);
         assertNotNull(track);
