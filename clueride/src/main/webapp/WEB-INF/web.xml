@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This web.xml file is not required when using Servlet 3.0 container,
      see implementation details http://jersey.java.net/nonav/documentation/latest/jax-rs.html -->
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-         http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+         http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <display-name>ClueRide Player</display-name>
 
     <filter>
         <filter-name>guiceFilter</filter-name>
         <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
 
     <filter-mapping>
@@ -41,6 +42,7 @@
         -->
 
         <load-on-startup>1</load-on-startup>
+        <async-supported>true</async-supported>
     </servlet>
 
     <servlet-mapping>
@@ -51,6 +53,7 @@
     <filter>
         <filter-name>CORS Filter</filter-name>
         <filter-class>com.clueride.infrastructure.CorsFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
 
     <filter-mapping>
@@ -62,6 +65,7 @@
     <filter>
         <filter-name>CluerideSessionFilter</filter-name>
         <filter-class>com.clueride.infrastructure.CluerideSessionFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
 
     <filter-mapping>
