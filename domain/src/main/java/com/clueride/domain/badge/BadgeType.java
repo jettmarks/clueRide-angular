@@ -1,5 +1,5 @@
-package com.clueride.domain.user;/*
- * Copyright 2016 Jett Marks
+package com.clueride.domain.badge;/*
+ * Copyright 2018 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,12 @@ package com.clueride.domain.user;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 2/6/16.
+ * Created by jett on 8/4/18.
  */
 
-/**
- * Currently, the list of recognized badges is defined here, but as the Badging
- * system comes online, that system will be the record source since badges will
- * be managed in that system and picked up here. This then becomes dependent on
- * the badging system.
- */
-public enum Badge {
-    TEAM_LEAD,
-    TEAM_MEMBER,
+public enum BadgeType {
+    SEEKER,
+    GUIDE,
     LOCATION_EDITOR,
-    NETWORK_EDITOR
+    COURSE_EDITOR
 }

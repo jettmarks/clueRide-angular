@@ -17,6 +17,7 @@
  */
 package com.clueride.domain;
 
+import java.net.MalformedURLException;
 import java.security.Principal;
 
 import com.google.inject.AbstractModule;
@@ -30,6 +31,8 @@ import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.badge.Badge;
+import com.clueride.domain.badge.BadgeType;
 import com.clueride.domain.badge.event.BadgeEventService;
 import com.clueride.domain.badge.event.BadgeEventStore;
 import com.clueride.domain.user.image.ImageStore;
@@ -93,4 +96,12 @@ public class DomainGuiceModuleTest extends AbstractModule {
         return new EmailPrincipal("test.different@clueride.com");
     }
 
+    @Provides
+    private Badge.Builder getBadgeBuilder() throws MalformedURLException {
+        return Badge.Builder.builder()
+                .withId(10)
+                .withBadgeType(BadgeType.SEEKER)
+                .withImageUrlString("https://clueride.com/favicon")
+                .withCriteriaUrlString("https://clueride.com/hmm");
+    }
 }
