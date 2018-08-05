@@ -31,12 +31,14 @@ public class Outing {
     private Integer teamId;
     private Integer courseId;
     private Date scheduledTime;
+    private Integer guideMemberId;
 
     public Outing(Builder builder) {
         this.id = builder.id;
         this.teamId = builder.getTeamId();
         this.courseId = builder.getCourseId();
         this.scheduledTime = builder.getScheduledTime();
+        this.guideMemberId = builder.getGuideMemberId();
     }
 
     public Integer getId() {
@@ -59,11 +61,16 @@ public class Outing {
         this.scheduledTime = scheduledTime;
     }
 
+    public Integer getGuideMemberId() {
+        return guideMemberId;
+    }
+
     public static final class Builder implements com.clueride.domain.common.Builder<Outing> {
         private Integer id;
         private Integer teamId;
         private Integer courseId;
         private Date scheduledTime;
+        private Integer guideMemberId;
 
         /**
          * Builder pattern implements interface to allow construction of a given type.
@@ -132,5 +139,15 @@ public class Outing {
             this.scheduledTime = scheduledTime;
             return this;
         }
+
+        public Integer getGuideMemberId() {
+            return guideMemberId;
+        }
+
+        public Builder withGuideMemberId(Integer guideMemberId) {
+            this.guideMemberId = guideMemberId;
+            return this;
+        }
+
     }
 }

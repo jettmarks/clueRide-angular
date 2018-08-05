@@ -76,7 +76,6 @@ public class OutingServiceImplTest {
     @Test
     public void testGetByOutingId() throws Exception {
         /* train mocks */
-
         when(outingStore.getOutingById(OUTING_ID1)).thenReturn(outings.get(0));
         when(outingStore.getOutingById(OUTING_ID2)).thenReturn(outings.get(1));
 
