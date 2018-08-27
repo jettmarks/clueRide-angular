@@ -21,22 +21,35 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 /**
- * Allows obtaining the configured factory for the Hibernate Entity Manager.
+ * Allows obtaining the configured factory for the Hibernate Entity Managers.
  */
 public class JpaUtil {
-    private static final String PERSISTENCE_UNIT_NAME = "ClueRidePersistenceUnit";
-    private static EntityManagerFactory factory;
+    private static final String CLUERIDE_PERSISTENCE_UNIT_NAME = "ClueRidePersistenceUnit";
+    private static final String WORDPRESS_PERSISTENCE_UNIT_NAME = "WordPressPersistenceUnit";
+    private static EntityManagerFactory clueRideFactory;
+    private static EntityManagerFactory wordPressFactory;
 
-    public static EntityManagerFactory getEntityManagerFactory() {
-        if (factory == null) {
-            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+    public static EntityManagerFactory getClueRideEntityManagerFactory() {
+        if (clueRideFactory == null) {
+            clueRideFactory = Persistence.createEntityManagerFactory(CLUERIDE_PERSISTENCE_UNIT_NAME);
         }
-        return factory;
+        return clueRideFactory;
+    }
+
+    public static EntityManagerFactory getWordPressEntityManagerFactory() {
+        if (wordPressFactory == null) {
+            wordPressFactory = Persistence.createEntityManagerFactory(WORDPRESS_PERSISTENCE_UNIT_NAME);
+        }
+        return wordPressFactory;
     }
 
     public static void shutdown() {
-        if (factory != null) {
-            factory.close();
+        if (clueRideFactory != null) {
+            clueRideFactory.close();
+        }
+        if (wordPressFactory != null) {
+            wordPressFactory.close();
         }
     }
+
 }

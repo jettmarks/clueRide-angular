@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 
 import com.google.inject.Inject;
 
+import com.clueride.infrastructure.db.ClueRide;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -34,7 +35,7 @@ public class LatLonStoreJpa implements LatLonStore {
 
     @Inject
     public LatLonStoreJpa(
-            @Nonnull EntityManager entityManager
+            @Nonnull @ClueRide EntityManager entityManager
     ) {
         this.entityManager = requireNonNull(entityManager);
     }

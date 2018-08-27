@@ -26,6 +26,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
+import com.clueride.infrastructure.db.ClueRide;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -37,7 +38,7 @@ public class ImageStoreJpa implements ImageStore {
 
     @Inject
     public ImageStoreJpa(
-            @Nonnull EntityManager entityManager
+            @Nonnull @ClueRide EntityManager entityManager
     ) {
         this.entityManager = requireNonNull(entityManager, "missing Entity Manager");
     }
