@@ -26,6 +26,7 @@ import javax.persistence.EntityManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.google.inject.name.Names;
 import org.apache.log4j.Logger;
 
 import com.clueride.config.GeoToolsGuiceModule;
@@ -125,7 +126,7 @@ public class PuzzleUtilMain {
                 new GeoToolsGuiceModule()
         );
 
-        entityManager = injector.getInstance(EntityManager.class);
+        entityManager = injector.getInstance(Key.get(EntityManager.class, Names.named("ClueRide")));
         puzzleStore = injector.getInstance(
                 PuzzleStore.class
         );

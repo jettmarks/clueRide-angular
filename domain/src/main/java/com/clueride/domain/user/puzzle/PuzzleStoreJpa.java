@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import com.clueride.domain.user.location.Location;
+import com.clueride.infrastructure.db.ClueRide;
 
 /**
  * Implementation of the Puzzle Store.
@@ -33,7 +34,7 @@ public class PuzzleStoreJpa implements PuzzleStore {
     private final EntityManager entityManager;
     @Inject
     public PuzzleStoreJpa(
-            @Nonnull EntityManager entityManager
+            @Nonnull @ClueRide EntityManager entityManager
     ) {
         this.entityManager = entityManager;
     }

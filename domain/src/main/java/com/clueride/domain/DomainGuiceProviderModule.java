@@ -44,6 +44,8 @@ import com.clueride.infrastructure.ClientSourced;
 import com.clueride.infrastructure.DbSourced;
 import com.clueride.infrastructure.JpaUtil;
 import com.clueride.infrastructure.ServiceSourced;
+import com.clueride.infrastructure.db.ClueRide;
+import com.clueride.infrastructure.db.WordPress;
 import static java.util.Arrays.asList;
 
 /**
@@ -56,8 +58,15 @@ public class DomainGuiceProviderModule extends AbstractModule {
     }
 
     @Provides
-    private EntityManager getEntityManager() {
-        return JpaUtil.getEntityManagerFactory().createEntityManager();
+    @ClueRide
+    private EntityManager getClueRideEntityManager() {
+        return JpaUtil.getClueRideEntityManagerFactory().createEntityManager();
+    }
+
+    @Provides
+    @WordPress
+    private EntityManager getWordPressEntityManager() {
+        return JpaUtil.getWordPressEntityManagerFactory().createEntityManager();
     }
 
     @Provides

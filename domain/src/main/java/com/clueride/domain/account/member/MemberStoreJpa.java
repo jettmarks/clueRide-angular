@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.EntityManager;
 
+import com.clueride.infrastructure.db.ClueRide;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -35,7 +36,7 @@ public class MemberStoreJpa implements MemberStore {
     private final EntityManager entityManager;
     @Inject
     public MemberStoreJpa(
-            @Nonnull EntityManager entityManager
+            @Nonnull @ClueRide EntityManager entityManager
     ) {
         this.entityManager = requireNonNull(entityManager);
     }

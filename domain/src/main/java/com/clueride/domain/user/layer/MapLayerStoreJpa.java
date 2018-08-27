@@ -22,6 +22,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import com.clueride.infrastructure.db.ClueRide;
+
 /**
  * JPA-based implementation of Map Layer persistence.
  */
@@ -30,7 +32,7 @@ public class MapLayerStoreJpa implements MapLayerStore {
 
     @Inject
     public MapLayerStoreJpa(
-            EntityManager entityManager
+            @ClueRide EntityManager entityManager
     ) {
         this.entityManager = entityManager;
     }

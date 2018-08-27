@@ -17,8 +17,11 @@
  */
 package com.clueride.domain.badge.event;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+
+import com.clueride.infrastructure.db.ClueRide;
 
 /**
  * Implementation of Badge Event Store for JPA.
@@ -29,7 +32,7 @@ public class BadgeEventStoreJpa implements BadgeEventStore {
 
     @Inject
     public BadgeEventStoreJpa(
-            EntityManager entityManager
+            @Nonnull @ClueRide EntityManager entityManager
     ) {
         this.entityManager = entityManager;
     }

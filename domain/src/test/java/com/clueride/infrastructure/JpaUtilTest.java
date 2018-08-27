@@ -43,7 +43,7 @@ public class JpaUtilTest {
     @BeforeClass
     public void setUp() {
         if (dbAvailable) {
-            entityManagerFactory = JpaUtil.getEntityManagerFactory();
+            entityManagerFactory = JpaUtil.getClueRideEntityManagerFactory();
             System.out.println("Entity Manager opened");
         }
     }

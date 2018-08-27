@@ -24,6 +24,8 @@ import javax.persistence.EntityManager;
 
 import com.google.inject.Inject;
 
+import com.clueride.infrastructure.db.ClueRide;
+
 /**
  * JPA implementation of the LocationTypeStore (DAO).
  */
@@ -31,7 +33,9 @@ public class LocationTypeStoreJpa implements LocationTypeStore {
     private final EntityManager entityManager;
 
     @Inject
-    public LocationTypeStoreJpa(EntityManager entityManager) {
+    public LocationTypeStoreJpa(
+            @ClueRide EntityManager entityManager
+    ) {
         this.entityManager = entityManager;
     }
 
