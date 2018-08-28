@@ -126,7 +126,12 @@ public class PuzzleUtilMain {
                 new GeoToolsGuiceModule()
         );
 
-        entityManager = injector.getInstance(Key.get(EntityManager.class, Names.named("ClueRide")));
+        entityManager = injector.getInstance(
+                Key.get(
+                        EntityManager.class,
+                        Names.named("ClueRide")
+                )
+        );
         puzzleStore = injector.getInstance(
                 PuzzleStore.class
         );

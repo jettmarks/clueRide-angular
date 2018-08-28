@@ -13,30 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 1/16/18.
+ * Created by jett on 8/26/18.
  */
 package com.clueride.domain.badge;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 /**
- * Default Implementation of BadgeService.
+ * Defines the DAO for Badges.
+ *
+ * Badges are created and maintained within the BadgeOS system and for that reason,
+ * when we read Badges from the database, we're reading from the BadgeOS / WordPress
+ * database.
  */
-public class BadgeServiceImpl implements BadgeService {
-    private final BadgeStore badgeStore;
-
-    @Inject
-    public BadgeServiceImpl(
-            BadgeStore badgeStore
-    ) {
-        this.badgeStore = badgeStore;
-    }
-
-    @Override
-    public List<Badge> getBadges() {
-        return badgeStore.getAwardedBadgesForUser();
-    }
+public interface BadgeStore {
+    /**
+     * Retrieves list of currently awarded badges for the session's user.
+     * @return List of Badges for display.
+     */
+    List<Badge> getAwardedBadgesForUser();
 
 }
