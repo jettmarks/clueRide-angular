@@ -19,8 +19,6 @@ package com.clueride.domain.badge;
 
 import java.util.List;
 
-import com.clueride.domain.user.Badge;
-
 /**
  * Defines what operations are provided for Badges.
  */

@@ -24,7 +24,11 @@ import javax.annotation.concurrent.Immutable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.log4j.Logger;
 
 import static java.util.Objects.requireNonNull;
 
@@ -37,13 +41,15 @@ import static java.util.Objects.requireNonNull;
 @Immutable
 public class Badge {
     private final Integer id;
-    private final BadgeType badgeType;
+    // TODO: CA-359
+//    private final BadgeType badgeType;
     private final URL badgeImageUrl;
     private final URL badgeCriteriaUrl;
 
     public Badge(Builder builder) {
         this.id = requireNonNull(builder.getId());
-        this.badgeType = requireNonNull(builder.getBadgeType());
+        // TODO: CA-359
+//        this.badgeType = requireNonNull(builder.getBadgeType());
         this.badgeImageUrl = requireNonNull(builder.getImageUrl());
         this.badgeCriteriaUrl = requireNonNull(builder.getCriteriaUrl());
     }
@@ -52,9 +58,10 @@ public class Badge {
         return id;
     }
 
-    public BadgeType getBadgeType() {
-        return badgeType;
-    }
+    // TODO: CA-359
+//    public BadgeType getBadgeType() {
+//        return badgeType;
+//    }
 
     public URL getBadgeImageUrl() {
         return badgeImageUrl;
@@ -64,15 +71,26 @@ public class Badge {
         return badgeCriteriaUrl;
     }
 
-    @Entity(name="badge")
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Entity(name="badge_display_per_user")
+    @Table(name="badge_display_per_user")
     public static class Builder implements com.clueride.domain.common.Builder<Badge> {
+        private static final Logger LOGGER = Logger.getLogger(Builder.class);
 
         @Id
+        @Column(name="achievement_id")
         private Integer id;
 
-        @Column(name="badge_type") private String badgeTypeString;
-        @Column(name="image_url") private String imageUrlString;
-        @Column(name="criteria_url") private String criteriaUrlString;
+        @Column(name="image_url")
+        private String imageUrlString;
+        @Column(name="url")
+        private String criteriaUrlString;
+
+        @Transient private String badgeTypeString;
 
         @Transient
         private BadgeType badgeType;
@@ -98,6 +116,11 @@ public class Badge {
         }
 
         public URL getImageUrl() {
+            try {
+                this.imageUrl = new URL(this.imageUrlString);
+            } catch (MalformedURLException e) {
+                LOGGER.error(e);
+            }
             return imageUrl;
         }
 
@@ -106,6 +129,11 @@ public class Badge {
             return this;
         }
         public URL getCriteriaUrl() {
+            try {
+                this.criteriaUrl = new URL(this.criteriaUrlString);
+            } catch (MalformedURLException e) {
+                LOGGER.error(e);
+            }
             return criteriaUrl;
         }
 
@@ -147,8 +175,8 @@ public class Badge {
         }
 
         public Builder withImageUrlString(String imageUrlString) throws MalformedURLException {
+            this.imageUrl = new URL(this.imageUrlString);
             this.imageUrlString = imageUrlString;
-            this.imageUrl = new URL(imageUrlString);
             return this;
         }
 
@@ -157,8 +185,8 @@ public class Badge {
         }
 
         public Builder withCriteriaUrlString(String criteriaUrlString) throws MalformedURLException {
+            this.criteriaUrl = new URL(this.criteriaUrlString);
             this.criteriaUrlString = criteriaUrlString;
-            this.criteriaUrl = new URL(criteriaUrlString);
             return this;
         }
     }
