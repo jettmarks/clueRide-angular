@@ -27,6 +27,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 
@@ -41,15 +43,13 @@ import static java.util.Objects.requireNonNull;
 @Immutable
 public class Badge {
     private final Integer id;
-    // TODO: CA-359
-//    private final BadgeType badgeType;
+    private final BadgeType badgeType;
     private final URL badgeImageUrl;
     private final URL badgeCriteriaUrl;
 
     public Badge(Builder builder) {
         this.id = requireNonNull(builder.getId());
-        // TODO: CA-359
-//        this.badgeType = requireNonNull(builder.getBadgeType());
+        this.badgeType = requireNonNull(builder.getBadgeType());
         this.badgeImageUrl = requireNonNull(builder.getImageUrl());
         this.badgeCriteriaUrl = requireNonNull(builder.getCriteriaUrl());
     }
@@ -58,10 +58,9 @@ public class Badge {
         return id;
     }
 
-    // TODO: CA-359
-//    public BadgeType getBadgeType() {
-//        return badgeType;
-//    }
+    public BadgeType getBadgeType() {
+        return badgeType;
+    }
 
     public URL getBadgeImageUrl() {
         return badgeImageUrl;
@@ -74,6 +73,16 @@ public class Badge {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Entity(name="badge_display_per_user")
@@ -175,7 +184,7 @@ public class Badge {
         }
 
         public Builder withImageUrlString(String imageUrlString) throws MalformedURLException {
-            this.imageUrl = new URL(this.imageUrlString);
+            this.imageUrl = new URL(imageUrlString);
             this.imageUrlString = imageUrlString;
             return this;
         }
@@ -185,7 +194,7 @@ public class Badge {
         }
 
         public Builder withCriteriaUrlString(String criteriaUrlString) throws MalformedURLException {
-            this.criteriaUrl = new URL(this.criteriaUrlString);
+            this.criteriaUrl = new URL(criteriaUrlString);
             this.criteriaUrlString = criteriaUrlString;
             return this;
         }

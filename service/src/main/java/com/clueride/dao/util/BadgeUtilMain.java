@@ -26,6 +26,8 @@ import com.clueride.domain.badge.BadgeService;
 import com.clueride.domain.badge.BadgeServiceImpl;
 import com.clueride.domain.badge.BadgeStore;
 import com.clueride.domain.badge.BadgeStoreJpa;
+import com.clueride.domain.badge.BadgeTypeService;
+import com.clueride.domain.badge.BadgeTypeServiceMappedImpl;
 import com.clueride.infrastructure.JpaUtil;
 
 /**
@@ -53,6 +55,7 @@ public class BadgeUtilMain {
     private static void instantiateServices() {
         entityManager = JpaUtil.getWordPressEntityManagerFactory().createEntityManager();
         badgeStore = new BadgeStoreJpa(entityManager);
-        badgeService = new BadgeServiceImpl(badgeStore);
+        BadgeTypeService badgeTypeService = new BadgeTypeServiceMappedImpl();
+        badgeService = new BadgeServiceImpl(badgeStore, badgeTypeService);
     }
 }

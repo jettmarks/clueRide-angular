@@ -17,6 +17,7 @@
  */
 package com.clueride.domain.badge;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,18 +26,28 @@ import javax.inject.Inject;
  * Default Implementation of BadgeService.
  */
 public class BadgeServiceImpl implements BadgeService {
+
     private final BadgeStore badgeStore;
+    private final BadgeTypeService badgeTypeService;
 
     @Inject
     public BadgeServiceImpl(
-            BadgeStore badgeStore
+            BadgeStore badgeStore,
+            BadgeTypeService badgeTypeService
     ) {
         this.badgeStore = badgeStore;
+        this.badgeTypeService = badgeTypeService;
     }
 
     @Override
     public List<Badge> getBadges() {
-        return badgeStore.getAwardedBadgesForUser();
+        List<Badge> badgeList = new ArrayList<>();
+        List<Badge.Builder> builderList = badgeStore.getAwardedBadgesForUser();
+        for (Badge.Builder builder : builderList) {
+            builder.withBadgeType(badgeTypeService.getTypeOfBadge(builder));
+            badgeList.add(builder.build());
+        }
+        return badgeList;
     }
 
 }
