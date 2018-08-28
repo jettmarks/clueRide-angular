@@ -32,7 +32,9 @@ import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.SessionPrincipal;
 import com.clueride.domain.badge.Badge;
+import com.clueride.domain.badge.BadgeStore;
 import com.clueride.domain.badge.BadgeType;
+import com.clueride.domain.badge.BadgeTypeService;
 import com.clueride.domain.badge.event.BadgeEventService;
 import com.clueride.domain.badge.event.BadgeEventStore;
 import com.clueride.domain.user.image.ImageStore;
@@ -53,6 +55,12 @@ public class DomainGuiceModuleTest extends AbstractModule {
 
     @Mock
     private BadgeEventStore badgeEventStore;
+
+    @Mock
+    private BadgeStore badgeStore;
+
+    @Mock
+    private BadgeTypeService badgeTypeService;
 
     @Mock
     private ImageStore imageStore;
@@ -84,6 +92,8 @@ public class DomainGuiceModuleTest extends AbstractModule {
         bind(AopDummyService.class).toInstance(dummyService);
         bind(BadgeEventService.class).toInstance(badgeEventService);
         bind(BadgeEventStore.class).toInstance(badgeEventStore);
+        bind(BadgeStore.class).toInstance(badgeStore);
+        bind(BadgeTypeService.class).toInstance(badgeTypeService);
         bind(MemberService.class).toInstance(memberService);
         bind(MemberStore.class).toInstance(memberStore);
         bind(PrincipalService.class).toInstance(principleService);

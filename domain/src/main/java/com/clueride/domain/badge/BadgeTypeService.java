@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 8/26/18.
+ * Created by jett on 8/27/18.
  */
 package com.clueride.domain.badge;
 
-import java.util.List;
-
 /**
- * Defines the DAO for Badges.
- *
- * Badges are created and maintained within the BadgeOS system and for that reason,
- * when we read Badges from the database, we're reading from the BadgeOS / WordPress
- * database.
+ * Maps from a Badge to a Badge Type.
  */
-public interface BadgeStore {
+public interface BadgeTypeService {
+
     /**
-     * Retrieves list of currently awarded badges for the session's user.
-     * @return List of Badges for display.
+     * Given a Badge, determine the BadgeType.
+     * @param builder instance of Builder populated from source that doesn't know about ClueRide's Badge Types.
+     * @return Enumeration of the BadgeType which provides authorization for certain activities.
      */
-    List<Badge.Builder> getAwardedBadgesForUser();
+    BadgeType getTypeOfBadge(Badge.Builder builder);
 
 }

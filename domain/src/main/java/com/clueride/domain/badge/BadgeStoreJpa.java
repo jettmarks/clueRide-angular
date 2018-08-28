@@ -17,8 +17,6 @@
  */
 package com.clueride.domain.badge;
 
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -44,22 +42,14 @@ public class BadgeStoreJpa implements BadgeStore {
     }
 
     @Override
-    public List<Badge> getAwardedBadgesForUser() {
+    public List<Badge.Builder> getAwardedBadgesForUser() {
         List<Badge.Builder> builderList;
         entityManager.getTransaction().begin();
         builderList = entityManager.createQuery(
                     "SELECT b FROM badge_display_per_user b"
         ).getResultList();
         entityManager.getTransaction().commit();
-        List<Badge> badgeList = new ArrayList<>();
-        for (Badge.Builder builder : builderList) {
-            try {
-                badgeList.add(builder.build());
-            } catch (MalformedURLException e) {
-                LOGGER.error("Problem with URL: " + e);
-            }
-        }
-        return badgeList;
+        return builderList;
     }
 
 }

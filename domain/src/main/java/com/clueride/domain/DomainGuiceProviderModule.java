@@ -230,4 +230,20 @@ public class DomainGuiceProviderModule extends AbstractModule {
         return badgeEventBuilder.build();
     }
 
+    @Provides
+    @DbSourced
+    private com.clueride.domain.badge.Badge.Builder getDbBadgeBuilder() {
+           com.clueride.domain.badge.Badge.Builder builder
+           = com.clueride.domain.badge.Badge.Builder.builder();
+
+        try {
+            builder
+                    .withId(3376)
+                    .withImageUrlString("http://clueride.com/favicon.ico")
+                    .withCriteriaUrlString("http://clueride.com/?post_id=3376");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return builder;
+    }
 }
