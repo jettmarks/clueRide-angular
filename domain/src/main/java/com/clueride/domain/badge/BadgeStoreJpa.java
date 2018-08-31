@@ -42,12 +42,14 @@ public class BadgeStoreJpa implements BadgeStore {
     }
 
     @Override
-    public List<Badge.Builder> getAwardedBadgesForUser() {
+    public List<Badge.Builder> getAwardedBadgesForUser(Integer userId) {
         List<Badge.Builder> builderList;
         entityManager.getTransaction().begin();
         builderList = entityManager.createQuery(
-                    "SELECT b FROM badge_display_per_user b"
-        ).getResultList();
+                    "SELECT b FROM badge_display_per_user b where user_id = :userId"
+        )
+                .setParameter("userId", userId)
+                .getResultList();
         entityManager.getTransaction().commit();
         return builderList;
     }

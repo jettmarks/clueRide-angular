@@ -27,6 +27,8 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.domain.DomainGuiceModuleTest;
+import com.clueride.domain.account.principal.BadgeOsPrincipal;
+import com.clueride.domain.account.principal.SessionPrincipal;
 import com.clueride.infrastructure.DbSourced;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
@@ -44,6 +46,9 @@ public class BadgeServiceImplTest {
     private Provider<BadgeServiceImpl> toTestProvider;
 
     @Inject
+    private BadgeOsPrincipal badgeOsPrincipal;
+
+    @Inject
     private BadgeStore badgeStore;
 
     @Inject
@@ -52,6 +57,9 @@ public class BadgeServiceImplTest {
     @Inject
     @DbSourced
     private Badge.Builder badgeBuilderFromDb;
+
+    @Inject
+    private SessionPrincipal sessionPrincipal;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -67,11 +75,14 @@ public class BadgeServiceImplTest {
         List<Badge> expected = Collections.singletonList(expectedBadge);
 
         /* train mocks */
-        when(badgeStore.getAwardedBadgesForUser()).thenReturn(
+        when(badgeStore.getAwardedBadgesForUser(2)).thenReturn(
                 Collections.singletonList(badgeBuilderFromDb)
         );
         when(badgeTypeService.getTypeOfBadge(badgeBuilderFromDb)).thenReturn(
                 BadgeType.SEEKER
+        );
+        when(sessionPrincipal.getSessionPrincipal()).thenReturn(
+            badgeOsPrincipal
         );
 
         /* make call */

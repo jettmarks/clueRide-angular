@@ -22,27 +22,39 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
+
+import com.clueride.domain.account.principal.BadgeOsPrincipal;
+import com.clueride.domain.account.principal.SessionPrincipal;
+
 /**
  * Default Implementation of BadgeService.
  */
 public class BadgeServiceImpl implements BadgeService {
+    private static final Logger LOGGER = Logger.getLogger(BadgeServiceImpl.class);
 
     private final BadgeStore badgeStore;
     private final BadgeTypeService badgeTypeService;
+    private final SessionPrincipal sessionPrincipal;
 
     @Inject
     public BadgeServiceImpl(
             BadgeStore badgeStore,
-            BadgeTypeService badgeTypeService
+            BadgeTypeService badgeTypeService,
+            SessionPrincipal sessionPrincipal
     ) {
         this.badgeStore = badgeStore;
         this.badgeTypeService = badgeTypeService;
+        this.sessionPrincipal = sessionPrincipal;
     }
 
     @Override
     public List<Badge> getBadges() {
+        BadgeOsPrincipal badgeOsPrincipal = (BadgeOsPrincipal) sessionPrincipal.getSessionPrincipal();
+        Integer userId = badgeOsPrincipal.getBadgeOsUserId();
         List<Badge> badgeList = new ArrayList<>();
-        List<Badge.Builder> builderList = badgeStore.getAwardedBadgesForUser();
+        LOGGER.info("Looking up Badges for User ID " + userId);
+        List<Badge.Builder> builderList = badgeStore.getAwardedBadgesForUser(userId);
         for (Badge.Builder builder : builderList) {
             builder.withBadgeType(badgeTypeService.getTypeOfBadge(builder));
             badgeList.add(builder.build());

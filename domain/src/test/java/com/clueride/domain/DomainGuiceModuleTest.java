@@ -20,6 +20,9 @@ package com.clueride.domain;
 import java.net.MalformedURLException;
 import java.security.Principal;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.mockito.Mock;
@@ -28,6 +31,8 @@ import com.clueride.aop.AopDummyService;
 import com.clueride.aop.AopModuleTest;
 import com.clueride.domain.account.member.MemberService;
 import com.clueride.domain.account.member.MemberStore;
+import com.clueride.domain.account.principal.BadgeOsPrincipal;
+import com.clueride.domain.account.principal.BadgeOsPrincipalService;
 import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.SessionPrincipal;
@@ -55,6 +60,9 @@ public class DomainGuiceModuleTest extends AbstractModule {
 
     @Mock
     private BadgeEventStore badgeEventStore;
+
+    @Mock
+    private BadgeOsPrincipalService badgeOsPrincipalService;
 
     @Mock
     private BadgeStore badgeStore;
@@ -92,6 +100,7 @@ public class DomainGuiceModuleTest extends AbstractModule {
         bind(AopDummyService.class).toInstance(dummyService);
         bind(BadgeEventService.class).toInstance(badgeEventService);
         bind(BadgeEventStore.class).toInstance(badgeEventStore);
+        bind(BadgeOsPrincipalService.class).toInstance(badgeOsPrincipalService);
         bind(BadgeStore.class).toInstance(badgeStore);
         bind(BadgeTypeService.class).toInstance(badgeTypeService);
         bind(MemberService.class).toInstance(memberService);
@@ -114,4 +123,20 @@ public class DomainGuiceModuleTest extends AbstractModule {
                 .withImageUrlString("https://clueride.com/favicon")
                 .withCriteriaUrlString("https://clueride.com/hmm");
     }
+
+    @Provides
+    private BadgeOsPrincipal getBadgeOsPrincipal() {
+        InternetAddress emailAddress = null;
+        try {
+            emailAddress = new InternetAddress("test.different@clueride.com");
+        } catch (AddressException e) {
+            e.printStackTrace();
+        }
+        return BadgeOsPrincipal.Builder.builder()
+                .withBadgeOsUserId(2)
+                .withEmailAddress(emailAddress)
+                .withName("Test Account")
+                .build();
+    }
+
 }

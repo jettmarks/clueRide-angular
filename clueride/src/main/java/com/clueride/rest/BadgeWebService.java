@@ -25,8 +25,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.clueride.domain.badge.Badge;
 import com.clueride.domain.badge.BadgeService;
-import com.clueride.domain.user.Badge;
 import com.clueride.infrastructure.Secured;
 
 /**
