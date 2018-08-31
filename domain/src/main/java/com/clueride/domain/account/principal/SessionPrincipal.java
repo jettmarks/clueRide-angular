@@ -31,7 +31,7 @@ public interface SessionPrincipal {
 
     /**
      * Populates the Principal for the current request/session.
-     * @param sessionPrincipal
+     * @param sessionPrincipal Principal representing the current user.
      */
     void setSessionPrincipal(Principal sessionPrincipal);
 

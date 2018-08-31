@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.account.principal.SessionPrincipalImpl;
 import com.clueride.domain.badge.Badge;
 import com.clueride.domain.badge.BadgeService;
 import com.clueride.domain.badge.BadgeServiceImpl;
@@ -56,6 +58,7 @@ public class BadgeUtilMain {
         entityManager = JpaUtil.getWordPressEntityManagerFactory().createEntityManager();
         badgeStore = new BadgeStoreJpa(entityManager);
         BadgeTypeService badgeTypeService = new BadgeTypeServiceMappedImpl();
-        badgeService = new BadgeServiceImpl(badgeStore, badgeTypeService);
+        SessionPrincipal sessionPrincipal = new SessionPrincipalImpl();
+        badgeService = new BadgeServiceImpl(badgeStore, badgeTypeService, sessionPrincipal);
     }
 }

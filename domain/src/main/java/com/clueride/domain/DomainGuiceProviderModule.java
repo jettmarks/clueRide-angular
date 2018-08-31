@@ -46,7 +46,6 @@ import com.clueride.infrastructure.JpaUtil;
 import com.clueride.infrastructure.ServiceSourced;
 import com.clueride.infrastructure.db.ClueRide;
 import com.clueride.infrastructure.db.WordPress;
-import static java.util.Arrays.asList;
 
 /**
  * Guice Providers that may be pulled into Tests of other modules.
@@ -102,7 +101,7 @@ public class DomainGuiceProviderModule extends AbstractModule {
                 .withId(1)
                 .withNodeId(100)
                 .withName("Test Location")
-                .withPuzzleBuilders(asList(puzzleBuilder))
+                .withPuzzleBuilders(Collections.singletonList(puzzleBuilder))
                 .withDescription("Beautiful Test")
                 .withLocationType(locationType)
                 .withTagScores(Collections.EMPTY_MAP);

@@ -33,6 +33,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.clueride.infrastructure.db.ClueRide;
+
 /**
  * DTO for the data captured for Badge-worthy deeds.
  */
@@ -102,6 +104,7 @@ public class BadgeEvent {
     /**
      * Mutable instance of BadgeEvent.
      */
+    @ClueRide
     @Entity(name="badge_event")
     public static class Builder {
         @Id

@@ -33,14 +33,18 @@ import com.clueride.domain.account.member.MemberService;
  */
 public class PrincipalServiceImpl implements PrincipalService {
     private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(PrincipalServiceImpl.class);
+
     private static List<Principal> principals = null;
     private final MemberService memberService;
+    private final BadgeOsPrincipalService badgeOsPrincipalService;
 
     @Inject
     public PrincipalServiceImpl(
-            MemberService memberService
+            MemberService memberService,
+            BadgeOsPrincipalService badgeOsPrincipalService
     ) {
         this.memberService = memberService;
+        this.badgeOsPrincipalService = badgeOsPrincipalService;
     }
 
     @Override
@@ -68,7 +72,8 @@ public class PrincipalServiceImpl implements PrincipalService {
 
     @Override
     public Principal getPrincipalForEmailAddress(String emailAddress) {
-        return new EmailPrincipal(emailAddress);
+        Principal badgeOsPrincipal = badgeOsPrincipalService.getBadgeOsPrincipal(emailAddress);
+        return badgeOsPrincipal;
     }
 
     private void refreshPrincipalCache() {

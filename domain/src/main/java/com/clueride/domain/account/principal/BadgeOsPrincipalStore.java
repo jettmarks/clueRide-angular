@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 8/26/18.
+ * Created by jett on 8/28/18.
  */
-package com.clueride.domain.badge;
+package com.clueride.domain.account.principal;
 
-import java.util.List;
+import javax.mail.internet.InternetAddress;
 
 /**
- * Defines the DAO for Badges.
- *
- * Badges are created and maintained within the BadgeOS system and for that reason,
- * when we read Badges from the database, we're reading from the BadgeOS / WordPress
- * database.
+ * How we retrieve BadgeOS Principals from the BadgeOS system.
  */
-public interface BadgeStore {
+public interface BadgeOsPrincipalStore {
+
     /**
-     * Retrieves list of currently awarded badges for the session's user.
-     * @return List of Badges for display.
+     * Retrieves the BadgeOsPrincipal for the given email address.
+     * @param emailAddress supplied by the user's credentials.
+     * @return Principal containing the User ID, Display Name, and the email address.
      */
-    List<Badge.Builder> getAwardedBadgesForUser(Integer userId);
+    BadgeOsPrincipal.Builder getBadgeOsPrincipalForEmailAddress(InternetAddress emailAddress);
 
 }
