@@ -117,6 +117,7 @@ public class BadgeOsPrincipal implements Principal {
         }
 
         public Builder withEmailAddress(InternetAddress emailAddress) {
+            this.emailAddressString = emailAddress.toString();
             this.emailAddress = emailAddress;
             return this;
         }
