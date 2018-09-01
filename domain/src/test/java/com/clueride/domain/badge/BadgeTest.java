@@ -16,7 +16,6 @@ package com.clueride.domain.badge;/*
  * Created by jett on 8/4/18.
  */
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.inject.Inject;
@@ -27,6 +26,8 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.domain.DomainGuiceModuleTest;
+import com.clueride.exc.MalformedUrlWithinDBException;
+import com.clueride.infrastructure.DbSourced;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -41,6 +42,10 @@ public class BadgeTest {
     private Badge.Builder builder;
 
     @Inject
+    @DbSourced
+    private Badge.Builder builderFromDb;
+
+    @Inject
     private Provider<Badge.Builder> toTestProvider;
 
     @BeforeMethod
@@ -50,8 +55,7 @@ public class BadgeTest {
         toTest = builder.build();
         assertNotNull(toTest);
         assertNotNull(toTest.getId());
-        // TODO: CA-359
-//        assertNotNull(toTest.getBadgeType());
+        assertNotNull(toTest.getBadgeType());
         assertNotNull(toTest.getBadgeImageUrl());
         assertNotNull(toTest.getBadgeCriteriaUrl());
     }
@@ -63,6 +67,28 @@ public class BadgeTest {
         assertEquals(actual, expected);
     }
 
+    @Test
+    public void testSetId() throws Exception {
+        Integer expected = 123;
+        builder.setId(expected);
+        Integer actual = builder.build().getId();
+        assertEquals(actual, expected);
+    }
+
+    @Test
+    public void testGetUserId() throws Exception {
+        Integer expected = builder.getUserId();
+        Integer actual = toTest.getUserId();
+        assertEquals(actual, expected);
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        Badge expected = toTest;
+        Badge actual = builder.build();
+        assertEquals(actual, expected);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void testGetId_missing_all() throws Exception {
         builder = Badge.Builder.builder();
@@ -71,53 +97,44 @@ public class BadgeTest {
 
     @Test(expectedExceptions = NullPointerException.class)
     public void testGetId_missing_id() throws Exception {
-        Badge.Builder toTestBuilder = Badge.Builder.builder()
-                .withBadgeType(builder.getBadgeType())
-                .withCriteriaUrl(builder.getCriteriaUrl())
-                .withImageUrl(builder.getImageUrl());
+        Badge.Builder toTestBuilder = Badge.Builder.from(builderFromDb)
+                .withId(null);
         toTest = toTestBuilder.build();
     }
 
     @Test(expectedExceptions = NullPointerException.class)
     public void testGetId_missing_badgeType() throws Exception {
-        Badge.Builder toTestBuilder = Badge.Builder.builder()
-                .withId(builder.getId())
-                .withCriteriaUrl(builder.getCriteriaUrl())
-                .withImageUrl(builder.getImageUrl());
+        Badge.Builder toTestBuilder = Badge.Builder.from(builderFromDb)
+                .withBadgeType(null);
         toTest = toTestBuilder.build();
     }
 
     @Test(expectedExceptions = NullPointerException.class)
     public void testGetId_missing_imageUrl() throws Exception {
-        Badge.Builder toTestBuilder = Badge.Builder.builder()
-                .withId(builder.getId())
-                .withBadgeType(builder.getBadgeType())
-                .withCriteriaUrl(builder.getCriteriaUrl());
+        Badge.Builder toTestBuilder = Badge.Builder.from(builderFromDb)
+                .withImageUrl(null);
         toTest = toTestBuilder.build();
     }
 
     @Test(expectedExceptions = NullPointerException.class)
-    public void testGetId_missing_criteriaUrl() throws Exception {
+    public void testGetId_missing_baseUrl() throws Exception {
         Badge.Builder toTestBuilder = Badge.Builder.builder()
-                .withId(builder.getId())
-                .withBadgeType(builder.getBadgeType())
-                .withImageUrl(builder.getImageUrl());
+                .withBaseUrlString(null);
         toTest = toTestBuilder.build();
     }
 
-    // TODO: CA-359
-//    @Test
-//    public void testGetBadgeType_OK() throws Exception {
-//        BadgeType expected = BadgeType.GUIDE;
-//        toTest = builder.withBadgeTypeString(expected.toString()).build();
-//        BadgeType actual = toTest.getBadgeType();
-//        assertEquals(actual, expected);
-//    }
+    @Test
+    public void testGetBadgeType_OK() throws Exception {
+        BadgeType expected = BadgeType.GUIDE;
+        toTest = builder.withBadgeTypeString(expected.toString()).build();
+        BadgeType actual = toTest.getBadgeType();
+        assertEquals(actual, expected);
+    }
 
-//    @Test(expectedExceptions = IllegalArgumentException.class)
-//    public void testGetBadgeType_unrecognizedType() throws Exception {
-//        toTest = builder.withBadgeTypeString("not a real badge").build();
-//    }
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testGetBadgeType_unrecognizedType() throws Exception {
+        toTest = builder.withBadgeTypeString("not a real badge").build();
+    }
 
     @Test
     public void testGetBadgeImageUrl_OK() throws Exception {
@@ -127,22 +144,26 @@ public class BadgeTest {
         assertEquals(actual, expected);
     }
 
-    @Test(expectedExceptions = MalformedURLException.class)
+    @Test(expectedExceptions = MalformedUrlWithinDBException.class)
     public void testGetBadgeImageUrl_badUrl() throws Exception {
         toTest = builder.withImageUrlString("not a URL").build();
     }
 
     @Test
     public void testGetBadgeCriteriaUrl_OK() throws Exception {
-        URL expected = builder.getCriteriaUrl();
-        toTest = builder.withCriteriaUrlString(expected.toString()).build();
+        URL expected = builderFromDb.getCriteriaUrl();
+        toTest = builder
+                .withBaseUrlString(builderFromDb.getBaseUrlString())
+                .withBadgeName(builderFromDb.getBadgeName())
+                .withBadgeLevel(builderFromDb.getBadgeLevel())
+                .build();
         URL actual = toTest.getBadgeCriteriaUrl();
         assertEquals(actual, expected);
     }
 
-    @Test(expectedExceptions = MalformedURLException.class)
-    public void testGetBadgeCriteriaUrl_badUrl() throws Exception {
-        toTest = builder.withCriteriaUrlString("not a URL").build();
+    @Test(expectedExceptions = MalformedUrlWithinDBException.class)
+    public void testGetBadgeBaseUrl_badUrl() throws Exception {
+        toTest = builder.withBaseUrlString("not a URL").build();
     }
 
 }

@@ -32,6 +32,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 
+import com.clueride.exc.MalformedUrlWithinDBException;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -43,12 +44,14 @@ import static java.util.Objects.requireNonNull;
 @Immutable
 public class Badge {
     private final Integer id;
+    private final Integer userId;
     private final BadgeType badgeType;
     private final URL badgeImageUrl;
     private final URL badgeCriteriaUrl;
 
     public Badge(Builder builder) {
         this.id = requireNonNull(builder.getId());
+        this.userId = requireNonNull(builder.getUserId());
         this.badgeType = requireNonNull(builder.getBadgeType());
         this.badgeImageUrl = requireNonNull(builder.getImageUrl());
         this.badgeCriteriaUrl = requireNonNull(builder.getCriteriaUrl());
@@ -56,6 +59,10 @@ public class Badge {
 
     public Integer getId() {
         return id;
+    }
+
+    public Integer getUserId() {
+        return userId;
     }
 
     public BadgeType getBadgeType() {
@@ -94,66 +101,42 @@ public class Badge {
         @Column(name="achievement_id")
         private Integer id;
 
+        @Column(name="user_id")
+        private Integer userId;
+
+        @Column(name="base_url")
+        private String baseUrlString;
+
         @Column(name="image_url")
         private String imageUrlString;
-        @Column(name="url")
-        private String criteriaUrlString;
 
-        @Transient private String badgeTypeString;
+        @Column(name="badge_name")
+        private String badgeName;
 
-        @Transient
-        private BadgeType badgeType;
+        @Column(name="badge_level")
+        private String badgeLevel;
 
-        @Transient
-        private URL imageUrl;
+        @Transient private BadgeType badgeType;
 
-        @Transient
-        private URL criteriaUrl;
+        @Transient private URL imageUrl;
+        @Override
+        public Badge build() {
+            return new Badge(this);
+        }
 
         public static Builder builder() {
             return new Builder();
         }
 
-        public BadgeType getBadgeType() {
-            return badgeType;
-        }
-
-        public Builder withBadgeType(BadgeType badgeType) {
-            this.badgeType = badgeType;
-            this.badgeTypeString = badgeType.toString();
-            return this;
-        }
-
-        public URL getImageUrl() {
-            try {
-                this.imageUrl = new URL(this.imageUrlString);
-            } catch (MalformedURLException e) {
-                LOGGER.error(e);
-            }
-            return imageUrl;
-        }
-
-        public Builder withImageUrl(URL imageUrl) {
-            this.imageUrl = imageUrl;
-            return this;
-        }
-        public URL getCriteriaUrl() {
-            try {
-                this.criteriaUrl = new URL(this.criteriaUrlString);
-            } catch (MalformedURLException e) {
-                LOGGER.error(e);
-            }
-            return criteriaUrl;
-        }
-
-        public Builder withCriteriaUrl(URL criteriaUrl) {
-            this.criteriaUrl = criteriaUrl;
-            return this;
-        }
-
-        @Override
-        public Badge build() {
-            return new Badge(this);
+        public static Builder from(Builder builderToCopy) {
+            return builder()
+                    .withId(builderToCopy.getId())
+                    .withUserId(builderToCopy.getUserId())
+                    .withBadgeName(builderToCopy.getBadgeName())
+                    .withBadgeLevel(builderToCopy.getBadgeLevel())
+                    .withBadgeType(builderToCopy.getBadgeType())
+                    .withBaseUrlString(builderToCopy.getBaseUrlString())
+                    .withImageUrlString(builderToCopy.getImageUrlString());
         }
 
         public Integer getId() {
@@ -169,34 +152,135 @@ public class Badge {
             return this;
         }
 
-        public String getBadgeTypeString() {
-            return badgeTypeString;
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public Builder withUserId(Integer userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public BadgeType getBadgeType() {
+            return badgeType;
+        }
+
+        public Builder withBadgeType(BadgeType badgeType) {
+            this.badgeType = badgeType;
+            return this;
         }
 
         public Builder withBadgeTypeString(String badgeTypeString) {
-            this.badgeTypeString = badgeTypeString;
             this.badgeType = BadgeType.valueOf(badgeTypeString);
             return this;
+        }
+
+        public URL getImageUrl() {
+            try {
+                this.imageUrl = new URL(this.imageUrlString);
+            } catch (MalformedURLException e) {
+                throw new MalformedUrlWithinDBException(e);
+            }
+            return imageUrl;
         }
 
         public String getImageUrlString() {
             return imageUrlString;
         }
 
-        public Builder withImageUrlString(String imageUrlString) throws MalformedURLException {
-            this.imageUrl = new URL(imageUrlString);
+        Builder withImageUrl(URL imageUrl) {
+            this.imageUrl = imageUrl;
+            return this;
+        }
+
+        public Builder withImageUrlString(String imageUrlString) {
             this.imageUrlString = imageUrlString;
             return this;
         }
 
-        public String getCriteriaUrlString() {
-            return criteriaUrlString;
+        URL getCriteriaUrl() {
+            return criteriaUrlFromBaseAndLevel(
+                    this.baseUrlString,
+                    this.badgeName,
+                    this.badgeLevel
+            );
         }
 
-        public Builder withCriteriaUrlString(String criteriaUrlString) throws MalformedURLException {
-            this.criteriaUrl = new URL(criteriaUrlString);
-            this.criteriaUrlString = criteriaUrlString;
+        /**
+         * Constructs the Criteria Page URL from elements available from BadgeOS.
+         * @param baseUrlString The URL of the BadgeOS system's encompassing post.
+         * @param badgeName Specific name for the class of badge.
+         * @param badgeLevel Level of badge within the class -- matches the "slug" for the badge's page.
+         * @return Assembled URL containing elements that make up the badge's criteria page.
+         */
+        private URL criteriaUrlFromBaseAndLevel(
+                String baseUrlString,
+                String badgeName,
+                String badgeLevel
+        ) {
+            requireNonNull(baseUrlString, "Base URL is null");
+            requireNonNull(badgeName, "Badge Name is null");
+            requireNonNull(badgeLevel, "Badge Level is null");
+
+            URL baseUrl;
+            try {
+                baseUrl = new URL(baseUrlString);
+                StringBuilder urlString = new StringBuilder()
+                        .append(baseUrl.getProtocol())
+                        .append("://")
+                        .append(baseUrl.getHost())
+                        .append("/")
+                        .append(badgeName)
+                        .append("/")
+                        .append(badgeLevel);
+                LOGGER.trace("Constructed URL String: " + urlString.toString());
+                return new URL(urlString.toString());
+            } catch (MalformedURLException e) {
+                LOGGER.error("Unable to assemble URL:" + e.getMessage());
+                throw new MalformedUrlWithinDBException(e);
+            }
+        }
+
+        String getBaseUrlString() {
+            return baseUrlString;
+        }
+
+        public Builder withBaseUrlString(String baseUrlString) {
+            this.baseUrlString = baseUrlString;
             return this;
+        }
+
+        String getBadgeName() {
+            return badgeName;
+        }
+
+        public Builder withBadgeName(String badgeName) {
+            this.badgeName = badgeName;
+            return this;
+        }
+
+        String getBadgeLevel() {
+            return badgeLevel;
+        }
+
+        public Builder withBadgeLevel(String badgeLevel) {
+            this.badgeLevel = badgeLevel;
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj);
+        }
+
+        @Override
+        public int hashCode() {
+            return HashCodeBuilder.reflectionHashCode(this);
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
         }
     }
 

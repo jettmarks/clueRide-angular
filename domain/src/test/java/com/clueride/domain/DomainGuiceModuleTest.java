@@ -119,9 +119,12 @@ public class DomainGuiceModuleTest extends AbstractModule {
     private Badge.Builder getBadgeBuilder() throws MalformedURLException {
         return Badge.Builder.builder()
                 .withId(10)
+                .withUserId(2)
                 .withBadgeType(BadgeType.SEEKER)
+                .withBadgeName("seekers")
+                .withBadgeLevel("aware")
                 .withImageUrlString("https://clueride.com/favicon")
-                .withCriteriaUrlString("https://clueride.com/hmm");
+                .withBaseUrlString("https://clueride.com/?post_id=3996");
     }
 
     @Provides
