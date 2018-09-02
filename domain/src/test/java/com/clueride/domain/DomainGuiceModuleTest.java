@@ -36,6 +36,7 @@ import com.clueride.domain.account.principal.BadgeOsPrincipalService;
 import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.account.wpuser.WpUserStore;
 import com.clueride.domain.badge.Badge;
 import com.clueride.domain.badge.BadgeStore;
 import com.clueride.domain.badge.BadgeType;
@@ -85,6 +86,9 @@ public class DomainGuiceModuleTest extends AbstractModule {
     @Mock
     private SessionPrincipal sessionPrincipal;
 
+    @Mock
+    private WpUserStore wpUserStore;
+
     @Override
     protected void configure() {
         initMocks(this);
@@ -107,6 +111,7 @@ public class DomainGuiceModuleTest extends AbstractModule {
         bind(MemberStore.class).toInstance(memberStore);
         bind(PrincipalService.class).toInstance(principleService);
         bind(SessionPrincipal.class).toInstance(sessionPrincipal);
+        bind(WpUserStore.class).toInstance(wpUserStore);
 
     }
 

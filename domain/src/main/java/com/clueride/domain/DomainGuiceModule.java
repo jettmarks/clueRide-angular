@@ -31,6 +31,10 @@ import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.PrincipalServiceImpl;
 import com.clueride.domain.account.principal.SessionPrincipal;
 import com.clueride.domain.account.principal.SessionPrincipalImpl;
+import com.clueride.domain.account.wpuser.WpUserService;
+import com.clueride.domain.account.wpuser.WpUserServiceImpl;
+import com.clueride.domain.account.wpuser.WpUserStore;
+import com.clueride.domain.account.wpuser.WpUserStoreJpa;
 import com.clueride.domain.badge.BadgeService;
 import com.clueride.domain.badge.BadgeServiceImpl;
 import com.clueride.domain.badge.BadgeStore;
@@ -98,6 +102,8 @@ public class DomainGuiceModule extends AbstractModule {
         bind(ScoredLocationService.class).to(ScoredLocationServiceImpl.class);
         bind(SessionPrincipal.class).to(SessionPrincipalImpl.class);
         bind(TetherService.class).to(TetherServiceImpl.class);
+        bind(WpUserService.class).to(WpUserServiceImpl.class);
+        bind(WpUserStore.class).to(WpUserStoreJpa.class);
     }
 
 }

@@ -19,6 +19,7 @@ package com.clueride.domain;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -31,6 +32,7 @@ import com.google.inject.Provides;
 
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.account.principal.EmailPrincipal;
+import com.clueride.domain.account.wpuser.WpUser;
 import com.clueride.domain.badge.event.BadgeEvent;
 import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.answer.Answer;
@@ -51,6 +53,8 @@ import com.clueride.infrastructure.db.WordPress;
  * Guice Providers that may be pulled into Tests of other modules.
  */
 public class DomainGuiceProviderModule extends AbstractModule {
+    private static Date testDateNow = new Date();
+
     @Override
     protected void configure() {
 
@@ -239,5 +243,19 @@ public class DomainGuiceProviderModule extends AbstractModule {
                 .withBadgeLevel("adept")
                 .withBaseUrlString("http://clueride.com/?post_id=3376")
                 .withImageUrlString("http://clueride.com/favicon.ico");
+    }
+
+    @Provides
+    @DbSourced
+    private WpUser.Builder getDbWpUserBuilder() {
+        return WpUser.Builder.builder()
+                .withId(2)
+                .withAccountName("turtle")
+                .withDisplayName("turtle")
+                .withEmailString("turtle@clueride.com")
+                .withWebsiteString("https://clueride.com/turtle")
+                .withActivatedTimestamp(
+                        new Timestamp(testDateNow.getTime())
+                );
     }
 }
