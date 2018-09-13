@@ -25,6 +25,7 @@ import javax.mail.internet.InternetAddress;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -76,7 +77,8 @@ public class BadgeOsPrincipal implements Principal {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    @Entity(name="wp_users")
+    @Entity(name="badgeos_principal")
+    @Table(name="wp_users")
     public static class Builder implements com.clueride.domain.common.Builder {
         /**
          * Builder for BadgeOsPrincipal.

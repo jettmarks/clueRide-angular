@@ -47,7 +47,7 @@ public class BadgeOsPrincipalStoreJpa implements BadgeOsPrincipalStore {
 
             principalBuilder = entityManager
                     .createQuery(
-                            "from wp_users u where u.emailAddressString = :emailAddress",
+                            "from badgeos_principal p where p.emailAddressString = :emailAddress",
                             BadgeOsPrincipal.Builder.class
                     )
                     .setParameter("emailAddress", emailAddress.toString())
