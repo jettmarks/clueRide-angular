@@ -17,6 +17,7 @@
  */
 package com.clueride.domain.account.wpuser;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
@@ -32,6 +33,7 @@ public class WpUserStoreJpa implements WpUserStore {
     private static final Logger LOGGER = Logger.getLogger(WpUserStoreJpa.class);
     private final EntityManager entityManager;
 
+    @Inject
     public WpUserStoreJpa(
             @WordPress EntityManager entityManager
     ) {

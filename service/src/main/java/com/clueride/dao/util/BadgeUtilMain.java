@@ -19,8 +19,11 @@ package com.clueride.dao.util;
 
 import java.util.List;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.persistence.EntityManager;
 
+import com.clueride.domain.account.principal.BadgeOsPrincipal;
 import com.clueride.domain.account.principal.SessionPrincipal;
 import com.clueride.domain.account.principal.SessionPrincipalImpl;
 import com.clueride.domain.badge.Badge;
@@ -47,6 +50,8 @@ public class BadgeUtilMain {
             for (Badge badge : badges) {
                 System.out.println(badge.toString());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             entityManager.close();
         }
@@ -59,6 +64,23 @@ public class BadgeUtilMain {
         badgeStore = new BadgeStoreJpa(entityManager);
         BadgeTypeService badgeTypeService = new BadgeTypeServiceMappedImpl();
         SessionPrincipal sessionPrincipal = new SessionPrincipalImpl();
+        setUserSession(sessionPrincipal);
         badgeService = new BadgeServiceImpl(badgeStore, badgeTypeService, sessionPrincipal);
+
+    }
+
+    private static void setUserSession(SessionPrincipal sessionPrincipal) {
+        InternetAddress emailAddress = null;
+        try {
+            emailAddress = new InternetAddress("bikeangel.atl@gmail.com");
+        } catch (AddressException e) {
+            e.printStackTrace();
+        }
+        BadgeOsPrincipal badgeOsPrincipal = BadgeOsPrincipal.Builder.builder()
+                .withName("don't care")
+                .withEmailAddress(emailAddress)
+                .withBadgeOsUserId(47)
+                .build();
+        sessionPrincipal.setSessionPrincipal(badgeOsPrincipal);
     }
 }
