@@ -42,8 +42,8 @@ import static java.util.Objects.requireNonNull;
  * API for working with Game State both for User Session and per Team.
  *
  */
-@Path("gameState")
-public class GameState {
+@Path("game-state")
+public class GameStateWebService {
     @Context
     private HttpServletRequest request;
 
@@ -51,7 +51,7 @@ public class GameState {
     private OutingService outingService;
 
     @Inject
-    public GameState(
+    public GameStateWebService(
             @Nonnull GameStateService gameStateService,
             @Nonnull OutingService outingService
     ) {
@@ -89,8 +89,7 @@ public class GameState {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public OutingState getOutingState() {
-        HttpSession session = request.getSession();
-        Integer outingId = (Integer) session.getAttribute("outingId");
+        Integer outingId = getOutingFromSession();
         return outingService.getState(outingId);
     }
 
@@ -100,4 +99,30 @@ public class GameState {
     public Long updateOutingState(OutingState outingState) {
         return outingService.updateOutingState(outingState);
     }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("arrival")
+    public Long updateOutingWithArrival() {
+        Integer outingId = getOutingFromSession();
+        gameStateService.updateOutingStateWithArrival(outingId);
+        return 0L;
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("departure")
+    public Long updateOutingWithDeparture() {
+        Integer outingId = getOutingFromSession();
+        gameStateService.updateOutingStateWithDeparture(outingId);
+        return 0L;
+    }
+
+    private Integer getOutingFromSession() {
+        HttpSession session = request.getSession();
+        return (Integer) session.getAttribute("outingId");
+    }
+
 }
