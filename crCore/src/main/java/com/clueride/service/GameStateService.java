@@ -36,4 +36,17 @@ public interface GameStateService {
      * @return - JSON object indicating success of update.
      */
     String updateGameStateByTeam(ClueRideState clueRideState);
+
+    /**
+     * Updates the indicated Outing with an Arrival Event (including the broadcast of the SSE.
+     * @param outingId Identifies the Outing (usually taken from the session).
+     */
+    void updateOutingStateWithArrival(Integer outingId);
+
+    /**
+     * Updates the indicated Outing with a Departure Event (including the broadcast of the SSE.
+     * @param outingId Identifies the Outing (usually taken from the session).
+     */
+    void updateOutingStateWithDeparture(Integer outingId);
+
 }

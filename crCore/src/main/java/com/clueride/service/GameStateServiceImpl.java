@@ -49,4 +49,15 @@ public class GameStateServiceImpl implements GameStateService {
         this.clueRideState = clueRideState;
         return "{\"status\": \"OK\"}";
     }
+
+    @Override
+    public void updateOutingStateWithArrival(Integer outingId) {
+        LOGGER.info("Changing Game State for outing " + outingId + " to Arrival");
+    }
+
+    @Override
+    public void updateOutingStateWithDeparture(Integer outingId) {
+        LOGGER.info("Changing Game State for outing " + outingId + " to Departure");
+    }
+
 }
