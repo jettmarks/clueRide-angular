@@ -17,11 +17,20 @@
  */
 package com.clueride.service;
 
+import com.clueride.domain.user.path.Path;
+
 /**
  * Handles requests from Game Clients for the "legs" of the Course which run between
  * locations and their clues.
  */
 public interface PathService {
+    /**
+     * Given Path ID, retrieve the Path matching that ID.
+     * @param integer unique identifier for the Path.
+     * @return Path record matching the given ID.
+     */
+    Path getPath(Integer integer);
+
     /**
      * Given a Path ID (provided by a Course), retrieve the metadata (Location IDs)
      * for that Path.
@@ -38,4 +47,5 @@ public interface PathService {
      * and Locations.
      */
     String getPathGeometry(Integer pathId);
+
 }

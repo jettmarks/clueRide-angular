@@ -17,6 +17,7 @@
  */
 package com.clueride.domain;
 
+import com.clueride.domain.course.Course;
 import com.clueride.domain.user.path.Path;
 
 /**

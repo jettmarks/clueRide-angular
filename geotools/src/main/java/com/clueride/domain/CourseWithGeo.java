@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
+import com.clueride.domain.course.Course;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.path.Path;
 import com.clueride.service.IdProvider;
@@ -30,8 +31,9 @@ import com.clueride.service.MemoryBasedCourseIdProvider;
 /**
  * Implementation of Course used for Games.
  */
-public class GameCourse implements Course {
+public class CourseWithGeo implements Course {
     private final Integer id;
+    // TODO: CA-374
 //    private Location departure;
 //    private Location destination;
     private List<Step> steps;
@@ -43,18 +45,22 @@ public class GameCourse implements Course {
     private int stepIndex;
     private int lastStep;
 
-    private GameCourse(Builder builder) {
+    private CourseWithGeo(Builder builder) {
         this.id = builder.getId();
         this.name = builder.getName();
         this.description = builder.getDescription();
         this.courseTypeId = builder.getCourseTypeId();
 
-        stepIndex = 0;
-        this.steps = ImmutableList.copyOf(builder.getSteps());
         this.pathIds = ImmutableList.copyOf(builder.getPathIds());
+
+        // TODO: CA-373 Move to GameState instance
+        stepIndex = 0;
+        if (builder.getSteps() != null) {
+            this.steps = ImmutableList.copyOf(builder.getSteps());
+            this.lastStep = steps.size() - 1;
+        }
+        /* TODO: CA-308 & CA-374 there was a reason this had been commented out. */
 //        this.departure = (Location) steps.get(0);
-        /* TODO: there was a reason this had been commented out. */
-        this.lastStep = steps.size() - 1;
 //        this.destination = (Location) steps.get(lastStep);
     }
 
@@ -79,11 +85,25 @@ public class GameCourse implements Course {
     }
 
     @Override
+    public Location getDeparture() {
+        return null;
+    }
+
+    @Override
+    public Location getDestination() {
+        return null;
+    }
+
+    @Override
     public Integer getCourseTypeId() {
         return courseTypeId;
     }
 
     @Override
+    public List<Step> getSteps() {
+        return null;
+    }
+
     public Step nextStep() {
         if (stepIndex == lastStep) {
             throw new IllegalStateException("Course is complete; no more steps");
@@ -91,12 +111,10 @@ public class GameCourse implements Course {
         return steps.get(stepIndex + 1);
     }
 
-    @Override
     public Step currentStep() {
         return steps.get(stepIndex);
     }
 
-    @Override
     public Step completeCurrentStep() {
         return steps.get(stepIndex++);
     }
@@ -165,13 +183,13 @@ public class GameCourse implements Course {
             return this;
         }
 
-        public GameCourse build() {
+        public CourseWithGeo build() {
             // Validations happen here
-            return new GameCourse(this);
+            return new CourseWithGeo(this);
         }
 
-        /* TODO: Add the code to copy paths and locations. */
-        public static Builder from(GameCourse gameCourse) {
+        /* TODO: CA-374 Add the code to copy paths and locations. */
+        public static Builder from(CourseWithGeo gameCourse) {
             return getBuilder()
                     .withName(gameCourse.getName())
                     .withDescription(gameCourse.getDescription());

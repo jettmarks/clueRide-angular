@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Jett Marks
+ * Copyright 2018 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 7/10/16.
+ * Created by jett on 9/15/18.
  */
-package com.clueride.service;
-
-import com.clueride.domain.course.CourseType;
+package com.clueride.domain.course;
 
 /**
- * Handles requests from client -- particularly the REST Web API -- for Course Types.
+ * Course that has all the links to other objects populated.
  */
-public interface CourseTypeService {
-    /**
-     * Given a Course Type ID, retrieve the details for that Type of Course.
-     * @param courseTypeId - Unique identifier for the Course Type.
-     * @return CourseType instance holding course type details.
-     */
-    CourseType getCourseType(Integer courseTypeId);
-
+public interface FilledCourse extends Course {
+    /** Starting out as a "Marker" sort of interface. */
+    // TODO: CA-374
 }

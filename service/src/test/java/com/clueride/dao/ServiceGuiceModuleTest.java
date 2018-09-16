@@ -17,8 +17,6 @@
  */
 package com.clueride.dao;
 
-import java.util.Collections;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.mockito.Mock;
@@ -26,10 +24,8 @@ import org.mockito.Mock;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DomainGuiceProviderModule;
 import com.clueride.domain.GamePath;
-import com.clueride.domain.account.member.Member;
 import com.clueride.domain.dev.Node;
 import com.clueride.domain.factory.PointFactory;
-import com.clueride.domain.user.Badge;
 import com.clueride.io.PojoJsonService;
 import com.clueride.service.NetworkEval;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -60,17 +56,18 @@ public class ServiceGuiceModuleTest extends AbstractModule {
         bind(PojoJsonService.class).toInstance(pojoJsonService);
     }
 
-    @Provides
-    private Member getMember() {
-        return Member.Builder.builder()
-                .withFirstName("ClueRide")
-                .withLastName("Guest")
-                .withEmailAddress("guest.dummy@clueride.com")
-                .withBadges(Collections.singletonList(Badge.LOCATION_EDITOR))
-                .withDisplayName("ClueRide Guest")
-                .withPhone("123-456-7890")
-                .build();
-    }
+    // Handled by DomainGuiceProviderModule
+//    @Provides
+//    private Member getMember() {
+//        return Member.Builder.builder()
+//                .withFirstName("ClueRide")
+//                .withLastName("Guest")
+//                .withEmailAddress("guest.dummy@clueride.com")
+//                .withBadges(Collections.singletonList(Badge.LOCATION_EDITOR))
+//                .withDisplayName("ClueRide Guest")
+//                .withPhone("123-456-7890")
+//                .build();
+//    }
 
     @Provides
     private GamePath.Builder getGamePathBuilder(

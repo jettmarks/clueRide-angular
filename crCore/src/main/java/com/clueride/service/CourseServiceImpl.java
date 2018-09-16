@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
 import com.clueride.dao.CourseStore;
-import com.clueride.domain.Course;
+import com.clueride.domain.course.Course;
 import com.clueride.service.builder.CourseBuilder;
 
 /**
@@ -42,6 +42,11 @@ public class CourseServiceImpl implements CourseService {
     ) {
         this.courseStore = courseStore;
         this.courseBuilder = courseBuilder;
+    }
+
+    @Override
+    public Course getCourse(Integer courseId) {
+        return courseStore.getCourseById(courseId);
     }
 
     @Override

@@ -45,7 +45,7 @@ import static org.testng.AssertJUnit.assertNotNull;
  */
 @Guice(modules = CoreGuiceModuleTest.class)
 public class OutingServiceImplTest {
-    private OutingService toTest;
+    private OutingServiceImpl toTest;
     private List<Outing> outings;
     private List<Integer> outingIds;
     private static final Integer OUTING_ID1 = 1;
@@ -57,7 +57,7 @@ public class OutingServiceImplTest {
     private Outing outing;
 
     @Inject
-    private Provider<OutingService> testProvider;
+    private Provider<OutingServiceImpl> testProvider;
 
     @Inject
     private OutingStore outingStore;
@@ -69,6 +69,7 @@ public class OutingServiceImplTest {
     public void setUp() throws Exception {
         initMocks(this);
         toTest = testProvider.get();
+        assertNotNull(toTest);
         populateToTest(toTest);
         assertTrue(outingIds.size() > 0);
     }

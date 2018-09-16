@@ -25,7 +25,7 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 
-import com.clueride.domain.CourseType;
+import com.clueride.domain.course.CourseType;
 import com.clueride.io.PojoJsonUtil;
 
 /**

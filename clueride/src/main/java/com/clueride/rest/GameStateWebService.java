@@ -32,9 +32,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import com.clueride.domain.game.GameState;
+import com.clueride.domain.game.GameStateService;
 import com.clueride.rest.dto.ClueRideState;
 import com.clueride.rest.dto.OutingState;
-import com.clueride.service.GameStateService;
 import com.clueride.service.OutingService;
 import static java.util.Objects.requireNonNull;
 
@@ -73,7 +74,9 @@ public class GameStateWebService {
     public String updateGameStateForTeam(
             ClueRideState clueRideState
     ) {
-        return gameStateService.updateGameStateByTeam(clueRideState);
+        // No longer supports the new API for Ionic clients
+//        return gameStateService.updateGameStateByTeam(clueRideState);
+        return "OK";
     }
 
     /* Outing API uses bare path and the Outing ID to identify which Outing State is requested. */
@@ -103,26 +106,37 @@ public class GameStateWebService {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("arrival")
-    public Long updateOutingWithArrival() {
+    @Path("team-assembled")
+    public GameState updateOutingWithTeamAssembled() {
         Integer outingId = getOutingFromSession();
-        gameStateService.updateOutingStateWithArrival(outingId);
-        return 0L;
+        return gameStateService.updateWithTeamAssembled(outingId);
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("arrival")
+    public GameState updateOutingWithArrival() {
+        Integer outingId = getOutingFromSession();
+        return gameStateService.updateOutingStateWithArrival(outingId);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("departure")
-    public Long updateOutingWithDeparture() {
+    public GameState updateOutingWithDeparture() {
         Integer outingId = getOutingFromSession();
-        gameStateService.updateOutingStateWithDeparture(outingId);
-        return 0L;
+        return gameStateService.updateOutingStateWithDeparture(outingId);
     }
 
     private Integer getOutingFromSession() {
         HttpSession session = request.getSession();
-        return (Integer) session.getAttribute("outingId");
+        Integer outingId = (Integer) session.getAttribute("outingId");
+        if (outingId == null) {
+            outingId = 2;
+        }
+        return outingId;
     }
 
 }

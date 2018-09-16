@@ -22,6 +22,8 @@ package com.clueride.rest.dto;
  *
  * This is pushed by the client when game state changes and pulled by the client
  * when it refreshes so game state is preserved.
+ * TODO: Remove this class
+ * @deprecated - Don't want the rest.dto versions.
  */
 public class ClueRideState {
     public Integer teamId;

@@ -58,7 +58,6 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(CourseTypeService.class).to(CourseTypeServiceImpl.class);
         bind(ClueService.class).to(ClueServiceImpl.class);
         bind(DiagnosticService.class).to(DiagnosticServiceImpl.class);
-        bind(GameStateService.class).to(GameStateServiceImpl.class);
         bind(ImageStore.class).to(FileImageStore.class);
         bind(InvitationService.class).to(InvitationServiceImpl.class);
         bind(JtiService.class).to(JtiServiceImpl.class);

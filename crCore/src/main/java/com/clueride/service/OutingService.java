@@ -17,9 +17,9 @@
  */
 package com.clueride.service;
 
-import com.clueride.domain.Course;
 import com.clueride.domain.Outing;
 import com.clueride.domain.Team;
+import com.clueride.domain.course.Course;
 import com.clueride.rest.dto.OutingState;
 
 /**

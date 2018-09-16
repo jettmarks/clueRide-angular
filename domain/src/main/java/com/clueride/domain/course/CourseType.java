@@ -15,7 +15,7 @@
  *
  * Created by jett on 7/10/16.
  */
-package com.clueride.domain;
+package com.clueride.domain.course;
 
 import java.net.URL;
 

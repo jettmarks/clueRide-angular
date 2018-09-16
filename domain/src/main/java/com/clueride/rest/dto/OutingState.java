@@ -19,10 +19,16 @@ package com.clueride.rest.dto;
 
 /**
  * DTO for the Outing State; shares the ID of the corresponding Outing.
+ * @deprecated - No longer need to support the "DTO" instances.
  */
 public class OutingState {
     public Integer outingId;
+    /* True if we are ready to begin play. */
     public Boolean teamConfirmed;
+    /* Index into the Outing for the current index into the Path list. */
     public Integer pathIndex;
+    /* Less easy to follow; should deprecate this. */
     public Boolean mostRecentClueSolvedFlag;
+    /* True if we have departed and are approaching the next location. */
+    public Boolean rolling;
 }

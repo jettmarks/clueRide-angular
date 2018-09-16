@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 
-import com.clueride.domain.Course;
+import com.clueride.domain.course.Course;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.PojoJsonUtil;
 

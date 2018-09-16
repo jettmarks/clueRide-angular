@@ -20,7 +20,7 @@ package com.clueride.dao;
 import java.io.IOException;
 import java.util.List;
 
-import com.clueride.domain.Course;
+import com.clueride.domain.course.Course;
 
 /**
  * Persistence interface for {@link Course} instances.
@@ -31,7 +31,7 @@ public interface CourseStore {
      *
      * @param course - instance to be added to the memory-based copy (which may be persisted).
      * @return Unique Integer ID of the new Course.
-     * @throws IOException
+     * @throws IOException if there is a problem writing to disk.
      */
     Integer addNew(Course course) throws IOException;
 

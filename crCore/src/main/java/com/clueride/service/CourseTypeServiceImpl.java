@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 
 import com.clueride.dao.CourseTypeStore;
-import com.clueride.domain.CourseType;
+import com.clueride.domain.course.CourseType;
 
 /**
  * Implementation of the CourseTypeService.
@@ -41,4 +41,5 @@ public class CourseTypeServiceImpl implements CourseTypeService {
         LOGGER.info("Requesting Course Type data for Course Type " + courseTypeId);
         return courseTypeStore.getCourseTypeById(courseTypeId);
     }
+
 }
