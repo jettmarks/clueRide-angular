@@ -32,6 +32,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
+
 import com.clueride.domain.game.GameState;
 import com.clueride.domain.game.GameStateService;
 import com.clueride.rest.dto.ClueRideState;
@@ -45,6 +47,8 @@ import static java.util.Objects.requireNonNull;
  */
 @Path("game-state")
 public class GameStateWebService {
+    private static final Logger LOGGER = Logger.getLogger(GameStateWebService.class);
+
     @Context
     private HttpServletRequest request;
 
@@ -133,8 +137,10 @@ public class GameStateWebService {
     private Integer getOutingFromSession() {
         HttpSession session = request.getSession();
         Integer outingId = (Integer) session.getAttribute("outingId");
+        // TODO: CA-376
         if (outingId == null) {
-            outingId = 2;
+            outingId = 3;
+            LOGGER.info("Not finding the Outing in the Session; setting to " + outingId);
         }
         return outingId;
     }

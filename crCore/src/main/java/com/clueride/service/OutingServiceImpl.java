@@ -133,9 +133,10 @@ public class OutingServiceImpl implements OutingService {
     @Override
     public OutingState getState(Integer outingId) {
         // TODO: Temporarily hardcoding the outing if the session doesn't hold an ID.
+        // TODO: CA-376 (except this may be deprecated now that I'm using the GameState)
         if (outingId == null) {
-            LOGGER.warn("Session doesn't hold an outingId -- default to outingId 2");
-            outingId = 2;
+            LOGGER.warn("Session doesn't hold an outingId -- default to outingId 3");
+            outingId = 3;
         }
 
         if (statePerOuting.containsKey(outingId)) {
@@ -149,7 +150,7 @@ public class OutingServiceImpl implements OutingService {
                 .build()
         );
         OutingState outingState = new OutingState();
-        outingState.outingId = 2;
+        outingState.outingId = 3;
         outingState.pathIndex = -1;
         outingState.mostRecentClueSolvedFlag = false;
         outingState.teamConfirmed = false;
@@ -169,4 +170,5 @@ public class OutingServiceImpl implements OutingService {
         lastModifiedStatePerOuting.put(outingState.outingId, now);
         return now;
     }
+
 }
