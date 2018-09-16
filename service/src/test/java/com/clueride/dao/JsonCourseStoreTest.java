@@ -24,8 +24,8 @@ import com.google.inject.Injector;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.clueride.domain.Course;
-import com.clueride.domain.GameCourse;
+import com.clueride.domain.CourseWithGeo;
+import com.clueride.domain.course.Course;
 import com.clueride.service.NetworkEval;
 import com.clueride.service.NetworkEvalImpl;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -39,7 +39,7 @@ public class JsonCourseStoreTest {
     /** Instance under test. */
     private CourseStore toTest;
 
-    private GameCourse.Builder builder;
+    private CourseWithGeo.Builder builder;
     private Injector injector;
 
     @BeforeMethod
@@ -60,8 +60,8 @@ public class JsonCourseStoreTest {
 
     }
 
-    private GameCourse.Builder getBuilder() {
-        return GameCourse.Builder.getBuilder()
+    private CourseWithGeo.Builder getBuilder() {
+        return CourseWithGeo.Builder.getBuilder()
                 .withName("Five Free Things in Atlanta")
                 .withDescription("From Washington Post article in 2014")
                 .addPathId(2)

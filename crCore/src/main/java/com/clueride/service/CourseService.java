@@ -17,10 +17,19 @@
  */
 package com.clueride.service;
 
+import com.clueride.domain.course.Course;
+
 /**
  * Handles requests from client -- particularly the REST Web API -- for Courses.
  */
 public interface CourseService {
+    /**
+     * Returns the Course identified by the given Course ID.
+     * @param courseId unique identifier for the Course.
+     * @return Course instance containing metadata about the specific Course.
+     */
+    Course getCourse(Integer courseId);
+
     /**
      * Given a courseId, retrieve the metadata (name, description, list of Paths)
      * for that Course.

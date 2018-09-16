@@ -19,6 +19,7 @@ package com.clueride.domain;
 
 import java.util.Date;
 
+import com.clueride.domain.course.Course;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedOutingIdProvider;
 

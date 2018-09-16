@@ -26,17 +26,18 @@ import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.Course;
-import com.clueride.domain.CourseType;
-import com.clueride.domain.GameCourse;
+import com.clueride.domain.CourseWithGeo;
 import com.clueride.domain.GamePath;
 import com.clueride.domain.Invitation;
 import com.clueride.domain.Outing;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.common.Builder;
+import com.clueride.domain.course.Course;
+import com.clueride.domain.course.CourseType;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.path.Path;
@@ -318,7 +319,8 @@ public class PojoJsonUtil implements PojoJsonService {
         Course course;
         try {
             synchronized (objectMapper) {
-                GameCourse.Builder builder = objectMapper.readValue(file, GameCourse.Builder.class);
+                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                CourseWithGeo.Builder builder = objectMapper.readValue(file, CourseWithGeo.Builder.class);
                 course = builder.build();
                 pathIdProvider.registerId(course.getId());
             }

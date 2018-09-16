@@ -24,6 +24,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.clueride.domain.course.CourseType;
 import com.clueride.service.CourseTypeService;
 
 /**
@@ -44,7 +45,7 @@ public class CourseTypeWebService {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public com.clueride.domain.CourseType getCourseTypeById(@PathParam("id") Integer courseTypeId) {
+    public CourseType getCourseTypeById(@PathParam("id") Integer courseTypeId) {
         return courseTypeService.getCourseType(courseTypeId);
     }
 

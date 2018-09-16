@@ -76,4 +76,5 @@ public interface Path extends Step {
      * @return unique Integer representing the Destination Location.
      */
     Integer getEndLocationId();
+
 }

@@ -15,9 +15,7 @@
  *
  * Created by jett on 1/24/16.
  */
-package com.clueride.service;
-
-import com.clueride.rest.dto.ClueRideState;
+package com.clueride.domain.game;
 
 /**
  * Manages an in-memory copy of the State per Team and per User Session.
@@ -35,18 +33,29 @@ public interface GameStateService {
      * @param clueRideState - State values to be used for the update.
      * @return - JSON object indicating success of update.
      */
-    String updateGameStateByTeam(ClueRideState clueRideState);
+//    String updateGameStateByTeam(ClueRideState clueRideState);
+
+    /**
+     * Indicates that an initial game has all players assembled and we're
+     * ready to reveal a puzzle at the starting location.
+     * @param outingId - Unique identifier for the Outing, generally from the session.
+     * @return updated Game State instance.
+     */
+    GameState updateWithTeamAssembled(Integer outingId);
 
     /**
      * Updates the indicated Outing with an Arrival Event (including the broadcast of the SSE.
+     * This is only valid after the first departure from the starting location;
+     * it cannot be used to trigger arrival at the start, that's the job for
+     * {@link GameStateService#updateWithTeamAssembled(Integer)}
      * @param outingId Identifies the Outing (usually taken from the session).
      */
-    void updateOutingStateWithArrival(Integer outingId);
+    GameState updateOutingStateWithArrival(Integer outingId);
 
     /**
      * Updates the indicated Outing with a Departure Event (including the broadcast of the SSE.
      * @param outingId Identifies the Outing (usually taken from the session).
      */
-    void updateOutingStateWithDeparture(Integer outingId);
+    GameState updateOutingStateWithDeparture(Integer outingId);
 
 }

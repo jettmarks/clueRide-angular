@@ -37,10 +37,10 @@ import com.clueride.dao.ImageStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.dao.OutingStore;
 import com.clueride.dao.PathStore;
+import com.clueride.domain.CourseWithGeo;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DomainGuiceProviderModule;
 import com.clueride.domain.EdgeImpl;
-import com.clueride.domain.GameCourse;
 import com.clueride.domain.GeoNode;
 import com.clueride.domain.Outing;
 import com.clueride.domain.account.member.Member;
@@ -67,11 +67,12 @@ import com.clueride.infrastructure.AuthServiceImpl;
 import com.clueride.infrastructure.Jpa;
 import com.clueride.infrastructure.Json;
 import com.clueride.service.AuthenticationService;
+import com.clueride.service.CourseService;
 import com.clueride.service.InvitationService;
 import com.clueride.service.LocationService;
 import com.clueride.service.NodeService;
 import com.clueride.service.OutingService;
-import com.clueride.service.OutingServiceImpl;
+import com.clueride.service.PathService;
 import com.clueride.service.RecommendationService;
 import com.clueride.service.TeamService;
 import com.clueride.token.JtiService;
@@ -88,6 +89,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
 
     @Mock
     private ClueStore clueStore;
+
+    @Mock
+    private CourseService courseService;
 
     @Mock
     private CourseStore courseStore;
@@ -126,7 +130,13 @@ public class CoreGuiceModuleTest extends AbstractModule {
     private NodeService nodeService;
 
     @Mock
+    private OutingService outingService;
+
+    @Mock
     private OutingStore outingStore;
+
+    @Mock
+    private PathService pathService;
 
     @Mock
     private PathStore pathStore;
@@ -157,6 +167,7 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(ClueStore.class).toInstance(clueStore);
         bind(ConfigService.class).to(ConfigServiceImpl.class);
         bind(CourseStore.class).toInstance(courseStore);
+        bind(CourseService.class).toInstance(courseService);
         bind(ImageStore.class).toInstance(imageStore);
         bind(ImageService.class).toInstance(imageService);
         bind(InvitationService.class).toInstance(invitationService);
@@ -171,8 +182,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(MemberService.class).toInstance(memberService);
         bind(NodeService.class).toInstance(nodeService);
         bind(NodeStore.class).toInstance(nodeStore);
-        bind(OutingService.class).to(OutingServiceImpl.class);
+        bind(OutingService.class).toInstance(outingService);
         bind(OutingStore.class).toInstance(outingStore);
+        bind(PathService.class).toInstance(pathService);
         bind(PathStore.class).toInstance(pathStore);
         bind(PrincipalService.class).toInstance(principalService);
         bind(RecommendationService.class).toInstance(recommendationService);
@@ -201,8 +213,8 @@ public class CoreGuiceModuleTest extends AbstractModule {
     }
 
     @Provides
-    private GameCourse provideGameCourse() {
-        return GameCourse.Builder.getBuilder()
+    private CourseWithGeo provideGameCourse() {
+        return CourseWithGeo.Builder.getBuilder()
                 .withName("Test Course")
                 .withDescription("Trying out the Builder for a Game Course")
                 .build();

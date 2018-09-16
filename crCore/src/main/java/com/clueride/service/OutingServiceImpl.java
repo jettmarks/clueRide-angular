@@ -153,6 +153,7 @@ public class OutingServiceImpl implements OutingService {
         outingState.pathIndex = -1;
         outingState.mostRecentClueSolvedFlag = false;
         outingState.teamConfirmed = false;
+        outingState.rolling = false;
         statePerOuting.put(2, outingState);
 
         /* If an outingState isn't found at this ID, complain. */

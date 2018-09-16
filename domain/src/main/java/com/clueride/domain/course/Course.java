@@ -15,10 +15,11 @@
  *
  * Created by jett on 1/15/16.
  */
-package com.clueride.domain;
+package com.clueride.domain.course;
 
 import java.util.List;
 
+import com.clueride.domain.Step;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.path.Path;
 
@@ -30,14 +31,15 @@ public interface Course {
     Integer getId();
     String getName();
     String getDescription();
-    List<Integer> getPathIds();
     Integer getCourseTypeId();
+    List<Step> getSteps();
+    List<Integer> getPathIds();
+    Location getDeparture();
+    Location getDestination();
 
-//    Location getDeparture();
-//    Location getDestination();
-
-    Step nextStep();
-    Step currentStep();
+    // TODO: CA-374
+//    Step nextStep();
+//    Step currentStep();
 
     /**
      * As progress is made along the course, each step is completed by calling
@@ -46,7 +48,5 @@ public interface Course {
      * and the state changes to the first {@link Path}.
      * @return The last current step which we've marked as completed (giving us a new current Step).
      */
-    Step completeCurrentStep();
-
-//    List<Step> getSteps();
+//    Step completeCurrentStep();
 }

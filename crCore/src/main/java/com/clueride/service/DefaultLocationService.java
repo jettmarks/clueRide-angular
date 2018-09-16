@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 import com.clueride.dao.CourseStore;
 import com.clueride.dao.ImageStore;
 import com.clueride.dao.PathStore;
-import com.clueride.domain.Course;
+import com.clueride.domain.course.Course;
 import com.clueride.domain.user.image.Image;
 import com.clueride.domain.user.image.ImageService;
 import com.clueride.domain.user.latlon.LatLon;

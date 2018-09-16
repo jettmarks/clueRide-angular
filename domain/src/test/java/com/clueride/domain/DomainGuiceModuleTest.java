@@ -43,6 +43,7 @@ import com.clueride.domain.badge.BadgeType;
 import com.clueride.domain.badge.BadgeTypeService;
 import com.clueride.domain.badge.event.BadgeEventService;
 import com.clueride.domain.badge.event.BadgeEventStore;
+import com.clueride.domain.ssevent.SSEventService;
 import com.clueride.domain.user.image.ImageStore;
 import com.clueride.domain.user.image.ImageStoreJpa;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -87,6 +88,9 @@ public class DomainGuiceModuleTest extends AbstractModule {
     private SessionPrincipal sessionPrincipal;
 
     @Mock
+    private SSEventService ssEventService;
+
+    @Mock
     private WpUserStore wpUserStore;
 
     @Override
@@ -111,6 +115,7 @@ public class DomainGuiceModuleTest extends AbstractModule {
         bind(MemberStore.class).toInstance(memberStore);
         bind(PrincipalService.class).toInstance(principleService);
         bind(SessionPrincipal.class).toInstance(sessionPrincipal);
+        bind(SSEventService.class).toInstance(ssEventService);
         bind(WpUserStore.class).toInstance(wpUserStore);
 
     }

@@ -19,7 +19,7 @@ package com.clueride.dao;
 
 import java.io.IOException;
 
-import com.clueride.domain.CourseType;
+import com.clueride.domain.course.CourseType;
 
 /**
  * Persistence interface for {@link CourseType} instances.
@@ -43,4 +43,5 @@ public interface CourseTypeStore {
      * @return Matching CourseType.
      */
     CourseType getCourseTypeById(Integer courseTypeId);
+
 }

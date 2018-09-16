@@ -43,6 +43,11 @@ public class PathServiceImpl implements PathService {
     }
 
     @Override
+    public Path getPath(Integer pathId) {
+        return pathStore.getPathById(pathId);
+    }
+
+    @Override
     public String getPathMetaData(Integer pathId) {
         return null;
     }
@@ -53,4 +58,5 @@ public class PathServiceImpl implements PathService {
         Path path = pathStore.getPathById(pathId);
         return pathBuilder.getPathFeatureCollection(path);
     }
+
 }

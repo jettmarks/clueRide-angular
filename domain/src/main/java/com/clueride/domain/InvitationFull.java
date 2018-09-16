@@ -18,6 +18,8 @@
 package com.clueride.domain;
 
 import com.clueride.domain.account.member.Member;
+import com.clueride.domain.course.Course;
+import com.clueride.domain.course.CourseType;
 
 /**
  * Represents a flattened Invitation where all references to sub-types are resolved into the actual instances.

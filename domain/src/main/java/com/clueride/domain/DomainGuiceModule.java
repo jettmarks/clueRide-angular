@@ -45,6 +45,10 @@ import com.clueride.domain.badge.event.BadgeEventService;
 import com.clueride.domain.badge.event.BadgeEventServiceImpl;
 import com.clueride.domain.badge.event.BadgeEventStore;
 import com.clueride.domain.badge.event.BadgeEventStoreJpa;
+import com.clueride.domain.game.GameStateService;
+import com.clueride.domain.game.GameStateServiceImpl;
+import com.clueride.domain.ssevent.SSEventService;
+import com.clueride.domain.ssevent.SSEventServiceImpl;
 import com.clueride.domain.user.image.ImageService;
 import com.clueride.domain.user.image.ImageServiceImpl;
 import com.clueride.domain.user.image.ImageStore;
@@ -86,6 +90,7 @@ public class DomainGuiceModule extends AbstractModule {
         bind(BadgeOsPrincipalService.class).to(BadgeOsPrincipalServiceImpl.class);
         bind(BadgeOsPrincipalStore.class).to(BadgeOsPrincipalStoreJpa.class);
         bind(BadgeTypeService.class).to(BadgeTypeServiceMappedImpl.class);
+        bind(GameStateService.class).to(GameStateServiceImpl.class);
         bind(ImageService.class).to(ImageServiceImpl.class);
         bind(ImageStore.class).to(ImageStoreJpa.class);
         bind(LatLonStore.class).to(LatLonStoreJpa.class);
@@ -101,6 +106,7 @@ public class DomainGuiceModule extends AbstractModule {
         bind(PuzzleStore.class).to(PuzzleStoreJpa.class);
         bind(ScoredLocationService.class).to(ScoredLocationServiceImpl.class);
         bind(SessionPrincipal.class).to(SessionPrincipalImpl.class);
+        bind(SSEventService.class).to(SSEventServiceImpl.class);
         bind(TetherService.class).to(TetherServiceImpl.class);
         bind(WpUserService.class).to(WpUserServiceImpl.class);
         bind(WpUserStore.class).to(WpUserStoreJpa.class);

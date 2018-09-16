@@ -38,7 +38,7 @@ import static org.testng.Assert.assertEquals;
  */
 @Guice(modules = CoreGuiceModuleTest.class)
 public class GameCourseTest {
-    private GameCourse toTest;
+    private CourseWithGeo toTest;
     private IdProvider idProvider = new MemoryBasedCourseIdProvider();
 
     @Mock
@@ -57,12 +57,12 @@ public class GameCourseTest {
     private Path secondPath;
 
     @Inject
-    private Provider<GameCourse> gameCourseProvider;
+    private Provider<CourseWithGeo> gameCourseProvider;
 
     @BeforeMethod
     public void setUp() throws Exception {
         initMocks(this);
-        GameCourse.Builder gameCourseBuilder = GameCourse.Builder.from(gameCourseProvider.get())
+        CourseWithGeo.Builder gameCourseBuilder = CourseWithGeo.Builder.from(gameCourseProvider.get())
                 .addLocation(startLocation)
                 .addPath(firstPath)
                 .addLocation(secondLocation)
