@@ -15,12 +15,10 @@
  *
  * Created by jett on 5/30/16.
  */
-package com.clueride.dao;
+package com.clueride.domain.invite;
 
 import java.io.IOException;
 import java.util.List;
-
-import com.clueride.domain.Invitation;
 
 /**
  * Persistence interface for {@link Invitation} instances.
@@ -29,23 +27,31 @@ public interface InvitationStore {
     /**
      * Accepts fully-populated Invitation and returns the Integer ID; the token should already have been populated.
      * Integer ID is the DB unique identifier; the token is a hashed value serving as a public ID.
-     * @param invitation - Instance to be persisted.
+     * @param builder - Builder for Instance to be persisted.
      * @return Integer DB-generated ID.
      * @throws IOException if unable to access underlying backing store.
      */
-    Integer addNew(Invitation invitation) throws IOException;
+    Integer addNew(Invitation.Builder builder) throws IOException;
 
     /**
      * Returns a list of fully-populated Invitations for the given Outing.
      * @param outingId - Unique ID of the Outing which may or may not have Invitations yet.
      * @return List of Invitations or empty list if none created yet.
      */
-    List<Invitation> getInvitationsByOuting(Integer outingId);
+    List<Invitation.Builder> getInvitationsByOuting(Integer outingId);
 
     /**
      * Given a specific token identifying a specific Invitation, return the Invitation.
      * @param token - Unique identifier for an Invitation.
      * @return Matching Invitation.
      */
-    Invitation getInvitationByToken(String token);
+    Invitation.Builder getInvitationByToken(String token);
+
+    /**
+     * Given a memberId, retrieve the list of Active Invitations in order of soonest to latest.
+     * @param memberId - Unique identifier for the Member who is being invited.
+     * @return List of Invitations for the Member, in order of sooner rather than later.
+     */
+    List<Invitation.Builder> getUpcomingInvitationsByMemberId(Integer memberId);
+
 }

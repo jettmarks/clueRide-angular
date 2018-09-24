@@ -25,7 +25,8 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 
-import com.clueride.domain.Outing;
+import com.clueride.domain.outing.Outing;
+import com.clueride.domain.outing.OutingStore;
 import com.clueride.io.PojoJsonUtil;
 
 /**
@@ -60,4 +61,5 @@ public class JsonOutingStore implements OutingStore {
     public Outing getOutingById(Integer outingId) {
         return outingsPerId.get(outingId);
     }
+
 }

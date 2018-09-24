@@ -21,8 +21,8 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 
-import com.clueride.dao.CourseTypeStore;
 import com.clueride.domain.course.CourseType;
+import com.clueride.domain.course.CourseTypeStore;
 
 /**
  * Implementation of the CourseTypeService.

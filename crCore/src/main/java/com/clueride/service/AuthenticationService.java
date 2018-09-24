@@ -22,8 +22,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.clueride.domain.InvitationFull;
 import com.clueride.domain.account.OAuthCredentials;
+import com.clueride.domain.invite.InvitationFull;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
 
@@ -68,4 +68,5 @@ public interface AuthenticationService {
      * @param crCredentials ClueRide specific credentials (username/password).
      */
     Principal getPrincipal(CRCredentials crCredentials);
+
 }

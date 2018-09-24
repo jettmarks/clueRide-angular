@@ -15,19 +15,32 @@
  *
  * Created by jett on 5/29/16.
  */
-package com.clueride.domain;
+package com.clueride.domain.invite;
 
-import com.clueride.service.IdProvider;
-import com.clueride.service.MemoryBasedInvitationIdProvider;
+import javax.annotation.concurrent.Immutable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Maps a given Member to a given Outing along with a unique token that serves as the first step
  * toward authenticating that member.
  */
+@Immutable
 public class Invitation {
     private String token;
     private Integer memberId;
-    private Outing outing;
+    private Integer outingId;
     private Integer id = null;
     private InvitationState state;
 
@@ -39,7 +52,7 @@ public class Invitation {
     public Invitation(Builder builder) {
         this.token = builder.getToken();
         this.id = builder.getId();
-        this.outing = builder.getOuting();
+        this.outingId = builder.getOutingId();
         this.memberId = builder.getMemberId();
         this.state = (builder.getState() != null) ? builder.getState() : InvitationState.INITIAL;
     }
@@ -52,8 +65,8 @@ public class Invitation {
         return memberId;
     }
 
-    public Outing getOuting() {
-        return outing;
+    public Integer getOutingId() {
+        return outingId;
     }
 
     public Integer getId() {
@@ -61,7 +74,6 @@ public class Invitation {
     }
 
     public void setState(InvitationState state) {
-        // TODO: Do we really want this in the immutable?
         this.state = state;
     }
 
@@ -73,52 +85,64 @@ public class Invitation {
         this.id = id;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Entity(name="invite")
     public static final class Builder implements com.clueride.domain.common.Builder<Invitation> {
-        private String token;
-        private Outing outing;
-        private Integer memberId;
+        @Id
+        @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="invite_pk_sequence")
+        @SequenceGenerator(name="invite_pk_sequence",sequenceName="invite_id_seq", allocationSize=1)
         private Integer id;
+
+        @Column(name="member_id")
+        private Integer memberId;
+        @Column(name="outing_id")       // TODO: Outing is not yet persisted in the JPA store.
+        private Integer outingId;
+        @Column(name="team_id")         // TODO: Team is not yet persisted in the JPA store.
+        private Integer teamId;
+
+        @Column(name="state")
+        @Enumerated(EnumType.STRING)
         private InvitationState invitationState;
 
-        /** No-arg constructor for our use only. */
-        private Builder() {
-            IdProvider idProvider = new MemoryBasedInvitationIdProvider();
-            id = idProvider.getId();
-        }
+        @Transient
+        private String token;
 
         public static Builder builder() {
             return new Builder();
         }
 
-        public static com.clueride.domain.common.Builder<Invitation> from(Invitation instance) {
+        public static Builder from(Invitation instance) {
             return builder()
-                    .setId(instance.id)
-                    .setOuting(Outing.Builder.from(instance.getOuting()))
-                    .setMemberId(instance.memberId)
-                    .setState(instance.state)
-                    .setToken(instance.token);
+                    .withId(instance.id)
+                    .withOutingId(instance.getOutingId())
+                    .withMemberId(instance.memberId)
+                    .withState(instance.state)
+                    .withToken(instance.token);
         }
 
         public Invitation build() {
             return new Invitation(this);
         }
 
-        public Outing getOuting() {
-            return outing;
+        public Integer getOutingId() {
+            return outingId;
         }
 
         public Integer getMemberId() {
             return memberId;
         }
 
-        public Builder setMemberId(Integer memberId) {
+        public Builder withMemberId(Integer memberId) {
             this.memberId = memberId;
-            return this;
-        }
-
-        // TODO: Deprecate this; switch over to Builder/Mutable
-        public Builder setBuiltOuting(Outing outing) {
-            this.outing = outing;
             return this;
         }
 
@@ -126,14 +150,14 @@ public class Invitation {
             return token;
         }
 
-        public Builder setToken(String token) {
+        public Builder withToken(String token) {
             this.token = token;
             return this;
         }
 
         /* Assists Jackson in creating instances. */
-        public Builder setOuting(Outing.Builder outingBuilder) {
-            this.outing = outingBuilder.build();
+        public Builder withOutingId(Integer outingId) {
+            this.outingId = outingId;
             return this;
         }
 
@@ -141,8 +165,17 @@ public class Invitation {
             return id;
         }
 
-        public Builder setId(Integer id) {
+        public Builder withId(Integer id) {
             this.id = id;
+            return this;
+        }
+
+        public Integer getTeamId() {
+            return teamId;
+        }
+
+        public Builder withTeamId(Integer teamId) {
+            this.teamId = teamId;
             return this;
         }
 
@@ -150,7 +183,7 @@ public class Invitation {
             return invitationState;
         }
 
-        public Builder setState(InvitationState invitationState) {
+        public Builder withState(InvitationState invitationState) {
             this.invitationState = invitationState;
             return this;
         }
@@ -163,15 +196,32 @@ public class Invitation {
          * This value should be calculated once, persisted, and then used unchanged from then on since
          * the token will become "public", and is expected to match up through the life-cycle
          * of the invitation.
+         * @deprecated - Unsure if this will be used.
          */
         public Builder evaluateToken() {
             // Unable to handle left-shift until we put this into a long
-            long longToken = outing.hashCode();
+//            long longToken = outing.hashCode();
+            long longToken = outingId;
             longToken <<= 32;
             longToken += this.hashCode();
             token = Long.toHexString(longToken);
             return this;
         }
-    }
 
+        @Override
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj);
+        }
+
+        @Override
+        public int hashCode() {
+            return HashCodeBuilder.reflectionHashCode(this);
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
+        }
+
+    }
 }

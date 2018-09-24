@@ -15,7 +15,7 @@
  * <p/>
  * Created 11/17/15.
  */
-package com.clueride.service;
+package com.clueride.domain.team;
 
 import java.util.List;
 

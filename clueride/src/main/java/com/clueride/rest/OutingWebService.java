@@ -26,6 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.clueride.domain.outing.Outing;
 import com.clueride.service.OutingService;
 
 /**
@@ -44,14 +45,14 @@ public class OutingWebService {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public com.clueride.domain.Outing getOutingById(@PathParam("id") Integer outingId) {
+    public Outing getOutingById(@PathParam("id") Integer outingId) {
         return outingService.getByOutingId(outingId);
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public com.clueride.domain.Outing createOuting(com.clueride.domain.Outing.Builder outingBuilder) {
+    public Outing createOuting(Outing.Builder outingBuilder) {
         return outingService.createOuting(outingBuilder.build());
     }
 

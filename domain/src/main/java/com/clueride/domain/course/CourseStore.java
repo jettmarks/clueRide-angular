@@ -15,12 +15,10 @@
  *
  * Created by jett on 1/17/16.
  */
-package com.clueride.dao;
+package com.clueride.domain.course;
 
 import java.io.IOException;
 import java.util.List;
-
-import com.clueride.domain.course.Course;
 
 /**
  * Persistence interface for {@link Course} instances.
@@ -54,4 +52,5 @@ public interface CourseStore {
      * @return List of all Courses.
      */
     List<Course> getCourses();
+
 }

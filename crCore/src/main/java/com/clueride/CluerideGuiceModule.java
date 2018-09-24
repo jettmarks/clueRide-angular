@@ -31,6 +31,8 @@ import com.clueride.domain.account.member.MemberServiceImpl;
 import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.PrincipalServiceImpl;
+import com.clueride.domain.team.TeamService;
+import com.clueride.domain.team.TeamServiceImpl;
 import com.clueride.domain.user.location.LocationStore;
 import com.clueride.domain.user.location.LocationStoreJpa;
 import com.clueride.infrastructure.AuthService;
@@ -59,7 +61,6 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(ClueService.class).to(ClueServiceImpl.class);
         bind(DiagnosticService.class).to(DiagnosticServiceImpl.class);
         bind(ImageStore.class).to(FileImageStore.class);
-        bind(InvitationService.class).to(InvitationServiceImpl.class);
         bind(JtiService.class).to(JtiServiceImpl.class);
         bind(LocationService.class).to(DefaultLocationService.class);
         bind(LocationStore.class).annotatedWith(Json.class).to(JsonLocationStore.class);

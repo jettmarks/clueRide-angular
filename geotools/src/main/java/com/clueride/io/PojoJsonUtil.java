@@ -32,12 +32,12 @@ import org.apache.log4j.Logger;
 
 import com.clueride.domain.CourseWithGeo;
 import com.clueride.domain.GamePath;
-import com.clueride.domain.Invitation;
-import com.clueride.domain.Outing;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.common.Builder;
 import com.clueride.domain.course.Course;
 import com.clueride.domain.course.CourseType;
+import com.clueride.domain.invite.Invitation;
+import com.clueride.domain.outing.Outing;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.location.Location;
 import com.clueride.domain.user.path.Path;

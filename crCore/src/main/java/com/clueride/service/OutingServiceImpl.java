@@ -26,8 +26,8 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
-import com.clueride.dao.OutingStore;
-import com.clueride.domain.Outing;
+import com.clueride.domain.outing.Outing;
+import com.clueride.domain.outing.OutingStore;
 import com.clueride.rest.dto.OutingState;
 
 /**

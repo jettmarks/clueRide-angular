@@ -15,11 +15,9 @@
  *
  * Created by jett on 7/10/16.
  */
-package com.clueride.dao;
+package com.clueride.domain.course;
 
 import java.io.IOException;
-
-import com.clueride.domain.course.CourseType;
 
 /**
  * Persistence interface for {@link CourseType} instances.

@@ -19,9 +19,22 @@ package com.clueride.infrastructure;
 
 import com.google.inject.AbstractModule;
 
-import com.clueride.dao.*;
+import com.clueride.dao.ClueStore;
+import com.clueride.dao.JsonClueStore;
+import com.clueride.dao.JsonCourseStore;
+import com.clueride.dao.JsonCourseTypeStore;
+import com.clueride.dao.JsonLocationStore;
+import com.clueride.dao.JsonMemberStore;
+import com.clueride.dao.JsonNodeStore;
+import com.clueride.dao.JsonOutingStore;
+import com.clueride.dao.JsonPathStore;
+import com.clueride.dao.NodeStore;
+import com.clueride.dao.PathStore;
 import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.account.member.MemberStoreJpa;
+import com.clueride.domain.course.CourseStore;
+import com.clueride.domain.course.CourseTypeStore;
+import com.clueride.domain.outing.OutingStore;
 import com.clueride.domain.user.location.LocationStore;
 import com.clueride.domain.user.location.LocationStoreJpa;
 
@@ -31,12 +44,10 @@ import com.clueride.domain.user.location.LocationStoreJpa;
 public class ServiceGuiceModule extends AbstractModule {
     @Override
     protected void configure() {
-//        install(new DomainGuiceModule());
 
         bind(ClueStore.class).to(JsonClueStore.class);
         bind(CourseStore.class).to(JsonCourseStore.class);
         bind(CourseTypeStore.class).to(JsonCourseTypeStore.class);
-        bind(InvitationStore.class).to(JsonInvitationStore.class);
         bind(LocationStore.class).annotatedWith(Json.class).to(JsonLocationStore.class);
         bind(LocationStore.class).annotatedWith(Jpa.class).to(LocationStoreJpa.class);
         bind(MemberStore.class).annotatedWith(Json.class).to(JsonMemberStore.class);

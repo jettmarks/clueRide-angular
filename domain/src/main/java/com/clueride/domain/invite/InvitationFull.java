@@ -15,11 +15,13 @@
  *
  * Created by jett on 7/10/16.
  */
-package com.clueride.domain;
+package com.clueride.domain.invite;
 
+import com.clueride.domain.Team;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.course.Course;
 import com.clueride.domain.course.CourseType;
+import com.clueride.domain.outing.Outing;
 
 /**
  * Represents a flattened Invitation where all references to sub-types are resolved into the actual instances.

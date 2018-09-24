@@ -43,7 +43,14 @@ import com.clueride.domain.badge.BadgeType;
 import com.clueride.domain.badge.BadgeTypeService;
 import com.clueride.domain.badge.event.BadgeEventService;
 import com.clueride.domain.badge.event.BadgeEventStore;
+import com.clueride.domain.course.CourseStore;
+import com.clueride.domain.course.CourseTypeStore;
+import com.clueride.domain.invite.InvitationService;
+import com.clueride.domain.invite.InvitationServiceImpl;
+import com.clueride.domain.invite.InvitationStore;
+import com.clueride.domain.outing.OutingStore;
 import com.clueride.domain.ssevent.SSEventService;
+import com.clueride.domain.team.TeamService;
 import com.clueride.domain.user.image.ImageStore;
 import com.clueride.domain.user.image.ImageStoreJpa;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -73,13 +80,25 @@ public class DomainGuiceModuleTest extends AbstractModule {
     private BadgeTypeService badgeTypeService;
 
     @Mock
+    private CourseStore courseStore;
+
+    @Mock
+    private CourseTypeStore courseTypeStore;
+
+    @Mock
     private ImageStore imageStore;
+
+    @Mock
+    private InvitationStore invitationStore;
 
     @Mock
     private MemberService memberService;
 
     @Mock
     private MemberStore memberStore;
+
+    @Mock
+    private OutingStore outingStore;
 
     @Mock
     private PrincipalService principleService;
@@ -89,6 +108,9 @@ public class DomainGuiceModuleTest extends AbstractModule {
 
     @Mock
     private SSEventService ssEventService;
+
+    @Mock
+    private TeamService teamService;
 
     @Mock
     private WpUserStore wpUserStore;
@@ -111,11 +133,16 @@ public class DomainGuiceModuleTest extends AbstractModule {
         bind(BadgeOsPrincipalService.class).toInstance(badgeOsPrincipalService);
         bind(BadgeStore.class).toInstance(badgeStore);
         bind(BadgeTypeService.class).toInstance(badgeTypeService);
+        bind(CourseStore.class).toInstance(courseStore);
+        bind(CourseTypeStore.class).toInstance(courseTypeStore);
+        bind(InvitationStore.class).toInstance(invitationStore);
         bind(MemberService.class).toInstance(memberService);
         bind(MemberStore.class).toInstance(memberStore);
+        bind(OutingStore.class).toInstance(outingStore);
         bind(PrincipalService.class).toInstance(principleService);
         bind(SessionPrincipal.class).toInstance(sessionPrincipal);
         bind(SSEventService.class).toInstance(ssEventService);
+        bind(TeamService.class).toInstance(teamService);
         bind(WpUserStore.class).toInstance(wpUserStore);
 
     }
@@ -151,5 +178,27 @@ public class DomainGuiceModuleTest extends AbstractModule {
                 .withName("Test Account")
                 .build();
     }
+
+    @Provides
+    private InvitationService getInvitationService(
+            InvitationStore invitationStore,
+            MemberStore memberStore,
+            OutingStore outingStore,
+            CourseStore courseStore,
+            CourseTypeStore courseTypeStore,
+            TeamService teamService,
+            SessionPrincipal sessionPrincipal
+    ) {
+        return new InvitationServiceImpl(
+                invitationStore,
+                memberStore,
+                outingStore,
+                courseStore,
+                courseTypeStore,
+                teamService,
+                sessionPrincipal
+        );
+    }
+
 
 }

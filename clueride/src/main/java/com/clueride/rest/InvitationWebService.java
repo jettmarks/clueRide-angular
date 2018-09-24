@@ -29,13 +29,15 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.clueride.domain.Invitation;
-import com.clueride.domain.InvitationFull;
-import com.clueride.service.InvitationService;
+import com.clueride.domain.invite.Invitation;
+import com.clueride.domain.invite.InvitationFull;
+import com.clueride.domain.invite.InvitationService;
+import com.clueride.infrastructure.Secured;
 
 /**
  * REST API for working with Invitations, a mapping between an Outing and a Member.
  */
+@Secured
 @Path("invite")
 public class InvitationWebService {
     private final InvitationService invitationService;
@@ -46,16 +48,22 @@ public class InvitationWebService {
     }
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Invitation> getActiveInvitationsForSession() {
+        return invitationService.getInvitationsForSession();
+    }
+
+    @GET
     @Path("/outing/{outingId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Invitation> getActiveInvitations(@PathParam("outingId") Integer outingId) {
+    public List<Invitation> getActiveInvitationsForOuting(@PathParam("outingId") Integer outingId) {
         return invitationService.getInvitationsForOuting(outingId);
     }
 
     @GET
     @Path("{token}")
     @Produces(MediaType.APPLICATION_JSON)
-    public InvitationFull getInvitation(@PathParam("token") String token) {
+    public InvitationFull getInvitationByToken(@PathParam("token") String token) {
         return invitationService.getInvitationByToken(token);
     }
 
@@ -65,8 +73,9 @@ public class InvitationWebService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Invitation createInvitation(Invitation.Builder invitationBuilder)
             throws IOException {
+
         return invitationService.createNew(
-                invitationBuilder.getOuting(),
+                invitationBuilder.getOutingId(),
                 invitationBuilder.getMemberId()
         );
     }
@@ -78,4 +87,5 @@ public class InvitationWebService {
     public List<Invitation> sendInvitations(Integer outingId) {
         return invitationService.send(outingId);
     }
+
 }
