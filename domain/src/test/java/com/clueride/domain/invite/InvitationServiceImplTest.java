@@ -15,23 +15,27 @@
  *
  * Created by jett on 5/29/16.
  */
-package com.clueride.service;
+package com.clueride.domain.invite;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
-import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
-import com.clueride.dao.CourseStore;
-import com.clueride.dao.CourseTypeStore;
-import com.clueride.dao.InvitationStore;
-import com.clueride.domain.Invitation;
-import com.clueride.domain.Outing;
+import com.clueride.domain.DomainGuiceModuleTest;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.account.member.MemberStore;
+import com.clueride.domain.account.principal.BadgeOsPrincipal;
+import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.outing.Outing;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 /**
@@ -43,44 +47,42 @@ import static org.testng.Assert.assertNotNull;
  * Some of the methods are essentially pass-through calls to the underlying
  * Store and are not tested here.
  */
+@Guice(modules = DomainGuiceModuleTest.class)
 public class InvitationServiceImplTest {
-
-    private InvitationService toTest;
-
-    @Mock
-    private InvitationStore invitationStore;
-
-    @Mock
-    private MemberStore memberStore;
-
-    @Inject
-    private CourseStore courseStore;
-
-    @Mock
-    private CourseTypeStore courseTypeStore;
-
-    @Mock
-    private TeamService teamService;
-
-    private Outing outing;
-    private Member member;
 
     private static final int TEST_COURSE_ID = 1234;
     private static final int TEST_MEMBER_ID = 123;
     private static final int TEST_TEAM_ID = 321;
 
+    private InvitationService toTest;
+
+    @Inject
+    private InvitationStore invitationStore;
+
+    @Inject
+    private Provider<InvitationService> toTestProvider;
+
+    @Inject
+    private Member member;
+
+    @Inject
+    private MemberStore memberStore;
+
+    private Outing outing;
+
+    @Inject
+    private SessionPrincipal sessionPrincipal;
+    @Inject
+    private BadgeOsPrincipal principal;
+
+    @Inject
+    private Invitation invitation;
+
     @BeforeMethod
     public void setUp() {
         initMocks(this);
         outing = createTestOuting();
-        member = createTestMember();
-        toTest = new InvitationServiceImpl(
-                invitationStore,
-                memberStore,
-                courseStore,
-                courseTypeStore,
-                teamService
-        );
+        toTest = toTestProvider.get();
     }
 
     private Outing createTestOuting() {
@@ -102,21 +104,25 @@ public class InvitationServiceImplTest {
 
     @Test
     public void testCreateNew() throws Exception {
-        when(memberStore.getMemberById(TEST_MEMBER_ID)).thenReturn(member);
-        Invitation actual = toTest.createNew(outing, member.getId());
+        /* train mocks */
+        when(memberStore.getMemberById(member.getId())).thenReturn(member);
+        /* make call */
+        Invitation actual = toTest.createNew(outing.getId(), member.getId());
+        /* verify results */
         assertNotNull(actual);
         assertNotNull(actual.getToken());
     }
 
-    @Test
+//    @Test     TODO unsure if Tokens have a role to play
     public void testCreateNew_TokenCheck() throws Exception {
         when(memberStore.getMemberById(TEST_MEMBER_ID)).thenReturn(member);
-        Invitation firstInvite = toTest.createNew(outing, member.getId());
+        Invitation firstInvite = toTest.createNew(outing.getId(), member.getId());
         System.out.println("First  Token: " + firstInvite.getToken());
-        Member member2 = createTestMember();
-        member2.withId(TEST_MEMBER_ID + 1);
+        Member member2 = Member.Builder.from(member)
+                .withId(TEST_MEMBER_ID + 1)
+                .build();
         when(memberStore.getMemberById(TEST_MEMBER_ID + 1)).thenReturn(member2);
-        Invitation secondInvite = toTest.createNew(outing, member2.getId());
+        Invitation secondInvite = toTest.createNew(outing.getId(), member2.getId());
         System.out.println("Second Token: " + secondInvite.getToken());
     }
 
@@ -124,15 +130,25 @@ public class InvitationServiceImplTest {
     public void testCreateNew_InvalidMember() throws Exception {
         member.withEmailAddress(null);
         when(memberStore.getMemberById(TEST_MEMBER_ID)).thenReturn(member);
-        Invitation actual = toTest.createNew(outing, member.getId());
+        Invitation actual = toTest.createNew(outing.getId(), member.getId());
     }
 
-    private Member createTestMember() {
-        // TODO: Replace this with the injected instance.
-        Member member = new Member();
-        member.withId(TEST_MEMBER_ID);
-        member.withDisplayName("testee");
-        member.withEmailAddress("nowhere@bad-domain.com");
-        return member;
+    @Test
+    public void testGetInvitationsForSession() {
+        /* setup test */
+
+        /* train mocks */
+        when(sessionPrincipal.getSessionPrincipal()).thenReturn(principal);
+        when(memberStore.getMemberByEmail(principal.getEmailAddress())).thenReturn(member);
+        when(invitationStore.getUpcomingInvitationsByMemberId(member.getId()))
+                .thenReturn(Collections.singletonList(Invitation.Builder.from(invitation)));
+
+        /* make call */
+        List<Invitation> invites = toTest.getInvitationsForSession();
+
+        /* verify results */
+        assertNotNull(invites);
+        assertEquals(1, invites.size());
+        assertEquals(invites.get(0), invitation);
     }
 }

@@ -26,6 +26,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 
 import com.clueride.domain.course.CourseType;
+import com.clueride.domain.course.CourseTypeStore;
 import com.clueride.io.PojoJsonUtil;
 
 /**
@@ -60,4 +61,5 @@ public class JsonCourseTypeStore implements CourseTypeStore {
     public CourseType getCourseTypeById(Integer courseTypeId) {
         return instancePerId.get(courseTypeId);
     }
+
 }

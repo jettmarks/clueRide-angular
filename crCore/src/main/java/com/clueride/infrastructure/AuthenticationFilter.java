@@ -39,6 +39,9 @@ import com.clueride.token.TokenService;
 
 /**
  * Allows picking up Authorization headers and extracting the Principal.
+ *
+ * This is also responsible for inserting the Principal into the Session.
+ * The @Secured annotation on Jersey endpoints is what triggers this to be called.
  */
 @Secured
 // TODO: CA-306: entanglement of this and AuthServiceImpl

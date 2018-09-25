@@ -15,10 +15,11 @@
  *
  * Created by jett on 3/5/16.
  */
-package com.clueride.domain;
+package com.clueride.domain.outing;
 
 import java.util.Date;
 
+import com.clueride.domain.Team;
 import com.clueride.domain.course.Course;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedOutingIdProvider;

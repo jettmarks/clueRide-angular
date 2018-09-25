@@ -15,11 +15,9 @@
  *
  * Created by jett on 7/5/16.
  */
-package com.clueride.dao;
+package com.clueride.domain.outing;
 
 import java.io.IOException;
-
-import com.clueride.domain.Outing;
 
 /**
  * Persistence interface for {@link Outing} instances.
@@ -41,4 +39,5 @@ public interface OutingStore {
      * @return Matching Outing.
      */
     Outing getOutingById(Integer outingId);
+
 }

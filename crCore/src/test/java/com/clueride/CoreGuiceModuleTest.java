@@ -32,27 +32,29 @@ import org.mockito.Mock;
 import com.clueride.config.ConfigService;
 import com.clueride.config.ConfigServiceImpl;
 import com.clueride.dao.ClueStore;
-import com.clueride.dao.CourseStore;
 import com.clueride.dao.ImageStore;
 import com.clueride.dao.NodeStore;
-import com.clueride.dao.OutingStore;
 import com.clueride.dao.PathStore;
 import com.clueride.domain.CourseWithGeo;
 import com.clueride.domain.DefaultGeoNode;
 import com.clueride.domain.DomainGuiceProviderModule;
 import com.clueride.domain.EdgeImpl;
 import com.clueride.domain.GeoNode;
-import com.clueride.domain.Outing;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.account.member.MemberService;
 import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.SessionPrincipal;
 import com.clueride.domain.account.principal.SessionPrincipalImpl;
+import com.clueride.domain.course.CourseStore;
 import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NewNodeProposal;
 import com.clueride.domain.dev.TrackImpl;
 import com.clueride.domain.factory.PointFactory;
+import com.clueride.domain.invite.InvitationService;
+import com.clueride.domain.outing.Outing;
+import com.clueride.domain.outing.OutingStore;
+import com.clueride.domain.team.TeamService;
 import com.clueride.domain.user.image.ImageService;
 import com.clueride.domain.user.latlon.LatLonService;
 import com.clueride.domain.user.latlon.LatLonStore;
@@ -68,13 +70,11 @@ import com.clueride.infrastructure.Jpa;
 import com.clueride.infrastructure.Json;
 import com.clueride.service.AuthenticationService;
 import com.clueride.service.CourseService;
-import com.clueride.service.InvitationService;
 import com.clueride.service.LocationService;
 import com.clueride.service.NodeService;
 import com.clueride.service.OutingService;
 import com.clueride.service.PathService;
 import com.clueride.service.RecommendationService;
-import com.clueride.service.TeamService;
 import com.clueride.token.JtiService;
 import com.clueride.token.JtiServiceImpl;
 import com.clueride.token.TokenService;
@@ -278,4 +278,5 @@ public class CoreGuiceModuleTest extends AbstractModule {
     @Provides NetworkProposal getNewNodeNetworkProposal(GeoNode geoNode) {
         return new NewNodeProposal(geoNode);
     }
+
 }

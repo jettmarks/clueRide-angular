@@ -10,7 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.clueride.domain.account.member.Member;
-import com.clueride.service.TeamService;
+import com.clueride.domain.team.TeamService;
 
 /**
  * Team resource (exposed at "team" path).
@@ -49,4 +49,5 @@ public class Team {
     public com.clueride.domain.Team addMember(@PathParam("teamId") Integer teamId, Member newMember) {
         return teamService.addMember(teamId, newMember);
     }
+
 }

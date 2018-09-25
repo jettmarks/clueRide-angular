@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 
 import com.clueride.domain.CourseWithGeo;
 import com.clueride.domain.course.Course;
+import com.clueride.domain.course.CourseStore;
 import com.clueride.service.NetworkEval;
 import com.clueride.service.NetworkEvalImpl;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -101,4 +102,5 @@ public class JsonCourseStoreTest {
     public void testUpdate() throws Exception {
 
     }
+
 }

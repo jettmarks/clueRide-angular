@@ -15,14 +15,10 @@
  *
  * Created by jett on 5/29/16.
  */
-package com.clueride.service;
+package com.clueride.domain.invite;
 
 import java.io.IOException;
 import java.util.List;
-
-import com.clueride.domain.Invitation;
-import com.clueride.domain.InvitationFull;
-import com.clueride.domain.Outing;
 
 /**
  * Service supporting the Invitation Model which ties together an Outing and a Member.
@@ -48,11 +44,12 @@ public interface InvitationService {
      * an Invitation.
      * Both the Outing and the Member are validated to make sure we have what
      * is needed.
-     * @param outing The Outing which we're inviting people to attend.
+     * TODO: Inviting an entire team makes more sense.
+     * @param outingId The identifier for the Outing which we're inviting people to attend.
      * @param memberId Unique identifier for the person who we invite.
      * @return Fully-populated Invitation instance.
      */
-    Invitation createNew(Outing outing, Integer memberId) throws IOException;
+    Invitation createNew(Integer outingId, Integer memberId) throws IOException;
 
     /**
      * Given an Outing's unique ID, generate and send emails for each of the Guests for the Outing.
@@ -62,4 +59,12 @@ public interface InvitationService {
      * @return List of Invitations for the Outing with appropriate state for each Invitation.
      */
     List<Invitation> send(Integer outingId);
+
+    /**
+     * Once the session is established, we're able to tell the client what list of invitations
+     * are active on that session.
+     * @return List of Invitations for the Session's Principal.
+     */
+    List<Invitation> getInvitationsForSession();
+
 }

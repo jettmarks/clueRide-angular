@@ -38,6 +38,8 @@ import com.clueride.domain.badge.event.BadgeEvent;
 import com.clueride.domain.course.Course;
 import com.clueride.domain.course.GameCourse;
 import com.clueride.domain.game.GameState;
+import com.clueride.domain.invite.Invitation;
+import com.clueride.domain.invite.InvitationState;
 import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.answer.Answer;
 import com.clueride.domain.user.answer.AnswerKey;
@@ -286,4 +288,16 @@ public class DomainGuiceProviderModule extends AbstractModule {
                 .withPathIndex(0)
                 .build();
     }
+
+    @Provides
+    private Invitation getInvitation() {
+        return Invitation.Builder.builder()
+                .withId(-1)
+                .withMemberId(6)
+                .withOutingId(2)
+                .withTeamId(2)
+                .withState(InvitationState.INITIAL)
+                .build();
+    }
+
 }

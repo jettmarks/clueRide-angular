@@ -17,9 +17,9 @@
  */
 package com.clueride.service;
 
-import com.clueride.domain.Outing;
 import com.clueride.domain.Team;
 import com.clueride.domain.course.Course;
+import com.clueride.domain.outing.Outing;
 import com.clueride.rest.dto.OutingState;
 
 /**
@@ -100,4 +100,5 @@ public interface OutingService {
      * @return - Long timestamp of the updated state.
      */
     Long updateOutingState(OutingState outingState);
+
 }

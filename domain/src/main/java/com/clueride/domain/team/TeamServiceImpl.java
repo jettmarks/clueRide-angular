@@ -15,7 +15,7 @@
  *
  * Created by jett on 3/20/16.
  */
-package com.clueride.service;
+package com.clueride.domain.team;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,4 +57,5 @@ public class TeamServiceImpl implements TeamService {
         team.add(newMember);
         return team;
     }
+
 }

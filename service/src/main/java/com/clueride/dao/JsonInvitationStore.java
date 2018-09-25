@@ -25,17 +25,16 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
-import com.clueride.domain.Invitation;
+import com.clueride.domain.invite.Invitation;
+import com.clueride.domain.invite.InvitationStore;
 import com.clueride.io.JsonStoreType;
 import com.clueride.io.PojoJsonUtil;
 
 /**
  * Implementation of InvitationStore.
- *
- * TODO: CA-264 Need to actually persist this instead of letting it hang around in memory.
  */
 public class JsonInvitationStore implements InvitationStore {
-    private static List<Invitation> invitations = new ArrayList<>();
+    private static List<Invitation.Builder> builderList = new ArrayList<>();
 
     @Inject
     public JsonInvitationStore() {
@@ -43,38 +42,48 @@ public class JsonInvitationStore implements InvitationStore {
     }
 
     private void loadAll() {
-        invitations = PojoJsonUtil.loadInvitations();
+        List<Invitation> invitations = PojoJsonUtil.loadInvitations();
+        for (Invitation invitation : invitations) {
+            builderList.add(Invitation.Builder.from(invitation));
+        }
+
     }
 
     @Override
-    public Integer addNew(Invitation invitation) throws IOException {
-        invitations.add(invitation);
-        File outFile = PojoJsonUtil.getFile(invitation.getId(), JsonStoreType.INVITATION);
+    public Integer addNew(Invitation.Builder builder) throws IOException {
+        builderList.add(builder);
+        File outFile = PojoJsonUtil.getFile(builder.getId(), JsonStoreType.INVITATION);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             objectMapper
                     .writer()
                     .withDefaultPrettyPrinter()
-                    .writeValue(outFile, invitation);
+                    .writeValue(outFile, builder);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return invitation.getId();
+        return builder.getId();
     }
 
     @Override
-    public List<Invitation> getInvitationsByOuting(Integer outingId) {
-        return invitations;
+    public List<Invitation.Builder> getInvitationsByOuting(Integer outingId) {
+        return builderList;
     }
 
     @Override
-    public Invitation getInvitationByToken(String token) {
-        // TODO: CA-264 Brute force method until we build indices
-        for (Invitation invitation : invitations) {
+    public Invitation.Builder getInvitationByToken(String token) {
+        // TODO: unclear if we'll need the token
+        for (Invitation.Builder invitation : builderList) {
             if (invitation.getToken().endsWith(token)) {
                 return invitation;
             }
         }
         return null;
     }
+
+    @Override
+    public List<Invitation.Builder> getUpcomingInvitationsByMemberId(Integer memberId) {
+        return null;
+    }
+
 }

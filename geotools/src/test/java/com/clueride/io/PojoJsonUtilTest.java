@@ -22,10 +22,10 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.clueride.domain.Invitation;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.course.Course;
 import com.clueride.domain.course.CourseType;
+import com.clueride.domain.invite.Invitation;
 import com.clueride.domain.user.Badge;
 import com.clueride.domain.user.Clue;
 import com.clueride.domain.user.location.Location;

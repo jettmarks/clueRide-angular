@@ -32,6 +32,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import com.clueride.domain.user.Badge;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedMemberIdProvider;
+import static java.util.Objects.requireNonNull;
 
 public class Member {
     private Integer id;
@@ -144,6 +145,7 @@ public class Member {
         }
 
         public static Builder from(Member member) {
+            requireNonNull(member);
             return builder()
                     .withPhone(member.getPhoneNumber())
                     .withFirstName(member.firstName)

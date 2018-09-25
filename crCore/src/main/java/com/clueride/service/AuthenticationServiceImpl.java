@@ -27,11 +27,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.InvitationFull;
 import com.clueride.domain.account.OAuthCredentials;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.account.member.MemberService;
 import com.clueride.domain.account.principal.EmailPrincipal;
+import com.clueride.domain.invite.InvitationFull;
+import com.clueride.domain.team.TeamService;
 import com.clueride.domain.user.Badge;
 import com.clueride.rest.dto.CRCredentials;
 import com.clueride.token.TokenService;
