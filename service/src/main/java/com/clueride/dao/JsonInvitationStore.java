@@ -81,8 +81,21 @@ public class JsonInvitationStore implements InvitationStore {
         return null;
     }
 
+    /* May never implement since we're moving toward JPA implementation. */
     @Override
     public List<Invitation.Builder> getUpcomingInvitationsByMemberId(Integer memberId) {
+        return null;
+    }
+
+    /* May never implement since we're moving toward JPA implementation. */
+    @Override
+    public Invitation.Builder getInvitationById(Integer inviteId) {
+        return null;
+    }
+
+    /* May never implement since we're moving toward JPA implementation. */
+    @Override
+    public Invitation.Builder save(Invitation.Builder builder) {
         return null;
     }
 

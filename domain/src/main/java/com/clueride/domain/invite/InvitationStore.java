@@ -54,4 +54,18 @@ public interface InvitationStore {
      */
     List<Invitation.Builder> getUpcomingInvitationsByMemberId(Integer memberId);
 
+    /**
+     * Given an invitation ID, retrieve the matching instance.
+     * @param inviteId Unique identifier for the Invite.
+     * @return Matching Invitation Builder.
+     */
+    Invitation.Builder getInvitationById(Integer inviteId);
+
+    /**
+     * Given an instance of Invitation.Builder, persist (or create a new record).
+     * @param builder instance with new information to replace existing or create new.
+     * @return The same builder with populated ID if this is a new record.
+     */
+    Invitation.Builder save(Invitation.Builder builder);
+
 }
