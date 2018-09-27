@@ -75,4 +75,20 @@ public class InvitationStoreJpa implements InvitationStore {
         return builders;
     }
 
+    @Override
+    public Invitation.Builder getInvitationById(Integer inviteId) {
+        entityManager.getTransaction().begin();
+        Invitation.Builder builder = entityManager.find(Invitation.Builder.class, inviteId);
+        entityManager.getTransaction().commit();
+        return builder;
+    }
+
+    @Override
+    public Invitation.Builder save(Invitation.Builder builder) {
+        entityManager.getTransaction().begin();
+        entityManager.persist(builder);
+        entityManager.getTransaction().commit();
+        return builder;
+    }
+
 }

@@ -67,4 +67,26 @@ public interface InvitationService {
      */
     List<Invitation> getInvitationsForSession();
 
+    /**
+     * Invoked when the user wants to Accept (or re-Accept) an invitation.
+     * @param inviteId unique identifier for the ID; can be checked that this user is the one accepting.
+     * @return The Invitation with the updated state.
+     */
+    Invitation accept(Integer inviteId);
+
+    /**
+     * Invoked when the user wants to Decline an invitation or Cancel a previously accepted invite.
+     * @param inviteId unique identifier for the ID; can be checked that this user is the one accepting.
+     * @return The Invitation with the updated state.
+     */
+    Invitation decline(Integer inviteId);
+
+    /**
+     * Invoked when the Outing for an invitation come to an end.
+     * TODO: consider expiring an entire team's worth of Invitations all at once.
+     * @param inviteId unique identifier for the ID.
+     * @return The Invitation with the updated state.
+     */
+    Invitation expire(Integer inviteId);
+
 }

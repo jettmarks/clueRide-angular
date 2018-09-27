@@ -88,4 +88,20 @@ public class InvitationWebService {
         return invitationService.send(outingId);
     }
 
+    @POST
+    @Path("/accept/{inviteId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Invitation acceptInvitation(@PathParam("inviteId") Integer inviteId) {
+        return invitationService.accept(inviteId);
+    }
+
+    @POST
+    @Path("/decline/{inviteId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Invitation declineInvitation(@PathParam("inviteId") Integer inviteId) {
+        return invitationService.decline(inviteId);
+    }
+
 }

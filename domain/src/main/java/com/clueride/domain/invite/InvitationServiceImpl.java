@@ -47,6 +47,7 @@ import com.clueride.domain.course.CourseTypeStore;
 import com.clueride.domain.outing.Outing;
 import com.clueride.domain.outing.OutingStore;
 import com.clueride.domain.team.TeamService;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Default implementation of InvitationService.
@@ -64,8 +65,8 @@ public class InvitationServiceImpl implements InvitationService {
 
     /**
      * Injectable constructor.
-     * TODO: Switch this over to using services instead of stores for non-Invite domain objects.
      * @param invitationStore - Persistence layer for Invitations.
+     * TODO: Switch remaining over to using services instead of stores.
      * @param memberStore - Persistence layer for Members.
      * @param outingStore - Persistence layer for Outings.
      * @param courseStore - Persistence layer for Courses.
@@ -152,6 +153,29 @@ public class InvitationServiceImpl implements InvitationService {
         Integer memberId = memberStore.getMemberByEmail(emailAddress).getId();
         List<Invitation.Builder> builders = invitationStore.getUpcomingInvitationsByMemberId(memberId);
         return getInvitesFromBuilders(builders);
+    }
+
+    @Override
+    public Invitation accept(Integer inviteId) {
+        return updateInvitationState(inviteId, InvitationState.ACTIVE);
+    }
+
+    @Override
+    public Invitation decline(Integer inviteId) {
+        return updateInvitationState(inviteId, InvitationState.DECLINED);
+    }
+
+    @Override
+    public Invitation expire(Integer inviteId) {
+        return updateInvitationState(inviteId, InvitationState.EXPIRED);
+    }
+
+    private Invitation updateInvitationState(Integer inviteId, InvitationState inviteState) {
+        requireNonNull(inviteId, "Expecting non-null Invitation ID");
+        Invitation.Builder builder = invitationStore.getInvitationById(inviteId);
+        builder.withState(inviteState);
+        invitationStore.save(builder);
+        return builder.build();
     }
 
     private List<Invitation> getInvitesFromBuilders(List<Invitation.Builder> builders) {
