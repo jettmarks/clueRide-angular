@@ -17,13 +17,16 @@
  */
 package com.clueride.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 /**
- * Interim implementation until I can get the TypeSafe config impl going.
+ * TypeSafe-backed implementation.
+ *
+ * Values can be overridden by defining JVM args (-D flag).
  */
 public class ConfigServiceImpl implements ConfigService {
     private static Config config = ConfigFactory.load();
@@ -34,13 +37,34 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
+    public List<String> getAuthIssuerTypes() {
+        return config.getStringList("clueride.auth.issuerTypes");
+    }
+
+    @Override
     public List<String> getAuthIssuers() {
-        return config.getStringList("clueride.jwt.issuers");
+        List<String> authIssuers = new ArrayList<>();
+        List<String> issuerTypes = getAuthIssuerTypes();
+
+        for (String issuerType : issuerTypes) {
+            authIssuers.add(get("clueride.auth." + issuerType + ".url"));
+        }
+        return authIssuers;
     }
 
     @Override
     public String getAuthSecret() {
-        return config.getString("clueride.jwt.secret");
+        return config.getString("clueride.auth.secret");
+    }
+
+    @Override
+    public String getTestToken() {
+        return get("clueride.test.token");
+    }
+
+    @Override
+    public String getTestAccount() {
+        return get("clueride.test.account");
     }
 
 }

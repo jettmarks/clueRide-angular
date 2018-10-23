@@ -32,6 +32,7 @@ import com.clueride.io.PojoJsonUtil;
 
 /**
  * Implementation of InvitationStore.
+ * @deprecated in favor of JPA Store.
  */
 public class JsonInvitationStore implements InvitationStore {
     private static List<Invitation.Builder> builderList = new ArrayList<>();
@@ -72,7 +73,6 @@ public class JsonInvitationStore implements InvitationStore {
 
     @Override
     public Invitation.Builder getInvitationByToken(String token) {
-        // TODO: unclear if we'll need the token
         for (Invitation.Builder invitation : builderList) {
             if (invitation.getToken().endsWith(token)) {
                 return invitation;

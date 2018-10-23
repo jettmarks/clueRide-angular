@@ -30,7 +30,22 @@ public interface ConfigService {
      */
     String get(String key);
 
+    /**
+     * List of the valid Issuer Types.
+     * @return List of the valid Issuer Types.
+     */
+    List<String> getAuthIssuerTypes();
+
+    /** Returns list of the URL Strings identifying the Auth Issuers defined. */
     List<String> getAuthIssuers();
 
+    /** Allows local override without placing secret in public code. */
     String getAuthSecret();
+
+    /** Allows local override of a non-expiring Test Token for internal use. */
+    String getTestToken();
+
+    /** Account to be used during testing. */
+    String getTestAccount();
+
 }

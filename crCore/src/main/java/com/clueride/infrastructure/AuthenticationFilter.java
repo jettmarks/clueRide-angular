@@ -33,9 +33,10 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.log4j.Logger;
 
+import com.clueride.auth.access.AccessTokenService;
+import com.clueride.config.ConfigService;
 import com.clueride.domain.account.principal.PrincipalService;
 import com.clueride.domain.account.principal.SessionPrincipal;
-import com.clueride.token.TokenService;
 
 /**
  * Allows picking up Authorization headers and extracting the Principal.
@@ -45,32 +46,41 @@ import com.clueride.token.TokenService;
  */
 @Secured
 // TODO: CA-306: entanglement of this and AuthServiceImpl
+// TODO: CA-306 Refactor out the TokenService -- no more JWT parsing
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationFilter.class);
 
-    private final TokenService tokenService;
     private final Provider<SessionPrincipal> sessionPrincipalProvider;
     private final PrincipalService principalService;
+    private final AccessTokenService accessTokenService;
+    private final String testToken;
+    private final String testAccount;
 
     @Inject
     public AuthenticationFilter(
-            TokenService tokenService,
             Provider<SessionPrincipal> sessionPrincipalProvider,
-            PrincipalService principalService
+            PrincipalService principalService,
+            AccessTokenService accessTokenService,
+            ConfigService configService
     ) {
         super();
-        this.tokenService = tokenService;
+
+        LOGGER.debug("Instantiating my Auth");
         this.sessionPrincipalProvider = sessionPrincipalProvider;
         this.principalService = principalService;
-        LOGGER.info("Instantiating my Auth");
+        this.accessTokenService = accessTokenService;
+
+        /* From config */
+        this.testToken = configService.getTestToken();
+        this.testAccount = configService.getTestAccount();
     }
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         if (requestContext.getMethod().equals(HttpMethod.OPTIONS)) {
             /* Free pass for OPTIONS requests? */
-            LOGGER.info("Allowing OPTIONS request");
+            LOGGER.debug("Allowing OPTIONS request");
             return;
         }
         // Get the HTTP Authorization header from the request
@@ -79,6 +89,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
         // Check if the HTTP Authorization header is present and formatted correctly
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            LOGGER.error("Authorization Header missing or malformed");
             requestContext.abortWith(
                     Response.status(Response.Status.UNAUTHORIZED).build());
         }
@@ -86,30 +97,16 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         // Extract the token from the HTTP Authorization header
         String token = authorizationHeader.substring("Bearer".length()).trim();
 
-        if (token.equals("GuestToken")) {
-            /* Respond with a replacement token. */
-            requestContext.abortWith(
-                    Response
-                            .status(Response.Status.OK)
-                            .header(
-                                    HttpHeaders.AUTHORIZATION,
-                                    "Bearer " + tokenService.generateTokenForNewPrincipal())
-                            .build()
-            );
-            return;
+        String candidatePrincipalName = "Not logged in";
+        if (token.equals(testToken)) {
+            candidatePrincipalName = testAccount;
+        } else {
+            candidatePrincipalName = accessTokenService.getPrincipalString(token);
         }
 
-        try {
-            tokenService.validateToken(token);
-        } catch (Exception e) {
-            LOGGER.warn("Login Failure: " + e.getMessage());
-            requestContext.abortWith(
-                    Response.status(Response.Status.UNAUTHORIZED).build());
-            /* Our work is done for this request. */
-            return;
-        }
+        final String principalName = candidatePrincipalName;
+        LOGGER.info("Logged in as " + principalName);
 
-        final String principalName = tokenService.getNameFromToken(token);
         /* This one is used for Method Interceptors for Badge Capture. */
         setSessionPrincipal(principalName);
 
