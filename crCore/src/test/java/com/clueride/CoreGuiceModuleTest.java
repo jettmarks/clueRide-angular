@@ -17,8 +17,12 @@
  */
 package com.clueride;
 
+import java.net.MalformedURLException;
 import java.security.Principal;
+import java.text.ParseException;
 import java.util.Date;
+
+import javax.mail.internet.AddressException;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
@@ -29,6 +33,10 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import org.mockito.Mock;
 
+import com.clueride.auth.Auth0Connection;
+import com.clueride.auth.access.AccessToken;
+import com.clueride.auth.identity.ClueRideIdentity;
+import com.clueride.auth.identity.IdentityStore;
 import com.clueride.config.ConfigService;
 import com.clueride.config.ConfigServiceImpl;
 import com.clueride.dao.ClueStore;
@@ -85,6 +93,9 @@ import static org.mockito.MockitoAnnotations.initMocks;
  */
 public class CoreGuiceModuleTest extends AbstractModule {
     @Mock
+    private Auth0Connection auth0Connection;
+
+    @Mock
     private AuthenticationService authenticationService;
 
     @Mock
@@ -95,6 +106,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
 
     @Mock
     private CourseStore courseStore;
+
+    @Mock
+    private IdentityStore identityStore;
 
     @Mock
     private ImageService imageService;
@@ -162,12 +176,14 @@ public class CoreGuiceModuleTest extends AbstractModule {
 
         install(new DomainGuiceProviderModule());
 
+        bind(Auth0Connection.class).toInstance(auth0Connection);
         bind(AuthenticationService.class).toInstance(authenticationService);
         bind(AuthService.class).to(AuthServiceImpl.class);
         bind(ClueStore.class).toInstance(clueStore);
         bind(ConfigService.class).to(ConfigServiceImpl.class);
         bind(CourseStore.class).toInstance(courseStore);
         bind(CourseService.class).toInstance(courseService);
+        bind(IdentityStore.class).toInstance(identityStore);
         bind(ImageStore.class).toInstance(imageStore);
         bind(ImageService.class).toInstance(imageService);
         bind(InvitationService.class).toInstance(invitationService);
@@ -277,6 +293,35 @@ public class CoreGuiceModuleTest extends AbstractModule {
 
     @Provides NetworkProposal getNewNodeNetworkProposal(GeoNode geoNode) {
         return new NewNodeProposal(geoNode);
+    }
+
+    @Provides
+    private ClueRideIdentity getClueRideIdentity(Member member) {
+        try {
+            return ClueRideIdentity.Builder.builder()
+                    .withEmailString(member.getEmailAddress())
+                    .withSub("email|12345")
+                    .withDisplayName(member.getDisplayName())
+                    .withFamilyName("Booger")
+                    .withGivenName("Eat my")
+                    .withNickName(member.getEmailAddress())
+                    .withPictureUrl("https://clueride.com/")
+                    .build();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (AddressException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Provides
+    private AccessToken getAccessToken() {
+        return  AccessToken.Builder.builder()
+                .withToken("Test Token")
+                .build();
     }
 
 }

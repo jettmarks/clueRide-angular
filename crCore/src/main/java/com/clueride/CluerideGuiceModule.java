@@ -21,6 +21,12 @@ import java.security.Principal;
 
 import com.google.inject.AbstractModule;
 
+import com.clueride.auth.Auth0Connection;
+import com.clueride.auth.Auth0ConnectionImpl;
+import com.clueride.auth.access.AccessTokenService;
+import com.clueride.auth.access.AccessTokenServiceImpl;
+import com.clueride.auth.identity.IdentityStore;
+import com.clueride.auth.identity.IdentityStoreAuth0;
 import com.clueride.config.ConfigService;
 import com.clueride.config.ConfigServiceImpl;
 import com.clueride.dao.FileImageStore;
@@ -51,6 +57,8 @@ import com.clueride.token.TokenServiceJwt;
 public class CluerideGuiceModule extends AbstractModule {
     @Override
     protected void configure() {
+        bind(AccessTokenService.class).to(AccessTokenServiceImpl.class);
+        bind(Auth0Connection.class).to(Auth0ConnectionImpl.class);
         bind(AuthService.class).to(AuthServiceImpl.class);
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(RecommendationService.class).to(DefaultRecommendationService.class);
@@ -60,6 +68,7 @@ public class CluerideGuiceModule extends AbstractModule {
         bind(CourseTypeService.class).to(CourseTypeServiceImpl.class);
         bind(ClueService.class).to(ClueServiceImpl.class);
         bind(DiagnosticService.class).to(DiagnosticServiceImpl.class);
+        bind(IdentityStore.class).to(IdentityStoreAuth0.class);
         bind(ImageStore.class).to(FileImageStore.class);
         bind(JtiService.class).to(JtiServiceImpl.class);
         bind(LocationService.class).to(DefaultLocationService.class);
