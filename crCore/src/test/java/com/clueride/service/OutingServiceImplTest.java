@@ -29,9 +29,9 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import com.clueride.CoreGuiceModuleTest;
-import com.clueride.domain.Team;
 import com.clueride.domain.outing.Outing;
 import com.clueride.domain.outing.OutingStore;
+import com.clueride.domain.team.Team;
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;

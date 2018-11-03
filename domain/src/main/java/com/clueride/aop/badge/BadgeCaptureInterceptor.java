@@ -24,9 +24,9 @@ import javax.inject.Provider;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
-import com.clueride.domain.account.principal.SessionPrincipal;
 import com.clueride.domain.badge.event.BadgeEvent;
 import com.clueride.domain.badge.event.BadgeEventService;
+import com.clueride.domain.session.SessionPrincipal;
 
 /**
  * Method Interceptor responsible for capturing events that count toward the awarding of badges.

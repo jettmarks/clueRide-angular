@@ -30,8 +30,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.clueride.domain.user.Badge;
-import com.clueride.service.IdProvider;
-import com.clueride.service.MemoryBasedMemberIdProvider;
 import static java.util.Objects.requireNonNull;
 
 public class Member {
@@ -131,8 +129,6 @@ public class Member {
         private List<Badge> badges = Collections.emptyList();
 
         public Builder() {
-            IdProvider idProvider = new MemoryBasedMemberIdProvider();
-            id = idProvider.getId();
         }
 
         @Override
@@ -147,6 +143,7 @@ public class Member {
         public static Builder from(Member member) {
             requireNonNull(member);
             return builder()
+                    .withId(member.getId())
                     .withPhone(member.getPhoneNumber())
                     .withFirstName(member.firstName)
                     .withLastName(member.lastName)

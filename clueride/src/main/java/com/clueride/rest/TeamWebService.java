@@ -1,5 +1,7 @@
 package com.clueride.rest;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -10,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.clueride.domain.account.member.Member;
+import com.clueride.domain.team.Team;
 import com.clueride.domain.team.TeamService;
 
 /**
@@ -21,12 +24,22 @@ import com.clueride.domain.team.TeamService;
  * DELETE - Removes member from the team when individual is supplied; otherwise, the entire team is closed.
  */
 @Path("team")
-public class Team {
+public class TeamWebService {
     private final TeamService teamService;
 
     @Inject
-    public Team(TeamService teamService) {
+    public TeamWebService(TeamService teamService) {
         this.teamService = teamService;
+    }
+
+    /**
+     * Returns list of defined teams.
+     * @return
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Team> getTeams() {
+        return teamService.getTeams();
     }
 
     /**
@@ -38,7 +51,7 @@ public class Team {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{teamId}")
-    public com.clueride.domain.Team getTeamById(@PathParam("teamId") Integer teamId) {
+    public Team getTeamById(@PathParam("teamId") Integer teamId) {
         return teamService.getTeam(teamId);
     }
 
@@ -46,7 +59,7 @@ public class Team {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("{teamId}")
-    public com.clueride.domain.Team addMember(@PathParam("teamId") Integer teamId, Member newMember) {
+    public Team addMember(@PathParam("teamId") Integer teamId, Member newMember) {
         return teamService.addMember(teamId, newMember);
     }
 

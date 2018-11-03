@@ -17,45 +17,56 @@
  */
 package com.clueride.domain.team;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.Team;
 import com.clueride.domain.account.member.Member;
+import com.clueride.domain.account.member.MemberService;
 
 /**
  * Implementation of the Team Interface for maintaining the list of Teams and their members.
  */
 public class TeamServiceImpl implements TeamService {
     private static final Logger LOGGER = Logger.getLogger(TeamServiceImpl.class);
-    private static TeamService instance = new TeamServiceImpl();
-    private static Team team;
+    private final TeamStore teamStore;
+    private final MemberService memberService;
 
-    static
-    {
-        // TODO: Move this over to using a Store to hold onto the Teams and their members.
-        team = new Team("Spokes Folks");
-        team.add(new Member("Jett"));
+    @Inject
+    public TeamServiceImpl(
+            TeamStore teamStore,
+            MemberService memberService
+    ) {
+        this.teamStore = teamStore;
+        this.memberService = memberService;
     }
+
 
     @Override
     public List<Team> getTeams() {
-        return Collections.singletonList(team);
+        List<Team> teams = new ArrayList<>();
+        List<Team.Builder> builders = teamStore.getTeams();
+        for (Team.Builder builder : builders) {
+            teams.add(builder.build());
+        }
+        return teams;
     }
 
     @Override
     public Team getTeam(Integer teamId) {
-        // TODO: tap into the store
-        return team;
+        return teamStore.getTeamById(teamId).build();
     }
 
     @Override
     public Team addMember(Integer teamId, Member newMember) {
-        LOGGER.info("Adding Member " + newMember.getDisplayName() + " to team " + teamId);
-        team.add(newMember);
-        return team;
+        Member member = memberService.getMember(newMember.getId());
+        LOGGER.info("Adding Member " + member.getDisplayName() + " to team " + teamId);
+        Team.Builder teamBuilder = teamStore.getTeamById(teamId);
+        teamBuilder.withNewMember(member);
+        return teamStore.updateTeam(teamBuilder).build();
     }
 
 }

@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 
 import com.clueride.domain.account.principal.BadgeOsPrincipal;
-import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.session.SessionPrincipal;
 
 /**
  * Default Implementation of BadgeService.

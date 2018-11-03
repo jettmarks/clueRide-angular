@@ -41,6 +41,9 @@ import com.clueride.token.TokenService;
 
 /**
  * Rest API for Authentication and Authorization functionality.
+ *
+ * TODO: Deprecate this; replaced by Auth0 functionality.
+ * @deprecated
  */
 @Path("login")
 public class LoginWebService {

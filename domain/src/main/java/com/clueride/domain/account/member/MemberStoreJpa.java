@@ -51,7 +51,10 @@ public class MemberStoreJpa implements MemberStore {
 
     @Override
     public Member getMemberById(Integer id) {
-        return null;
+        entityManager.getTransaction().begin();
+        Member.Builder memberBuilder = entityManager.find(Member.Builder.class, id);
+        entityManager.getTransaction().commit();
+        return memberBuilder.build();
     }
 
     @Override
