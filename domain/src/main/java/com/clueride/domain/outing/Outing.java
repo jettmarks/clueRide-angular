@@ -19,8 +19,8 @@ package com.clueride.domain.outing;
 
 import java.util.Date;
 
-import com.clueride.domain.Team;
 import com.clueride.domain.course.Course;
+import com.clueride.domain.team.Team;
 import com.clueride.service.IdProvider;
 import com.clueride.service.MemoryBasedOutingIdProvider;
 

@@ -16,6 +16,7 @@ package com.clueride.auth;/*
  * Created by jett on 10/19/18.
  */
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.testng.annotations.BeforeMethod;
@@ -30,6 +31,8 @@ import com.clueride.CoreGuiceModuleTest;
 @Guice(modules = CoreGuiceModuleTest.class)
 public class Auth0ConnectionImplTest {
     private Auth0Connection toTest;
+
+    @Inject
     private Provider<Auth0Connection> toTestProvider;
 
     @BeforeMethod

@@ -35,17 +35,17 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
-import com.clueride.domain.Team;
 import com.clueride.domain.account.member.Member;
 import com.clueride.domain.account.member.MemberStore;
 import com.clueride.domain.account.principal.BadgeOsPrincipal;
-import com.clueride.domain.account.principal.SessionPrincipal;
 import com.clueride.domain.course.Course;
 import com.clueride.domain.course.CourseStore;
 import com.clueride.domain.course.CourseType;
 import com.clueride.domain.course.CourseTypeStore;
 import com.clueride.domain.outing.Outing;
 import com.clueride.domain.outing.OutingStore;
+import com.clueride.domain.session.SessionPrincipal;
+import com.clueride.domain.team.Team;
 import com.clueride.domain.team.TeamService;
 import static java.util.Objects.requireNonNull;
 

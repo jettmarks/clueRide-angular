@@ -35,6 +35,7 @@ import org.mockito.Mock;
 
 import com.clueride.auth.Auth0Connection;
 import com.clueride.auth.access.AccessToken;
+import com.clueride.auth.access.AccessTokenService;
 import com.clueride.auth.identity.ClueRideIdentity;
 import com.clueride.auth.identity.IdentityStore;
 import com.clueride.config.ConfigService;
@@ -52,8 +53,6 @@ import com.clueride.domain.account.member.Member;
 import com.clueride.domain.account.member.MemberService;
 import com.clueride.domain.account.principal.EmailPrincipal;
 import com.clueride.domain.account.principal.PrincipalService;
-import com.clueride.domain.account.principal.SessionPrincipal;
-import com.clueride.domain.account.principal.SessionPrincipalImpl;
 import com.clueride.domain.course.CourseStore;
 import com.clueride.domain.dev.NetworkProposal;
 import com.clueride.domain.dev.NewNodeProposal;
@@ -62,6 +61,8 @@ import com.clueride.domain.factory.PointFactory;
 import com.clueride.domain.invite.InvitationService;
 import com.clueride.domain.outing.Outing;
 import com.clueride.domain.outing.OutingStore;
+import com.clueride.domain.session.SessionPrincipal;
+import com.clueride.domain.session.SessionPrincipalImpl;
 import com.clueride.domain.team.TeamService;
 import com.clueride.domain.user.image.ImageService;
 import com.clueride.domain.user.latlon.LatLonService;
@@ -92,6 +93,9 @@ import static org.mockito.MockitoAnnotations.initMocks;
  * Configures bindings for Core Guice module testing.
  */
 public class CoreGuiceModuleTest extends AbstractModule {
+    @Mock
+    private AccessTokenService accessTokenService;
+
     @Mock
     private Auth0Connection auth0Connection;
 
@@ -176,6 +180,7 @@ public class CoreGuiceModuleTest extends AbstractModule {
 
         install(new DomainGuiceProviderModule());
 
+        bind(AccessTokenService.class).toInstance(accessTokenService);
         bind(Auth0Connection.class).toInstance(auth0Connection);
         bind(AuthenticationService.class).toInstance(authenticationService);
         bind(AuthService.class).to(AuthServiceImpl.class);

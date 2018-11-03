@@ -24,8 +24,6 @@ import javax.mail.internet.InternetAddress;
 import javax.persistence.EntityManager;
 
 import com.clueride.domain.account.principal.BadgeOsPrincipal;
-import com.clueride.domain.account.principal.SessionPrincipal;
-import com.clueride.domain.account.principal.SessionPrincipalImpl;
 import com.clueride.domain.badge.Badge;
 import com.clueride.domain.badge.BadgeService;
 import com.clueride.domain.badge.BadgeServiceImpl;
@@ -33,6 +31,8 @@ import com.clueride.domain.badge.BadgeStore;
 import com.clueride.domain.badge.BadgeStoreJpa;
 import com.clueride.domain.badge.BadgeTypeService;
 import com.clueride.domain.badge.BadgeTypeServiceMappedImpl;
+import com.clueride.domain.session.SessionPrincipal;
+import com.clueride.domain.session.SessionPrincipalImpl;
 import com.clueride.infrastructure.JpaUtil;
 
 /**

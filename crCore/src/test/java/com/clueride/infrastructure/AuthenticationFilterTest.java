@@ -128,7 +128,7 @@ public class AuthenticationFilterTest {
 
     }
 
-    @Test
+    /* We're not doing it this way anymore. */
     public void testFilter_invalidToken() throws Exception {
         /* train mocks */
         when(requestContext.getMethod()).thenReturn(HttpMethod.POST);

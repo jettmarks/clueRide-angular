@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 import com.clueride.auth.access.AccessTokenService;
 import com.clueride.config.ConfigService;
 import com.clueride.domain.account.principal.PrincipalService;
-import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.session.SessionPrincipal;
 
 /**
  * Allows picking up Authorization headers and extracting the Principal.

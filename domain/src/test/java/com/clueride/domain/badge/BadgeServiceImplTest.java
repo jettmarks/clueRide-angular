@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 
 import com.clueride.domain.DomainGuiceModuleTest;
 import com.clueride.domain.account.principal.BadgeOsPrincipal;
-import com.clueride.domain.account.principal.SessionPrincipal;
+import com.clueride.domain.session.SessionPrincipal;
 import com.clueride.infrastructure.DbSourced;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;

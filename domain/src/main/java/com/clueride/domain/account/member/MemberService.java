@@ -31,14 +31,14 @@ public interface MemberService {
     Member getMember(Integer id);
 
     /**
-     * Retrieve Member instances by displayName
+     * Retrieve Member instances by displayName.
      * @param displayName - Name by which the Member appears within teams; not necessarily Unique.
      * @return Matching instance of Member.
      */
     List<Member> getMemberByDisplayName(String displayName);
 
     /**
-     * Retrieve Member instances by displayName
+     * Retrieve Member instances by Email Address (Principal).
      * @param email String representation of what should be a valid email address.
      * @return Matching instance of Member.
      */
