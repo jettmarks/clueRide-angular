@@ -74,6 +74,7 @@ public class ImageStoreJpa implements ImageStore {
         return imageByLocation.id;
     }
 
+    // TODO: Unsure if I want an inner class of a JPA Store representing an entity -- not clear it is scanned by WildFly.
     @Entity(name="image_by_location")
     public static class ImageByLocation {
         @Id

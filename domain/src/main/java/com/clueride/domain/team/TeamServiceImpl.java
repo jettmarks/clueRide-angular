@@ -69,4 +69,11 @@ public class TeamServiceImpl implements TeamService {
         return teamStore.updateTeam(teamBuilder).build();
     }
 
+    @Override
+    public Team newTeam(String name) {
+        Team.Builder teamBuilder = Team.Builder.builder()
+                .withName(name);
+        return teamStore.addNew(teamBuilder).build();
+    }
+
 }

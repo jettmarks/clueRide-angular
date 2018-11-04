@@ -24,14 +24,13 @@ import com.clueride.domain.account.member.Member;
 public interface TeamService {
 
     /**
-     * At this time, there is only a single team, but eventually, we'll have a number
-     * of teams managed by the store.
+     * Returns all of our teams.
      * @return List of all Teams.
      */
     List<Team> getTeams();
 
     /**
-     *
+     * Given the ID, return the matching Team.
      * @param teamId unique identifier for the Team.
      * @return Matching Team.
      */
@@ -45,5 +44,13 @@ public interface TeamService {
      * @return the updated Team.
      */
     Team addMember(Integer teamId, Member newMember);
+
+    /**
+     * Given a name for a new team, create the Team record so we can then add
+     * members.
+     * @param name String representing the name of the team.
+     * @return Named Team ready to add members (none included).
+     */
+    Team newTeam(String name);
 
 }

@@ -58,4 +58,5 @@ public interface MemberService {
      * @return List of the Members currently defined.
      */
     List<Member> getAllMembers();
+
 }

@@ -18,6 +18,7 @@
 package com.clueride.domain.account.member;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -93,6 +94,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<Member> getAllMembers() {
-        return memberStore.getAllMembers();
+        List<Member> members = new ArrayList<>();
+        List<Member.Builder> builders = memberStore.getAllMembers();
+        for (Member.Builder builder : builders) {
+            members.add(builder.build());
+        }
+        return members;
     }
 }

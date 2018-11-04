@@ -42,8 +42,12 @@ public class TeamStoreJpa implements TeamStore {
     }
 
     @Override
-    public Integer addNew(Team.Builder builder) {
-        return null;
+    public Team.Builder addNew(Team.Builder teamBuilder) {
+        LOGGER.info("Creating a new Team: " + teamBuilder.getName());
+        entityManager.getTransaction().begin();
+        entityManager.persist(teamBuilder);
+        entityManager.getTransaction().commit();
+        return teamBuilder;
     }
 
     @Override
@@ -66,6 +70,7 @@ public class TeamStoreJpa implements TeamStore {
 
     @Override
     public Team.Builder updateTeam(Team.Builder teamBuilder) {
+        LOGGER.info("Updating an existing Team: " + teamBuilder.getId());
         entityManager.getTransaction().begin();
         entityManager.merge(teamBuilder);
         entityManager.getTransaction().commit();

@@ -34,7 +34,7 @@ public class TeamWebService {
 
     /**
      * Returns list of defined teams.
-     * @return
+     * @return all defined teams.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -61,6 +61,13 @@ public class TeamWebService {
     @Path("{teamId}")
     public Team addMember(@PathParam("teamId") Integer teamId, Member newMember) {
         return teamService.addMember(teamId, newMember);
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Team createTeam(Team.Builder newTeam) {
+        return teamService.newTeam(newTeam.getName());
     }
 
 }

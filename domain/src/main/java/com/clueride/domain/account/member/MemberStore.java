@@ -64,5 +64,6 @@ public interface MemberStore {
      * TODO: This won't be sustainable once we have a significant number of members, but it's sufficient for testing.
      * @return List of the Members currently defined.
      */
-    List<Member> getAllMembers();
+    List<Member.Builder> getAllMembers();
+
 }
