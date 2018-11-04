@@ -29,7 +29,7 @@ public interface TeamStore {
      * @param builder Builder instance representing the Team including the Members of the Team.
      * @return ID of the new Team.
      */
-    Integer addNew(Team.Builder builder);
+    Team.Builder addNew(Team.Builder builder);
 
     /**
      * Retrieve a list of the current Teams.

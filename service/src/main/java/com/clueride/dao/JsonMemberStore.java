@@ -20,6 +20,7 @@ package com.clueride.dao;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * Implementation of MemberStore backed by JSON files.
+ * @deprecated - no longer using JSON to store Members.
  */
 public class JsonMemberStore implements MemberStore {
     private static final Logger LOGGER = Logger.getLogger(JsonMemberStore.class);
@@ -88,7 +90,6 @@ public class JsonMemberStore implements MemberStore {
         requireNonNull(member.getEmailAddress(), "Member Email Address cannot be null");
         membersByEmail.put(member.getEmailAddress(), member);
         members.add(member);
-        // TODO: Persistence with a ID
         return 0;
     }
 
@@ -112,15 +113,10 @@ public class JsonMemberStore implements MemberStore {
 
     @Override
     public void update(Member member) {
-        // TODO: Build this impl
-
     }
 
     @Override
-    public List<Member> getAllMembers() {
-        /* convert Collection to List */
-        List<Member> returnList = new ArrayList<>();
-        returnList.addAll(members);
-        return returnList;
+    public List<Member.Builder> getAllMembers() {
+        return Collections.emptyList();
     }
 }

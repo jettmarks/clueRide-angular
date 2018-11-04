@@ -24,6 +24,8 @@ import javax.persistence.EntityManager;
 import org.apache.log4j.Logger;
 
 import com.clueride.domain.account.member.Member;
+import com.clueride.domain.account.member.MemberService;
+import com.clueride.domain.account.member.MemberServiceImpl;
 import com.clueride.domain.account.member.MemberStoreJpa;
 import com.clueride.domain.team.Team;
 import com.clueride.domain.team.TeamService;
@@ -34,6 +36,9 @@ import com.clueride.infrastructure.JpaUtil;
 
 /**
  * Dumps records from Team database.
+ *
+ * NOTE: This is probably easier to do from the REST API, but this
+ * allows running from the Command Line.
  */
 public class TeamUtilMain {
     private static final Logger LOGGER = Logger.getLogger(TeamUtilMain.class);
@@ -71,7 +76,8 @@ public class TeamUtilMain {
         entityManager = JpaUtil.getClueRideEntityManagerFactory().createEntityManager();
         teamStore = new TeamStoreJpa(entityManager);
         MemberStoreJpa memberStore = new MemberStoreJpa(entityManager);
-        teamService = new TeamServiceImpl(teamStore, memberStore, memberService);
+        MemberService memberService = new MemberServiceImpl(memberStore);
+        teamService = new TeamServiceImpl(teamStore, memberService);
     }
 
 }

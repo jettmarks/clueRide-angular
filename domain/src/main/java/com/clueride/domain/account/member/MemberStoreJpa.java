@@ -18,7 +18,6 @@
 package com.clueride.domain.account.member;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -89,7 +88,10 @@ public class MemberStoreJpa implements MemberStore {
     }
 
     @Override
-    public List<Member> getAllMembers() {
-        return Collections.emptyList();
+    public List<Member.Builder> getAllMembers() {
+        entityManager.getTransaction().begin();
+        List<Member.Builder> builders = entityManager.createQuery("SELECT m FROM member m").getResultList();
+        entityManager.getTransaction().commit();
+        return builders;
     }
 }

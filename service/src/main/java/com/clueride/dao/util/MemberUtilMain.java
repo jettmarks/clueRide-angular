@@ -51,13 +51,14 @@ public class MemberUtilMain {
                 )
         );
 
-        List<Member> members = memberStoreJson.getAllMembers();
-        for (Member member : members) {
+        List<Member.Builder> members = memberStoreJson.getAllMembers();
+        for (Member.Builder member : members) {
             try {
-                memberStoreJpa.addNew(member);
+                memberStoreJpa.addNew(member.build());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
 }

@@ -82,7 +82,7 @@ public class CluerideJerseyModule extends ResourceConfig {
         Map<Key<?>,Binding<?>> map = injector.getBindings();
         for(Map.Entry<Key<?>, Binding<?>> e : map.entrySet()) {
             LOGGER.debug(e.getValue());
-//            LOGGER.debug(e.getKey() + ": " + e.getValue());
         }
     }
+
 }
