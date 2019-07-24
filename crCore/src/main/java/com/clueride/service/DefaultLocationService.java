@@ -278,7 +278,6 @@ public class DefaultLocationService implements LocationService {
     }
 
     private Image persistImageMetadata(Integer locationId, Integer newSeqId) {
-        // TODO: URL responsibility probably belongs with the image service.
         String imageUrlString =
                 "https://images.clueride.com/img/" + locationId + "/" + newSeqId + ".jpg";
         Image.Builder imageBuilder = Image.Builder.builder()

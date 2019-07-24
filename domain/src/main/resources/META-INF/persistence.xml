@@ -4,10 +4,10 @@
     <persistence-unit name="ClueRidePersistenceUnit">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
-            <property name="hibernate.connection.url" value="jdbc:postgresql://<host>:5432/<schema>"/>
+            <property name="hibernate.connection.url" value="jdbc:postgresql://mensa:5432/crapp"/>
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
-            <property name="hibernate.connection.username" value=""/>
-            <property name="hibernate.connection.password" value=""/>
+            <property name="hibernate.connection.username" value="crapp"/>
+            <property name="hibernate.connection.password" value="cableSp0ken"/>
             <property name="hibernate.archive.autodetection" value="class"/>
             <property name="hibernate.show_sql" value="false"/>
             <property name="hibernate.format_sql" value="false"/>
@@ -20,10 +20,10 @@
     <persistence-unit name="WordPressPersistenceUnit">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
-            <property name="hibernate.connection.url" value="jdbc:mysql://<host>:3306/<schema>"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://mensa:3306/crapp"/>
             <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
-            <property name="hibernate.connection.username" value=""/>
-            <property name="hibernate.connection.password" value=""/>
+            <property name="hibernate.connection.username" value="crapp"/>
+            <property name="hibernate.connection.password" value="cableSp0ken"/>
             <property name="hibernate.archive.autodetection" value="class"/>
             <property name="hibernate.show_sql" value="false"/>
             <property name="hibernate.format_sql" value="false"/>
