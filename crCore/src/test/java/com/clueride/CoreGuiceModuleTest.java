@@ -42,6 +42,11 @@ import com.clueride.config.ConfigService;
 import com.clueride.config.ConfigServiceImpl;
 import com.clueride.dao.ClueStore;
 import com.clueride.dao.ImageStore;
+import com.clueride.dao.JsonCourseStore;
+import com.clueride.dao.JsonNetworkStore;
+import com.clueride.dao.JsonNodeStore;
+import com.clueride.dao.JsonPathStore;
+import com.clueride.dao.NetworkStore;
 import com.clueride.dao.NodeStore;
 import com.clueride.dao.PathStore;
 import com.clueride.domain.CourseWithGeo;
@@ -77,6 +82,8 @@ import com.clueride.infrastructure.AuthService;
 import com.clueride.infrastructure.AuthServiceImpl;
 import com.clueride.infrastructure.Jpa;
 import com.clueride.infrastructure.Json;
+import com.clueride.io.PojoJsonService;
+import com.clueride.io.PojoJsonUtil;
 import com.clueride.service.AuthenticationService;
 import com.clueride.service.CourseService;
 import com.clueride.service.LocationService;
@@ -142,6 +149,9 @@ public class CoreGuiceModuleTest extends AbstractModule {
     private MemberService memberService;
 
     @Mock
+    private NetworkStore networkStore;
+
+    @Mock
     private NodeStore nodeStore;
 
     @Mock
@@ -186,7 +196,8 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(AuthService.class).to(AuthServiceImpl.class);
         bind(ClueStore.class).toInstance(clueStore);
         bind(ConfigService.class).to(ConfigServiceImpl.class);
-        bind(CourseStore.class).toInstance(courseStore);
+//        bind(CourseStore.class).toInstance(courseStore);
+        bind(CourseStore.class).to(JsonCourseStore.class);
         bind(CourseService.class).toInstance(courseService);
         bind(IdentityStore.class).toInstance(identityStore);
         bind(ImageStore.class).toInstance(imageStore);
@@ -201,12 +212,17 @@ public class CoreGuiceModuleTest extends AbstractModule {
         bind(LocationTypeService.class).toInstance(locationTypeService);
         bind(LocationService.class).toInstance(locationService);
         bind(MemberService.class).toInstance(memberService);
+//        bind(NetworkStore.class).toInstance(networkStore);
+        bind(NetworkStore.class).to(JsonNetworkStore.class);
         bind(NodeService.class).toInstance(nodeService);
-        bind(NodeStore.class).toInstance(nodeStore);
+//        bind(NodeStore.class).toInstance(nodeStore);
+        bind(NodeStore.class).to(JsonNodeStore.class);
         bind(OutingService.class).toInstance(outingService);
         bind(OutingStore.class).toInstance(outingStore);
         bind(PathService.class).toInstance(pathService);
-        bind(PathStore.class).toInstance(pathStore);
+//        bind(PathStore.class).toInstance(pathStore);
+        bind(PathStore.class).to(JsonPathStore.class);
+        bind(PojoJsonService.class).to(PojoJsonUtil.class);
         bind(PrincipalService.class).toInstance(principalService);
         bind(RecommendationService.class).toInstance(recommendationService);
         bind(ScoredLocationService.class).toInstance(scoredLocationService);

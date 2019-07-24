@@ -71,13 +71,13 @@ public class MemberStoreJpaTest {
     public void testGetMemberByEmail() throws Exception {
         /* expected */
         Member expected = Member.Builder.builder()
-                .withEmailAddress("test.email@clueride.com")
-                .withDisplayName("tester")
-                .withFirstName("Test")
-                .withLastName("Account")
+                .withEmailAddress("invitedUser@clueride.com")
+                .withDisplayName("invitedUser")
+                .withFirstName("Invited")
+                .withLastName("User")
                 .withPhone("123.456.7890")
                 .build();
-        email = new InternetAddress("test.email@clueride.com");
+        email = new InternetAddress("invitedUser@clueride.com");
 
         /* make call */
         Member actual = toTest.getMemberByEmail(email);

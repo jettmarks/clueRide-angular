@@ -39,4 +39,5 @@ public interface ImageStore {
      * @return Integer sequence number of the image for this location.
      */
      Integer addNew(Integer locationId, InputStream imageData) throws FileNotFoundException;
+
 }

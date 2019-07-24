@@ -32,6 +32,7 @@ import com.clueride.feature.Edge;
 import com.clueride.geo.TranslateUtil;
 import com.clueride.io.GeoJsonUtil;
 import com.clueride.io.JsonStoreType;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Assembles a Feature Collection for a Course so it can be displayed on a map.
@@ -53,6 +54,7 @@ public class CourseBuilder {
     }
 
     public String getCourseFeatureCollection(Course course) {
+        requireNonNull(course, "Course must not be null");
         GeoJsonUtil jsonRespWriter = new GeoJsonUtil(JsonStoreType.OTHER);
         DefaultFeatureCollection fcPoints = new DefaultFeatureCollection();
         DefaultFeatureCollection fcNonPoints = new DefaultFeatureCollection();
